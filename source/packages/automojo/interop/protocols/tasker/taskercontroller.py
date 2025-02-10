@@ -23,23 +23,23 @@ import time
 
 from datetime import datetime, timedelta
 
-from mojo.errors.exceptions import NotOverloadedError, SemanticError
+from automojo.errors.exceptions import NotOverloadedError, SemanticError
 
-from mojo.results.model.taskingresult import TaskingResult
-from mojo.results.model.progressdelivery import SummaryProgressDelivery
+from automojo.results.model.taskingresult import TaskingResult
+from automojo.results.model.progressdelivery import SummaryProgressDelivery
 
 
-from mojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
-from mojo.interop.protocols.tasker.tasking import Tasking, TaskingIdentity
-from mojo.interop.protocols.tasker.taskernode import TaskerNode, TaskerClientNode
-from mojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
-from mojo.interop.protocols.tasker.taskerservice import TaskerService
-from mojo.interop.protocols.tasker.taskerservermanager import TaskerServerManager, spawn_tasking_server_process
-from mojo.interop.protocols.tasker.taskingevent import TaskingEvent
+from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
+from automojo.interop.protocols.tasker.tasking import Tasking, TaskingIdentity
+from automojo.interop.protocols.tasker.taskernode import TaskerNode, TaskerClientNode
+from automojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
+from automojo.interop.protocols.tasker.taskerservice import TaskerService
+from automojo.interop.protocols.tasker.taskerservermanager import TaskerServerManager, spawn_tasking_server_process
+from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 
-from mojo.landscaping.client.clientbase import ClientBase
+from automojo.landscaping.client.clientbase import ClientBase
 
-from mojo.xmods.xformatting import indent_lines_list
+from automojo.xmods.xformatting import indent_lines_list
 
 TASKER_PORT = 8686
 

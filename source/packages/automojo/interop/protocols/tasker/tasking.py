@@ -35,22 +35,22 @@ from logging import FileHandler
 
 from uuid import uuid4
 
-from mojo.errors.exceptions import NotOverloadedError, SemanticError
-from mojo.errors.xtraceback import create_traceback_detail, format_traceback_detail
+from automojo.errors.exceptions import NotOverloadedError, SemanticError
+from automojo.errors.xtraceback import create_traceback_detail, format_traceback_detail
 
-from mojo.results.model.resultcode import ResultCode
-from mojo.results.model.resulttype import ResultType
-from mojo.results.model.progressinfo import ProgressInfo, ProgressType
-from mojo.results.model.progresscode import ProgressCode
-from mojo.results.model.taskingresult import TaskingResult
+from automojo.results.model.resultcode import ResultCode
+from automojo.results.model.resulttype import ResultType
+from automojo.results.model.progressinfo import ProgressInfo, ProgressType
+from automojo.results.model.progresscode import ProgressCode
+from automojo.results.model.taskingresult import TaskingResult
 
-from mojo.xmods.xdatetime import format_datetime_with_fractional
-from mojo.xmods.xformatting import indent_lines_list
-from mojo.xmods.ximport import import_by_name
-from mojo.xmods.jsos import CHAR_RECORD_SEPERATOR
+from automojo.xmods.xdatetime import format_datetime_with_fractional
+from automojo.xmods.xformatting import indent_lines_list
+from automojo.xmods.ximport import import_by_name
+from automojo.xmods.jsos import CHAR_RECORD_SEPERATOR
 
-from mojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
-from mojo.interop.protocols.tasker.taskingevent import TaskingEvent
+from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
+from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 
 
 def instantiate_tasking(worker: str, wref: str, module_name: str, tasking_name: str, tasking_id: str, parent_id: str, output_dir: str,

@@ -19,12 +19,13 @@ import struct
 
 from enum import IntEnum
 
-from mojo.interop.protocols.dns.dnsconst import DnsFlags, DnsRecordClass, DnsRecordType, MAX_MSG_ABSOLUTE, MAX_MSG_TYPICAL
+from automojo.networking.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType, DNS_PACKET_HEADER_SIZE, MAX_MSG_ABSOLUTE, MAX_MSG_TYPICAL
+from automojo.networking.protocols.dns.dnsflags import DnsFlags
 
-from mojo.interop.protocols.dns.exceptions import DnsNamePartTooLongError
-from mojo.interop.protocols.dns.dnsquestion import DnsQuestion
-from mojo.interop.protocols.dns.dnsrecord import DnsRecord
-from mojo.interop.protocols.dns.dnspointer import DnsPointer
+from automojo.networking.protocols.dns.exceptions import DnsNamePartTooLongError
+from automojo.networking.protocols.dns.dnsquestion import DnsQuestion
+from automojo.networking.protocols.dns.dnsrecord import DnsRecord
+from automojo.networking.protocols.dns.dnspointer import DnsPointer
 
 logger = logging.getLogger()
 
@@ -34,31 +35,44 @@ class DnsPacketBuilderState(IntEnum):
     Initial = 0
     Finished = 1
 
+
 class DnsOutboundMessage:
     """
-        The :class:`DnsOutboundMessage` object is used to write outgoing DNS packets.
+        The :class:`DnsOutboundMessage` object is used to format outgoing DNS packets into octet streams.
     """
 
-    def __init__(self, flags: DnsFlags, id: int=0, multicast: bool = True) -> None:
+    def __init__(self, flags: DnsFlags, id: int=0, multicast: bool = True, use_compression: Optional[bool] = None) -> None:
         """
         """
         self._finished = False
         self._id = id
         self._multicast = multicast
+        
+        if use_compression is not None:
+            self._use_compression = use_compression
+        elif self._multicast is True:
+            self._use_compression = True # Always use compression with multicast DNS
+        else:
+            self._use_compression = False
+
         self._flags = flags
+
+        # Stream state and data fields
+        self._state = DnsPacketBuilderState.Initial
         self._packets_data: List[bytes] = [] 
 
-        # these 3 are per-packet -- see also reset_for_next_packet()
-        self._names: Dict[str, int] = {}  
+        # these 3 are per-packet fields -- see also reset_for_next_packet()
+        self._compression_names: Dict[str, int] = {}
         self._data: List[bytes] = []
-        self._size = 12
+        self._packet_offset = DNS_PACKET_HEADER_SIZE
 
-        self._state = DnsPacketBuilderState.Initial
-
+        # Message Data
         self._questions: List[DnsQuestion] = []
         self._answers: List[Tuple[DnsRecord, float]] = [] 
         self._authorities: List[DnsPointer] = [] 
         self._additionals: List[DnsRecord] = []
+        
+        return
 
     @property
     def additionals(self) -> List[DnsRecord]:
@@ -93,10 +107,6 @@ class DnsOutboundMessage:
         return self._multicast
 
     @property
-    def names(self) -> Dict[str, int]:
-        return self._names
-
-    @property
     def packets_data(self) -> List[bytes]:
         return self._packets_data
 
@@ -106,7 +116,7 @@ class DnsOutboundMessage:
 
     @property
     def size(self) -> int:
-        return self._size
+        return self._packet_offset
 
     @property
     def state(self) -> DnsPacketBuilderState:
@@ -187,51 +197,34 @@ class DnsOutboundMessage:
         self._authorities.append(record)
         return
 
-    def packet(self) -> bytes:
-        """
-            Returns a bytestring containing the first packet's bytes.
-
-            Generally, you want to use packets() in case the response does not fit in a single packet, but this
-            exists for backward compatibility.
-        """
-        packets = self.packets()
-        if len(packets) > 0:
-            if len(packets[0]) > MAX_MSG_ABSOLUTE:
-                # TODO: Filter this logging down to once per packet type or instance
-                logger.warn(
-                    "Created over-sized packet (%d bytes) %r", len(packets[0]), packets[0]
-                )
-            return packets[0]
-        else:
-            return b''
-
     def packets(self) -> List[bytes]:
         """
             Returns a list of bytestrings containing the packets' bytes
 
             No further parts should be added to the packet once this is done.  The packets are each restricted to
-            _MAX_MSG_TYPICAL or less in length, except for the case of a single answer which will be written out to
-            a single oversized packet no more than _MAX_MSG_ABSOLUTE in length (and hence will be subject to IP
+            MAX_MSG_TYPICAL or less in length, except for the case of a single answer which will be written out to
+            a single oversized packet no more than MAX_MSG_ABSOLUTE in length (and hence will be subject to IP
             fragmentation potentially).
         """
 
         if self._state == DnsPacketBuilderState.Finished:
             return self._packets_data
 
+        questions_offset = 0
         answer_offset = 0
         authority_offset = 0
         additional_offset = 0
 
         # we have to at least write out the question
-        first_time = True
+        first_iteration = True
 
         while (
-            first_time
+            questions_offset < len(self._questions)
             or answer_offset < len(self._answers)
             or authority_offset < len(self._authorities)
             or additional_offset < len(self._additionals)
         ):
-            first_time = False
+            
             logger.debug("offsets = %d, %d, %d", answer_offset, authority_offset, additional_offset)
             logger.debug("lengths = %d, %d, %d", len(self._answers), len(self._authorities), len(self._additionals))
 
@@ -240,11 +233,12 @@ class DnsOutboundMessage:
             answers_written = 0
             questions_written = 0
 
+            # Write out all the questions, we expect questions to be kept to a minimum for each outbound DnsMessage
             for question in self._questions:
                 self._write_question(question)
                 questions_written += 1
 
-            allow_long = True  # at most one answer is allowed to be a long packet
+            allow_long = True  # at most one answer must be allowed even if it creates a long DNS packet
             for answer, time_ in self._answers[answer_offset:]:
                 if self._write_record(answer, time_, allow_long):
                     answers_written += 1
@@ -258,20 +252,25 @@ class DnsOutboundMessage:
                 if self._write_record(additional, 0):
                     additionals_written += 1
 
+            # Insert the Flags and Header at the beginning of the packet stream
             self._insert_short(0, additionals_written)
             self._insert_short(0, authorities_written)
             self._insert_short(0, answers_written)
             self._insert_short(0, questions_written)
-            self._insert_short(0, self._flags)
+
+            flags_int = self._flags.flags()
+            self._insert_short(0, flags_int)
 
             if self._multicast:
                 self._insert_short(0, 0)
             else:
                 self._insert_short(0, self._id)
 
+            # Roll up all the buffers into a bytestream and add it to our packets_data
             self._packets_data.append(b''.join(self._data))
             self._reset_for_next_packet()
 
+            questions_offset += questions_written
             answer_offset += answers_written
             authority_offset += authorities_written
             additional_offset += additionals_written
@@ -292,18 +291,18 @@ class DnsOutboundMessage:
             Inserts an unsigned short in a certain position in the packet
         """
         self._data.insert(index, struct.pack(b'!H', value))
-        self._size += 2
+        self._packet_offset += 2
         return
 
     def _pack(self, format_: Union[bytes, str], value: Any) -> None:
         self._data.append(struct.pack(format_, value))
-        self._size += struct.calcsize(format_)
+        self._packet_offset += struct.calcsize(format_)
         return
 
     def _reset_for_next_packet(self) -> None:
-        self._names = {}
+        self._compression_names = {}
         self._data = []
-        self._size = 12
+        self._packet_offset = 12 # Initialize to 12 to account for the packet header size
 
     def _write_bytes(self, buffer: bytes) -> None:
         """
@@ -311,7 +310,43 @@ class DnsOutboundMessage:
         """
         assert isinstance(buffer, bytes)
         self._data.append(buffer)
-        self._size += len(buffer)
+        self._packet_offset += len(buffer)
+        return
+
+    def _write_compressed_name(self, name: str, parts: List[str]) -> None:
+
+        if name not in self._compression_names:
+            self._compression_names[name] = self._packet_offset
+
+            # Top level names are just written out.        
+            if len(parts) == 1:    
+                self._write_utf(name)
+                self._write_single_byte(0) # Terminate the name with a '0' octect
+            
+            # If we are not a top level name, write out our parent first, then write ourselves and
+            # terminate with a parent pointer
+            elif len(parts) > 1:
+                toplabel = parts[0]
+                self._write_utf(toplabel)
+
+                pparts = parts[1:]
+                pname = '.'.join(pparts)
+                
+                if pname in self._compression_names:
+                    pindex = self._compression_names[pname]
+                    self._write_compressed_name_index(pindex)  # Terminate the name with a compressed name pointer
+                else:
+                    self._write_compressed_name(pname, pparts)
+
+            else:
+                raise RuntimeError("We should never get called with a parts length of '0'")
+        
+       
+        return
+
+    def _write_compressed_name_index(self, name_index: int) -> None:
+        self._write_single_byte((name_index >> 8) | 0xC0)
+        self._write_single_byte(name_index & 0xFF)
         return
 
     def _write_int(self, value: Union[float, int]) -> None:
@@ -327,46 +362,28 @@ class DnsOutboundMessage:
 
             18.14. Name Compression
 
-            When generating Multicast DNS messages, implementations SHOULD use
-            name compression wherever possible to compress the names of resource
-            records, by replacing some or all of the resource record name with a
-            compact two-byte reference to an appearance of that data somewhere
-            earlier in the message [RFC1035].
+            When generating Multicast DNS messages, implementations SHOULD use name compression wherever possible to
+            compress the names of resource records, by replacing some or all of the resource record name with a
+            compact two-byte reference to an appearance of that data somewhere earlier in the message [RFC1035].
         """
 
-        # split name into each label
-        parts = name.split('.')
-        if not parts[-1]:
-            parts.pop()
+        if self._use_compression:
+            name = name.rstrip(".")
 
-        # construct each suffix
-        name_suffices = ['.'.join(parts[i:]) for i in range(len(parts))]
+            # If the full name if found in the compression names, then we have already
+            # written out the name and all its parts.
+            name_index: Union[int, None] = self._compression_names.get(name, None)
+            if name_index is not None:
+                self._write_compressed_name_index(name_index)
 
-        # look for an existing name or suffix
-        for count, sub_name in enumerate(name_suffices):
-            if sub_name in self._names:
-                break
+            else:
+                parts = name.split('.')
+                self._write_compressed_name(name, parts)
+
         else:
-            count = len(name_suffices)
-
-        # note the new names we are saving into the packet
-        name_length = len(name.encode('utf-8'))
-        for suffix in name_suffices[:count]:
-            self._names[suffix] = self._size + name_length - len(suffix.encode('utf-8')) - 1
-
-        # write the new names out.
-        for part in parts[:count]:
-            self._write_utf(part)
-
-        # if we wrote part of the name, create a pointer to the rest
-        if count != len(name_suffices):
-            # Found substring in packet, create pointer
-            index = self._names[name_suffices[count]]
-            self._write_single_byte((index >> 8) | 0xC0)
-            self._write_single_byte(index & 0xFF)
-        else:
-            # this is the end of a name
+            self._write_utf(name)
             self._write_single_byte(0)
+
         return
 
     def _write_question(self, question: DnsQuestion) -> None:
@@ -386,7 +403,7 @@ class DnsOutboundMessage:
         if self._state == self._state.finished:
             return False
 
-        start_data_length, start_size = len(self._data), self._size
+        start_data_length, start_size = len(self._data), self._packet_offset
         self._write_name(record.name)
         self._write_short(record.rtype)
 
@@ -403,9 +420,9 @@ class DnsOutboundMessage:
         index = len(self._data)
 
         # Adjust size for the short we will write before this record
-        self._size += 2
+        self._packet_offset += 2
         record.write(self)
-        self._size -= 2
+        self._packet_offset -= 2
 
         length = sum((len(d) for d in self._data[index:]))
         # Here is the short we adjusted for
@@ -414,10 +431,10 @@ class DnsOutboundMessage:
         len_limit = MAX_MSG_ABSOLUTE if allow_long else MAX_MSG_TYPICAL
 
         # if we go over, then rollback and quit
-        if self._size > len_limit:
+        if self._packet_offset > len_limit:
             while len(self._data) > start_data_length:
                 self._data.pop()
-            self._size = start_size
+            self._packet_offset = start_size
             return False
 
         return True

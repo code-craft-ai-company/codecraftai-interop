@@ -15,15 +15,15 @@ from typing import Any, Dict, Tuple, Union, TYPE_CHECKING
 
 import weakref
 
-from mojo.landscaping.coordinators.coordinatorbase import CoordinatorBase
-from mojo.landscaping.friendlyidentifier import FriendlyIdentifier
-from mojo.landscaping.landscapeparameters import LandscapeActivationParams
-from mojo.landscaping.landscapedevice import LandscapeDevice
+from automojo.landscaping.coordinators.coordinatorbase import CoordinatorBase
+from automojo.landscaping.friendlyidentifier import FriendlyIdentifier
+from automojo.landscaping.landscapeparameters import LandscapeActivationParams
+from automojo.landscaping.landscapedevice import LandscapeDevice
 
-from mojo.interop.protocols.serial.tcpserialagent import TcpSerialAgent
+from automojo.interop.protocols.serial.tcpserialagent import TcpSerialAgent
 
 if TYPE_CHECKING:
-    from mojo.landscaping.landscape import Landscape
+    from automojo.landscaping.landscape import Landscape
 
 class TcpSerialCoordinator(CoordinatorBase):
     """

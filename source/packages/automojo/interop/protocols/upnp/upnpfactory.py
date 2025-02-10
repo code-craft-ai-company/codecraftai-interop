@@ -14,20 +14,20 @@ __credits__ = []
 
 from typing import Union
 
-from mojo.errors.exceptions import SemanticError
-from mojo.xmods.extension.dynamic import (
+from automojo.errors.exceptions import SemanticError
+from automojo.xmods.extension.dynamic import (
     collect_extensions_under_code_container,
     collect_extensions_under_folder,
     generate_extension_key
 )
-from mojo.xmods.ximport import import_by_name
-from mojo.collections.context import Context
+from automojo.xmods.ximport import import_by_name
+from automojo.collections.context import Context
 
-from mojo.interop.protocols.upnp.devices.upnpembeddeddevice import UpnpEmbeddedDevice
-from mojo.interop.protocols.upnp.devices.upnprootdevice import UpnpRootDevice
-from mojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
+from automojo.interop.protocols.upnp.devices.upnpembeddeddevice import UpnpEmbeddedDevice
+from automojo.interop.protocols.upnp.devices.upnprootdevice import UpnpRootDevice
+from automojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
 
-from mojo.interop.protocols.upnp.extensions import standard as standard_extensions
+from automojo.interop.protocols.upnp.extensions import standard as standard_extensions
 
 
 class UpnpFactory:

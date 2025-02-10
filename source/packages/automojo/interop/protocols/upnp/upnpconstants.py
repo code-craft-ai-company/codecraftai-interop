@@ -5,7 +5,7 @@ __credits__ = []
 
 import platform
 
-from mojo.interop.protocols.upnp.aspects import AspectsUPnP
+from automojo.interop.protocols.upnp.aspects import AspectsUPnP
 
 TIMEDELTA_RENEWAL_WINDOW = 120
 

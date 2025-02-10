@@ -15,7 +15,7 @@ from typing import List, Optional
 
 import logging
 
-from mojo.xmods.aspects import (
+from automojo.interop.aspects import (
     Aspects,
     ActionPattern,
     LoggingPattern,

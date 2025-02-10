@@ -25,9 +25,9 @@ from argparse import ArgumentParser, ArgumentError
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import fromstring as xml_fromstring
 
-from mojo.xmods.fspath import ensure_directory_is_package
+from automojo.xmods.fspath import ensure_directory_is_package
 
-from mojo.interop.protocols.upnp.coordinators.upnpcoordinator import UpnpCoordinator
+from automojo.interop.protocols.upnp.coordinators.upnpcoordinator import UpnpCoordinator
 
 # pylint: disable=unused-import
 
@@ -41,14 +41,14 @@ CONTENT_PROXY_FILE_HEADER = """
     NOTE: This is a code generated file.  This file should not be edited directly.
 """
 
-PROXY_BASE_CLASS_IMPORT = "from mojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy"
+PROXY_BASE_CLASS_IMPORT = "from automojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy"
 PROXY_BASE_CLASS_NAME = "UpnpServiceProxy"
 
 TEMPLATE_CLASS_PREFIX = """
 
-from mojo.interop.protocols.upnp.aspects import AspectsUPnP, DEFAULT_UPNP_ASPECTS
+from automojo.interop.protocols.upnp.aspects import AspectsUPnP, DEFAULT_UPNP_ASPECTS
 
-from mojo.xmods.extension.dynamic import DynamicExtension
+from automojo.xmods.extension.dynamic import DynamicExtension
 %(base_class_import)s
 
 class %(class_name)s(%(base_class_name)s, DynamicExtension):

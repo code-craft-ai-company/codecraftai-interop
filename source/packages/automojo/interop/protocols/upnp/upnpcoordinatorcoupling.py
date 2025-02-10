@@ -13,16 +13,16 @@ __credits__ = []
 
 from typing import Dict, List, Tuple, TYPE_CHECKING
 
-from mojo.collections.contextpaths import ContextPaths
-from mojo.errors.exceptions import SemanticError
-from mojo.landscaping.coupling.coordinatorcoupling import CoordinatorCoupling
+from automojo.collections.contextpaths import ContextPaths
+from automojo.errors.exceptions import SemanticError
+from automojo.landscaping.coupling.coordinatorcoupling import CoordinatorCoupling
 
-from mojo.interop.protocols.integrationclasses import INTEGRATION_CLASS_NETWORK_UPNP
-from mojo.interop.protocols.upnp.upnpcoordinator import UpnpCoordinator
+from automojo.interop.protocols.integrationclasses import INTEGRATION_CLASS_NETWORK_UPNP
+from automojo.interop.protocols.upnp.upnpcoordinator import UpnpCoordinator
 
 # Types imported only for type checking purposes
 if TYPE_CHECKING:
-    from mojo.landscaping.landscape import Landscape
+    from automojo.landscaping.landscape import Landscape
 
 class UpnpCoordinatorIntegration(CoordinatorCoupling):
     """

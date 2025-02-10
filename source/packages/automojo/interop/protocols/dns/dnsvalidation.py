@@ -13,12 +13,12 @@ __copyright__ = "Copyright 2020, Myron W Walker"
 __credits__ = []
 
 
-from mojo.interop.protocols.dns.dnsconst import HAS_A_TO_Z
-from mojo.interop.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN
-from mojo.interop.protocols.dns.dnsconst import HAS_ASCII_CONTROL_CHARS
-from mojo.interop.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN_UNDERSCORE
+from automojo.networking.protocols.dns.dnsconst import HAS_A_TO_Z
+from automojo.networking.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN
+from automojo.networking.protocols.dns.dnsconst import HAS_ASCII_CONTROL_CHARS
+from automojo.networking.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN_UNDERSCORE
 
-from mojo.interop.protocols.dns.exceptions import DnsBadTypeInNameError
+from automojo.networking.protocols.dns.exceptions import DnsBadTypeInNameError
 
 def validate_service_name(service_name: str, allow_underscores: bool = False):
     """

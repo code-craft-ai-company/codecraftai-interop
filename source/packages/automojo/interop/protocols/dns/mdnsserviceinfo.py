@@ -3,21 +3,35 @@
 import os
 import socket
 
-import zeroconf
-
 class MdnsServiceInfo:
-    def __init__(self, serviceinfo: zeroconf.ServiceInfo):
-        self._serviceinfo = serviceinfo
+
+    def __init__(self):
+        self._addresses = []
+        self._host_ttl = None
+        self._other_ttl = None
+        self._interface_index = None
+        self._key = None
+        self._port = None
+        self._priority = None
+        self._server = None
+        self._properties = {}
+        self._server = None
+        self._server_key = None
+        self._svc_name = None
+        self._svc_type = None
+        self._text = None
+        self._weight = None
+        return
 
     @property
     def addresses(self):
-        return self._serviceinfo.addresses
+        return self._addresses
 
     @property
     def first_ipv4_address(self):
         fipv4_addr = None
 
-        for addr in self._serviceinfo.addresses:
+        for addr in self._addresses:
             if len(addr) == 4: 
                 fipv4_addr = socket.inet_ntoa(addr)
                 break
@@ -26,67 +40,63 @@ class MdnsServiceInfo:
 
     @property
     def host_ttl(self):
-        return self._serviceinfo.host_ttl
+        return self._host_ttl
 
     @property
     def interface_index(self):
-        return self._serviceinfo.interface_index
+        return self._interface_index
 
     @property
     def key(self):
-        return self._serviceinfo.key
+        return self._key
     
     @property
     def other_ttl(self):
-        return self._serviceinfo.other_ttl
+        return self._other_ttl
     
     @property
     def port(self):
-        return self._serviceinfo.port
+        return self._port
 
     @property
     def priority(self):
-        return self._serviceinfo.priority
+        return self._priority
     
     @property
     def properties(self):
-        return self._serviceinfo.properties
+        return self._properties
     
     @property
     def server(self):
-        return self._serviceinfo.server
+        return self._server
     
     @property
     def server_key(self):
-        return self._serviceinfo.server_key
+        return self._server_key
 
     @property
     def svc_name(self):
-        return self._serviceinfo.name
+        return self._name
     
     @property
     def svc_type(self):
-        return self._serviceinfo.type
+        return self._type
 
     @property
     def text(self):
-        return self._serviceinfo.text
+        return self._text
     
     @property
     def weight(self):
-        return self._serviceinfo.weight
+        return self._weight
 
-    @property
-    def wrapped_serviceinfo(self):
-        return self._serviceinfo
 
     def detail_lines(self):
 
         str_lines = [
-            "svc_name: {}".format(self.svc_name),
-            "svc_type: {}".format(self.svc_type),
+            "svc_name: {}".format(self._svc_name),
+            "svc_type: {}".format(self._svc_type),
             "ipv4_addr: {}".format(self.first_ipv4_address),
-            "svc_type: {}".format(self.svc_type),
             "properties"
         ]
 

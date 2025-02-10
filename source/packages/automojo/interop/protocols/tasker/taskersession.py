@@ -34,26 +34,26 @@ from uuid import uuid4
 
 from http import HTTPStatus
 
-from mojo.errors.exceptions import SemanticError
+from automojo.errors.exceptions import SemanticError
 
-from mojo.errors.xtraceback import (
+from automojo.errors.xtraceback import (
     create_traceback_detail,
     format_traceback_detail
 )
 
-from mojo.results.model.progresscode import ProgressCode
-from mojo.results.model.progressinfo import ProgressInfo
-from mojo.results.model.resultcode import ResultCode
-from mojo.results.model.taskingresult import TaskingResult
+from automojo.results.model.progresscode import ProgressCode
+from automojo.results.model.progressinfo import ProgressInfo
+from automojo.results.model.resultcode import ResultCode
+from automojo.results.model.taskingresult import TaskingResult
 
-from mojo.xmods.ximport import import_by_name
+from automojo.xmods.ximport import import_by_name
 
-from mojo.interop.protocols.tasker.taskingresultpromise import TaskingRef
-from mojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
-from mojo.interop.protocols.tasker.tasking import Tasking, TaskingManager
+from automojo.interop.protocols.tasker.taskingresultpromise import TaskingRef
+from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
+from automojo.interop.protocols.tasker.tasking import Tasking, TaskingManager
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.tasker.taskerservice import TaskerService
+    from automojo.interop.protocols.tasker.taskerservice import TaskerService
 
 
 class EventNotificationHandler(BaseHTTPRequestHandler):

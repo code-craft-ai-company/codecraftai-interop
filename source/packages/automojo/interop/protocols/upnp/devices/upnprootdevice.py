@@ -34,37 +34,37 @@ import requests
 
 from requests.compat import urljoin
 
-from mojo.networking.exceptions import ProtocolError, HttpRequestError, NotOverloadedError
+from automojo.networking.exceptions import ProtocolError, HttpRequestError, NotOverloadedError
 
-from mojo.errors.exceptions import  HttpRequestError, NotOverloadedError
-from mojo.xmods.extension.dynamic import generate_extension_key
-from mojo.xmods.fspath import normalize_name_for_path
-from mojo.landscaping.protocolextension import ProtocolExtension
+from automojo.errors.exceptions import  HttpRequestError, NotOverloadedError
+from automojo.xmods.extension.dynamic import generate_extension_key
+from automojo.xmods.fspath import normalize_name_for_path
+from automojo.landscaping.protocolextension import ProtocolExtension
 
-from mojo.interop.protocols.upnp.upnperrors import UpnpError
-from mojo.interop.protocols.upnp.aliases import StrSvcId, StrSvcType, StrSubId
-from mojo.interop.protocols.upnp.upnpconstants import TIMEDELTA_RENEWAL_WINDOW, UPNP_HEADERS
-from mojo.interop.protocols.upnp.upnpprotocol import MSearchRouteKeys
-from mojo.interop.protocols.upnp.devices.upnpdevice import UpnpDevice
-from mojo.interop.protocols.upnp.devices.upnpembeddeddevice import UpnpEmbeddedDevice
-from mojo.interop.protocols.upnp.xml.upnpdevice1 import UPNP_DEVICE1_NAMESPACE, UpnpDevice1Device, UpnpDevice1SpecVersion
-from mojo.interop.protocols.upnp.soap import NS_UPNP_EVENT
+from automojo.interop.protocols.upnp.upnperrors import UpnpError
+from automojo.interop.protocols.upnp.aliases import StrSvcId, StrSvcType, StrSubId
+from automojo.interop.protocols.upnp.upnpconstants import TIMEDELTA_RENEWAL_WINDOW, UPNP_HEADERS
+from automojo.interop.protocols.upnp.upnpprotocol import MSearchRouteKeys
+from automojo.interop.protocols.upnp.devices.upnpdevice import UpnpDevice
+from automojo.interop.protocols.upnp.devices.upnpembeddeddevice import UpnpEmbeddedDevice
+from automojo.interop.protocols.upnp.xml.upnpdevice1 import UPNP_DEVICE1_NAMESPACE, UpnpDevice1Device, UpnpDevice1SpecVersion
+from automojo.interop.protocols.upnp.soap import NS_UPNP_EVENT
 
-from mojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_EMBEDDEDDEVICES
-from mojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_ROOTDEVICES
-from mojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_SERVICES
-from mojo.interop.protocols.upnp.upnpprotocol import MSearchKeys
+from automojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_EMBEDDEDDEVICES
+from automojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_ROOTDEVICES
+from automojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_SERVICES
+from automojo.interop.protocols.upnp.upnpprotocol import MSearchKeys
 
-from mojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
+from automojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
 
 import mojo.interop.protocols.upnp as upnp_module
 
-from mojo.networking.exceptions import raise_for_http_status
+from automojo.networking.exceptions import raise_for_http_status
 
 
 # Types imported only for type checking purposes
 if TYPE_CHECKING:
-    from mojo.interop.protocols.upnp.upnpfactory import UpnpFactory
+    from automojo.interop.protocols.upnp.upnpfactory import UpnpFactory
 
 UPNP_DIR = os.path.dirname(upnp_module.__file__)
 

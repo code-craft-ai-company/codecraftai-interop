@@ -13,10 +13,10 @@ __credits__ = []
 
 from typing import TYPE_CHECKING
 
-from mojo.interop.protocols.dns.dnsrecord import DnsRecord
+from automojo.networking.protocols.dns.dnsrecord import DnsRecord
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+    from automojo.networking.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
 
 class DnsHostInfo(DnsRecord):
     """
@@ -41,7 +41,7 @@ class DnsHostInfo(DnsRecord):
         """
             Used in constructing an outgoing packet
         """
-        out.write_character_string(self._cpu.encode('utf-8'))
+        out.write(self._cpu.encode('utf-8'))
         out.write_character_string(self._os.encode('utf-8'))
         return
 

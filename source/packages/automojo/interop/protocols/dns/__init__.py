@@ -1,8 +1,7 @@
 """
-.. module:: mdns
+.. module:: dns
     :platform: Darwin, Linux, Unix, Windows
-    :synopsis: The mdns package contains modules for engaging in discovery operations
-               with mdns services.
+    :synopsis: The dns package contains modules for engaging DNS operations and MDNS discovery operations.
 
 .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """

@@ -28,40 +28,40 @@ import yaml
 
 from requests.exceptions import ConnectionError
 
-from mojo.errors.exceptions import ConfigurationError, SemanticError
-from mojo.landscaping.friendlyidentifier import FriendlyIdentifier
+from automojo.errors.exceptions import ConfigurationError, SemanticError
+from automojo.landscaping.friendlyidentifier import FriendlyIdentifier
 
-from mojo.collections.context import Context
-from mojo.collections.contextpaths import ContextPaths
+from automojo.collections.context import Context
+from automojo.collections.contextpaths import ContextPaths
 
-from mojo.networking.constants import HTTP1_1_LINESEP, HTTP1_1_END_OF_HEADER
-from mojo.networking.interfaces import get_interface_for_ip
-from mojo.networking.multicast import create_multicast_socket
-from mojo.networking.resolution import get_arp_table, refresh_arp_table
-from mojo.networking.trafficcapturecontext import TrafficCaptureContext
+from automojo.networking.constants import HTTP1_1_LINESEP, HTTP1_1_END_OF_HEADER
+from automojo.networking.interfaces import get_interface_for_ip
+from automojo.networking.multicast import create_multicast_socket
+from automojo.networking.resolution import get_arp_table, refresh_arp_table
+from automojo.networking.trafficcapturecontext import TrafficCaptureContext
 
 import mojo.interop.protocols.upnp as upnp_module
 
-from mojo.landscaping.coordinators.coordinatorbase import CoordinatorBase
-from mojo.landscaping.landscapedevice import LandscapeDevice
+from automojo.landscaping.coordinators.coordinatorbase import CoordinatorBase
+from automojo.landscaping.landscapedevice import LandscapeDevice
 
-from mojo.interop.protocols.upnp.upnpconstants import UPNP_HEADERS
-from mojo.interop.protocols.upnp.devices.upnprootdevice import UpnpRootDevice
-from mojo.interop.protocols.upnp.devices.upnprootdevice import device_description_load
-from mojo.interop.protocols.upnp.devices.upnprootdevice import device_description_find_components
+from automojo.interop.protocols.upnp.upnpconstants import UPNP_HEADERS
+from automojo.interop.protocols.upnp.devices.upnprootdevice import UpnpRootDevice
+from automojo.interop.protocols.upnp.devices.upnprootdevice import device_description_load
+from automojo.interop.protocols.upnp.devices.upnprootdevice import device_description_find_components
 
-from mojo.interop.protocols.upnp.upnpfactory import UpnpFactory
-from mojo.interop.protocols.upnp.upnpprotocol import msearch_query_host, msearch_scan, notify_parse_request
-from mojo.interop.protocols.upnp.upnpprotocol import MSearchKeys, MSearchRouteKeys, UpnpProtocol
-from mojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
-from mojo.interop.protocols.upnp.xml.upnpdevice1 import UPNP_DEVICE1_NAMESPACE
+from automojo.interop.protocols.upnp.upnpfactory import UpnpFactory
+from automojo.interop.protocols.upnp.upnpprotocol import msearch_query_host, msearch_scan, notify_parse_request
+from automojo.interop.protocols.upnp.upnpprotocol import MSearchKeys, MSearchRouteKeys, UpnpProtocol
+from automojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
+from automojo.interop.protocols.upnp.xml.upnpdevice1 import UPNP_DEVICE1_NAMESPACE
 
-from mojo.networking.interfaces import get_ipv4_address
+from automojo.networking.interfaces import get_ipv4_address
 
 
 # Types imported only for type checking purposes
 if TYPE_CHECKING:
-    from mojo.landscaping.landscape import Landscape
+    from automojo.landscaping.landscape import Landscape
 
 EMPTY_LIST = []
 

@@ -8,7 +8,7 @@ from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 
 from requests import Response
 
-from mojo.interop.protocols.rest.restaspects import RestAspects
+from automojo.interop.protocols.rest.restaspects import RestAspects
 
 
 CT = TypeVar('CT')

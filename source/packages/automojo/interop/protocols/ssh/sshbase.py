@@ -26,24 +26,24 @@ from io import StringIO
 
 import paramiko
 
-from mojo.waiting.waitmodel import TimeoutContext
+from automojo.waiting.waitmodel import TimeoutContext
 
-from mojo.errors.exceptions import ConfigurationError, NotOverloadedError, SemanticError
+from automojo.errors.exceptions import ConfigurationError, NotOverloadedError, SemanticError
 
-from mojo.xmods.aspects import ActionPattern, AspectsCmd, LoggingPattern, DEFAULT_CMD_ASPECTS
-from mojo.credentials.sshcredential import SshCredential
-from mojo.interfaces.isystemcontext import ISystemContext
-from mojo.xmods.xformatting import indent_lines
-from mojo.xmods.xlogging.scopemonitoring import MonitoredScope
+from automojo.interop.aspects import ActionPattern, AspectsCmd, LoggingPattern, DEFAULT_CMD_ASPECTS
+from automojo.credentials.sshcredential import SshCredential
+from automojo.interfaces.isystemcontext import ISystemContext
+from automojo.xmods.xformatting import indent_lines
+from automojo.xmods.xlogging.scopemonitoring import MonitoredScope
 
-from mojo.interop.protocols.ssh.sshconst import (
+from automojo.interop.protocols.ssh.sshconst import (
     SshJumpParams,
     DEFAULT_SSH_TIMEOUT,
     DEFAULT_SSH_RETRY_INTERVAL,
     TEMPLATE_COMMAND_FAILURE,
     TEMPLATE_COMMAND_SUCCESS
 )
-from mojo.interop.protocols.ssh.sshhelpers import (
+from automojo.interop.protocols.ssh.sshhelpers import (
     primitive_directory_exists,
     primitive_file_exists,
     primitive_file_pull,

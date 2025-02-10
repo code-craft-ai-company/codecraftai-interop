@@ -16,12 +16,12 @@ from typing import TYPE_CHECKING
 import socket
 import threading
 
-from mojo.interop.protocols.dns.dnsquestion import DnsQuestion
-from mojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
-from mojo.networking.constants import MDNS_GROUP_ADDR, MDNS_GROUP_ADDR6, MDNS_PORT
+from automojo.networking.protocols.dns.dnsquestion import DnsQuestion
+from automojo.networking.protocols.dns.dnsinboundmessage import DnsInboundMessage
+from automojo.networking.constants import MDNS_GROUP_ADDR, MDNS_GROUP_ADDR6, MDNS_PORT
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+    from automojo.networking.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
 
 class DnsServer:
     """

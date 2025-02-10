@@ -21,19 +21,19 @@ import pickle
 import weakref
 
 
-from mojo.results.model.taskingresult import TaskingResult
-from mojo.results.model.progressinfo import ProgressInfo
-from mojo.results.model.progressdelivery import SummaryProgressDelivery
+from automojo.results.model.taskingresult import TaskingResult
+from automojo.results.model.progressinfo import ProgressInfo
+from automojo.results.model.progressdelivery import SummaryProgressDelivery
 
-from mojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
-from mojo.interop.protocols.tasker.taskeraspects import (
+from automojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
+from automojo.interop.protocols.tasker.taskeraspects import (
     TaskerAspects,
     DEFAULT_TASKER_ASPECTS
 )
-from mojo.interop.protocols.tasker.taskingevent import TaskingEvent
+from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 
 if TYPE_CHECKING:
-    from mojo.landscaping.client.clientbase import ClientBase
+    from automojo.landscaping.client.clientbase import ClientBase
 
 
 TASKER_PROTOCOL_CONFIG = {

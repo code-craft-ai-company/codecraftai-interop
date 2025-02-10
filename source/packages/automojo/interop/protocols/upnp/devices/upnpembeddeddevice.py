@@ -12,8 +12,8 @@ __copyright__ = "Copyright 2023, Myron W Walker"
 __credits__ = []
 
 
-from mojo.errors.exceptions import SemanticError
-from mojo.interop.protocols.upnp.devices.upnpdevice import UpnpDevice
+from automojo.errors.exceptions import SemanticError
+from automojo.interop.protocols.upnp.devices.upnpdevice import UpnpDevice
 
 class UpnpEmbeddedDevice(UpnpDevice):
     """

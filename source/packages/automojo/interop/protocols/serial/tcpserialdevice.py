@@ -14,14 +14,14 @@ __credits__ = []
 
 from typing import TYPE_CHECKING
 
-from mojo.landscaping.landscapedevice import LandscapeDevice
-from mojo.landscaping.friendlyidentifier import FriendlyIdentifier
+from automojo.landscaping.landscapedevice import LandscapeDevice
+from automojo.landscaping.friendlyidentifier import FriendlyIdentifier
 
-from mojo.interop.protocols.serial.tcpserialagent import TcpSerialAgent
+from automojo.interop.protocols.serial.tcpserialagent import TcpSerialAgent
 
 if TYPE_CHECKING:
-    from mojo.landscaping.landscape import Landscape
-    from mojo.landscaping.coordinators.coordinatorbase import CoordinatorBase
+    from automojo.landscaping.landscape import Landscape
+    from automojo.landscaping.coordinators.coordinatorbase import CoordinatorBase
 
 class TcpSerialDevice(LandscapeDevice):
 

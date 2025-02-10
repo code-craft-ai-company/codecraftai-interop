@@ -14,24 +14,33 @@ __credits__ = []
 
 from typing import Optional, Union, TYPE_CHECKING
 
+import math
 import time
 
-from mojo.interop.protocols.dns.dnsconst import (
+from automojo.networking.protocols.dns.dnsconst import (
     DnsLiftimePercent,
     DnsRecordClass,
     DnsRecordType
 )
 
-from mojo.xmods.xdatetime import current_time_millis
+
+def current_time_millis() -> float:
+    """
+        Current system time in milliseconds
+
+        :returns: Time in milliseconds
+    """
+    now_ms = time.time() * 1000
+    return now_ms
 
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
-    from mojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+    from automojo.networking.protocols.dns.dnsinboundmessage import DnsInboundMessage
+    from automojo.networking.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
 
 class DnsRecord:
     """
-        A DNS record is a DNS entry that has a Time To Live or TTL attached.
+        RFC-1035 3.2.1 - A DNS record is a DNS entry that has a Time To Live or TTL attached.
 
                                          1  1  1  1  1  1
            0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
@@ -59,7 +68,7 @@ class DnsRecord:
         self._key = name.lower()
         self._name = name
         self._rtype = rtype
-        self._rclass = (rclass & DnsRecordClass.MASK)
+        self._rclass = DnsRecordClass(rclass & DnsRecordClass.MASK)
         self._ttl = ttl
 
         self._unique = (rclass & DnsRecordClass.UNIQUE) != 0
@@ -71,31 +80,31 @@ class DnsRecord:
         return
 
     @property
-    def key(self):
+    def key(self) -> str:
         return self._key
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def rclass(self):
+    def rclass(self) -> DnsRecordClass:
         return self._rclass
 
     @property
-    def rtype(self):
+    def rtype(self) -> DnsRecordType:
         return self._rtype
 
     @property
-    def ttl(self):
+    def ttl(self) -> int:
         return self._ttl
 
     @property
-    def unique(self):
+    def unique(self) -> bool:
         return self._unique
 
     @property
-    def updated(self):
+    def updated(self) -> bool:
         return self._updated
 
     def as_dns_string(self, other: Optional[str] = None) -> str:
@@ -105,7 +114,7 @@ class DnsRecord:
         remaining_ttl = int(self.get_remaining_ttl(current_time_millis()))
         other = "%s/%s,%s" % (self.ttl, remaining_ttl, other)
         
-        dnsstr = "%s[%s,%s" % ('record', self._rtype.name, self._rclass.name)
+        dnsstr = "%s[%s,%s" % ('record', self._rtype, self._rclass)
 
         if self._unique:
             dnsstr += "-unique,"
@@ -121,11 +130,11 @@ class DnsRecord:
 
         return dnsstr
 
-    def get_remaining_ttl(self, now: float) -> float:
+    def get_remaining_ttl(self, now: float) -> int:
         """
             Gets the remaining time to live (TTL) in seconds.
         """
-        rval = max(0, (self._when_expires - now) / 1000)
+        rval = max(0, math.floor((self._when_expires - now) / 1000))
         return rval
 
     def is_expired(self, now: Optional[float]) -> bool:
@@ -186,8 +195,8 @@ class DnsRecord:
         errmsg = "The 'DnsRecord.write' method must be implemented in derived classes."
         raise NotImplementedError(errmsg)
 
-    def _compute_time_marker(self, percent: int) -> float:
-        marker = self._updated + (percent * self._ttl * 10)
+    def _compute_time_marker(self, percent: int) -> int:
+        marker = math.floor(self._updated + (percent * self._ttl * 10))
         return marker
 
     def __eq__(self, other: 'DnsRecord') -> bool:

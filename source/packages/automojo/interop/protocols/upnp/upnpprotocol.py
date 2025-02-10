@@ -24,11 +24,11 @@ import threading
 
 import netifaces
 
-from mojo.networking.multicast import create_multicast_socket_for_iface, create_multicast_socket
-from mojo.networking.unicast import create_unicast_socket
-from mojo.networking.interfaces import get_interface_for_ip
+from automojo.networking.multicast import create_multicast_socket_for_iface, create_multicast_socket
+from automojo.networking.unicast import create_unicast_socket
+from automojo.networking.interfaces import get_interface_for_ip
 
-from mojo.waiting.waitmodel import WaitContext
+from automojo.waiting.waitmodel import WaitContext
 
 REGEX_NOTIFY_HEADER = re.compile("NOTIFY[ ]+[*/]+[ ]+HTTP/1")
 

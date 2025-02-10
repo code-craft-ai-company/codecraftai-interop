@@ -26,7 +26,7 @@ from logging.handlers import WatchedFileHandler
 from rpyc.utils.server import ThreadedServer
 
 
-from mojo.interop.protocols.tasker.taskerservice import TaskerService
+from automojo.interop.protocols.tasker.taskerservice import TaskerService
 
 
 TASKER_PROTOCOL_CONFIG = {

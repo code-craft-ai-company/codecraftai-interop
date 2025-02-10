@@ -16,14 +16,14 @@ from types import TracebackType
 
 import telnetlib
 
-from mojo.xmods.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS
-from mojo.interfaces.isystemcontext import ISystemContext
-from mojo.xmods.xconvert import (
+from automojo.interop.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS
+from automojo.interfaces.isystemcontext import ISystemContext
+from automojo.xmods.xconvert import (
     safe_as_bytes,
     safe_as_str
 )
 
-from mojo.landscaping.agents.serialagentbase import SerialAgentBase
+from automojo.landscaping.agents.serialagentbase import SerialAgentBase
 
 import telnetlib
 

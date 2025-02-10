@@ -5,12 +5,12 @@ import threading
 import time
 import weakref
 
-from mojo.results.model.progressdelivery import SummaryProgressDelivery
-from mojo.results.model.progresscode import ProgressCode
+from automojo.results.model.progressdelivery import SummaryProgressDelivery
+from automojo.results.model.progresscode import ProgressCode
 
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
+    from automojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
     
 
 class TaskingProgressMonitor:

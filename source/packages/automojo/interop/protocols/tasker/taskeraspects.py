@@ -25,7 +25,7 @@ DEFAULT_INACTIVITY_INTERVAL = .5
 
 DEFAULT_PROGRESS_INTERVAL = 30
 
-from mojo.results.model.progressdelivery import ProgressDeliveryMethod
+from automojo.results.model.progressdelivery import ProgressDeliveryMethod
 
 class TaskerAspects:
 

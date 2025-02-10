@@ -13,14 +13,14 @@ from http import HTTPStatus
 
 import requests
 
-from mojo.errors.exceptions import HttpForbiddenError
+from automojo.errors.exceptions import HttpForbiddenError
 
-from mojo.credentials.basecredential import BaseCredential
-from mojo.credentials.basiccredential import BasicCredential
+from automojo.credentials.basecredential import BaseCredential
+from automojo.credentials.basiccredential import BasicCredential
 
-from mojo.interop.protocols.rest.restaspects import RestAspects, DEFAULT_REST_ASPECTS
+from automojo.interop.protocols.rest.restaspects import RestAspects, DEFAULT_REST_ASPECTS
 
-from mojo.xmods.aspects import ActionPattern
+from automojo.interop.aspects import ActionPattern
 
 
 class RestClientBase:

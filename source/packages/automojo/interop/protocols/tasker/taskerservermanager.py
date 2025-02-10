@@ -19,7 +19,7 @@ from typing import Optional, Tuple
 import multiprocessing
 import multiprocessing.managers
 
-from mojo.interop.protocols.tasker.taskerserver import TaskerServer
+from automojo.interop.protocols.tasker.taskerserver import TaskerServer
 
 
 class TaskerServerManager(multiprocessing.managers.SyncManager):

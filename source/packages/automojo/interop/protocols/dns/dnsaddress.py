@@ -15,12 +15,13 @@ from typing import TYPE_CHECKING
 
 import socket
 
-from mojo.networking.interfaces import is_ipv6_address
+from automojo.networking.interfaces import is_ipv6_address
 
-from mojo.interop.protocols.dns.dnsrecord import DnsRecord
+from automojo.networking.protocols.dns.dnsrecord import DnsRecord
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+    from automojo.networking.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+
 
 class DnsAddress(DnsRecord):
     """
@@ -40,7 +41,7 @@ class DnsAddress(DnsRecord):
         """
             Used in constructing an outgoing packet
         """
-        out.write_string(self._address)
+        out._write_utf(self._address)
         return
 
     def __eq__(self, other: DnsRecord) -> bool:

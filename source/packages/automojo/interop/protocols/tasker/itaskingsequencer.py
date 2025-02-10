@@ -2,9 +2,9 @@
 from typing import Protocol
 
 
-from mojo.results.recorders.resultrecorder import ResultRecorder
-from mojo.results.model.taskinggroup import TaskingGroup
-from mojo.results.model.taskingresult import TaskingResult
+from automojo.results.recorders.resultrecorder import ResultRecorder
+from automojo.results.model.taskinggroup import TaskingGroup
+from automojo.results.model.taskingresult import TaskingResult
 
 
 class ITaskingSequencer(Protocol):

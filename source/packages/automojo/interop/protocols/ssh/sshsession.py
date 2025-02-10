@@ -19,21 +19,21 @@ import paramiko
 
 from types import TracebackType
 
-from mojo.xmods.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS
-from mojo.credentials.sshcredential import SshCredential
-from mojo.interfaces.isystemcontext import ISystemContext
+from automojo.interop.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS
+from automojo.credentials.sshcredential import SshCredential
+from automojo.interfaces.isystemcontext import ISystemContext
 
-from mojo.interop.protocols.ssh.sshconst import (
+from automojo.interop.protocols.ssh.sshconst import (
     SshJumpParams,
     DEFAULT_SSH_TIMEOUT,
     DEFAULT_SSH_RETRY_INTERVAL,
     INTERACTIVE_PROMPT
 )
-from mojo.interop.protocols.ssh.sshhelpers import (
+from automojo.interop.protocols.ssh.sshhelpers import (
     ssh_execute_command,
     ssh_execute_command_in_channel
 )
-from mojo.interop.protocols.ssh.sshbase import SshBase
+from automojo.interop.protocols.ssh.sshbase import SshBase
 
 logger = logging.getLogger()
 

@@ -20,11 +20,11 @@ from xml.etree.ElementTree import tostring as xml_tostring
 from xml.etree.ElementTree import fromstring as xml_fromstring
 from xml.etree.ElementTree import register_namespace
 
-from mojo.xmods.xconvert import safe_as_str
+from automojo.xmods.xconvert import safe_as_str
 
-from mojo.networking.exceptions import ProtocolError
+from automojo.networking.exceptions import ProtocolError
 
-from mojo.interop.protocols.upnp.upnperrors import UPNP_ERROR_TEST_LOOKUP
+from automojo.interop.protocols.upnp.upnperrors import UPNP_ERROR_TEST_LOOKUP
 
 NS_SOAP_ENV = "http://schemas.xmlsoap.org/soap/envelope/"
 NS_SOAP_ENC = "http://schemas.xmlsoap.org/soap/encoding/"

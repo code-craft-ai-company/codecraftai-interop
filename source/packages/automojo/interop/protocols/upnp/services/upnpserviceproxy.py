@@ -26,30 +26,30 @@ from datetime import datetime, timedelta
 
 import requests
 
-from mojo.errors.xtraceback import format_exc_lines
-from mojo.waiting.waitmodel import TimeoutContext
+from automojo.errors.xtraceback import format_exc_lines
+from automojo.waiting.waitmodel import TimeoutContext
 
-from mojo.collections.context import Context
-from mojo.collections.contextpaths import ContextPaths
+from automojo.collections.context import Context
+from automojo.collections.contextpaths import ContextPaths
 
-from mojo.xmods.aspects import ActionPattern
-from mojo.xmods.eventing.eventedvariablesink import EventedVariableSink
-from mojo.xmods.eventing.eventedvariable import EventedVariable
-from mojo.xmods.xlogging.scopemonitoring import MonitoredScope
+from automojo.interop.aspects import ActionPattern
+from automojo.xmods.eventing.eventedvariablesink import EventedVariableSink
+from automojo.xmods.eventing.eventedvariable import EventedVariable
+from automojo.xmods.xlogging.scopemonitoring import MonitoredScope
 
-from mojo.interop.protocols.upnp.aspects import AspectsUPnP, DEFAULT_UPNP_ASPECTS
-from mojo.interop.protocols.upnp.soap import SoapProcessor, SOAP_TIMEOUT
-from mojo.interop.protocols.upnp.upnpconstants import DEFAULT_UPNP_CALL_ASPECTS
-from mojo.interop.protocols.upnp.upnperrors import UpnpError
-from mojo.interop.protocols.upnp.services.upnpdefaultvar import UpnpDefaultVar
+from automojo.interop.protocols.upnp.aspects import AspectsUPnP, DEFAULT_UPNP_ASPECTS
+from automojo.interop.protocols.upnp.soap import SoapProcessor, SOAP_TIMEOUT
+from automojo.interop.protocols.upnp.upnpconstants import DEFAULT_UPNP_CALL_ASPECTS
+from automojo.interop.protocols.upnp.upnperrors import UpnpError
+from automojo.interop.protocols.upnp.services.upnpdefaultvar import UpnpDefaultVar
 
-from mojo.interop.protocols.upnp.xml.upnpdevice1 import UpnpDevice1Service
+from automojo.interop.protocols.upnp.xml.upnpdevice1 import UpnpDevice1Service
 
 
 logger = logging.getLogger()
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.upnp.devices.upnpdevice import UpnpDevice
+    from automojo.interop.protocols.upnp.devices.upnpdevice import UpnpDevice
 
 class UpnpServiceProxy(EventedVariableSink):
     """

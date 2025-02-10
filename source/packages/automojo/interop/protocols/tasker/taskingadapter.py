@@ -4,13 +4,13 @@ from typing import List, Optional
 import uuid
 
 
-from mojo.interop.protocols.tasker.itaskingsequencer import ITaskingSequencer
-from mojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
-from mojo.interop.protocols.tasker.taskernode import TaskerNode
-from mojo.interop.protocols.tasker.taskercontroller import TaskerController
+from automojo.interop.protocols.tasker.itaskingsequencer import ITaskingSequencer
+from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
+from automojo.interop.protocols.tasker.taskernode import TaskerNode
+from automojo.interop.protocols.tasker.taskercontroller import TaskerController
 
 
-from mojo.interop.protocols.tasker.taskinggroupscope import TaskingGroupScope
+from automojo.interop.protocols.tasker.taskinggroupscope import TaskingGroupScope
 
 
 class TaskingAdapter:

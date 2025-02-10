@@ -8,11 +8,11 @@ import time
 
 import paramiko
 
-from mojo.errors.exceptions import CommandError
+from automojo.errors.exceptions import CommandError
 
-from mojo.xmods.xformatting import indent_lines, format_command_result
+from automojo.xmods.xformatting import indent_lines, format_command_result
 
-from mojo.interop.protocols.ssh.sshconst import (
+from automojo.interop.protocols.ssh.sshconst import (
     DEFAULT_SSH_TIMEOUT,
     DEFAULT_SSH_RETRY_INTERVAL,
     INTERACTIVE_PROMPT,

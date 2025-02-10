@@ -28,15 +28,15 @@ from logging.handlers import RotatingFileHandler
 
 import rpyc
 
-from mojo.errors.exceptions import SemanticError
+from automojo.errors.exceptions import SemanticError
 
-from mojo.results.model.taskingresult import TaskingResult
+from automojo.results.model.taskingresult import TaskingResult
 
-from mojo.xmods.compression import create_archive_of_folder
-from mojo.xmods.fspath import expand_path
+from automojo.xmods.compression import create_archive_of_folder
+from automojo.xmods.fspath import expand_path
 
-from mojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
-from mojo.interop.protocols.tasker.taskersession import TaskerSession
+from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
+from automojo.interop.protocols.tasker.taskersession import TaskerSession
 
 class TaskerService(rpyc.Service):
     """

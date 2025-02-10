@@ -13,10 +13,10 @@ __credits__ = []
 
 from typing import TYPE_CHECKING
 
-from mojo.interop.protocols.dns.dnsrecord import DnsRecord
+from automojo.networking.protocols.dns.dnsrecord import DnsRecord
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+    from automojo.networking.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
 
 class DnsPointer(DnsRecord):
     """

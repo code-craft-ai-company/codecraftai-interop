@@ -26,7 +26,7 @@ import time
 import traceback
 
 
-from mojo.interop.protocols.tasker.taskerserver import TaskerServer
+from automojo.interop.protocols.tasker.taskerserver import TaskerServer
 
 
 service_logger = None
@@ -258,7 +258,7 @@ class TaskerServerDaemon(object):
 
     def run_debug_assistant(self):
 
-        from mojo.xmods.xdebugger import DebugPyAssistant, PORT_DEBUGPY_ASSISTANT
+        from automojo.xmods.xdebugger import DebugPyAssistant, PORT_DEBUGPY_ASSISTANT
 
         endpoint = ("0.0.0.0", PORT_DEBUGPY_ASSISTANT)
 

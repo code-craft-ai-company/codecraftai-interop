@@ -4,9 +4,9 @@ import time
 
 from datetime import datetime
 
-from mojo.results.model.progressinfo import ProgressInfo, ProgressType, ProgressCode
+from automojo.results.model.progressinfo import ProgressInfo, ProgressType, ProgressCode
 
-from mojo.interop.protocols.tasker.tasking import Tasking
+from automojo.interop.protocols.tasker.tasking import Tasking
 
 class HelloWorldTasking(Tasking):
 

@@ -13,21 +13,31 @@ __credits__ = []
 
 
 
-from typing import cast, List, Optional
+from typing import List, Optional, Tuple, Union
 
 import logging
+import os
 import struct
 
-from mojo.interop.protocols.dns.dnsconst import DnsFlags, DnsQr, DnsRecordType
-from mojo.interop.protocols.dns.exceptions import DnsDecodeError
+from automojo.networking.protocols.dns.dnsconst import (
+    DnsQr,
+    DnsRecordType,
+    DnsRecordClass,
+    DNS_PACKET_HEADER_SIZE,
+    DNS_COMP_MASK,
+    DNS_OFFSET_MASK
+)
 
-from mojo.interop.protocols.dns.dnsaddress import DnsAddress
-from mojo.interop.protocols.dns.dnshostinfo import DnsHostInfo
-from mojo.interop.protocols.dns.dnspointer import DnsPointer
-from mojo.interop.protocols.dns.dnsquestion import DnsQuestion
-from mojo.interop.protocols.dns.dnsrecord import DnsRecord
-from mojo.interop.protocols.dns.dnsservice import DnsService
-from mojo.interop.protocols.dns.dnstext import DnsText
+from automojo.networking.protocols.dns.dnsflags import DnsFlags
+from automojo.networking.protocols.dns.exceptions import DnsDecodeError
+
+from automojo.networking.protocols.dns.dnsaddress import DnsAddress
+from automojo.networking.protocols.dns.dnshostinfo import DnsHostInfo
+from automojo.networking.protocols.dns.dnspointer import DnsPointer
+from automojo.networking.protocols.dns.dnsquestion import DnsQuestion
+from automojo.networking.protocols.dns.dnsrecord import DnsRecord
+from automojo.networking.protocols.dns.dnsservice import DnsService
+from automojo.networking.protocols.dns.dnstext import DnsText
 
 logger = logging.getLogger()
 
@@ -36,7 +46,7 @@ class DnsInboundMessage:
         The :class:`DnsInboundMessage` object is used to read incoming DNS packets.
     """
 
-    def __init__(self, data: bytes) -> None:
+    def __init__(self, data: bytes, source_endpoint: Union[str, bytes, Tuple[str, int], None] = None) -> None:
         """
             Constructor from string holding bytes of packet
         """
@@ -52,6 +62,15 @@ class DnsInboundMessage:
         self._num_authorities: int = 0
         self._num_additionals: int = 0
         self._valid: bool = False
+        self._source = "unknown"
+
+        if source_endpoint is not None:
+            if isinstance(source_endpoint, str):
+                self._source = source_endpoint
+            elif isinstance(source_endpoint, bytes):
+                self._source = source_endpoint.decode('utf-8')
+            else:
+                self._source = f"{source_endpoint[0], source_endpoint[1]}"
 
         try:
             self._ingest_header()
@@ -62,6 +81,7 @@ class DnsInboundMessage:
 
         except (IndexError, struct.error, DnsDecodeError):
             logger.exception('Choked at offset %d while unpacking %r', self._offset, data)
+            pass
 
         return
 
@@ -129,12 +149,14 @@ class DnsInboundMessage:
         """
             Processes the questions section of the message
         """
+
         for i in range(self._num_questions):
             name = self._read_name()
-            rtype, rclass = self._unpack(b'!HH')
+            rtype, rclass = self._read_type_and_class()
 
             question = DnsQuestion(name, rtype, rclass)
             self._questions.append(question)
+        
         return
     
     def _ingest_others(self) -> None:
@@ -143,82 +165,154 @@ class DnsInboundMessage:
         """
         n = self._num_answers + self._num_authorities + self._num_additionals
         for i in range(n):
-            domain = self._read_name()
-            rtype, rclass, ttl, length = self._unpack(b'!HHiH')
+            record_offset = self._offset
 
-            rec = None  # type: Optional[DnsRecord]
-            if rtype == DnsRecordType.A:
-                rec = DnsAddress(domain, rtype, rclass, ttl, self._read_string_characters(4))
-            elif rtype == DnsRecordType.CNAME or rtype == DnsRecordType.PTR:
-                rec = DnsPointer(domain, rtype, rclass, ttl, self._read_name())
-            elif rtype == DnsRecordType.TXT:
-                rec = DnsText(domain, rtype, rclass, ttl, self._read_string(length))
-            elif rtype == DnsRecordType.SRV:
+            domain = self._read_name()
+
+            rtype, rclass = self._read_type_and_class()
+            ttl = self._read_ttl()
+            length = self._read_unsigned_short()
+
+            if rtype == DnsRecordType.SRV:
+                priority = self._read_unsigned_short()
+                weight = self._read_unsigned_short()
+                port = self._read_unsigned_short()
+                server = self._read_name()
+
                 rec = DnsService(
                     domain,
                     rtype,
                     rclass,
                     ttl,
-                    self._read_unsigned_short(),
-                    self._read_unsigned_short(),
-                    self._read_unsigned_short(),
-                    self._read_name(),
+                    priority,
+                    weight,
+                    port,
+                    server,
                 )
-            elif rtype == DnsRecordType.HINFO:
-                rec = DnsHostInfo(
-                    domain,
-                    rtype,
-                    rclass,
-                    ttl,
-                    self._read_string().decode('utf-8'),
-                    self._read_string().decode('utf-8'),
-                )
-            elif rtype == DnsRecordType.AAAA:
-                rec = DnsAddress(domain, rtype, rclass, ttl, self._read_string_characters(16))
             else:
-                # Try to ignore types we don't know about
-                # Skip the payload for the resource record so the next
-                # records can be parsed correctly
-                self._offset += length
+
+                rec = None  # type: Optional[DnsRecord]
+                if rtype == DnsRecordType.A:
+                    address = self._read_string_characters(4)
+                    rec = DnsAddress(domain, rtype, rclass, ttl, address)
+
+                elif rtype == DnsRecordType.AAAA:
+                    address = self._read_string_characters(16)
+                    rec = DnsAddress(domain, rtype, rclass, ttl, address)
+
+                elif rtype == DnsRecordType.CNAME or rtype == DnsRecordType.PTR:
+                    alias = self._read_name()
+                    rec = DnsPointer(domain, rtype, rclass, ttl, alias)
+
+                elif rtype == DnsRecordType.TXT:
+                    text = self._read_string_characters(length)
+
+                    rec = DnsText(domain, rtype, rclass, ttl, text)
+
+                elif rtype == DnsRecordType.HINFO:
+                    host_cpu = self._read_string().decode('utf-8')
+                    host_os = self._read_string().decode('utf-8')
+
+                    rec = DnsHostInfo(
+                        domain,
+                        rtype,
+                        rclass,
+                        ttl,
+                        host_cpu,
+                        host_os,
+                    )
+
+                else:
+                    # Try to ignore types we don't know about
+                    # Skip the payload for the resource record so the next
+                    # records can be parsed correctly
+                    self._offset += length
 
             if rec is not None:
                 self.answers.append(rec)
+
         return
+    
 
     def _read_name(self) -> str:
         """
             Reads a domain name from the packet
         """
         result = ''
-        off = self._offset
-        next_ = -1
-        first = off
+        start = self._offset
+        cursor = start
 
-        while True:
-            length = self._data[off]
-            off += 1
-            if length == 0:
-                break
-            t = length & 0xC0
-            if t == 0x00:
-                result = ''.join((result, self._read_utf(off, length) + '.'))
-                off += length
-            elif t == 0xC0:
-                if next_ < 0:
-                    next_ = off + 1
-                off = ((length & 0x3F) << 8) | self._data[off]
-                if off >= first:
-                    raise DnsDecodeError("Bad domain name (circular) at %s" % (off,))
-                first = off
-            else:
-                raise DnsDecodeError("Bad domain name at %s" % (off,))
+        result, consumed = self._read_name_at_offset(start, cursor, [])
 
-        if next_ >= 0:
-            self._offset = next_
-        else:
-            self._offset = off
+        if consumed == 0:
+            raise DnsDecodeError(f"DnsInboundMessage[{self._source}] Empty name. start={start} consumed={consumed}")
+
+        self._offset += consumed
 
         return result
+
+
+    def _read_name_at_offset(self, start: int, cursor: int, followed: List[int]) -> str:
+
+        result = ''
+        consumed = 0
+
+        while True:
+
+            first_octet = self._data[cursor]
+            if len(followed) == 0:
+                consumed += 1
+
+            if first_octet == 0x00:
+                break
+
+            comp_flags = (first_octet & DNS_COMP_MASK)
+
+            if comp_flags == 0x00:
+                comp_start = cursor + 1
+                comp_length = first_octet & DNS_OFFSET_MASK
+                comp_val = self._read_utf(comp_start, comp_length)
+                result = f"{result}{comp_val}."
+
+                cursor = comp_start + comp_length
+
+                # We only consume bytes of the packet if we have not yet followed a pointer.
+                if len(followed) == 0:
+                    consumed += comp_length
+            
+            elif comp_flags == DNS_COMP_MASK:
+                second_octet = self._data[cursor + 1]
+                if len(followed) == 0:
+                    consumed += 1
+
+                offset_ptr = ((first_octet & DNS_OFFSET_MASK) << 8) + second_octet
+                if offset_ptr >= start:
+                    err_msg_lines = [
+                        f"DnsInboundMessage[{self._source}] Invalid name compression offset pointer.",
+                        f"    NAME START: {start}",
+                        f"    OFFSET POINTER: {offset_ptr}",
+                        f"    FOLLOWED: {followed}"
+                    ]
+                    err_msg = os.linesep.join(err_msg_lines)
+                    raise DnsDecodeError(err_msg)
+                followed.append(offset_ptr)
+                comp_val, _ = self._read_name_at_offset(start, offset_ptr, followed)
+                result = result = f"{result}{comp_val}"
+
+                break  # Once we hit a pointer, then that is the end of the name
+
+            else:
+                err_msg_lines = [
+                        f"DnsInboundMessage[{self._source}] Invalid name compression flags.",
+                        f"    NAME START: {start}",
+                        f"    FLAGS: {comp_flags}",
+                        f"    FOLLOWED: {followed}"
+                    ]
+                err_msg = os.linesep.join(err_msg_lines)
+                raise DnsDecodeError(err_msg)
+
+        return result, consumed
+
 
     def _read_string(self) -> bytes:
         """
@@ -239,13 +333,36 @@ class DnsInboundMessage:
         self._offset += length
         return strval
 
-    def _read_unsigned_int(self):
+    def _read_ttl(self) -> int:
+        """
+            Reads an integer ttl from the packet
+        """
+        # Unpack 4 bytes as unsigned int using network byte order !I
+        val = int(self._unpack(b'!i')[0])
+
+        return val
+
+    def _read_type_and_class(self) -> Tuple[DnsRecordType, DnsRecordClass]:
+        """
+            Reads an integer ttl from the packet
+        """
+
+        rtype, rclass = self._unpack(b'!HH')
+
+        try:
+            rtype = DnsRecordType(rtype)
+            rclass = DnsRecordClass(rclass)
+        except ValueError:
+            pass # Unable to convert record and class
+
+        return rtype, rclass
+
+    def _read_unsigned_int(self) -> int:
         """
             Reads an integer from the packet
         """
         # Unpack 4 bytes as unsigned int using network byte order !I
         val = int(self._unpack(b'!I')[0])
-        self._offset += 4
         return val
 
     def _read_unsigned_short(self) -> int:
@@ -254,7 +371,6 @@ class DnsInboundMessage:
         """
         # Unpack 2 bytes as unsigned short using network byte order !H
         val = int(self._unpack(b'!H')[0])
-        self._offset += 2
         return val
 
     def _read_utf(self, offset: int, length: int) -> str:
@@ -284,3 +400,11 @@ class DnsInboundMessage:
             ]
         )
         return strval
+
+
+
+if __name__ == "__main__":
+
+    packet = b"\x00\x00\x84\x00\x00\x00\x00\x02\x00\x00\x00\x04'HP Color LaserJet Pro M478f-9f [834BAB]\x04_ipp\x04_tcp\x05local\x00\x00\x10\x80\x01\x00\x00\x11\x94\x02\xda\ttxtvers=15adminurl=http://HP0068EB834BAB.local./#hId-pgAirPrint\x05note=\x0bpriority=20\x08qtotal=1\x07TLS=1.2\x0crp=ipp/print)UUID=5f1123e1-7b3c-5b59-698a-e4916b1b0e1a(product=(HP Color LaserJet Pro M478f-9f)!ty=HP Color LaserJet Pro M478f-9f\nusb_MFG=HP#usb_MDL=Color LaserJet Pro M478f-9f\x07Color=T\x08Duplex=T\xfepdl=application/vnd.hp-PCL,application/vnd.hp-PCLXL,application/postscript,application/msword,application/pdf,image/jpeg,image/urf,image/pwg-raster,application/PCLm,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.m\x11PaperMax=legal-A4dURF=CP1,MT1-2-8-9-10-11,PQ3-4-5,RS600,SRGB24,OB10,W8,DEVW8,DEVRGB24,ADOBERGB24,DM3,IS19-1-2,V1.4,FN3\rkind=document\x06Scan=T\x14mopria-certified=2.0\x0erfo=ipp/faxout\x05Fax=T\xc0\x0c\x00!\x80\x01\x00\x00\x00x\x00\x17\x00\x00\x00\x00\x02w\x0eHP0068EB834BAB\xc0>\xc3;\x00\x01\x80\x01\x00\x00\x00x\x00\x04\xac\x10\x01\x03\xc3;\x00\x1c\x80\x01\x00\x00\x00x\x00\x10\xfe\x80\x00\x00\x00\x00\x00\x00\x02h\xeb\xff\xfe\x83K\xac\xc0\x0c\x00/\x80\x01\x00\x00\x11\x94\x00\t\xc0\x0c\x00\x05\x00\x00\x80\x00@\xc3;\x00/\x80\x01\x00\x00\x00x\x00\x08\xc3;\x00\x04@\x00\x00\x08"
+
+    msg = DnsInboundMessage(packet)

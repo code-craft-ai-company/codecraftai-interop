@@ -13,10 +13,10 @@ __credits__ = []
 
 from typing import TYPE_CHECKING
 
-from mojo.interop.protocols.dns.dnsrecord import DnsRecord
+from automojo.networking.protocols.dns.dnsrecord import DnsRecord
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+    from automojo.networking.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
 
 class DnsText(DnsRecord):
     """
@@ -29,7 +29,7 @@ class DnsText(DnsRecord):
         self._text = text
 
     @property
-    def text(self):
+    def text(self) -> str:
         return self._text
 
     def write(self, out: 'DnsOutboundMessage') -> None:
@@ -61,7 +61,7 @@ class DnsText(DnsRecord):
         """
         strval = None
         if len(self._text) > 10:
-            strval = self.as_dns_string(self._text[:7]) + "..."
+            strval = self.as_dns_string(self._text[:7] + "...")
         else:
             strval = self.as_dns_string(self._text)
         return strval

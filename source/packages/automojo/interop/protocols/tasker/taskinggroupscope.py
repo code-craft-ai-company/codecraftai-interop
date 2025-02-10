@@ -4,27 +4,27 @@ import logging
 import os
 import weakref
 
-from mojo.errors.exceptions import SemanticError
-from mojo.errors.xtraceback import format_exception
+from automojo.errors.exceptions import SemanticError
+from automojo.errors.xtraceback import format_exception
 
-from mojo.results.model.taskinggroup import TaskingGroup
-from mojo.results.model.taskingresult import TaskingResult
-from mojo.results.model.progressinfo import ProgressInfo
-from mojo.results.model.progressdelivery import ProgressDeliveryMethod, SummaryProgressDelivery
+from automojo.results.model.taskinggroup import TaskingGroup
+from automojo.results.model.taskingresult import TaskingResult
+from automojo.results.model.progressinfo import ProgressInfo
+from automojo.results.model.progressdelivery import ProgressDeliveryMethod, SummaryProgressDelivery
 
-from mojo.results.recorders.resultrecorder import ResultRecorder
+from automojo.results.recorders.resultrecorder import ResultRecorder
 
-from mojo.interop.protocols.tasker.taskeraspects import TaskerAspects
+from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects
 
-from mojo.interop.protocols.tasker.taskernode import TaskerNode
-from mojo.interop.protocols.tasker.tasking import Tasking, TaskingIdentity
-from mojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
-from mojo.interop.protocols.tasker.taskercontroller import TaskerController
-from mojo.interop.protocols.tasker.taskingevent import TaskingEvent
+from automojo.interop.protocols.tasker.taskernode import TaskerNode
+from automojo.interop.protocols.tasker.tasking import Tasking, TaskingIdentity
+from automojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
+from automojo.interop.protocols.tasker.taskercontroller import TaskerController
+from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 
 if TYPE_CHECKING:
-    from mojo.testplus.sequencing.testsequencer import TestSequencer
-    from mojo.interop.protocols.tasker.taskingadapter import TaskingAdapter
+    from automojo.testplus.sequencing.testsequencer import TestSequencer
+    from automojo.interop.protocols.tasker.taskingadapter import TaskingAdapter
 
 
 logger = logging.getLogger()

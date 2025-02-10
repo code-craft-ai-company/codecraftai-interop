@@ -25,14 +25,14 @@ from dataclasses import dataclass, asdict
 DEFAULT_WAIT_TIMEOUT = 600
 DEFAULT_WAIT_INTERVAL = 5
 
-from mojo.results.model.taskingresult import TaskingResult
-from mojo.results.model.progressinfo import ProgressInfo
+from automojo.results.model.taskingresult import TaskingResult
+from automojo.results.model.progressinfo import ProgressInfo
 
-from mojo.interop.protocols.tasker.taskingevent import TaskingEvent
-from mojo.interop.protocols.tasker.taskingprogressmonitor import TaskingProgressMonitor
+from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
+from automojo.interop.protocols.tasker.taskingprogressmonitor import TaskingProgressMonitor
 
 if TYPE_CHECKING:
-    from mojo.interop.protocols.tasker.taskernode import TaskerNode
+    from automojo.interop.protocols.tasker.taskernode import TaskerNode
 
 
 logger = logging.getLogger()

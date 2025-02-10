@@ -12,7 +12,7 @@ from enum import IntEnum
 
 from requests import Session
 
-from mojo.xmods.aspects import (
+from automojo.interop.aspects import (
     Aspects,
     ActionPattern,
     LoggingPattern,
