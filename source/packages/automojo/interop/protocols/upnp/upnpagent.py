@@ -1,0 +1,12 @@
+__author__ = "Myron Walker"
+__copyright__ = "Copyright 2023, Myron W Walker"
+__credits__ = []
+
+from automojo.interop.protocols.upnp.devices.upnprootdevice import UpnpRootDevice
+
+
+class UpnpAgent(UpnpRootDevice):
+
+    def __init__(self, manufacturer: str, modelNumber: str, modelDescription):
+        super().__init__(manufacturer, modelNumber, modelDescription)
+        return

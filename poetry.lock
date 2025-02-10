@@ -52,7 +52,7 @@ debugpy = "^1.8.12"
 type = "git"
 url = "git@github.com:automationmojo/automojo-foundation-kit.git"
 reference = "main"
-resolved_reference = "a7b05f0c4b06a0f8a9b910a245c656e81a66c1b6"
+resolved_reference = "ac24f0c2889ef8d0ca1560a00f583bced1a76117"
 
 [[package]]
 name = "automojo-interfaces"
@@ -68,6 +68,21 @@ type = "git"
 url = "git@github.com:automationmojo/automojo-interfaces.git"
 reference = "main"
 resolved_reference = "40eac26529d4d73ec469035d83e8f3f3274d5a93"
+
+[[package]]
+name = "automojo-networking"
+version = "0.0.1"
+description = "Automation Mojo - Networking Package"
+optional = false
+python-versions = ">=3.10,<4.0"
+files = []
+develop = false
+
+[package.source]
+type = "git"
+url = "git@github.com:automationmojo/automojo-networking.git"
+reference = "main"
+resolved_reference = "ff05eb3212cf8f90248913c126fa10a9c2d67a30"
 
 [[package]]
 name = "automojo-testbase"
@@ -308,4 +323,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "bd6d0b016cc7a053bb18bb26db24582ac8930a5172262e5ff6ba0a410db8efcb"
+content-hash = "598a560b0d2d1cd4bb8bfd955c50839fc9d78a603637e924db7ea5e8aebb5312"

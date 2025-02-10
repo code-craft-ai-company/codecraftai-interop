@@ -2,7 +2,7 @@
 from typing import Optional
 
 
-from automojo.networking.protocols.dns.dnsconst import DnsQr, DnsOpCode, DnsRespCode
+from automojo.interop.protocols.dns.dnsconst import DnsQr, DnsOpCode, DnsRespCode
 
 
 class DnsFlags:

@@ -17,7 +17,7 @@ from typing import Optional, Protocol, Sequence, Tuple, Union
 
 from automojo.errors.exceptions import NotOverloadedError
 
-from automojo.landscaping.aspects import AspectsCmd
+from automojo.interop.aspects import AspectsCmd
 
 class ISystemContext(Protocol):
     """

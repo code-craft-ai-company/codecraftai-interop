@@ -6,14 +6,14 @@ __credits__ = []
 import socket
 import time
 
-from automojo.networking.protocols.dns.dnsconst import HAS_A_TO_Z
-from automojo.networking.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN
-from automojo.networking.protocols.dns.dnsconst import HAS_ASCII_CONTROL_CHARS
-from automojo.networking.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN_UNDERSCORE
+from automojo.interop.protocols.dns.dnsconst import HAS_A_TO_Z
+from automojo.interop.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN
+from automojo.interop.protocols.dns.dnsconst import HAS_ASCII_CONTROL_CHARS
+from automojo.interop.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN_UNDERSCORE
 
-from automojo.networking.protocols.dns.exceptions import DnsBadTypeInNameError
+from automojo.interop.protocols.dns.exceptions import DnsBadTypeInNameError
 
-from automojo.networking.protocols.dns.dnsvalidation import validate_service_name
+from automojo.interop.protocols.dns.dnsvalidation import validate_service_name
 
 def service_type_name(service_type: str, *, allow_underscores: bool = False) -> str:
     """

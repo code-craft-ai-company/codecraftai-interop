@@ -19,7 +19,7 @@ import logging
 import os
 import struct
 
-from automojo.networking.protocols.dns.dnsconst import (
+from automojo.interop.protocols.dns.dnsconst import (
     DnsQr,
     DnsRecordType,
     DnsRecordClass,
@@ -28,16 +28,16 @@ from automojo.networking.protocols.dns.dnsconst import (
     DNS_OFFSET_MASK
 )
 
-from automojo.networking.protocols.dns.dnsflags import DnsFlags
-from automojo.networking.protocols.dns.exceptions import DnsDecodeError
+from automojo.interop.protocols.dns.dnsflags import DnsFlags
+from automojo.interop.protocols.dns.exceptions import DnsDecodeError
 
-from automojo.networking.protocols.dns.dnsaddress import DnsAddress
-from automojo.networking.protocols.dns.dnshostinfo import DnsHostInfo
-from automojo.networking.protocols.dns.dnspointer import DnsPointer
-from automojo.networking.protocols.dns.dnsquestion import DnsQuestion
-from automojo.networking.protocols.dns.dnsrecord import DnsRecord
-from automojo.networking.protocols.dns.dnsservice import DnsService
-from automojo.networking.protocols.dns.dnstext import DnsText
+from automojo.interop.protocols.dns.dnsaddress import DnsAddress
+from automojo.interop.protocols.dns.dnshostinfo import DnsHostInfo
+from automojo.interop.protocols.dns.dnspointer import DnsPointer
+from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
+from automojo.interop.protocols.dns.dnsrecord import DnsRecord
+from automojo.interop.protocols.dns.dnsservice import DnsService
+from automojo.interop.protocols.dns.dnstext import DnsText
 
 logger = logging.getLogger()
 

@@ -155,6 +155,45 @@ class AspectsRest(Aspects):
     """
     """
 
+
+UPNP_CALL_COMPLETION_TIMEOUT = 30
+UPNP_CALL_COMPLETION_INTERVAL = 5
+
+UPNP_CALL_INACTIVITY_TIMEOUT = 30
+UPNP_CALL_INACTIVITY_INTERVAL = 1
+
+class AspectsUPnP(Aspects):
+    """
+    """
+    def __init__(self, action_pattern: ActionPattern = ActionPattern.SINGLE_CONNECTED_CALL,
+                       completion_timeout: float = DEFAULT_COMPLETION_TIMEOUT,
+                       completion_interval: float = DEFAULT_COMPLETION_INTERVAL,
+                       inactivity_timeout: float = DEFAULT_INACTIVITY_TIMEOUT,
+                       inactivity_interval: float = DEFAULT_INACTIVITY_INTERVAL,
+                       monitor_delay: float = DEFAULT_MONITOR_DELAY,
+                       logging_pattern: LoggingPattern = DEFAULT_LOGGING_PATTERN,
+                       retry_logging_interval: int = DEFAULT_RETRY_LOGGING_INTERVAL,
+                       allowed_error_codes: List[int] = DEFAULT_ALLOWED_ERROR_CODES,
+                       must_connect: bool = DEFAULT_MUST_CONNECT,
+                       logger: Optional[logging.Logger]=None):
+        
+        Aspects.__init__(self, action_pattern=action_pattern, completion_timeout=completion_timeout,
+                            completion_interval=completion_interval, inactivity_timeout=inactivity_timeout,
+                            inactivity_interval=inactivity_interval, monitor_delay=monitor_delay,
+                            logging_pattern=logging_pattern, retry_logging_interval=retry_logging_interval,
+                            allowed_error_codes=allowed_error_codes, must_connect=must_connect, logger=logger)
+        return
+
+
+
 DEFAULT_ASPECTS = Aspects()
 DEFAULT_CMD_ASPECTS = AspectsCmd()
 DEFAULT_REST_ASPECTS = AspectsRest()
+DEFAULT_UPNP_ASPECTS = AspectsUPnP()
+
+DEFAULT_UPNP_CALL_ASPECTS = AspectsUPnP(
+    completion_timeout=UPNP_CALL_COMPLETION_TIMEOUT,
+    completion_interval=UPNP_CALL_COMPLETION_INTERVAL,
+    inactivity_timeout=UPNP_CALL_INACTIVITY_TIMEOUT,
+    inactivity_interval=UPNP_CALL_INACTIVITY_INTERVAL)
+

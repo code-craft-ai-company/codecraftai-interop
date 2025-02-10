@@ -5,11 +5,11 @@ __credits__ = []
 
 from typing import List
 
-from automojo.networking.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType
+from automojo.interop.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType
 
-from automojo.networking.protocols.dns.dnsquestion import DnsQuestion
+from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
 
-from automojo.networking.protocols.dns.dnsserver import DnsServer
+from automojo.interop.protocols.dns.dnsserver import DnsServer
 
 def dns_query_name(name: str, rtype: DnsRecordType, rclass: DnsRecordClass):
 

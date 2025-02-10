@@ -19,12 +19,12 @@ from automojo.errors.exceptions import SemanticError
 from automojo.networking.multicast import create_multicast_socket
 from automojo.networking.constants import MDNS_GROUP_ADDR, MDNS_GROUP_ADDR6, MDNS_PORT
 
-from automojo.networking.protocols.dns.dnsconst import DNS_RECEIVE_BUFFER
-from automojo.networking.protocols.dns.dnsflags import DEFAULT_DNS_FLAGS_QUERY
-from automojo.networking.protocols.dns.dnsinboundmessage import DnsInboundMessage
-from automojo.networking.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
-from automojo.networking.protocols.dns.dnsquestion import DnsQuestion
-from automojo.networking.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
+from automojo.interop.protocols.dns.dnsconst import DNS_RECEIVE_BUFFER
+from automojo.interop.protocols.dns.dnsflags import DEFAULT_DNS_FLAGS_QUERY
+from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
+from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
+from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
 
 
 DEFAULT_SEARCH_TIMEOUT = 30.0

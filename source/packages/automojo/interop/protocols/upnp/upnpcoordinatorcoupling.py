@@ -13,7 +13,7 @@ __credits__ = []
 
 from typing import Dict, List, Tuple, TYPE_CHECKING
 
-from automojo.collections.contextpaths import ContextPaths
+from automojo.foundation.collections.contextpaths import ContextPaths
 from automojo.errors.exceptions import SemanticError
 from automojo.landscaping.coupling.coordinatorcoupling import CoordinatorCoupling
 

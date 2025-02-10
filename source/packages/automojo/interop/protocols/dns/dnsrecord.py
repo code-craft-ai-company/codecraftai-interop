@@ -17,7 +17,7 @@ from typing import Optional, Union, TYPE_CHECKING
 import math
 import time
 
-from automojo.networking.protocols.dns.dnsconst import (
+from automojo.interop.protocols.dns.dnsconst import (
     DnsLiftimePercent,
     DnsRecordClass,
     DnsRecordType
@@ -35,8 +35,8 @@ def current_time_millis() -> float:
 
 
 if TYPE_CHECKING:
-    from automojo.networking.protocols.dns.dnsinboundmessage import DnsInboundMessage
-    from automojo.networking.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+    from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
+    from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
 
 class DnsRecord:
     """

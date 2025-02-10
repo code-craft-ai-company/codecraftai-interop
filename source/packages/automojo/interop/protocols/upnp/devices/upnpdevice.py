@@ -24,9 +24,9 @@ import requests
 
 from automojo.interop.protocols.upnp.upnperrors import UpnpServiceNotAvailableError
 
-from automojo.xmods.extension.dynamic import generate_extension_key
+from automojo.foundation.extension.dynamicextension import generate_extension_key
 
-from automojo.xmods.fspath import normalize_name_for_path
+from automojo.foundation.fspath import normalize_name_for_path
 
 from automojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
 from automojo.interop.protocols.upnp.xml.upnpdevice1 import UpnpDevice1Device

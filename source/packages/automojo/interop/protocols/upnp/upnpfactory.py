@@ -15,13 +15,14 @@ __credits__ = []
 from typing import Union
 
 from automojo.errors.exceptions import SemanticError
-from automojo.xmods.extension.dynamic import (
+
+from automojo.foundation.extension.dynamicextension import (
     collect_extensions_under_code_container,
     collect_extensions_under_folder,
     generate_extension_key
 )
-from automojo.xmods.ximport import import_by_name
-from automojo.collections.context import Context
+from automojo.foundation.ximport import import_by_name
+from automojo.foundation.collections.context import Context
 
 from automojo.interop.protocols.upnp.devices.upnpembeddeddevice import UpnpEmbeddedDevice
 from automojo.interop.protocols.upnp.devices.upnprootdevice import UpnpRootDevice

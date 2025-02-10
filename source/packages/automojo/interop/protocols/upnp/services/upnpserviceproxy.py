@@ -29,17 +29,16 @@ import requests
 from automojo.errors.xtraceback import format_exc_lines
 from automojo.waiting.waitmodel import TimeoutContext
 
-from automojo.collections.context import Context
-from automojo.collections.contextpaths import ContextPaths
+from automojo.foundation.collections.context import Context
+from automojo.foundation.collections.contextpaths import ContextPaths
 
 from automojo.interop.aspects import ActionPattern
-from automojo.xmods.eventing.eventedvariablesink import EventedVariableSink
-from automojo.xmods.eventing.eventedvariable import EventedVariable
-from automojo.xmods.xlogging.scopemonitoring import MonitoredScope
+from automojo.foundation.eventing.eventedvariablesink import EventedVariableSink
+from automojo.foundation.eventing.eventedvariable import EventedVariable
+from automojo.foundation.xlogging.scopemonitoring import MonitoredScope
 
-from automojo.interop.protocols.upnp.aspects import AspectsUPnP, DEFAULT_UPNP_ASPECTS
+from automojo.interop.aspects import AspectsUPnP, DEFAULT_UPNP_ASPECTS, DEFAULT_UPNP_CALL_ASPECTS
 from automojo.interop.protocols.upnp.soap import SoapProcessor, SOAP_TIMEOUT
-from automojo.interop.protocols.upnp.upnpconstants import DEFAULT_UPNP_CALL_ASPECTS
 from automojo.interop.protocols.upnp.upnperrors import UpnpError
 from automojo.interop.protocols.upnp.services.upnpdefaultvar import UpnpDefaultVar
 

@@ -15,8 +15,8 @@ __credits__ = []
 
 import os
 
-from automojo.collections.context import Context
-from automojo.collections.contextpaths import ContextPaths
+from automojo.foundation.collections.context import Context
+from automojo.foundation.collections.contextpaths import ContextPaths
 
 DIR_UPNP = os.path.dirname(__file__)
 

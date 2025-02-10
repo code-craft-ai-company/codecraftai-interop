@@ -11,8 +11,8 @@ __copyright__ = "Copyright 2020, Myron W Walker"
 __credits__ = []
 
 
-from automojo.networking.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType
-from automojo.networking.protocols.dns.dnsrecord import DnsRecord
+from automojo.interop.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType
+from automojo.interop.protocols.dns.dnsrecord import DnsRecord
 
 class DnsQuestion:
     """

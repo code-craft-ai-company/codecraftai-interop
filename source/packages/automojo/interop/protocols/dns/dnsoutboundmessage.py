@@ -19,13 +19,13 @@ import struct
 
 from enum import IntEnum
 
-from automojo.networking.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType, DNS_PACKET_HEADER_SIZE, MAX_MSG_ABSOLUTE, MAX_MSG_TYPICAL
-from automojo.networking.protocols.dns.dnsflags import DnsFlags
+from automojo.interop.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType, DNS_PACKET_HEADER_SIZE, MAX_MSG_ABSOLUTE, MAX_MSG_TYPICAL
+from automojo.interop.protocols.dns.dnsflags import DnsFlags
 
-from automojo.networking.protocols.dns.exceptions import DnsNamePartTooLongError
-from automojo.networking.protocols.dns.dnsquestion import DnsQuestion
-from automojo.networking.protocols.dns.dnsrecord import DnsRecord
-from automojo.networking.protocols.dns.dnspointer import DnsPointer
+from automojo.interop.protocols.dns.exceptions import DnsNamePartTooLongError
+from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
+from automojo.interop.protocols.dns.dnsrecord import DnsRecord
+from automojo.interop.protocols.dns.dnspointer import DnsPointer
 
 logger = logging.getLogger()
 

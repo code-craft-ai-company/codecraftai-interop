@@ -25,9 +25,8 @@ from argparse import ArgumentParser, ArgumentError
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import fromstring as xml_fromstring
 
-from automojo.xmods.fspath import ensure_directory_is_package
+from automojo.foundation.fspath import ensure_directory_is_package
 
-from automojo.interop.protocols.upnp.coordinators.upnpcoordinator import UpnpCoordinator
 
 # pylint: disable=unused-import
 

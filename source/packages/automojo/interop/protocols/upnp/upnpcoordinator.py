@@ -31,8 +31,8 @@ from requests.exceptions import ConnectionError
 from automojo.errors.exceptions import ConfigurationError, SemanticError
 from automojo.landscaping.friendlyidentifier import FriendlyIdentifier
 
-from automojo.collections.context import Context
-from automojo.collections.contextpaths import ContextPaths
+from automojo.foundation.collections.context import Context
+from automojo.foundation.collections.contextpaths import ContextPaths
 
 from automojo.networking.constants import HTTP1_1_LINESEP, HTTP1_1_END_OF_HEADER
 from automojo.networking.interfaces import get_interface_for_ip

@@ -37,9 +37,8 @@ from requests.compat import urljoin
 from automojo.networking.exceptions import ProtocolError, HttpRequestError, NotOverloadedError
 
 from automojo.errors.exceptions import  HttpRequestError, NotOverloadedError
-from automojo.xmods.extension.dynamic import generate_extension_key
-from automojo.xmods.fspath import normalize_name_for_path
-from automojo.landscaping.protocolextension import ProtocolExtension
+from automojo.foundation.extension.dynamicextension import generate_extension_key
+from automojo.foundation.fspath import normalize_name_for_path
 
 from automojo.interop.protocols.upnp.upnperrors import UpnpError
 from automojo.interop.protocols.upnp.aliases import StrSvcId, StrSvcType, StrSubId
@@ -57,7 +56,7 @@ from automojo.interop.protocols.upnp.upnpprotocol import MSearchKeys
 
 from automojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
 
-import mojo.interop.protocols.upnp as upnp_module
+import automojo.interop.protocols.upnp as upnp_module
 
 from automojo.networking.exceptions import raise_for_http_status
 
@@ -87,6 +86,7 @@ def device_description_load(location: str) -> Union[ElementTree, None]:
         docTree = ElementTree(xml_fromstring(xmlcontent))
 
     return  docTree
+
 
 
 def device_description_find_components(location: str, docTree: ElementTree, namespaces: dict = {"": UPNP_DEVICE1_NAMESPACE}) -> Tuple[Element, str, str, str, str, str]:
@@ -140,7 +140,8 @@ def device_description_find_components(location: str, docTree: ElementTree, name
 
     return devNode, urlBase, manufacturer, modelName, modelNumber, modelDescription
 
-class UpnpRootDevice(UpnpDevice, ProtocolExtension):
+
+class UpnpRootDevice(UpnpDevice):
     """
         The UPNP Root device is the base device for the hierarchy that is
         associated with a unique network devices location.  The :class:`UpnpRootDevice`
