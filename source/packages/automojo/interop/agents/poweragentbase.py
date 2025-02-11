@@ -17,11 +17,16 @@ from typing import Union
 
 from automojo.errors.exceptions import ConfigurationError
 
+from automojo.credentials.basecredential import BaseCredential
+from automojo.credentials.basiccredential import BasicCredential
+
 
 class PowerAgentBase:
     """
     """
-    def __init__(self):
+    def __init__(self, host: str, credential: BaseCredential):
+        self._host = host
+        self._credential = credential
         return
 
     def _lookup_power_interface(self, interface_name: str) -> Union[dict, None]:
@@ -33,20 +38,14 @@ class PowerAgentBase:
         if interface_name in self._power_interfaces:
             power_iface = self._power_interfaces[interface_name]
         else:
-            lscape = self.coordinator.landscape
 
             interface_config = self._power_config[interface_name]
             
             powerType = interface_config["powerType"]
 
             if powerType == "DliPowerSwitch":
-                model = interface_config["model"]
-                host = interface_config["host"]
-
-                credential_name = interface_config["credential"]
-                credobj = lscape.lookup_credential(credential_name)
-
-                power_iface = dlipower.PowerSwitch(userid=credobj.username, password=credobj.password, hostname=host)
+                credobj: BasicCredential = self._credential
+                power_iface = dlipower.PowerSwitch(userid=credobj.username, password=credobj.password, hostname=self._host)
 
                 self._power_interfaces[interface_name] = power_iface
             else:

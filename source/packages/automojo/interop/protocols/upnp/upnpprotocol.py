@@ -145,6 +145,7 @@ class MSearchScanContext:
 
         return
 
+
 def msearch_parse_request(content: bytes) -> dict:
     """
         Takes in the content of the MSEARCH request and parses it into a
@@ -171,6 +172,7 @@ def msearch_parse_request(content: bytes) -> dict:
                     respinfo[key] = val
 
     return respinfo
+
 
 def msearch_parse_response(content: bytes) -> dict:
     """
@@ -433,7 +435,7 @@ def msearch_on_interface(scan_context: MSearchScanContext, ifname: str, ifaddres
 
 
 def msearch_scan(expected_devices, interface_list=None, response_timeout=45, interval=2, raise_exception=False,
-                 custom_headers: Optional[dict]=None, show_progress=False) -> Tuple[dict, dict]:
+                 custom_headers: Optional[dict]=None) -> Tuple[dict, dict]:
     """
         Performs a msearch across a list of interfaces for a specific expected device.  This method is typically used
         during a persistent search when a device was not found in a broad msearch.
@@ -444,7 +446,6 @@ def msearch_scan(expected_devices, interface_list=None, response_timeout=45, int
         :param interval: The retry interval to wait before retrying to search for an expected device.
         :param raise_exception: A boolean indicating if the mquery should raise an exception on failure.
         :param custom_headers: Custom headers to include in the msearch message
-        :param show_progress: Should progress be rendered to the console.
 
         :returns: A tuple with a dictionary of found and a dictionary of matching devices found.
     """
@@ -455,52 +456,37 @@ def msearch_scan(expected_devices, interface_list=None, response_timeout=45, int
 
     search_threads = []
 
-    progress = None
-    if show_progress:
-        progress = ProgressOfDurationWaitContext.create_rich_progress()
+    for ifname in interface_list:
+        ifaddress = None
 
-    try:
-        if progress is not None:
-            progress.start()
+        address_info = netifaces.ifaddresses(ifname)
+        if address_info is not None:
+            # First look for IPv4 address information
+            if netifaces.AF_INET in address_info:
+                addr_info = address_info[netifaces.AF_INET][0]
+                ifaddress = addr_info["addr"]
 
-        for ifname in interface_list:
-            ifaddress = None
+            # If we didn't find an ipv4 address, try using IPv6
+            # if ifaddress is None and netifaces.AF_INET6 in addr_info:
+            #    addr_info = address_info[netifaces.AF_INET6][0]
+            #    ifaddress = addr_info["addr"]
 
-            address_info = netifaces.ifaddresses(ifname)
-            if address_info is not None:
-                # First look for IPv4 address information
-                if netifaces.AF_INET in address_info:
-                    addr_info = address_info[netifaces.AF_INET][0]
-                    ifaddress = addr_info["addr"]
+            if ifaddress is not None:
+                thname = "msearch-%s" % ifname
+                thargs = (scan_context, ifname, ifaddress)
+                wctx = WaitContext(timeout=response_timeout)
 
-                # If we didn't find an ipv4 address, try using IPv6
-                # if ifaddress is None and netifaces.AF_INET6 in addr_info:
-                #    addr_info = address_info[netifaces.AF_INET6][0]
-                #    ifaddress = addr_info["addr"]
+                thkwargs = { "wctx": wctx, "custom_headers": custom_headers}
 
-                if ifaddress is not None:
-                    thname = "msearch-%s" % ifname
-                    thargs = (scan_context, ifname, ifaddress)
-                    wctx = None
-                    if progress is not None:
-                        wctx = ProgressOfDurationWaitContext(progress, thname, timeout=response_timeout)
-                    else:
-                        wctx = WaitContext(timeout=response_timeout)
+                sthread = threading.Thread(name=thname, target=msearch_on_interface, args=thargs, kwargs=thkwargs)
+                sthread.start()
+                search_threads.append(sthread)
 
-                    thkwargs = { "wctx": wctx, "custom_headers": custom_headers}
+    # Wait for all the search threads to finish
+    while len(search_threads) > 0:
+        nxt_thread = search_threads.pop(0)
+        nxt_thread.join()
 
-                    sthread = threading.Thread(name=thname, target=msearch_on_interface, args=thargs, kwargs=thkwargs)
-                    sthread.start()
-                    search_threads.append(sthread)
-
-        # Wait for all the search threads to finish
-        while len(search_threads) > 0:
-            nxt_thread = search_threads.pop(0)
-            nxt_thread.join()
-
-    finally:
-        if progress is not None:
-            progress.stop()
 
     found_devices = copy.deepcopy(scan_context.found_devices)
     matching_devices = copy.deepcopy(scan_context.matching_devices)
@@ -538,6 +524,7 @@ def msearch_scan(expected_devices, interface_list=None, response_timeout=45, int
         raise TimeoutError(err_msg) from None
 
     return found_devices, matching_devices
+
 
 def notify_parse_request(content: str) -> dict:
     """

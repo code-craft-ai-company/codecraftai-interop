@@ -12,7 +12,6 @@ import time
 import weakref
 
 from datetime import datetime, timedelta
-from types import TracebackType
 
 from automojo.errors.exceptions import SemanticError
 

@@ -8,8 +8,6 @@ from typing import List, Optional, Union
 
 import logging
 
-from enum import IntEnum
-
 from requests import Session
 
 from automojo.interop.aspects import (
@@ -30,7 +28,7 @@ from automojo.interop.aspects import (
     DEFAULT_MUST_CONNECT
 )
 
-class RestAspects(Aspects):
+class AspectsRest(Aspects):
     """
     """
     def __init__(self, *, action_pattern: ActionPattern = ActionPattern.SINGLE_CALL,
@@ -64,5 +62,5 @@ class RestAspects(Aspects):
 
 
 
-DEFAULT_REST_ASPECTS = RestAspects()
+DEFAULT_REST_ASPECTS = AspectsRest()
 

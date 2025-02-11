@@ -8,7 +8,7 @@ from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 
 from requests import Response
 
-from automojo.interop.protocols.rest.restaspects import RestAspects
+from automojo.interop.protocols.rest.aspectsrest import AspectsRest
 
 
 CT = TypeVar('CT')
@@ -18,7 +18,7 @@ class PreCannedRequest(Generic[CT]):
 
     def __init__(self, *, leaf: str, method: str, params: Union[Dict[str, str], None],
                      body: Union[Dict[str, Any], None], exp_status: Union[int, List[int]],
-                     aspects: Union[RestAspects, None], perform_call: Callable, package_result: Callable):
+                     aspects: Union[AspectsRest, None], perform_call: Callable, package_result: Callable):
         
         self._leaf = leaf
         self._method = method
