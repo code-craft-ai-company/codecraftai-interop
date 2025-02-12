@@ -27,19 +27,19 @@ class DnsQuestion:
         return
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def rclass(self):
+    def rclass(self) -> DnsRecordClass:
         return self._rclass
 
     @property
-    def rtype(self):
+    def rtype(self) -> DnsRecordType:
         return self._rtype
 
     @property
-    def unique(self):
+    def unique(self) -> bool:
         return self._unique
 
     def answered_by(self, rec: DnsRecord) -> bool:
@@ -52,7 +52,7 @@ class DnsQuestion:
                bval = self._name == rec._name
         return bval
 
-    def as_query_bytes(self) -> str:
+    def as_query_bytes(self) -> bytes:
         """
             Formats the DNS question as a byte stream for transmission.
         """
@@ -60,14 +60,14 @@ class DnsQuestion:
         brtype = self._rtype.name.encode("utf-8")
         brclass = self._rclass.name.encode("utf-8")
 
-        dnsstr = b"%s/x00%s,%s" % ('question', brtype, brclass)
+        dnsstr = "%s/x00%s,%s" % ('question', brtype, brclass)
 
         if self._unique:
             dnsstr += "-unique,"
         else:
             dnsstr += ","
 
-        dnsstr += self._name
+        dnsstr = dnsstr + self._name
 
         dnsbytes = dnsstr.encode("utf-8")
 
