@@ -8,7 +8,7 @@
 """
 
 __author__ = "Myron Walker"
-__copyright__ = "Copyright 2020, Myron W Walker"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
@@ -23,6 +23,7 @@ from automojo.interop.protocols.dns.dnsconst import (
     DnsQr,
     DnsRecordType,
     DnsRecordClass,
+    DNS_PACKET_HEADER_SIZE,
     DNS_COMP_MASK,
     DNS_OFFSET_MASK
 )

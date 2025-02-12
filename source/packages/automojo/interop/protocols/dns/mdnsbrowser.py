@@ -1,6 +1,6 @@
 
 __author__ = "Myron Walker"
-__copyright__ = "Copyright 2020, Myron W Walker"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 from typing import Dict, List, Optional, Tuple, Type
@@ -12,6 +12,7 @@ import time
 import weakref
 
 from datetime import datetime, timedelta
+from types import TracebackType
 
 from automojo.errors.exceptions import SemanticError
 

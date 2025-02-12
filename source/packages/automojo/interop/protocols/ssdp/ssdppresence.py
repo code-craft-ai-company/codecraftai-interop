@@ -1,15 +1,14 @@
 """
-.. module:: SsdpScanner
+.. module:: ssdppresence
     :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Module containing the :class:`MSearchRootDeviceProtocol` class and
-               associated diagnostic.
+    :synopsis: Module containing the :class:`SsdpPresence` class and associated diagnostic.
 
 .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 
 """
 
 __author__ = "Myron Walker"
-__copyright__ = "Copyright 2023, Myron W Walker"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
@@ -23,6 +22,10 @@ import threading
 import weakref
 
 from automojo.networking.multicast import create_multicast_socket
+from automojo.interop.protocols.ssdp.devicequerymanager import DeviceQueryManager
+
+from automojo.interop.protocols.ssdp.model import SsdpDevice
+from automojo.interop.protocols.ssdp.model import SsdpService
 
 
 REGEX_NOTIFY_HEADER = re.compile("NOTIFY[ ]+[*/]+[ ]+HTTP/1")
@@ -83,77 +86,6 @@ SSDP_IPV6_MULTICAST_ADDRESS_SITE_LOCAL="FF05::C"
 SSDP_IPV6_MULTICAST_ADDRESS_ORG_LOCAL="FF08::C"
 SSDP_IPV6_MULTICAST_ADDRESS_GLOBAL_LOCAL="FF0E::"
 
-
-class SsdpDevice:
-
-    def __init__(self, *, usn: str, status: str, server: str, location: str, ip: str, other: Dict[str, str], presence: "SsdpPresence"):
-        self._usn = usn
-        self._status = status
-        self._server = server
-        self._location = location
-        self._ip = ip
-        self._other = other
-        self._presence_ref = weakref.ref(presence)
-        return
-    
-    @property
-    def location(self):
-        return self._location
-    
-    @property
-    def other(self):
-        return self._other
-    
-    @property
-    def ip(self):
-        return self._ip
-
-    @property
-    def presence(self) -> "SsdpPresence":
-        return self._presence_ref()
-
-    @property
-    def server(self):
-        return self._server
-
-    @property
-    def status(self):
-        return self._status
-
-    @property
-    def usn(self):
-        return self._usn
-
-
-class SsdpService:
-    
-    def __init__(self, *, device: str, service: str, location: str, status: str, presence: "SsdpPresence"):
-        self._device = device
-        self._service = service
-        self._location = location
-        self._status = status
-        self._presence_ref = weakref.ref(presence)
-        return
-
-    @property
-    def device(self):
-        return self._device
-    
-    @property
-    def location(self):
-        return self._location
-    
-    @property
-    def presence(self) -> "SsdpPresence":
-        return self._presence_ref()
-
-    @property
-    def service(self):
-        return self._service
-    
-    @property
-    def status(self):
-        return self._status
 
 
 def notify_parse_request(content: str) -> dict:
@@ -278,6 +210,8 @@ class SsdpPresence:
         self._active_devices = {}
 
         self._services_by_device = {}
+
+        self._query_manager = DeviceQueryManager()
 
         return
 
@@ -406,7 +340,7 @@ class SsdpPresence:
                             server = msg_info.pop("SERVER")
                             location = msg_info.pop("LOCATION")
 
-                            device_info = None
+                            device_info = self._query_manager.query_device_details(location)
 
                             if nts == "ssdp:alive":
                                 status = 'active'
@@ -494,6 +428,8 @@ class SsdpPresence:
                     server = reply_info.pop("SERVER")
                     location = reply_info.pop("LOCATION")
 
+                    device_info = self._query_manager.query_device_details(location)
+
                     device_info = SsdpDevice(usn=usn, status="alive", server=server, location=location, ip=from_ip, other=reply_info, presence=self)
 
                     self._lock.acquire()
@@ -514,10 +450,12 @@ class SsdpPresence:
 
     def device_updated(self, context: str, usn: str, status: str, device_info: SsdpDevice):
 
-        print(f"UPDATE DEVICE: context={context} usn={usn} status={status}")
+        location = device_info.location
+
+        print(f"UPDATE DEVICE: context={context} usn={usn} status={status} location={location}")
 
         return
-    
+
     def service_updated(self, context: str, usn: str, service: str, status: str, device_info: SsdpDevice):
 
         print(f"UPDATE DEVICE SERVICE: context={context} usn={usn} service={service} status={status}")

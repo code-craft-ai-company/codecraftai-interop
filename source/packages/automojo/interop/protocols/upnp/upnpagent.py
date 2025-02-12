@@ -1,5 +1,5 @@
 __author__ = "Myron Walker"
-__copyright__ = "Copyright 2023, Myron W Walker"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 from automojo.interop.protocols.upnp.devices.upnprootdevice import UpnpRootDevice
