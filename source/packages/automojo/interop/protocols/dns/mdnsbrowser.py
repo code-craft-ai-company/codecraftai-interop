@@ -52,7 +52,7 @@ class MdnsBrowseSearchWindow:
         self._span = None
         self._start = None
         self._stop = None
-        self._results = {}
+        self._results = []
         return
 
     @property
@@ -64,7 +64,7 @@ class MdnsBrowseSearchWindow:
         return self._id
     
     @property
-    def results(self) -> Dict[str, DnsRecord]:
+    def results(self) -> List[DnsRecord]:
         rtnval = self._results.copy()
         return rtnval
 
@@ -72,11 +72,11 @@ class MdnsBrowseSearchWindow:
     def span(self) -> float:
         return self._span
 
-    def add_record(self, key: str, record: DnsRecord):
+    def add_record(self, record: DnsRecord):
         """
             Adds a record to the search window
         """
-        self._results[key] = record
+        self._results.append(record)
         return
 
     def begin(self, span: float):    
@@ -302,16 +302,12 @@ class MdnsBrowser:
 
         for dns_answer in msg_in.answers:
 
-            result_key = None
-
             rclass = dns_answer.rclass
 
             if rclass == DnsRecordClass.IN:
                 akey = dns_answer.key
                 aname = dns_answer.name
                 rtype = dns_answer.rtype
-
-                result_key = akey
 
                 if rtype == DnsRecordType.PTR:
                     alias = dns_answer.alias
@@ -320,16 +316,14 @@ class MdnsBrowser:
                         self._known_service_classes.add(alias)
                     print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass.name} key={akey} name={aname} alias={alias}")
 
-                    result_key = alias
-
                 else:
                     print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass.name} key={akey} name={aname}")
 
             else:
                 print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass}")        
 
-            if bwindow is not None and result_key is not None:
-                bwindow.add_record(result_key, dns_answer)
+            if bwindow is not None:
+                bwindow.add_record(dns_answer)
 
         return
 
@@ -344,8 +338,6 @@ class MdnsBrowser:
 
         for dns_answer in msg_resp.answers:
 
-            result_key = None
-
             rclass = dns_answer.rclass
 
             if rclass == DnsRecordClass.IN:
@@ -353,14 +345,10 @@ class MdnsBrowser:
                 aname = dns_answer.name
                 rtype = dns_answer.rtype
 
-                result_key = akey
-
                 if rtype == DnsRecordType.PTR:
                     alias = dns_answer.alias
                     if aname == "_services._dns-sd._udp.local.":
                         self._known_service_classes.add(alias)
-
-                    result_key = alias
 
                     print(f"Search: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass.name} key={akey} name={aname} alias={alias}")
                 else:
@@ -369,8 +357,8 @@ class MdnsBrowser:
             else:
                 print(f"Search: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass}")
 
-            if bwindow is not None and result_key is not None:
-                bwindow.add_record(result_key, dns_answer)
+            if bwindow is not None:
+                bwindow.add_record(dns_answer)
 
 
         return
