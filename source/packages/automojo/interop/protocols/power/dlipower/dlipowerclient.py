@@ -37,3 +37,4 @@ if __name__ == "__main__":
     client = DliPowerRestClient("172.16.1.150", credobj)
 
     client.relay.get_outlets()
+
