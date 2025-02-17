@@ -13,7 +13,7 @@ __credits__ = []
 
 
 
-from typing import Any, List, Optional, Type, Union
+from typing import List, Optional, Type, Union
 
 
 import logging
@@ -28,7 +28,7 @@ from automojo.errors.exceptions import NotOverloadedError, SemanticError
 from automojo.testbase.results.model.taskingresult import TaskingResult
 from automojo.testbase.results.model.progressdelivery import SummaryProgressDelivery
 
-
+from automojo.interop.interfaces.inetworkclient import INetworkClient
 from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
 from automojo.interop.protocols.tasker.tasking import Tasking, TaskingIdentity
 from automojo.interop.protocols.tasker.taskernode import TaskerNode, TaskerClientNode
@@ -61,7 +61,7 @@ class TaskerController:
 
 
     @property
-    def tasker_clients(self) -> List[Any]:
+    def tasker_clients(self) -> List[INetworkClient]:
         clients = [ tn.client for tn in self._tasker_nodes]
         return clients
 
@@ -416,7 +416,7 @@ class ClientTaskerController(TaskerController):
         super().__init__(logging_directory=logging_directory, aspects=aspects)
         return
 
-    def start_tasker_network(self, clients: List[ClientBase], output_directory: Optional[str] = None,
+    def start_tasker_network(self, clients: List[INetworkClient], output_directory: Optional[str] = None,
                              log_level: Optional[int] = logging.DEBUG):
         """
         """
