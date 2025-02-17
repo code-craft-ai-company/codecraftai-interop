@@ -25,6 +25,7 @@ automojo-networking = { git = "git@github.com:automationmojo/automojo-networking
 automojo-testbase = { git = "git@github.com:automationmojo/automojo-testbase.git", branch = "main" }
 automojo-waiting = { git = "git@github.com:automationmojo/automojo-waiting.git", branch = "main" }
 paramiko = "^3.5.1"
+rpyc = "^6.0.1"
 
 [tool.poetry.group.dev.dependencies]
 
