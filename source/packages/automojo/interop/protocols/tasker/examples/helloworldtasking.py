@@ -4,7 +4,7 @@ import time
 
 from datetime import datetime
 
-from automojo.results.model.progressinfo import ProgressInfo, ProgressType, ProgressCode
+from automojo.testbase.results.model.progressinfo import ProgressInfo, ProgressType, ProgressCode
 
 from automojo.interop.protocols.tasker.tasking import Tasking
 
