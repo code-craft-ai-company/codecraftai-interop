@@ -24,6 +24,7 @@ automojo-foundation = { git = "git@github.com:automationmojo/automojo-foundation
 automojo-networking = { git = "git@github.com:automationmojo/automojo-networking.git", branch = "main" }
 automojo-testbase = { git = "git@github.com:automationmojo/automojo-testbase.git", branch = "main" }
 automojo-waiting = { git = "git@github.com:automationmojo/automojo-waiting.git", branch = "main" }
+paramiko = "^3.5.1"
 
 [tool.poetry.group.dev.dependencies]
 
