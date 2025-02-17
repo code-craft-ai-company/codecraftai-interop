@@ -5,9 +5,9 @@
 
 
 
-from automojo.interop.protocols.upnp.aspects import AspectsUPnP, DEFAULT_UPNP_ASPECTS
+from automojo.interop.protocols.upnp.aspectsupnp import AspectsUPnP, DEFAULT_UPNP_ASPECTS
 
-from automojo.foundation.extension.dynamic import DynamicExtension
+from automojo.foundation.extension.dynamicextension import DynamicExtension
 from automojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
 
 class ApplicationManagement1ServiceProxy(UpnpServiceProxy, DynamicExtension):
