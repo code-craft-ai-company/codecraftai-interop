@@ -32,9 +32,9 @@ from automojo.errors.exceptions import ConfigurationError, NotOverloadedError, S
 
 from automojo.interop.aspects import ActionPattern, AspectsCmd, LoggingPattern, DEFAULT_CMD_ASPECTS
 from automojo.credentials.sshcredential import SshCredential
-from automojo.interfaces.isystemcontext import ISystemContext
-from automojo.xmods.xformatting import indent_lines
-from automojo.xmods.xlogging.scopemonitoring import MonitoredScope
+from automojo.interop.interfaces.isystemcontext import ISystemContext
+from automojo.foundation.xformatting import indent_lines
+from automojo.foundation.xlogging.scopemonitoring import MonitoredScope
 
 from automojo.interop.protocols.ssh.sshconst import (
     SshJumpParams,

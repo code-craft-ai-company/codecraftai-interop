@@ -30,10 +30,10 @@ import rpyc
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.results.model.taskingresult import TaskingResult
+from automojo.testbase.results.model.taskingresult import TaskingResult
 
-from automojo.xmods.compression import create_archive_of_folder
-from automojo.xmods.fspath import expand_path
+from automojo.foundation.compression import create_archive_of_folder
+from automojo.foundation.fspath import expand_path
 
 from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
 from automojo.interop.protocols.tasker.taskersession import TaskerSession

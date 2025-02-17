@@ -7,7 +7,7 @@
 
 from automojo.interop.protocols.upnp.aspects import AspectsUPnP, DEFAULT_UPNP_ASPECTS
 
-from automojo.xmods.extension.dynamic import DynamicExtension
+from automojo.foundation.extension.dynamic import DynamicExtension
 from automojo.interop.protocols.upnp.services.upnpserviceproxy import UpnpServiceProxy
 
 class Presence1ServiceProxy(UpnpServiceProxy, DynamicExtension):

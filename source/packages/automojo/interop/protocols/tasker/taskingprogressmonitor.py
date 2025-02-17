@@ -5,8 +5,8 @@ import threading
 import time
 import weakref
 
-from automojo.results.model.progressdelivery import SummaryProgressDelivery
-from automojo.results.model.progresscode import ProgressCode
+from automojo.testbase.results.model.progressdelivery import SummaryProgressDelivery
+from automojo.testbase.results.model.progresscode import ProgressCode
 
 
 if TYPE_CHECKING:

@@ -21,9 +21,9 @@ import pickle
 import weakref
 
 
-from automojo.results.model.taskingresult import TaskingResult
-from automojo.results.model.progressinfo import ProgressInfo
-from automojo.results.model.progressdelivery import SummaryProgressDelivery
+from automojo.testbase.results.model.taskingresult import TaskingResult
+from automojo.testbase.results.model.progressinfo import ProgressInfo
+from automojo.testbase.results.model.progressdelivery import SummaryProgressDelivery
 
 from automojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
 from automojo.interop.protocols.tasker.taskeraspects import (
@@ -31,10 +31,6 @@ from automojo.interop.protocols.tasker.taskeraspects import (
     DEFAULT_TASKER_ASPECTS
 )
 from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
-
-if TYPE_CHECKING:
-    from automojo.landscaping.client.clientbase import ClientBase
-
 
 TASKER_PROTOCOL_CONFIG = {
     "allow_public_attrs": True,
@@ -303,11 +299,11 @@ class TaskerNode:
 
 class TaskerClientNode(TaskerNode):
 
-    def __init__(self, client: "ClientBase", ipaddr: str, port: int):
+    def __init__(self, client: Any, ipaddr: str, port: int):
         self._client_ref = weakref.ref(client)
         super().__init__(ipaddr, port)
         return
 
     @property
-    def client(self) -> "ClientBase":
+    def client(self) -> Any:
         return self._client_ref()

@@ -258,7 +258,7 @@ class TaskerServerDaemon(object):
 
     def run_debug_assistant(self):
 
-        from automojo.xmods.xdebugger import DebugPyAssistant, PORT_DEBUGPY_ASSISTANT
+        from automojo.foundation.xdebugger import DebugPyAssistant, PORT_DEBUGPY_ASSISTANT
 
         endpoint = ("0.0.0.0", PORT_DEBUGPY_ASSISTANT)
 

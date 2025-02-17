@@ -47,7 +47,7 @@ TEMPLATE_CLASS_PREFIX = """
 
 from automojo.interop.protocols.upnp.aspects import AspectsUPnP, DEFAULT_UPNP_ASPECTS
 
-from automojo.xmods.extension.dynamic import DynamicExtension
+from automojo.foundation.extension.dynamic import DynamicExtension
 %(base_class_import)s
 
 class %(class_name)s(%(base_class_name)s, DynamicExtension):

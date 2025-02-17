@@ -7,12 +7,12 @@ import weakref
 from automojo.errors.exceptions import SemanticError
 from automojo.errors.xtraceback import format_exception
 
-from automojo.results.model.taskinggroup import TaskingGroup
-from automojo.results.model.taskingresult import TaskingResult
-from automojo.results.model.progressinfo import ProgressInfo
-from automojo.results.model.progressdelivery import ProgressDeliveryMethod, SummaryProgressDelivery
+from automojo.testbase.results.model.taskinggroup import TaskingGroup
+from automojo.testbase.results.model.taskingresult import TaskingResult
+from automojo.testbase.results.model.progressinfo import ProgressInfo
+from automojo.testbase.results.model.progressdelivery import ProgressDeliveryMethod, SummaryProgressDelivery
 
-from automojo.results.recorders.resultrecorder import ResultRecorder
+from automojo.testbase.results.recorders.resultrecorder import ResultRecorder
 
 from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects
 
@@ -23,7 +23,7 @@ from automojo.interop.protocols.tasker.taskercontroller import TaskerController
 from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 
 if TYPE_CHECKING:
-    from automojo.testplus.sequencing.testsequencer import TestSequencer
+    from automojo.testbase.sequencing.testsequencer import TestSequencer
     from automojo.interop.protocols.tasker.taskingadapter import TaskingAdapter
 
 

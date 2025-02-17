@@ -25,8 +25,8 @@ from dataclasses import dataclass, asdict
 DEFAULT_WAIT_TIMEOUT = 600
 DEFAULT_WAIT_INTERVAL = 5
 
-from automojo.results.model.taskingresult import TaskingResult
-from automojo.results.model.progressinfo import ProgressInfo
+from automojo.testbase.results.model.taskingresult import TaskingResult
+from automojo.testbase.results.model.progressinfo import ProgressInfo
 
 from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 from automojo.interop.protocols.tasker.taskingprogressmonitor import TaskingProgressMonitor

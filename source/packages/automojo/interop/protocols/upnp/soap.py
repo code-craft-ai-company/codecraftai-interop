@@ -20,7 +20,7 @@ from xml.etree.ElementTree import tostring as xml_tostring
 from xml.etree.ElementTree import fromstring as xml_fromstring
 from xml.etree.ElementTree import register_namespace
 
-from automojo.xmods.xconvert import safe_as_str
+from automojo.foundation.xconvert import safe_as_str
 
 from automojo.networking.exceptions import ProtocolError
 

@@ -38,16 +38,16 @@ from uuid import uuid4
 from automojo.errors.exceptions import NotOverloadedError, SemanticError
 from automojo.errors.xtraceback import create_traceback_detail, format_traceback_detail
 
-from automojo.results.model.resultcode import ResultCode
-from automojo.results.model.resulttype import ResultType
-from automojo.results.model.progressinfo import ProgressInfo, ProgressType
-from automojo.results.model.progresscode import ProgressCode
-from automojo.results.model.taskingresult import TaskingResult
+from automojo.testbase.results.model.resultcode import ResultCode
+from automojo.testbase.results.model.resulttype import ResultType
+from automojo.testbase.results.model.progressinfo import ProgressInfo, ProgressType
+from automojo.testbase.results.model.progresscode import ProgressCode
+from automojo.testbase.results.model.taskingresult import TaskingResult
 
-from automojo.xmods.xdatetime import format_datetime_with_fractional
-from automojo.xmods.xformatting import indent_lines_list
-from automojo.xmods.ximport import import_by_name
-from automojo.xmods.jsos import CHAR_RECORD_SEPERATOR
+from automojo.foundation.xdatetime import format_datetime_with_fractional
+from automojo.foundation.xformatting import indent_lines_list
+from automojo.foundation.ximport import import_by_name
+from automojo.foundation.jsos import CHAR_RECORD_SEPERATOR
 
 from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
 from automojo.interop.protocols.tasker.taskingevent import TaskingEvent

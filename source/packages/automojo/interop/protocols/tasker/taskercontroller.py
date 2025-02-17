@@ -13,7 +13,7 @@ __credits__ = []
 
 
 
-from typing import List, Optional, Type, Union
+from typing import Any, List, Optional, Type, Union
 
 
 import logging
@@ -25,8 +25,8 @@ from datetime import datetime, timedelta
 
 from automojo.errors.exceptions import NotOverloadedError, SemanticError
 
-from automojo.results.model.taskingresult import TaskingResult
-from automojo.results.model.progressdelivery import SummaryProgressDelivery
+from automojo.testbase.results.model.taskingresult import TaskingResult
+from automojo.testbase.results.model.progressdelivery import SummaryProgressDelivery
 
 
 from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
@@ -37,9 +37,7 @@ from automojo.interop.protocols.tasker.taskerservice import TaskerService
 from automojo.interop.protocols.tasker.taskerservermanager import TaskerServerManager, spawn_tasking_server_process
 from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 
-from automojo.landscaping.client.clientbase import ClientBase
-
-from automojo.xmods.xformatting import indent_lines_list
+from automojo.foundation.xformatting import indent_lines_list
 
 TASKER_PORT = 8686
 
@@ -63,7 +61,7 @@ class TaskerController:
 
 
     @property
-    def tasker_clients(self) -> List[ClientBase]:
+    def tasker_clients(self) -> List[Any]:
         clients = [ tn.client for tn in self._tasker_nodes]
         return clients
 
