@@ -109,7 +109,7 @@ click = "^8.1.8"
 type = "git"
 url = "git@github.com:automationmojo/automojo-testbase.git"
 reference = "main"
-resolved_reference = "79c979d0ffedb5df1e4c72daf227b3146dc49640"
+resolved_reference = "2090fcbfca82748cf0d0e753d3173c53f8aa6fc9"
 
 [[package]]
 name = "automojo-waiting"
