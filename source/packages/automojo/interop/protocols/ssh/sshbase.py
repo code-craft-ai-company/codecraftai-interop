@@ -28,7 +28,7 @@ import paramiko
 
 from automojo.waiting.waitmodel import TimeoutContext
 
-from automojo.errors.exceptions import ConfigurationError, NotOverloadedError, SemanticError
+from automojo.errors.exceptions import ConfigurationError, AbstractMethodError, SemanticError
 
 from automojo.interop.aspects import ActionPattern, AspectsCmd, LoggingPattern, DEFAULT_CMD_ASPECTS
 from automojo.credentials.sshcredential import SshCredential
@@ -222,7 +222,7 @@ class SshBase(ISystemContext):
                     automatic reconnects can be implemented as required on session objects.
 
         """
-        raise NotOverloadedError("SshBase.reboot must be overloaded by derived class '%s'." % type(self).__name__) from None
+        raise AbstractMethodError("SshBase.reboot must be overloaded by derived class '%s'." % type(self).__name__) from None
         reboot_cmd = 'reboot'
         try:
             status, stdout, stderr = self.run_cmd(reboot_cmd, aspects=aspects)
@@ -248,7 +248,7 @@ class SshBase(ISystemContext):
 
             :returns: The status, stderr and stdout from the command that was run.
         """
-        raise NotOverloadedError("SshBase.run_cmd must be overloaded by derived class '%s'." % type(self).__name__) from None
+        raise AbstractMethodError("SshBase.run_cmd must be overloaded by derived class '%s'." % type(self).__name__) from None
 
     def verify_connectivity(self) -> bool:
         """

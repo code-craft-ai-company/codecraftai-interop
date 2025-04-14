@@ -34,9 +34,9 @@ import requests
 
 from requests.compat import urljoin
 
-from automojo.networking.exceptions import ProtocolError, HttpRequestError, NotOverloadedError
+from automojo.networking.exceptions import ProtocolError, HttpRequestError, AbstractMethodError
 
-from automojo.errors.exceptions import  HttpRequestError, NotOverloadedError
+from automojo.errors.exceptions import  HttpRequestError, AbstractMethodError
 from automojo.foundation.extension.dynamicextension import generate_extension_key
 from automojo.foundation.fspath import normalize_name_for_path
 

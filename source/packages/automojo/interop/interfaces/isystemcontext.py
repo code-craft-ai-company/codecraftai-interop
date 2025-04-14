@@ -15,7 +15,7 @@ __credits__ = []
 
 from typing import Optional, Protocol, Sequence, Tuple, Union
 
-from automojo.errors.exceptions import NotOverloadedError
+from automojo.errors.exceptions import AbstractMethodError
 
 from automojo.interop.aspects import AspectsCmd
 
@@ -39,7 +39,7 @@ class ISystemContext(Protocol):
 
             :returns: A dictionary that contains information about the items in the target directory.
         """
-        raise NotOverloadedError("ISystemContext.directory must be overloaded by derived types")
+        raise AbstractMethodError("ISystemContext.directory must be overloaded by derived types")
 
     def directory_exists(self, remotedir: str) -> bool:
         """
@@ -49,7 +49,7 @@ class ISystemContext(Protocol):
 
             :returns: A boolean value indicating if the remote file exists.
         """
-        raise NotOverloadedError("ISystemContext.directory_exists must be overloaded by derived types")
+        raise AbstractMethodError("ISystemContext.directory_exists must be overloaded by derived types")
     
     def directory_tree(self, rootdir: str, depth: int = 1) -> dict:
         """
@@ -60,7 +60,7 @@ class ISystemContext(Protocol):
 
             :returns: A dictionary with a tree of information about the directory tree found on the remote system.
         """
-        raise NotOverloadedError("ISystemContext.directory_tree must be overloaded by derived types")
+        raise AbstractMethodError("ISystemContext.directory_tree must be overloaded by derived types")
     
     def file_exists(self, filepath: str) -> bool:
         """
@@ -70,7 +70,7 @@ class ISystemContext(Protocol):
 
             :returns: A boolean value indicating if the remote file exists.
         """
-        raise NotOverloadedError("ISystemContext.file_exists must be overloaded by derived types")
+        raise AbstractMethodError("ISystemContext.file_exists must be overloaded by derived types")
 
     def file_pull(self, remotepath: str, localpath: str):
         """
@@ -79,7 +79,7 @@ class ISystemContext(Protocol):
             :param remotepath: The remote file path to pull to the local file.
             :param localpath: The local file path to pull the content to.
         """
-        raise NotOverloadedError("ISystemContext.file_pull must be overloaded by derived types")
+        raise AbstractMethodError("ISystemContext.file_pull must be overloaded by derived types")
 
     def file_push(self, localpath: str, remotepath: str):
         """
@@ -88,7 +88,7 @@ class ISystemContext(Protocol):
             :param localpath: The local file path to push the content of to the remote file.
             :param remotepath: The remote file path to push content to.
         """
-        raise NotOverloadedError("ISystemContext.file_push must be overloaded by derived types")
+        raise AbstractMethodError("ISystemContext.file_push must be overloaded by derived types")
 
     def open_session(self, basis_session: Optional["ISystemContext"] = None, aspects: Optional[AspectsCmd] = None, **kwargs) -> "ISystemContext": # pylint: disable=arguments-differ
         """
@@ -99,7 +99,7 @@ class ISystemContext(Protocol):
             :param aspects: The default run aspects to use for the operations performed by the session.
             :param kwargs: Other keyword args to allow flexible tuning of session constraints.
         """
-        raise NotOverloadedError("ISystemContext.open_session must be overloaded by derived types")
+        raise AbstractMethodError("ISystemContext.open_session must be overloaded by derived types")
 
     def reboot(self, aspects: Optional[AspectsCmd] = None):
         """
@@ -109,7 +109,7 @@ class ISystemContext(Protocol):
                     automatic reconnects can be implemented as required on session objects.
 
         """
-        raise NotOverloadedError("ISystemContext.reboot must be overloaded by derived types")
+        raise AbstractMethodError("ISystemContext.reboot must be overloaded by derived types")
 
     def run_cmd(self, command: str, exp_status: Union[int, Sequence]=0, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]: # pylint: disable=arguments-differ
         """
@@ -121,7 +121,7 @@ class ISystemContext(Protocol):
 
             :returns: The status, stderr and stdout from the command that was run.
         """
-        raise NotOverloadedError("ICommandContext.run_cmd must be overloaded by derived types")
+        raise AbstractMethodError("ICommandContext.run_cmd must be overloaded by derived types")
 
     def verify_connectivity(self) -> bool:
         """
@@ -129,4 +129,4 @@ class ISystemContext(Protocol):
 
             :returns: A boolean value indicating whether connectivity with the remote machine was successful.
         """
-        raise NotOverloadedError("ICommandContext.verify_connectivity must be overloaded by derived types")
+        raise AbstractMethodError("ICommandContext.verify_connectivity must be overloaded by derived types")

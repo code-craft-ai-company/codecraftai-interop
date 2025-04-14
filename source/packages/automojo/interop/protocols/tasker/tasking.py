@@ -35,7 +35,7 @@ from logging import FileHandler
 
 from uuid import uuid4
 
-from automojo.errors.exceptions import NotOverloadedError, SemanticError
+from automojo.errors.exceptions import AbstractMethodError, SemanticError
 from automojo.errors.xtraceback import create_traceback_detail, format_traceback_detail
 
 from automojo.testbase.results.model.resultcode import ResultCode
@@ -519,7 +519,7 @@ class Tasking:
                       to complete more work.
         """
         errmsg = "Tasking.perform method must be overloaded in derived types."
-        raise NotOverloadedError(errmsg)
+        raise AbstractMethodError(errmsg)
     
     def post_event(self, event: TaskingEvent):
 

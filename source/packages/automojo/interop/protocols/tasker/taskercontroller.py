@@ -23,7 +23,7 @@ import time
 
 from datetime import datetime, timedelta
 
-from automojo.errors.exceptions import NotOverloadedError, SemanticError
+from automojo.errors.exceptions import AbstractMethodError, SemanticError
 
 from automojo.testbase.results.model.taskingresult import TaskingResult
 from automojo.testbase.results.model.progressdelivery import SummaryProgressDelivery
@@ -141,12 +141,12 @@ class TaskerController:
     def start_tasker_network(self):
         """
         """
-        raise NotOverloadedError("The 'start_task_network' method must be overloaded.")
+        raise AbstractMethodError("The 'start_task_network' method must be overloaded.")
 
 
     def stop_tasker_network(self):
 
-        raise NotOverloadedError("The 'stop_tasker_network' method must be overloaded.")
+        raise AbstractMethodError("The 'stop_tasker_network' method must be overloaded.")
 
 
     def wait_for_all_to_event(self, event_name: str, promises: List[TaskingResultPromise],
