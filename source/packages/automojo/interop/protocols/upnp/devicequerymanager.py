@@ -10,11 +10,11 @@ import logging
 
 
 from http import HTTPStatus
-
 from xml.etree.ElementTree import fromstring as parse_xml_content
-from xml.etree.ElementTree import Element
+
 
 import requests
+
 
 from automojo.interop.protocols.upnp.manufacturers.bose.bosedetailprocessor import BoseDetailProcessor
 from automojo.interop.protocols.upnp.manufacturers.bose.constants import MANUFACTURER_NAME as BOSE_MANUFACTURER_NAME
@@ -40,7 +40,7 @@ class DeviceQueryManager:
         device_desc = None
 
         try:
-            resp = requests.get(location, timeout=2)
+            resp: requests.Response = requests.get(location, timeout=2)
 
             if resp.status_code == HTTPStatus.OK:
                 try:
