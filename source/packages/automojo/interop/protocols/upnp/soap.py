@@ -22,9 +22,9 @@ from xml.etree.ElementTree import register_namespace
 
 from automojo.foundation.xconvert import safe_as_str
 
-from automojo.networking.exceptions import ProtocolError
+from automojo.errors.exceptions import ProtocolError
 
-from automojo.interop.protocols.upnp.upnperrors import UPNP_ERROR_TEST_LOOKUP
+from automojo.interop.protocols.upnpold.upnperrors import UPNP_ERROR_TEST_LOOKUP
 
 NS_SOAP_ENV = "http://schemas.xmlsoap.org/soap/envelope/"
 NS_SOAP_ENC = "http://schemas.xmlsoap.org/soap/encoding/"

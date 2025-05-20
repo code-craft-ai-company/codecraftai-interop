@@ -14,7 +14,7 @@ __credits__ = []
 
 from enum import Enum
 
-from automojo.networking.exceptions import ProtocolError
+from automojo.errors.exceptions import ProtocolError
 
 class UpnpError(ProtocolError):
     """

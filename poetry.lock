@@ -89,7 +89,7 @@ requests = "^2.32.3"
 type = "git"
 url = "git@github.com:automationmojo/automojo-networking.git"
 reference = "main"
-resolved_reference = "ac71b346e831b7e19df27ceaaa7c38b5c9962d79"
+resolved_reference = "2393871bafaa0fb1b38f5990597d44df143ac466"
 
 [[package]]
 name = "automojo-testbase"

@@ -3,25 +3,22 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Type
 
 import copy
 import socket
-import re
 import threading
 import time
 import weakref
 
-
-
 from datetime import datetime, timedelta
+from types import TracebackType
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.networking.multicast import create_multicast_socket
-from automojo.networking.constants import MDNS_GROUP_ADDR, MDNS_PORT
+from automojo.networking.multicast import create_multicast_listener_socket
+from automojo.networking.constants import MDNS_GROUP_ADDR, MDNS_GROUP_ADDR6, MDNS_PORT
 
-from automojo.interop.protocols.dns.dnsrecord import DnsRecord
 from automojo.interop.protocols.dns.dnsconst import DNS_RECEIVE_BUFFER
 from automojo.interop.protocols.dns.dnsflags import DEFAULT_DNS_FLAGS_QUERY
 from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
@@ -30,7 +27,7 @@ from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
 from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
 
 
-DEFAULT_SEARCH_TIMEOUT = 10.0
+DEFAULT_SEARCH_TIMEOUT = 30.0
 DEFAULT_RETRY_INTERVAL = 2.0
 
 
@@ -52,7 +49,6 @@ class MdnsBrowseSearchWindow:
         self._span = None
         self._start = None
         self._stop = None
-        self._results = []
         return
 
     @property
@@ -62,22 +58,10 @@ class MdnsBrowseSearchWindow:
     @property
     def id(self) -> int:
         return self._id
-    
-    @property
-    def results(self) -> List[DnsRecord]:
-        rtnval = self._results.copy()
-        return rtnval
 
     @property
     def span(self) -> float:
         return self._span
-
-    def add_record(self, record: DnsRecord):
-        """
-            Adds a record to the search window
-        """
-        self._results.append(record)
-        return
 
     def begin(self, span: float):    
         self._span = span
@@ -108,7 +92,7 @@ class MdnsBrowseSearchWindow:
 
 class MdnsBrowser:
 
-    def __init__(self, browse_service_classes: Optional[Set[str]] = None, multicast_address = MDNS_GROUP_ADDR, multicast_port = MDNS_PORT, discover_interval: int = 60, ttl: int=32):
+    def __init__(self, multicast_address = MDNS_GROUP_ADDR, multicast_port = MDNS_PORT, discover_interval: int = 60, ttl: int=32):
         
         self._multicast_address = multicast_address
         self._multicast_port = multicast_port
@@ -134,16 +118,7 @@ class MdnsBrowser:
         self._search_id = 1
         self._search_windows = {}
 
-        # The set of known service classes seen by the browser
         self._known_service_classes = set()
-
-        # The set of service classes that are used to browse for devices offering services
-        self._browse_service_classes = None
-        if browse_service_classes is None:
-            self._browse_service_classes = set()
-        else:
-            self._browse_service_classes = browse_service_classes
-
         return
     
     @property
@@ -178,45 +153,23 @@ class MdnsBrowser:
         del self._search_windows[search_window.id]
         return
 
-    def apply_service_classes(self, service_class_exp: Union[str, re.Pattern]):
-        """
-            Filters the known service classes to only those that match the regular expression and applies the mathing
-            service classes to the set of browsed service classes..
-        """
-        
-        browse_service_classes = set()
-
-        if isinstance(service_class_exp, str):
-            service_class_exp = re.compile(service_class_exp)
-
-        for service_class in self._known_service_classes:
-            if service_class_exp.match(service_class):
-                browse_service_classes.add(service_class)
-
-        self._browse_service_classes = browse_service_classes
-
-        return
-
     def start(self):
-        """
-            Starts the MDNS Browser
-        """
-
+        
         if self._running:
-            raise RuntimeError("MDNS Brower is already running.")
+            raise RuntimeError("SSDP Scanner is already running.")
 
         sgate = threading.Event()
 
         sgate.clear()
         
-        self._presence_thread = threading.Thread(target=self._mdns_presence_thread_entry, name="mojo-mdns-presence", args=(sgate,), daemon=True)
+        self._presence_thread = threading.Thread(target=self._mdns_presence_thread_entry, name="am-mdns-presence", args=(sgate,), daemon=True)
         self._presence_thread.start()
 
         sgate.wait()
 
         sgate.clear()
         
-        self._msearch_thread = threading.Thread(target=self._mdns_search_thread_entry, name="mojo-mdns-search", args=(sgate,), daemon=True)
+        self._msearch_thread = threading.Thread(target=self._mdns_search_thread_entry, name="am-mdns-search", args=(sgate,), daemon=True)
         self._msearch_thread.start()
 
         sgate.wait()
@@ -259,10 +212,10 @@ class MdnsBrowser:
     def discover_services(self, service_classes: List[str] = None, domain: str = "local", custom_headers: Optional[Dict[str, str]] = None):
 
         if service_classes is None:
-            service_classes = [sc for sc in self._browse_service_classes]
+            service_classes = []
 
         if not self._running:
-            raise RuntimeError("The MDNS Brower must be running before a discovery can be triggered.  Call 'start'.")
+            raise RuntimeError("The SSDP Scanner must be running before a discovery can be triggered.  Call 'start'.")
 
         for svc_class in service_classes:
             questions = DnsQuestion(svc_class, DnsRecordType.PTR, DnsRecordClass.IN)
@@ -273,7 +226,7 @@ class MdnsBrowser:
             sock = self._get_search_socket()
 
             try:
-                msg_packets = mdns_msg.packets()
+                msg_packets = mdns_msg.packets
                 for packet in msg_packets:
                     sock.sendto(packet, (self._multicast_address, self._multicast_port))
             except OSError as serr:
@@ -298,8 +251,6 @@ class MdnsBrowser:
         msg_in = DnsInboundMessage(msg_bytes, from_endpoint)
         msg_id = msg_in.id
 
-        bwindow: MdnsBrowseSearchWindow = self._search_windows.get(msg_id, None)
-
         for dns_answer in msg_in.answers:
 
             rclass = dns_answer.rclass
@@ -311,19 +262,15 @@ class MdnsBrowser:
 
                 if rtype == DnsRecordType.PTR:
                     alias = dns_answer.alias
-
                     if aname == "_services._dns-sd._udp.local.":
                         self._known_service_classes.add(alias)
-                    print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass.name} key={akey} name={aname} alias={alias}")
 
+                    print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass.name} key={akey} name={aname} alias={alias}")
                 else:
                     print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass.name} key={akey} name={aname}")
 
             else:
                 print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass}")        
-
-            if bwindow is not None:
-                bwindow.add_record(dns_answer)
 
         return
 
@@ -332,9 +279,8 @@ class MdnsBrowser:
         from_ip = from_endpoint[0]
 
         msg_resp = DnsInboundMessage(msg_bytes, source_endpoint=from_endpoint)
-        msg_id = msg_resp.id
 
-        bwindow: MdnsBrowseSearchWindow = self._search_windows.get(msg_id, None)
+        msg_id = msg_resp.id
 
         for dns_answer in msg_resp.answers:
 
@@ -356,10 +302,6 @@ class MdnsBrowser:
 
             else:
                 print(f"Search: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass}")
-
-            if bwindow is not None:
-                bwindow.add_record(dns_answer)
-
 
         return
 
@@ -385,7 +327,7 @@ class MdnsBrowser:
         self._lock.acquire()
         try:
             if self._presence_sock is None:
-                self._presence_sock: socket.socket = create_multicast_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
+                self._presence_sock: socket.socket = create_multicast_listener_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
             
             sock = self._presence_sock
         finally:
@@ -412,7 +354,7 @@ class MdnsBrowser:
 
         self._running = True
 
-        self._presence_sock: socket.socket = create_multicast_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
+        self._presence_sock: socket.socket = create_multicast_listener_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
         
         sgate.set()
 
@@ -484,8 +426,6 @@ if __name__ == "__main__":
 
     bsearch_window = browser.discover_service_classes()
     bsearch_window.wait_for_results()
-
-    scresults = bsearch_window.results
 
     service_classes = browser.known_service_classes
     service_classes.append("_bose-passport.tcp")

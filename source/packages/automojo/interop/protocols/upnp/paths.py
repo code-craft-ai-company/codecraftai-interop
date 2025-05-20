@@ -36,7 +36,7 @@ DIR_UPNP_GENERATOR_STANDARD_ROOTDEVICES = os.path.join(DIR_UPNP_GENERATOR_STANDA
 DIR_UPNP_GENERATOR_STANDARD_SERVICES = os.path.join(DIR_UPNP_GENERATOR_STANDARD, "services")
 
 context = Context()
-runtime_home_dir = context.lookup(ContextPaths.RUNTIME_HOME_DIRECTORY, default=os.path.expanduser("~/mjr"))
+runtime_home_dir = context.lookup(ContextPaths.PRESENCE_HOME_DIRECTORY, default=os.path.expanduser("~/mjr"))
 
 DIR_UPNP_EXTENSIONS_INTEGRATION = os.path.join(runtime_home_dir, "upnp", "extensions")
 upnp_extensions_integration_base = context.lookup("/upnp/extensions/integration/base")

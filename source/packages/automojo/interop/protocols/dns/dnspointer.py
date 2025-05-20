@@ -32,6 +32,13 @@ class DnsPointer(DnsRecord):
     def alias(self):
         return self._alias
 
+    def write(self, out: 'DnsOutboundMessage') -> None:
+        """
+            Used in constructing an outgoing packet
+        """
+        out.write_name(self._alias)
+        return
+
     def __eq__(self, other: DnsRecord) -> bool:
         """
             Tests equality on alias

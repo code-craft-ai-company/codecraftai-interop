@@ -59,10 +59,10 @@ class DnsService(DnsRecord):
         """
             Used in constructing an outgoing packet
         """
-        out._write_short(self._priority)
-        out._write_short(self._weight)
-        out._write_short(self._port)
-        out._write_name(self._server)
+        out.write_short(self._priority)
+        out.write_short(self._weight)
+        out.write_short(self._port)
+        out.write_name(self._server)
         return
 
     def __eq__(self, other: DnsRecord) -> bool:

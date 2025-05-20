@@ -261,8 +261,10 @@ class DnsOutboundMessage:
             flags_int = self._flags.flags()
             self._insert_short(0, flags_int)
 
-            # Make sure we put a valid ID in the packet so we can correlate responses
-            self._insert_short(0, self._id)
+            if self._multicast:
+                self._insert_short(0, 0)
+            else:
+                self._insert_short(0, self._id)
 
             # Roll up all the buffers into a bytestream and add it to our packets_data
             self._packets_data.append(b''.join(self._data))
