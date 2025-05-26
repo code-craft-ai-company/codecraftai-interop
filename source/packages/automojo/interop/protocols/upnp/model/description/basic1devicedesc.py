@@ -4,7 +4,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, Union, TYPE_CHECKING
 
 from automojo.interop.protocols.upnp.model.description.icondesc import IconDesc
 from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
@@ -119,7 +119,7 @@ class Basic1DeviceDesc:
 
         self.extras = extras
         return
-    
+
     def add_icon(self, icon: "IconDesc"):
         """
             Add an icon to the device description.
@@ -147,6 +147,46 @@ class Basic1DeviceDesc:
         self.serviceList.append(service)
         return
 
+    def as_dict(self, brief: bool = False) -> dict:
+        """
+            Convert the Basic1DeviceDesc object to a dictionary.
+        
+            :returns: Dictionary representation of the Basic1DeviceDesc object.
+        """
+        desc = {  
+            "deviceType": self.deviceType,
+            "specVersion": self.specVersion.as_dict(),
+            "friendlyName": self.friendlyName,
+            "manufacturer": self.manufacturer,
+            "manufacturerURL": self.manufacturerURL,
+            "modelDescription": self.modelDescription,
+            "modelName": self.modelName,
+            "modelNumber": self.modelNumber,
+            "serialNumber": self.serialNumber,
+            "UDN": self.UDN,
+            "UPC": self.UPC,
+            "modelURL": self.modelURL,
+            "presentationURL": self.presentationURL
+        }
+
+        if self.locationURL is not None:
+            desc["locationURL"] = self.locationURL
+
+        if not brief:
+            if self.iconList is not None and len(self.iconList) > 0:
+                desc["iconList"] = [icon.as_dict() for icon in self.iconList]
+
+            if self.serviceList is not None and len(self.serviceList) > 0:
+                desc["serviceList"] = [service.as_dict() for service in self.serviceList]
+            
+            if self.deviceList is not None and len(self.deviceList) > 0:
+                desc["deviceList"] = [device.as_dict() for device in self.deviceList]
+        
+            if self.extras is not None and len(self.extras) > 0:
+                desc.update(self.extras)
+
+        return desc
+
     def as_xml(self, indent="") -> str:
         """
             Convert the Basic1DeviceDesc object to an XML string.
@@ -163,6 +203,16 @@ class Basic1DeviceDesc:
         )
         
         return desc
+    
+    def generate_extension_key(self) -> str:
+        """
+            Generates a unique key that identifies an extension type based on where
+            it was found in a hiearchy of code containers.
+
+            :returns: A unique path like string that is an identifier used to lookup a device type.
+        """
+        extkey = f"{self.manufacturer}/{self.modelName}/{self.modelNumber}"
+        return extkey
     
     def __str__(self) -> str:
         """

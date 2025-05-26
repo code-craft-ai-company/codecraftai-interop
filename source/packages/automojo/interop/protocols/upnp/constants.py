@@ -18,3 +18,38 @@ TIMEDELTA_RENEWAL_WINDOW = 120
 class UPNP_HEADERS:
     USER_AGENT = "AutomationMojo/1.0 UPNP Test Package"
     SERVER = "{},{},AutomationKit/1.0".format(platform.system(), platform.release())
+
+
+class MSearchTargets:
+    """
+        MSearch target constants.
+    """
+    ROOTDEVICE = "upnp:rootdevice"
+    ALL="ssdp:all"
+
+
+class MSearchKeys:
+    """
+        MSearch dictionary or header keys that MSearch response data items are stored under.
+    """
+    CACHE_CONTROL = "CACHE-CONTROL"
+    EXT = "EXT"
+    LOCATION = "LOCATION"
+    NTS = "NTS"
+    SERVER = "SERVER"
+    ST = "ST"
+    USN = "USN"
+    USN_DEV = "USN_DEV"
+    USN_CLS = "USN_CLS"
+
+    IP = "IP"
+    ROUTES = "ROUTES"
+
+
+class MSearchRouteKeys:
+    """
+        The dictionary keys that MSearch interface routing information is stored under.
+    """
+    IFNAME = "LOCAL_IFNAME"
+    IP = "LOCAL_IP"
+

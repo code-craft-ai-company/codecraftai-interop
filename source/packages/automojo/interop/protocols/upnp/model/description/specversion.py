@@ -37,6 +37,19 @@ class SpecVersion:
         self.minor = minor
         return
 
+    def as_dict(self) -> dict:  
+        """
+        Convert the SpecVersion object to a dictionary.
+
+        :returns: Dictionary representation of the SpecVersion object.
+        """
+        desc = {
+            "major": self.major,
+            "minor": self.minor
+        }
+        return desc
+        
+
     def as_xml(self, indent="") -> str:
         """
         Convert the SpecVersion object to an XML string.

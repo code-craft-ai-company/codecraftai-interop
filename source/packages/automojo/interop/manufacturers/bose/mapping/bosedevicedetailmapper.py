@@ -15,26 +15,30 @@ from typing import Any, Dict
 
 from xml.etree.ElementTree import Element
 
+from automojo.interop.manufacturers.bose.constants import MANUFACTURER_NAME
+
 from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
 from automojo.interop.protocols.upnp.model.description.specversion import SpecVersion
-from automojo.interop.protocols.upnp.devicedetailprocessor import DeviceDetailProcessor
+from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
 
-from automojo.interop.protocols.upnp.manufacturers.bose.constants import BOSE_XML_NAMESPACES, BOSE_NAMESPACE_PREFIX_END
+from automojo.interop.manufacturers.bose.constants import BOSE_XML_NAMESPACES, BOSE_NAMESPACE_PREFIX_END
 
 
-from automojo.interop.protocols.upnp.manufacturers.bose.description.bosedevicedetail import BoseDeviceDetail
-from automojo.interop.protocols.upnp.manufacturers.bose.description.boseembeddeddevicedetail import BoseEmbeddedDeviceDetail
-from automojo.interop.protocols.upnp.manufacturers.bose.description.bosemultiroomversions import BoseMultiRoomVersions
-from automojo.interop.protocols.upnp.manufacturers.bose.description.bosefeatureversion import BoseFeatureVersion
+from automojo.interop.manufacturers.bose.description.bosedevicedetail import BoseDeviceDetail
+from automojo.interop.manufacturers.bose.description.boseembeddeddevicedetail import BoseEmbeddedDeviceDetail
+from automojo.interop.manufacturers.bose.description.bosemultiroomversions import BoseMultiRoomVersions
+from automojo.interop.manufacturers.bose.description.bosefeatureversion import BoseFeatureVersion
 
-class BoseDetailProcessor(DeviceDetailProcessor):
+class BoseDeviceDetailMapper(DeviceDetailMapper):
     """
-        The :class:`BoseHints` object is a :class:`ManufacturerHints` object that has been customized provide
-        more detailed processing of Bose secific device descriptions.
+        The :class:`BoseDeviceDetailMapper` provides customized processing of Bose specific device descriptions for the purpose of
+        mapping device description content to a common device description model.
     """
+
+    MANUFACTURER_NAME = MANUFACTURER_NAME
 
     @classmethod
-    def create_basic1_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
+    def _create_basic1_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                                   locationURL: str, params: Dict[str, Any]) -> BoseDeviceDetail:
 
         ext_params = {
@@ -67,7 +71,7 @@ class BoseDetailProcessor(DeviceDetailProcessor):
             elif tag == "X_softwareVersion":
                 params['software_version'] = child_el.text
             elif tag == "X_multiroomVersions":
-                params['multi_room'] = BoseDetailProcessor.process_device_multiroom_versions(child_el, all_namespaces)
+                params['multi_room'] = BoseDeviceDetailMapper.process_device_multiroom_versions(child_el, all_namespaces)
         
         try:
             device = BoseDeviceDetail(specVersion=specVersion, locationURL=locationURL, **params)
@@ -78,7 +82,7 @@ class BoseDetailProcessor(DeviceDetailProcessor):
         return device
 
     @classmethod
-    def create_embedded_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
+    def _create_embedded_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                                    params: Dict[str, Any]) -> EmbeddedDeviceDesc:
         ext_params = {
             "mac_addr": None,
@@ -110,7 +114,7 @@ class BoseDetailProcessor(DeviceDetailProcessor):
             elif tag == "X_softwareVersion":
                 params['software_version'] = child_el.text
             elif tag == "X_multiroomVersions":
-                params['multi_room'] = BoseDetailProcessor.process_device_multiroom_versions(child_el, all_namespaces)
+                params['multi_room'] = BoseDeviceDetailMapper.process_device_multiroom_versions(child_el, all_namespaces)
 
         try:
             device = BoseEmbeddedDeviceDetail(specVersion=specVersion, locationURL=None, **params)
@@ -137,32 +141,31 @@ class BoseDetailProcessor(DeviceDetailProcessor):
 
         next_ver_el = multiroom_el.find("./AudioControl_Protocol_Version", namespaces=namespaces)
         if next_ver_el is not None:
-            audio_control_ver = BoseDetailProcessor.process_bose_feature_version(next_ver_el, namespaces=namespaces)
+            audio_control_ver = BoseDeviceDetailMapper.process_bose_feature_version(next_ver_el, namespaces=namespaces)
         
         next_ver_el = multiroom_el.find("./ClockSync_Protocol_Version", namespaces=namespaces)
         if next_ver_el is not None:
-            audio_payload_ver = BoseDetailProcessor.process_bose_feature_version(next_ver_el, namespaces=namespaces)
+            audio_payload_ver = BoseDeviceDetailMapper.process_bose_feature_version(next_ver_el, namespaces=namespaces)
         
         next_ver_el = multiroom_el.find("./Audio_Payload_Version", namespaces=namespaces)
         if next_ver_el is not None:
-            clock_sync_ver = BoseDetailProcessor.process_bose_feature_version(next_ver_el, namespaces=namespaces)
+            clock_sync_ver = BoseDeviceDetailMapper.process_bose_feature_version(next_ver_el, namespaces=namespaces)
 
         next_ver_el = multiroom_el.find("./NowPlaying_Version", namespaces=namespaces)
         if next_ver_el is not None:
-            nowplaying_ver = BoseDetailProcessor.process_bose_feature_version(next_ver_el, namespaces=namespaces)
+            nowplaying_ver = BoseDeviceDetailMapper.process_bose_feature_version(next_ver_el, namespaces=namespaces)
         
         next_ver_el = multiroom_el.find("./bose:PlaybackRequest_Version", namespaces=namespaces)
         if next_ver_el is not None:
-            playback_request_ver = BoseDetailProcessor.process_bose_feature_version(next_ver_el, namespaces=namespaces)
+            playback_request_ver = BoseDeviceDetailMapper.process_bose_feature_version(next_ver_el, namespaces=namespaces)
         
         next_ver_el = multiroom_el.find("./ZoneControl_Version", namespaces=namespaces)
         if next_ver_el is not None:
-            zonecontrol_ver = BoseDetailProcessor.process_bose_feature_version(next_ver_el, namespaces=namespaces)
+            zonecontrol_ver = BoseDeviceDetailMapper.process_bose_feature_version(next_ver_el, namespaces=namespaces)
         
 
         bmrv = BoseMultiRoomVersions(audio_control=audio_control_ver, audio_payload=audio_payload_ver, clock_sync=clock_sync_ver,
                                      now_playing=nowplaying_ver, playback_request=playback_request_ver, zone_control=zonecontrol_ver)
-
 
         return bmrv
     
@@ -174,11 +177,11 @@ class BoseDetailProcessor(DeviceDetailProcessor):
 
         next_el = version_el.find("./major_version", namespaces=namespaces)
         if next_el is not None:
-            major = BoseDetailProcessor.process_bose_feature_version(next_el, namespaces=namespaces)
+            major = BoseDeviceDetailMapper.process_bose_feature_version(next_el, namespaces=namespaces)
         
         next_el = version_el.find("./minor_version", namespaces=namespaces)
         if next_el is not None:
-            minor = BoseDetailProcessor.process_bose_feature_version(next_el, namespaces=namespaces)
+            minor = BoseDeviceDetailMapper.process_bose_feature_version(next_el, namespaces=namespaces)
         
         verobj = BoseFeatureVersion(major, minor)
 

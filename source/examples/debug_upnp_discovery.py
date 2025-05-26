@@ -1,12 +1,19 @@
 
 import time
 
+
+from automojo.foundation.extension.wellknown import ConfiguredSuperFactorySingleton
+
 from automojo.interop.protocols.upnp.upnppresence import UpnpPresence
 
 def main_debug_upnp_discovery():
     """
         Debug the  UPnP discovery process.
     """
+
+    super_factory = ConfiguredSuperFactorySingleton()
+    super_factory.add_factory_module("automojo.interop.manufacturers.bose.boseupnpextension")
+
     scanner = UpnpPresence()
     
     scanner.start()

@@ -10,6 +10,10 @@ from automojo.interop.protocols.upnp.model.description.basic1devicedesc import B
 from automojo.interop.protocols.upnp.model.evidence.upnpdeviceevidence import UpnpDeviceEvidence
 
 
+
+
+
+
 class UpnpDeviceDetail:
     """
         Class to represent UPnP device details.
@@ -42,4 +46,14 @@ class UpnpDeviceDetail:
             :return: The last UPnP device description obtained for the device or None if a device description has not been obtained.
         """
         return self._description
+    
+    def generate_extension_key(self) -> str:
+        """
+            Generates a unique key that identifies an extension type based on where
+            it was found in a hiearchy of code containers.
+
+            :returns: A unique path like string that is an identifier used to lookup a device type.
+        """
+        extkey = self._description.generate_extension_key()
+        return extkey
     

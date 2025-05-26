@@ -12,7 +12,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2024, Myron W Walker"
 __credits__ = []
 
-from automojo.interop.protocols.upnp.manufacturers.bose.description.bosefeatureversion import BoseFeatureVersion
+from automojo.interop.manufacturers.bose.description.bosefeatureversion import BoseFeatureVersion
 
 
 class BoseMultiRoomVersions:

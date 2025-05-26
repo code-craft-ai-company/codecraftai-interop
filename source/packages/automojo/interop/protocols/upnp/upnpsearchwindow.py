@@ -13,8 +13,8 @@ import weakref
 
 from datetime import datetime, timedelta
 
-from automojo.interop.protocols.upnp.upnpdevicedetail import UpnpDeviceDetail
-from automojo.interop.protocols.upnp.upnpdevicehint import UpnpDeviceHint
+from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
+from automojo.interop.protocols.upnp.model.upnpdevicehint import UpnpDeviceHint
 
 
 if TYPE_CHECKING:

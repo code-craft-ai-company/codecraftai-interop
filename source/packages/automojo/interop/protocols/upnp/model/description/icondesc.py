@@ -57,6 +57,21 @@ class IconDesc:
         self.url = url
         return
 
+    def as_dict(self) -> dict:
+        """
+            Convert the IconDesc object to a dictionary.
+
+            :returns: Dictionary representation of the IconDesc object.
+        """
+        desc = {
+            "mimetype": self.mimetype,
+            "width": self.width,
+            "height": self.height,
+            "depth": self.depth,
+            "url": self.url
+        }
+        return desc
+
     def as_xml(self, indent="") -> str:
         """
             Convert the IconDesc object to an XML string.

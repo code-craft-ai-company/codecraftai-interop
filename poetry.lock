@@ -54,7 +54,7 @@ pyyaml = "^6.0.2"
 type = "git"
 url = "git@github.com:automationmojo/automojo-foundation.git"
 reference = "main"
-resolved_reference = "e95c8226cc9a38fd21ab94719e061a6391e5f442"
+resolved_reference = "544fd26415864b05bb09691a059ee56154354405"
 
 [[package]]
 name = "automojo-interfaces"
@@ -89,7 +89,7 @@ requests = "^2.32.3"
 type = "git"
 url = "git@github.com:automationmojo/automojo-networking.git"
 reference = "main"
-resolved_reference = "2393871bafaa0fb1b38f5990597d44df143ac466"
+resolved_reference = "4825fc5f6445239d4a282275f429f920086454ee"
 
 [[package]]
 name = "automojo-testbase"
@@ -385,13 +385,13 @@ files = [
 
 [[package]]
 name = "click"
-version = "8.2.0"
+version = "8.2.1"
 description = "Composable command line interface toolkit"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "click-8.2.0-py3-none-any.whl", hash = "sha256:6b303f0b2aa85f1cb4e5303078fadcbcd4e476f114fab9b5007005711839325c"},
-    {file = "click-8.2.0.tar.gz", hash = "sha256:f5452aeddd9988eefa20f90f05ab66f17fce1ee2a36907fd30b05bbb5953814d"},
+    {file = "click-8.2.1-py3-none-any.whl", hash = "sha256:61a3265b914e850b85317d0b3109c7f8cd35a670f963866005d6ef1d5175a12b"},
+    {file = "click-8.2.1.tar.gz", hash = "sha256:27c491cc05d968d271d5a1db13e3b5a184636d9d930f148c50b038f0d0646202"},
 ]
 
 [package.dependencies]

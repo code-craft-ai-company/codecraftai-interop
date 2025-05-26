@@ -12,7 +12,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Dict, List, Optional, Tuple
+from typing import Callable,Dict, List, Optional, Tuple
 
 import copy
 import logging
@@ -26,15 +26,17 @@ from datetime import datetime, timedelta
 
 from automojo.networking.multicast import create_multicast_listener_socket
 
+from automojo.interop.protocols.upnp.constants import MSearchTargets, MSearchKeys, MSearchRouteKeys
+
 from automojo.interop.protocols.upnp.upnpsearchwindow import UpnpSearchWindow
-from automojo.interop.protocols.upnp.upnpdevicedetail import UpnpDeviceDetail
+from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
 from automojo.interop.protocols.upnp.devicequerymanager import DeviceQueryManager
 from automojo.interop.protocols.upnp.constants import (
     UPNP_DEFAULT_SEARCH_WINDOW_LENGTH,
     UPNP_DEFAULT_SEARCH_MONITOR_INTERVAL
 )
 
-from automojo.interop.protocols.upnp.upnpdevicehint import UpnpDeviceHint
+from automojo.interop.protocols.upnp.model.upnpdevicehint import UpnpDeviceHint
 from automojo.interop.protocols.upnp.model.evidence.upnpdeviceevidence import UpnpDeviceEvidence
 from automojo.interop.protocols.upnp.model.evidence.upnpserviceevidence import UpnpServiceEvidence
 
@@ -43,40 +45,6 @@ REGEX_NOTIFY_HEADER = re.compile("NOTIFY[ ]+[*/]+[ ]+HTTP/1")
 
 
 logger = logging.getLogger()
-
-
-class MSearchTargets:
-    """
-        MSearch target constants.
-    """
-    ROOTDEVICE = "upnp:rootdevice"
-    ALL="ssdp:all"
-
-
-class MSearchKeys:
-    """
-        MSearch dictionary or header keys that MSearch response data items are stored under.
-    """
-    CACHE_CONTROL = "CACHE-CONTROL"
-    EXT = "EXT"
-    LOCATION = "LOCATION"
-    NTS = "NTS"
-    SERVER = "SERVER"
-    ST = "ST"
-    USN = "USN"
-    USN_DEV = "USN_DEV"
-    USN_CLS = "USN_CLS"
-
-    IP = "IP"
-    ROUTES = "ROUTES"
-
-
-class MSearchRouteKeys:
-    """
-        The dictionary keys that MSearch interface routing information is stored under.
-    """
-    IFNAME = "LOCAL_IFNAME"
-    IP = "LOCAL_IP"
 
 
 class SsdpProtocol:
@@ -242,6 +210,11 @@ class UpnpPresence:
 
         self._search_windows: Dict[str, UpnpSearchWindow] = {}
 
+        self._embedded_device_notifications_by_usn: Dict[str, List[Callable]] = {}
+        self._root_device_notifications_by_usn: Dict[str, List[Callable]] = {}
+        self._service_notifications_by_usn: Dict[str, List[Callable]] = {}
+
+
         return
 
 
@@ -268,15 +241,6 @@ class UpnpPresence:
             self._lock.release()
 
         return rtnval
-    
-
-    def get_presence_endpoint(self) -> Tuple[str, int]:
-        """
-            Returns the endpoint that this presence is listening on.
-
-            :return: A tuple containing the IP address and port of the presence socket.
-        """
-        return self._multicast_address, self._multicast_port
 
 
     def discover_devices(self, limit_to: List[UpnpDeviceHint]=None, custom_headers: Optional[Dict[str, str]] = None,
@@ -341,6 +305,99 @@ class UpnpPresence:
         return disco_window
 
 
+    def get_presence_endpoint(self) -> Tuple[str, int]:
+        """
+            Returns the endpoint that this presence is listening on.
+
+            :return: A tuple containing the IP address and port of the presence socket.
+        """
+        return self._multicast_address, self._multicast_port
+
+
+    def dispatch_embedded_device_notification(self, usn: str, msg_info: Dict[str, str]):
+        """
+            Dispatch a notification to the registered callback functions for an embedded device.
+
+            :param usn: The USN of the root device.
+            :param msg_info: The message detail of the notification.
+        """
+        self._lock.acquire()
+        try:
+            if usn in self._embedded_device_notifications_by_usn:
+
+                # Dont make any calls while holding the upnp presence lock, make a copy of the receipients list
+                # and release the lock before dispatching the notifications to registered callbacks
+                receipients = [r for r in self._embedded_device_notifications_by_usn[usn]]
+
+                self._lock.release()
+                try:
+                    for callback in receipients:
+                        callback(usn, msg_info)
+                finally:
+                    self._lock.acquire()
+
+        finally:
+            self._lock.release()
+
+        return
+
+
+    def dispatch_root_device_notification(self, usn: str, msg_info: Dict[str, str]):
+        """
+            Dispatch a notification to the registered callback functions for the root device.
+
+            :param usn: The USN of the root device.
+            :param msg_info: The message detail of the notification.
+        """
+        self._lock.acquire()
+        try:
+            if usn in self._root_device_notifications_by_usn:
+
+                # Dont make any calls while holding the upnp presence lock, make a copy of the receipients list
+                # and release the lock before dispatching the notifications to registered callbacks
+                receipients = [r for r in self._root_device_notifications_by_usn[usn]]
+
+                self._lock.release()
+                try:
+                    for callback in receipients:
+                        callback(usn, msg_info)
+                finally:
+                    self._lock.acquire()
+
+        finally:
+            self._lock.release()
+
+        return
+
+
+    def dispatch_service_notification(self, usn: str, msg_info: Dict[str, str]):
+        """
+            Dispatch a notification to the registered callback functions for a device service.
+
+            :param usn: The USN of the root device.
+            :param msg_info: The message detail of the notification.
+        """
+        self._lock.acquire()
+        try:
+            if usn in self._service_notifications_by_usn:
+
+                # Dont make any calls while holding the upnp presence lock, make a copy of the receipients list
+                # and release the lock before dispatching the notifications to registered callbacks
+                receipients = [r for r in self._service_notifications_by_usn[usn]]
+
+                self._lock.release()
+                try:
+                    for callback in receipients:
+                        callback(usn, msg_info)
+                finally:
+                    self._lock.acquire()
+
+        finally:
+            self._lock.release()
+
+        return
+
+
     def process_msearch(self, from_endpoint: Tuple[str, int], response: bytes):
         
         # We only process and respond to M-SEARCH messages if we have been given an identity
@@ -371,12 +428,15 @@ class UpnpPresence:
                     usn = msg_info.pop("USN")
                     status = None
 
+                    location = msg_info.pop("LOCATION")
+                    if "location" in msg_info:
+                        location = msg_info.pop("LOCATION")
+
                     if nt == 'upnp:rootdevice':
 
                         if "NTS" in msg_info:
                             nts = msg_info["NTS"]
                             server = msg_info.pop("SERVER")
-                            location = msg_info.pop("LOCATION")
 
                             if nts == "ssdp:alive":
                                 status = 'active'
@@ -442,14 +502,20 @@ class UpnpPresence:
                         try:
                             if devusn in self._active_devices:
 
-                                service_info = UpnpServiceEvidence(device=devusn, service=nt, location=location, status=status, presence=self)
+                                service_evidence = UpnpServiceEvidence(device=devusn, service=nt, location=location, status=status, presence=self)
+                                service_desc = self._query_manager.query_service_details(location)
+
+                                service_detail = UpnpDeviceDetail(service_evidence, service_desc)
+
+                                service_key = service_detail.generate_extension_key()
 
                                 # If the device is active, then register the service and associate it with the device
                                 if devusn in self._services_by_device:
-                                    self._services_by_device[devusn] = { nt: service_info }
+                                    self._services_by_device[devusn] = { service_key: service_evidence }
                                 else:
                                     service_table = self._services_by_device[devusn]
-                                    service_table[nt] = service_info
+                                    service_table[service_key] = service_evidence
+
 
                         finally:
                             self._lock.release()
@@ -521,6 +587,60 @@ class UpnpPresence:
         return
 
 
+    def register_embedded_device_notification_handler(self, usn: str, notify_callback: Callable):
+        """
+            Register a callback function to be called when an embedded device is found.
+
+            :param usn: The USN of the device to register the callback for.
+            :param notify_callback: The callback function to call when the device is found.
+        """
+        self._lock.acquire()
+        try:
+            if usn in self._embedded_device_notifications_by_usn:
+                self._embedded_device_notifications_by_usn[usn].append(notify_callback)
+            else:
+                self._embedded_device_notifications_by_usn[usn] = [notify_callback]
+        finally:
+            self._lock.release()
+        return
+
+
+    def register_service_notification_handler(self, usn: str, notify_callback: Callable):
+        """
+            Register a callback function to be called when a service is found.
+
+            :param usn: The USN of the service to register the callback for.
+            :param notify_callback: The callback function to call when the service is found.
+        """
+        self._lock.acquire()
+        try:
+            if usn in self._service_notifications_by_usn:
+                self._service_notifications_by_usn[usn].append(notify_callback)
+            else:
+                self._service_notifications_by_usn[usn] = [notify_callback]
+        finally:
+            self._lock.release()
+        return
+
+
+    def register_root_device_notification_handler(self, usn: str, notify_callback: Callable):
+        """
+            Register a callback function to be called when a root device is found.
+
+            :param usn: The USN of the device to register the callback for.
+            :param notify_callback: The callback function to call when the device is found.
+        """
+        self._lock.acquire()
+        try:
+            if usn in self._root_device_notifications_by_usn:
+                self._root_device_notifications_by_usn[usn].append(notify_callback)
+            else:
+                self._root_device_notifications_by_usn[usn] = [notify_callback]
+        finally:
+            self._lock.release()
+        return
+
+
     def search_window_closed(self, window_id: str):
         """
             Called when a search window is closed.  This method is used to remove the search window from the list of
@@ -534,10 +654,9 @@ class UpnpPresence:
                 del self._search_windows[window_id]
         finally:
             self._lock.release()
-
         return
-    
-    
+
+
     def start(self):
         
         if self._running:

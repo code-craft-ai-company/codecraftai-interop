@@ -35,33 +35,37 @@ import requests
 from requests.compat import urljoin
 
 from automojo.errors.exceptions import  ProtocolError, AbstractMethodError
-from automojo.foundation.extension.dynamicextension import generate_extension_key
+
 from automojo.foundation.fspath import normalize_name_for_path
 
-from automojo.interop.protocols.upnpold.upnperrors import UpnpError
-from automojo.interop.protocols.upnpold.aliases import StrSvcId, StrSvcType, StrSubId
-from automojo.interop.protocols.upnpold.upnpconstants import TIMEDELTA_RENEWAL_WINDOW, UPNP_HEADERS
-from automojo.interop.protocols.upnpold.upnpprotocol import MSearchRouteKeys
-from automojo.interop.protocols.upnpold.devices.upnpdevice import UpnpDevice
-from automojo.interop.protocols.upnpold.devices.upnpembeddeddevice import UpnpEmbeddedDevice
-from automojo.interop.protocols.upnpold.xml.upnpdevice1 import UPNP_DEVICE1_NAMESPACE, UpnpDevice1Device, UpnpDevice1SpecVersion
-from automojo.interop.protocols.upnpold.soap import NS_UPNP_EVENT
+from automojo.interop.protocols.upnp.constants import MSearchKeys, MSearchRouteKeys, UPNP_DEVICE1_NAMESPACE
+from automojo.interop.protocols.upnp.upnperrors import UpnpError
+from automojo.interop.protocols.upnp.aliases import StrSvcId, StrSvcType, StrSubId
+from automojo.interop.protocols.upnp.constants import TIMEDELTA_RENEWAL_WINDOW, UPNP_HEADERS
+from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
+from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
+from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
+from automojo.interop.protocols.upnp.model.devices.upnpdevicebase import UpnpDeviceBase
+from automojo.interop.protocols.upnp.model.devices.upnpembeddeddevice import UpnpEmbeddedDevice
+from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
 
-from automojo.interop.protocols.upnpold.paths import DIR_UPNP_SCAN_INTEGRATION_EMBEDDEDDEVICES
-from automojo.interop.protocols.upnpold.paths import DIR_UPNP_SCAN_INTEGRATION_ROOTDEVICES
-from automojo.interop.protocols.upnpold.paths import DIR_UPNP_SCAN_INTEGRATION_SERVICES
-from automojo.interop.protocols.upnpold.upnpprotocol import MSearchKeys
+from automojo.interop.protocols.upnp.soap import NS_UPNP_EVENT
 
-from automojo.interop.protocols.upnpold.services.upnpserviceproxy import UpnpServiceProxy
+from automojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_EMBEDDEDDEVICES
+from automojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_ROOTDEVICES
+from automojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_SERVICES
 
-import automojo.interop.protocols.upnpold as upnp_module
+from automojo.interop.protocols.upnp.model.services.upnpserviceproxy import UpnpServiceProxy
+
+import automojo.interop.protocols.upnp as upnp_module
 
 from automojo.errors.raising import raise_for_http_status
 
 
 # Types imported only for type checking purposes
 if TYPE_CHECKING:
-    from automojo.interop.protocols.upnpold.upnpfactory import UpnpFactory
+    from automojo.interop.protocols.upnp.model.devices.upnpdevicefactory import UpnpDeviceFactory
+
 
 UPNP_DIR = os.path.dirname(upnp_module.__file__)
 
@@ -139,7 +143,7 @@ def device_description_find_components(location: str, docTree: ElementTree, name
     return devNode, urlBase, manufacturer, modelName, modelNumber, modelDescription
 
 
-class UpnpRootDevice(UpnpDevice):
+class UpnpRootDevice(UpnpDeviceBase):
     """
         The UPNP Root device is the base device for the hierarchy that is
         associated with a unique network devices location.  The :class:`UpnpRootDevice`
@@ -154,27 +158,13 @@ class UpnpRootDevice(UpnpDevice):
 
     SERVICE_NAMES = []
 
-    def __init__(self, manufacturer: str, modelNumber: str, modelDescription):
+    def __init__(self, device_detail: UpnpDeviceDetail):
         """
             Creates a root device object.
         """
         super(UpnpRootDevice, self).__init__()
 
-        if self.MANUFACTURER != manufacturer:
-            self.MANUFACTURER = manufacturer
-        if self.MODEL_NUMBER != modelNumber:
-            self.MODEL_NUMBER = modelNumber
-        if self.MODEL_DESCRIPTION != modelDescription:
-            self.MODEL_DESCRIPTION = modelDescription
-
-        self._extra = {}
-        self._cachecontrol = None
-        self._ext = None
-        self._server = None
-        self._st = None
-        self._usn = None
-        self._usn_dev = None
-        self._usn_cls = None
+        self._server = None        
 
         self._specVersion = None
 
@@ -182,9 +172,6 @@ class UpnpRootDevice(UpnpDevice):
         self._ip_address = None
         self._routes = None
         self._primary_route = None
-
-        self._devices = {}
-        self._device_descriptions = {}
 
         self._auto_subscribe = False
         self._mode = None
@@ -215,23 +202,13 @@ class UpnpRootDevice(UpnpDevice):
         return self._cachecontrol
 
     @property
-    def description(self) -> UpnpDevice1Device:
-        """
-            The UpnpDevice1Device device description.
-        """
-        desc = self._description
-        return desc
-
-    @property
-    def embedded_device_descriptions(self) -> List[UpnpDevice1Device]:
+    def embedded_device_descriptions(self) -> List[EmbeddedDeviceDesc]:
         """
             Returns the list of descriptions for the embedded device that are declared for this root device.
         """
         dev_desc_list = []
 
-        dev_desc = self._device_descriptions
-        if dev_desc is not None:
-            dev_desc_list = [devdesc for devdesc in dev_desc.values()]
+        dev_desc_list = [devdesc for devdesc in self._device_description.deviceList]
 
         return dev_desc_list
 
@@ -242,7 +219,7 @@ class UpnpRootDevice(UpnpDevice):
         """
         devices_list = None
 
-        devices = self._devices
+        devices = self._embedded_devices
         if devices is not None:
             devices_list = [dev for dev in devices]
 
@@ -285,14 +262,23 @@ class UpnpRootDevice(UpnpDevice):
         return self._last_byebye
 
     @property
+    def location(self) -> str:
+        """
+            The location of the device as specified in the MSEARCH response.
+        """
+        locurl = self._device_evidence.location
+        return locurl
+
+    @property
     def MACAddress(self) -> Union[str, None]:
         """
             The MAC address of the device if specified in the device description or None.
         """
         macaddr = None
-        desc = self.description
-        if desc is not None:
-            macaddr = desc.MACAddress
+        dev_evidence = self._device_evidence
+        if dev_evidence is not None:
+            macaddr = dev_evidence.macAddress
+
         return macaddr
 
     @property
@@ -309,7 +295,7 @@ class UpnpRootDevice(UpnpDevice):
             The model name of the device as found in the device description or None.
         """
         mname = None
-        desc = self.description
+        desc = self._device_description
         if desc is not None:
             mname = desc.modelName
         return mname
@@ -320,7 +306,7 @@ class UpnpRootDevice(UpnpDevice):
             The model number of the device as found in the device description or None.
         """
         mnumber = None
-        desc = self.description
+        desc = self._device_description
         if desc is not None:
             mnumber = desc.modelNumber
         return mnumber
@@ -361,36 +347,29 @@ class UpnpRootDevice(UpnpDevice):
         """
             The serial number number of the device as found in the device description.
         """
-        desc = self.description
+        desc = self._device_description
         return desc.serialNumber
-
-    @property
-    def specVersion(self) -> UpnpDevice1SpecVersion:
-        """
-            Returns the spec version of the device description.
-        """
-        return self._specVersion
 
     @property
     def USN(self) -> str:
         """
             The USN identifier specified in the MSEARCH response for this device.
         """
-        return self._usn
+        return self._device_evidence.usn
 
     @property
     def USN_DEV(self) -> str:
         """
             The device component of the USN identifier specified in the MSEARCH response for this device.
         """
-        return self._usn_dev
+        return self._device_evidence.usn_dev
 
     @property
     def USN_CLS(self) -> str:
         """
             The class component of the USN identifier specified in the MSEARCH response for this device.
         """
-        return self._usn_cls
+        return self._device_evidence.usn_cls
 
     def get_custom_subscribe_headers(self) -> Optional[Dict[str, str]]:
         """
@@ -451,7 +430,7 @@ class UpnpRootDevice(UpnpDevice):
         self._consume_upnp_extra(devinfo)
         return
 
-    def lookup_device(self, device_type: str) -> Union[UpnpEmbeddedDevice, None]:
+    def lookup_embedded_device(self, device_type: str) -> Union[UpnpEmbeddedDevice, None]:
         """
             Looks up an embedded device by its device type identifier.
 
@@ -463,7 +442,7 @@ class UpnpRootDevice(UpnpDevice):
 
         self._device_lock.acquire()
         try:
-            device = self._devices[device_type]
+            device = self._embedded_devices[device_type]
         finally:
             self._device_lock.release()
 
@@ -565,130 +544,15 @@ class UpnpRootDevice(UpnpDevice):
         """
             Queries the UPnP device for its description.
         """
-        desc = device_description_load(self._location)
+        desc = device_description_load(self.location)
         return desc
 
 
-    def record_description(self, ip_addr: str, urlBase: str, manufacturer: str, modelName: str, docTree: ElementTree, devNode: Element, namespaces: str, upnp_recording: bool = False):
-        """
-            Called to record a description of a UPNP root device.
-
-            :param urlBase: The base url as detailed in the description document or if not specified as determined by looking at the host information.
-            :param manufacturer: The manufacturer of the device.
-            :param modelName: The model name of the device.
-            :param docTree: The XML document tree from the root of the device description.
-            :param devNode: The 'device' element node from the device description.
-            :param namespaces: A dictionary of namespaced to use when processing the XML document.
-            :param upnp_recording: Force the recording of the device description and will overwrite existing device descriptions.
-        """
-        manufacturerNormalized = normalize_name_for_path(manufacturer)
-        modelName = normalize_name_for_path(modelName)
-
-        root_dev_dir = os.path.join(DIR_UPNP_SCAN_INTEGRATION_ROOTDEVICES, manufacturerNormalized)
-        if not os.path.exists(root_dev_dir):
-            os.makedirs(root_dev_dir)
-
-        root_dev_def_file = os.path.join(root_dev_dir, modelName + ".xml")
-
-        if upnp_recording:
-            console_msg_lines = [
-                "================================================================",
-                " Recording Device: {}".format(ip_addr),
-                "------------------------- Detail -------------------------------",
-                "     Manufacturer: {}".format(manufacturer),
-                "            Model: {}".format(modelName),
-                "      Device File: {}".format(root_dev_def_file)
-            ]
-            console_msg = os.linesep.join(console_msg_lines)
-            print(console_msg)
-
-        if upnp_recording or not os.path.exists(root_dev_def_file):
-            docNode = docTree.getroot()
-            register_namespace('', namespaces[''])
-            pretty_dev_content = xml_tostring(docNode, short_empty_elements=False)
-            with open(root_dev_def_file, 'wb') as rddf:
-                rddf.write(pretty_dev_content)
-
-        indent = "    "
-        next_indent = indent + "    "
-        embDevList = devNode.find("deviceList", namespaces=namespaces)
-        if embDevList is not None:
-            if upnp_recording:
-                print("{}[ Embedded Devices ]".format(indent))
-
-            for embDevNode in embDevList:
-                self._record_embedded_device(urlBase, manufacturerNormalized, embDevNode, namespaces, upnp_recording=upnp_recording, indent=next_indent)
-
-            if upnp_recording:
-                print("")
-
-        svcList = devNode.find("serviceList", namespaces=namespaces)
-        if svcList is not None:
-            if upnp_recording:
-                print("{}[ Services ]".format(indent))
-
-            for svcNode in svcList:
-                self._record_service( urlBase, manufacturerNormalized, svcNode, namespaces, upnp_recording=upnp_recording, indent=next_indent)
-
-            if upnp_recording:
-                print("")
-
-
-        if upnp_recording:
-            print()
-
-        return
-
-    def refresh_description(self, ipaddr: str, factory: "UpnpFactory", docNode: Element, namespaces=Optional[dict]):
-        """
-            Called by the UPNP coordinator to refresh the decription information for a device.
-
-            :param ipaddr: IP address of the device to update the description for.
-            :param factory: The UpnpFactory that can be used to instantiate devices.
-            :param docNode: The root node of the description document.
-            :param namespaces: A dictionary of namespaces to use when processing the device description.
-        """
-        try:
-            if self._ip_address is not None and self._ip_address != ipaddr:
-                self._logger.debug("UpnpRootDevice - IP Address change for device usn={} location={}.".format(
-                    self._usn, self._ip_address
-                ))
-
-            self._ip_address = ipaddr
-
-            specVerNode = docNode.find("specVersion", namespaces=namespaces)
-            if specVerNode is not None:
-                self._locked_process_version_node(specVerNode, namespaces=namespaces)
-
-            baseURLNode = docNode.find("URLBase", namespaces=namespaces)
-            if baseURLNode is not None:
-                self._locked_process_urlbase_node(baseURLNode, namespaces=namespaces)
-
-            url_parts = urlparse(self._location)
-            self._host = url_parts.netloc
-
-            # If urlBase was not set we need to try to use the schema and host as the urlBase
-            if self._urlBase is None:
-                self._urlBase = "%s://%s" % (url_parts.scheme, self._host)
-
-            devNode = docNode.find("device", namespaces=namespaces)
-            if devNode is not None:
-                self._process_device_node(factory, devNode, namespaces=namespaces)
-
-            self._enhance_device_detail()
-
-        except Exception:
-            err_msg = traceback.format_exc()
-            print(err_msg)
-            raise
-
-        return
-
-    def set_auto_subscribe(self, val, factory: Optional["UpnpFactory"] = None):
+    def set_auto_subscribe(self, val, factory: Optional["UpnpDeviceFactory"] = None):
         self._auto_subscribe = val
         return
 
-    def subscribe_to_all_services(self, factory: Optional["UpnpFactory"] = None):
+    def subscribe_to_all_services(self, factory: Optional["UpnpDeviceFactory"] = None):
         """
             The 'subscribe_to_all_services' method is overriden by derived objects in order
             to allow for bulk subscription to device services.
@@ -896,32 +760,6 @@ class UpnpRootDevice(UpnpDevice):
         json_str = super(UpnpRootDevice, self).to_json(brief=brief)
         return json_str
 
-    def _consume_upnp_extra(self, extrainfo: dict):
-        """
-            Called during the processing of MSEARCH responses for the device with
-            a dictionary of any non-standard HTTP headers.
-
-            :param extrainfo: A dictionary of extra headers found in the devices responses.  This
-                              allows custom devices to overload this method and consume these extra
-                              device response headers.
-        """
-        # pylint: disable=no-self-use
-
-        self._extra = extrainfo
-        return
-
-    def _create_device_description_node(self, devNode: Element, namespaces: Optional[dict] = None):
-        """
-            Called in order for a device description to be created.  This could be overloaded by
-            custom UPNP devices in order to create custome device description objects.
-
-            :param devNode: The XML element of the root node of the device description document.
-            :param namespaces: A dictionary of namespaces to use when processing the device description.
-        """
-        # pylint: disable=no-self-use
-        dev_desc_node = UpnpDevice1Device(devNode, namespaces=namespaces)
-        return dev_desc_node
-
     def _enhance_device_detail(self):
         """
             Can be implemented by custom devices in order to be able query for and enhance a devices
@@ -930,26 +768,23 @@ class UpnpRootDevice(UpnpDevice):
         # pylint: disable=no-self-use
         return
 
-    def _locked_populate_embedded_device_descriptions(self, factory: "UpnpFactory", description: UpnpDevice1Device):
+    def _locked_populate_embedded_devices(self, factory: "UpnpDeviceFactory", description: Basic1DeviceDesc):
         """
             Called in order to process embedded device descriptions and to instantiate embedded device instances.
 
             NOTE: This method should be called with the device lock held.
         """
         for deviceInfo in description.deviceList:
-            manufacturer = deviceInfo.manufacturer.strip()
-            modelNumber = deviceInfo.modelNumber.strip()
-            modelDescription = deviceInfo.modelDescription.strip()
+    
+            devkey = deviceInfo.generate_extension_key()
 
-            devkey = ":".join([manufacturer, modelNumber, modelDescription])
-
-            if devkey not in self._device_descriptions:
-                dev_inst = factory.create_embedded_device_instance(manufacturer, modelNumber, modelDescription)
-                self._device_descriptions[devkey] = dev_inst
+            if devkey not in self._embedded_devices:
+                dev_inst = factory.(manufacturer, modelNumber, modelDescription)
+                self._embedded_devices[devkey] = dev_inst
 
                 self._locked_populate_services_descriptions(factory, deviceInfo)
             else:
-                dev_inst = self._device_descriptions[devkey]
+                dev_inst = self._embedded_devices[devkey]
 
             dev_inst.update_description(self._host, self._urlBase, deviceInfo)
         return
@@ -966,18 +801,6 @@ class UpnpRootDevice(UpnpDevice):
         # pylint: disable=unused-argument
 
         self._urlBase = urlBaseNode.text.rstrip("/")
-        return
-
-    def _locked_process_version_node(self, verNode: Element, namespaces: Optional[dict] = None):
-        """
-            Called in order to process the spec version information from the device description.
-
-            :param verNode: The XML Element node of the version node.
-            :param namespaces: A dictionary of namespaces to use when processing the device description.
-
-            NOTE: This method should be called with the device lock held.
-        """
-        self._specVersion = UpnpDevice1SpecVersion(verNode, namespaces=namespaces)
         return
 
     def _matches_model_name(self, modelName: str) -> bool:
@@ -1004,134 +827,6 @@ class UpnpRootDevice(UpnpDevice):
 
         return matches
 
-    def _process_device_node(self, factory: "UpnpFactory", devNode: Element, namespaces: Optional[dict] = None):
-        """
-            Method called for processing the 'device' node of the XML description of a device.
-
-            :param factory: The UpnpFactory instance that is used to instantiate devices, embedded devices and service proxies.
-            :param devNode: The XML Element node of the 'device' node.
-            :param namespaces: A dictionary of namespaces to use when processing the device description.
-        """
-        description = self._create_device_description_node(devNode, namespaces=namespaces)
-
-        self._device_lock.acquire()
-        try:
-            self._locked_populate_services_descriptions(factory, description)
-
-            self._locked_populate_embedded_device_descriptions(factory, description)
-
-            self._description = description
-        finally:
-            self._device_lock.release()
-
-        return
-
-    def _record_embedded_device(self, urlBase: str, manufacturer: str, embDevNode: Element, namespaces: Optional[dict] = None, upnp_recording: bool = False, indent="    "):
-        """
-            Method called for recording the description of an embedded device from a device description.
-
-            :param manufacturer: The manufacturer of the device.
-            :param embDevNode: The XML element node of the embedded device.
-            :param namespaces: A dictionary of namespaces to use when processing the device description.
-            :param upnp_recording: A boolean value indicating if the embedded device description should be recorded regardless of whether
-                                    an existing description has been recorded.
-        """
-        # pylint: disable=no-self-use
-
-        deviceTypeNode = embDevNode.find("deviceType", namespaces=namespaces)
-        if deviceTypeNode is not None:
-            deviceType = deviceTypeNode.text
-
-            dyn_dev_dir = os.path.join(DIR_UPNP_SCAN_INTEGRATION_EMBEDDEDDEVICES, manufacturer)
-            if not os.path.exists(dyn_dev_dir):
-                os.makedirs(dyn_dev_dir)
-
-            dyn_dev_filename = os.path.join(dyn_dev_dir, deviceType + ".xml")
-            if upnp_recording or not os.path.exists(dyn_dev_filename):
-                if upnp_recording:
-                    dev_msg_lines = [
-                        "{}Embedded Device Type: {}".format(indent, deviceType),
-                        "{}Embedded Device File: {}".format(indent, dyn_dev_filename)
-                    ]
-                    dev_msg = os.linesep.join(dev_msg_lines)
-                    print(dev_msg)
-
-                pretty_sl_content = ""
-
-                srcSvcListNode = embDevNode.find("serviceList", namespaces=namespaces)
-                if srcSvcListNode is not None:
-                    svcs_indent = indent + "    "
-                    if upnp_recording:
-                        print("{}[ Embedded Services ]".format(indent))
-
-                    for svcNode in srcSvcListNode:
-                        self._record_service( urlBase, manufacturer, svcNode, namespaces,
-                                              upnp_recording=upnp_recording,
-                                              indent=svcs_indent)
-
-                    if upnp_recording:
-                        print("")
-
-                    register_namespace('', namespaces[''])
-                    pretty_sl_content = xml_tostring(srcSvcListNode)
-
-                with open(dyn_dev_filename, 'wb') as edf:
-                    edf.write(b"<device>\n")
-                    edf.write(pretty_sl_content)
-                    edf.write(b"</device\n")
-
-        return
-
-    def _record_service(self, urlBase: str, manufacturer: str, svcNode: Element, namespaces: Optional[dict] = None, upnp_recording: bool = False, indent="    "):
-        """
-            Called to record the description of a device service.
-
-            :param urlBase: The base url of the device which is used to request further information based on relative URLs from the device description.
-            :param manufacturer: The manufacturer of the device.
-            :param svcNode: The XML Element for the 'service' description node.
-            :param namespaces: A dictionary of namespaces to use when processing the device description.
-            :param upnp_recording: A boolean value indicating if the embedded device description should be recorded regardless of whether
-                                    an existing description has been recorded.
-        """
-        # pylint: disable=broad-except
-
-        serviceTypeNode = svcNode.find("serviceType", namespaces=namespaces)
-        scpdUrlNode = svcNode.find("SCPDURL", namespaces=namespaces)
-        if serviceTypeNode is not None and scpdUrlNode is not None:
-
-            serviceType = serviceTypeNode.text
-
-            scpdUrl = scpdUrlNode.text
-            if urlBase is not None:
-                scpdUrl = urlBase.rstrip("/") + "/" + scpdUrl.lstrip("/")
-
-            dyn_service_dir = os.path.join(DIR_UPNP_SCAN_INTEGRATION_SERVICES, manufacturer)
-            if not os.path.exists(dyn_service_dir):
-                os.makedirs(dyn_service_dir)
-
-            dyn_svc_filename = os.path.join(dyn_service_dir, "%s.xml" % (serviceType,))
-            if upnp_recording or not os.path.exists(dyn_svc_filename):
-                if upnp_recording:
-                    svc_msg_lines = [
-                        "{}Service Type: {}".format(indent, serviceType),
-                        "{} Service URL: {}".format(indent, scpdUrl),
-                        "{}Service File: {}".format(indent, dyn_svc_filename)
-                    ]
-                    svc_msg = os.linesep.join(svc_msg_lines)
-                    print(svc_msg)
-
-                try:
-                    resp = requests.get(scpdUrl)
-                    if resp.status_code == 200:
-                        svc_content = resp.content
-                        with open(dyn_svc_filename, 'wb') as sdf:
-                            sdf.write(svc_content)
-                    else:
-                        self._logger.warn("Unable to retrieve service description for manf=%s st=%s url=%s" % (manufacturer, serviceType, scpdUrl))
-                except Exception:
-                    self._logger.exception("Exception while retreiving service description.")
-
-        return
 
     def __str__(self):
         """

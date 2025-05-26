@@ -19,7 +19,7 @@ from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import
 from automojo.interop.protocols.upnp.model.description.icondesc import IconDesc
 from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
 
-from automojo.interop.protocols.upnp.manufacturers.bose.description.bosemultiroomversions import BoseMultiRoomVersions
+from automojo.interop.manufacturers.bose.description.bosemultiroomversions import BoseMultiRoomVersions
 
 """
     <bose:X_MAC>ACBF7199AB83</bose:X_MAC>

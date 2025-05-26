@@ -12,7 +12,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Optional, Union, TYPE_CHECKING
+from typing import List, Optional, Union, TYPE_CHECKING
 
 import threading
 import weakref
@@ -22,18 +22,23 @@ from xml.etree.ElementTree import Element
 
 import requests
 
-from automojo.interop.protocols.upnpold.upnperrors import UpnpServiceNotAvailableError
-
-from automojo.foundation.extension.dynamicextension import generate_extension_key
-
 from automojo.foundation.fspath import normalize_name_for_path
 
-from automojo.interop.protocols.upnpold.services.upnpserviceproxy import UpnpServiceProxy
-from automojo.interop.protocols.upnpold.xml.upnpdevice1 import UpnpDevice1Device
+from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
+
+from automojo.interop.protocols.upnp.upnperrors import UpnpServiceNotAvailableError
+
+from automojo.interop.protocols.upnp.model.services.upnpserviceproxy import UpnpServiceProxy
+
+from automojo.interop.protocols.upnp.model.evidence.upnpdeviceevidence import UpnpDeviceEvidence
+from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
+
 
 # Types imported only for type checking purposes
 if TYPE_CHECKING:
-    from automojo.interop.protocols.upnpold.upnpfactory import UpnpFactory
+    from automojo.interop.protocols.upnp.upnppresence import UpnpPresence
+    from automojo.interop.protocols.upnp.model.devices.upnpdevicefactory import UpnpDeviceFactory
+
 
 UPNP_SERVICE1_NAMESPACE = "urn:schemas-upnp-org:service-1-0"
 
@@ -51,39 +56,91 @@ class UpnpDeviceBase:
     MODEL_NUMBER = "unknown"
     MODEL_DESCRIPTION = "unknown"
 
-    def __init__(self):
+    def __init__(self, presence: "UpnpPresence", device_detail: UpnpDeviceDetail):
         """
             Creates a root device object.
         """
         super(UpnpDeviceBase, self).__init__()
 
-        self._description = None
+        self._presence_ref = weakref.ref(presence)
+        self._device_detail = device_detail
+        self._device_description = device_detail.description
+        self._device_evidence = device_detail.evidence
+
+        if self.device_description.manufacturer is not None:
+            self.MANUFACTURER = self.device_description.manufacturer
+        
+        if self.device_description.modelNumber is not None:
+            self.MODEL_NUMBER = self.device_description.modelNumber
+
+        if self.device_description.modelDescription is not None:
+            self.MODEL_DESCRIPTION = self.device_description.modelDescription
+
         self._host = None
         self._urlBase = None
 
         self._device_lock = threading.RLock()
 
-        self._services_descriptions = {}
+        self._embedded_devices = {}
         self._services = {}
+        
+        # We must have an initial device description in order to be able to create a
+        # device instance.   Processes the serviceList and deviceList in the device
+        # description to populate the service description and embedded device description
+        # lookup tables.
+        self._service_descriptions = {}
+        serviceList = self._device_description.serviceList
+        if serviceList is not None:
+            for serviceInfo in serviceList:
+                svckey = serviceInfo.generate_extension_key()
+                self._service_descriptions[svckey] = serviceInfo
+
+        self._embedded_device_descriptions = {}
+        deviceList = self._device_description.deviceList
+        if deviceList is not None:
+            for deviceInfo in self._device_description.deviceList:
+                devkey = deviceInfo.generate_extension_key()
+                self._embedded_device_descriptions[devkey] = deviceInfo
 
         return
 
     @property
-    def description(self):
+    def device_description(self) -> Union[Basic1DeviceDesc, None]:
         """
             Returns the device description from the UPNP device.
         """
-        return self._description
+        return self._device_description
 
     @property
-    def host(self):
+    def device_detail(self) -> UpnpDeviceDetail:
+        """
+            Returns the device detail object that contains the device description and evidence.
+        """
+        return self._device_detail
+
+    @property
+    def device_evidence(self) -> UpnpDeviceEvidence:
+        """
+            Returns the device evidence from the UPNP device.
+        """
+        return self._device_evidence
+
+    @property
+    def host(self) -> str:
         """
             Returns the host associated with the UPNP device.
         """
         return self._host
 
     @property
-    def services(self):
+    def presence(self) -> "UpnpPresence":
+        """
+            Returns the presence object associated with the UPNP device.
+        """
+        return self._presence_ref()
+
+    @property
+    def services(self) -> List[UpnpServiceProxy]:
         """
             Returns a list of service proxies associated with the UPNP device.
         """
@@ -105,37 +162,35 @@ class UpnpDeviceBase:
         return self._services_descriptions
 
     @property
-    def URLBase(self):
+    def URLBase(self) -> str:
         """
             Returns the base URL for the UPNP device that is used with any relative URLs in devices or service
             description documents.
         """
         return self._urlBase
 
-    def get_service_description(self, service_type) -> Union[dict, None]:
+    def get_service_description(self, serviceType: str) -> Union[dict, None]:
         """
             Gets the service description for the specified service type.
 
-            :param service_type: The service type to lookup the service description for.
+            :param serviceType: The service type to lookup the service description for.
 
             :returns: Returns the description information for the service type if found or None if not found.
         """
         svc_content = None
 
-        devDesc = self.description
-
-        for nxtsvc in devDesc.serviceList:
-            if nxtsvc.serviceType == service_type:
+        for nxtsvc in self._device_description.serviceList:
+            if nxtsvc.serviceType == serviceType:
                 fullurl = self.URLBase.rstrip("/") + "/" + nxtsvc.SCPDURL.lstrip("/")
 
-                resp = requests.get(fullurl)
+                resp: requests.Response = requests.get(fullurl)
                 if resp.status_code == 200:
                     svc_content = resp.text
                     break
 
         return svc_content
 
-    def lookup_service(self, serviceManufacturer: str, serviceType: str, allow_none: bool=False, factory: Optional["UpnpFactory"] = None) -> Union[UpnpServiceProxy, None]:
+    def lookup_service(self, service_key: str, allow_none: bool=False, factory: Optional["UpnpDeviceFactory"] = None) -> Union[UpnpServiceProxy, None]:
         """
             Looks up a service proxy based on the service manufacturer and service type specified.
 
@@ -147,27 +202,27 @@ class UpnpDeviceBase:
         """
         svc = None
 
-        serviceManufacturer = normalize_name_for_path(serviceManufacturer)
-        svckey = generate_extension_key(serviceManufacturer, serviceType)
-
         self._device_lock.acquire()
         try:
-            if svckey in self._services:
-                svc = self._services[svckey]
+            if service_key in self._services:
+                svc = self._services[service_key]
+
             elif factory is not None:
+                svc_desc = self._service_descriptions[service_key]
+
                 self._device_lock.release()
                 try:
-                    svc = factory.create_service_instance(serviceManufacturer, serviceType)
+                    svc = factory.create_service_instance(svc_desc)
                 finally:
                     self._device_lock.acquire()
 
                 if svc is not None:
-                    self._services[svckey] = svc
+                    self._services[service_key] = svc
         finally:
             self._device_lock.release()
 
         if svc is None and not allow_none:
-            errmsg = "The service mfg={} serviceType={} was not found or is not available.".format(serviceManufacturer, serviceType)
+            errmsg = "The service service_key={} was not found or is not available.".format(service_key)
             raise UpnpServiceNotAvailableError(errmsg)
 
         return svc
@@ -180,7 +235,7 @@ class UpnpDeviceBase:
 
         self._device_lock.acquire()
         try:
-            desc = self._description
+            desc = self._device_description
 
             if desc is not None:
                 dval = desc.as_dict(brief=brief)
@@ -220,24 +275,24 @@ class UpnpDeviceBase:
 
         return json_str
 
-    def _locked_populate_embedded_device_descriptions(self, factory: "UpnpFactory", description: UpnpDevice1Device):
+    def _locked_populate_embedded_device_descriptions(self, factory: "UpnpDeviceFactory", description: Basic1DeviceDesc):
         """
             Takes in a device description and processes it for embedded devices.
 
-            :param factory: The UpnpFactory that has registered exentsion types that is used to instantiate
+            :param factory: The UpnpDeviceFactory that has registered exentsion types that is used to instantiate
                             embedded devices when the UPNP device description is processed.
-            :param description: The UpnpDevice1Device object that contains information about the device and its embedded devices.
+            :param description: The Basic1DeviceDesc object that contains information about the device and its embedded devices.
         """
         # pylint: disable=no-self-use,unused-argument
         raise NotImplementedError("UpnpDevice._populate_embedded_devices: must be overridden.") from None
 
-    def _locked_populate_services_descriptions(self, factory: "UpnpFactory", description: UpnpDevice1Device):
+    def _locked_populate_services_descriptions(self, factory: "UpnpDeviceFactory", description: Basic1DeviceDesc):
         """
             Takes in a device description and processes it for service descriptions.
 
-            :param factory: The UpnpFactory that has registered exentsion types that is used to instantiate
+            :param factory: The UpnpDeviceFactory that has registered exentsion types that is used to instantiate
                             services when the UPNP device description is processed.
-            :param description: The UpnpDevice1Device object that contains information about the device and its services.
+            :param description: The Basic1DeviceDesc object that contains information about the device and its services.
         """
         # pylint: disable=protected-access
         for serviceInfo in description.serviceList:

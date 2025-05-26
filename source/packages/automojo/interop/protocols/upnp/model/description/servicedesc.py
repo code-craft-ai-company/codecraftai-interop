@@ -5,11 +5,11 @@ __credits__ = []
 
 
 def xml_format_service_desc(
-    service_type: str,
-    service_id: str,
-    control_url: str,
-    event_sub_url: str,
-    scpd_url: str,
+    serviceType: str,
+    serviceId: str,
+    controlURL: str,
+    eventSubURL: str,
+    SCPDURL: str,
     indent: str = ""
 ) -> str:
     """
@@ -26,11 +26,11 @@ def xml_format_service_desc(
     
     desc_lines = [
         f"{indent}<service>",
-        f"{indent}    <serviceType>{service_type}</serviceType>",
-        f"{indent}    <serviceId>{service_id}</serviceId>",
-        f"{indent}    <controlURL>{control_url}</controlURL>",
-        f"{indent}    <eventSubURL>{event_sub_url}</eventSubURL>",
-        f"{indent}    <SCPDURL>{scpd_url}</SCPDURL>",
+        f"{indent}    <serviceType>{serviceType}</serviceType>",
+        f"{indent}    <serviceId>{serviceId}</serviceId>",
+        f"{indent}    <controlURL>{controlURL}</controlURL>",
+        f"{indent}    <eventSubURL>{eventSubURL}</eventSubURL>",
+        f"{indent}    <SCPDURL>{SCPDURL}</SCPDURL>",
         f"{indent}</service>"
     ]
 
@@ -44,34 +44,62 @@ class ServiceDesc:
         Class representing a UPnP service description.
     """
 
-    def __init__(self, *, service_type: str, service_id: str, control_url: str, event_sub_url: str, scpd_url: str):
-        self.service_type = service_type
-        self.service_id = service_id
-        self.control_url = control_url
-        self.event_sub_url = event_sub_url
-        self.scpd_url = scpd_url
+    def __init__(self, *, serviceType: str, serviceId: str, controlURL: str, eventSubURL: str, SCPDURL: str):
+        self.serviceType = serviceType
+        self.serviceId = serviceId
+        self.controlURL = controlURL
+        self.eventSubURL = eventSubURL
+        self.SCPDURL = SCPDURL
         return
+    
+    def as_dict(self) -> dict:
+        """
+        Convert the ServiceDesc object to a dictionary.
+
+        :returns: Dictionary representation of the ServiceDesc object.
+        """
+        
+        desc = {
+            "serviceType": self.serviceType,
+            "serviceId": self.serviceId,
+            "controlURL": self.controlURL,
+            "eventSubURL": self.eventSubURL,
+            "SCPDURL": self.SCPDURL
+        }
+
+        return desc 
     
     def as_xml(self, indent="") -> str:
         """
         Convert the ServiceDesc object to an XML string.
 
         :param indent: Indentation for the XML string.
+
         :returns: XML string representation of the ServiceDesc object.
         """
         
         desc = xml_format_service_desc(
-            service_type=self.service_type,
-            service_id=self.service_id,
-            control_url=self.control_url,
-            event_sub_url=self.event_sub_url,
-            scpd_url=self.scpd_url,
+            serviceType=self.serviceType,
+            serviceId=self.serviceId,
+            controlURL=self.controlURL,
+            eventSubURL=self.eventSubURL,
+            SCPDURL=self.SCPDURL,
             indent=indent
         )
 
         return desc
     
+    def generate_extension_key(self) -> str:
+        """
+            Generates a unique key that identifies an extension type based on where
+            it was found in a hiearchy of code containers.
+
+            :returns: A unique path like string that is an identifier used to lookup a device type.
+        """
+        extkey = f"{self.serviceType}/{self.serviceId}"
+        return extkey
+
     def __repr__(self):
-        rval = f"ServiceDesc(service_type={self.service_type}, service_id={self.service_id})"
+        rval = f"ServiceDesc(serviceType={self.serviceType}, serviceId={self.serviceId})"
         return rval
 

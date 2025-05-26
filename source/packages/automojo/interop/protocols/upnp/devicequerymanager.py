@@ -7,34 +7,31 @@ __credits__ = []
 from typing import Optional
 
 import logging
-
+import os
 
 from http import HTTPStatus
 from xml.etree.ElementTree import fromstring as parse_xml_content
 
-
 import requests
 
-
-from automojo.interop.protocols.upnp.manufacturers.bose.bosedetailprocessor import BoseDetailProcessor
-from automojo.interop.protocols.upnp.manufacturers.bose.constants import MANUFACTURER_NAME as BOSE_MANUFACTURER_NAME
-
 from automojo.interop.protocols.upnp.constants import UPNP_DEVICE1_NAMESPACE
-from automojo.interop.protocols.upnp.devicedetailprocessor import DeviceDetailProcessor
+from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
 
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
+
+from automojo.interop.protocols.upnp.wellknown import DeviceDetailMapperRegistrySingleton
 
 logger = logging.getLogger()
 
 class DeviceQueryManager:
-
-    MANUFACTURER_HINTS = {
-        BOSE_MANUFACTURER_NAME: BoseDetailProcessor
-    }
+    """
+        The :class:`DeviceQueryManager` is a class that manages the querying of device details from UPnP devices.
+    """
 
     def __init__(self):
+        self._mapper_registry = DeviceDetailMapperRegistrySingleton()
         return
-    
+
     def query_device_details(self, location: str) -> Optional[Basic1DeviceDesc]:
 
         device_desc = None
@@ -48,20 +45,25 @@ class DeviceQueryManager:
                     xml_content = resp.content.decode("utf-8")
                     root_el = parse_xml_content(xml_content)
                     
-                    spec_ver_el = root_el.find("specVersion", default_namespaces)
-                    sver = DeviceDetailProcessor.process_spec_version(spec_ver_el, default_namespaces)
+                    spec_ver, manufacturer = DeviceDetailMapper.pull_spec_version_and_manufacturer(root_el, default_namespaces)
                     
-                    device_el = root_el.find("device", namespaces=default_namespaces)
-                    device_desc = DeviceDetailProcessor.process_device(root_el, device_el, default_namespaces, self.MANUFACTURER_HINTS, sver, locationURL=location)
+                    if spec_ver is not None and manufacturer is not None:
+
+                        mapper = self._mapper_registry.lookup_device_detail_mapper(manufacturer)
+                        
+                        device_desc = mapper.create_root_device_description(root_el, default_namespaces, spec_ver, locationURL=location)
                     
                 except Exception as parse_err:
                     err_msg = f"Error parsing device description XML: {parse_err}"
                     logger.error(err_msg)
 
         except Exception as req_err:
-            err_msg = f"Error querying device at {location}: {req_err}"
+            err_msg_lines = [
+                f"Error querying device at {location}:"
+            ]
+            err_msg_lines.extend(f"{req_err}".splitlines(False))
+
+            err_msg = os.linesep.join(err_msg_lines)
             logger.error(err_msg)
 
         return device_desc
-    
-    

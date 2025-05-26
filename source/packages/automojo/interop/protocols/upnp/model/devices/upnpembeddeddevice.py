@@ -14,7 +14,7 @@ __credits__ = []
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.interop.protocols.upnpold.devices.upnpdevice import UpnpDevice
+from automojo.interop.protocols.upnp.devices.upnpdevice import UpnpDevice
 
 class UpnpEmbeddedDevice(UpnpDevice):
     """
