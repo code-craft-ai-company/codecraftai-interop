@@ -12,11 +12,9 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from optparse import Option
 from typing import Dict, List, Optional, Tuple, Union, TYPE_CHECKING
 
 import os
-import platform
 import re
 import threading
 import traceback
@@ -25,16 +23,14 @@ import weakref
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
-from xml.etree.ElementTree import tostring as xml_tostring
 from xml.etree.ElementTree import fromstring as xml_fromstring
 from xml.etree.ElementTree import Element, ElementTree
-from xml.etree.ElementTree import register_namespace
 
 import requests
 
 from requests.compat import urljoin
 
-from automojo.errors.exceptions import  ProtocolError, AbstractMethodError
+from automojo.errors.exceptions import  ProtocolError
 
 from automojo.foundation.fspath import normalize_name_for_path
 
@@ -48,6 +44,7 @@ from automojo.interop.protocols.upnp.model.description.servicedesc import Servic
 from automojo.interop.protocols.upnp.model.devices.upnpdevicebase import UpnpDeviceBase
 from automojo.interop.protocols.upnp.model.devices.upnpembeddeddevice import UpnpEmbeddedDevice
 from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
+
 
 from automojo.interop.protocols.upnp.soap import NS_UPNP_EVENT
 
@@ -64,8 +61,9 @@ from automojo.errors.raising import raise_for_http_status
 
 # Types imported only for type checking purposes
 if TYPE_CHECKING:
+    from automojo.interop.protocols.upnp.upnppresence import UpnpPresence
     from automojo.interop.protocols.upnp.model.devices.upnpdevicefactory import UpnpDeviceFactory
-
+    
 
 UPNP_DIR = os.path.dirname(upnp_module.__file__)
 
@@ -81,7 +79,7 @@ def device_description_load(location: str) -> Union[ElementTree, None]:
     """
     docTree = None
 
-    resp = requests.get(location)
+    resp: requests.Response = requests.get(location)
     if resp.status_code == 200:
         xmlcontent = resp.content
 
@@ -158,11 +156,13 @@ class UpnpRootDevice(UpnpDeviceBase):
 
     SERVICE_NAMES = []
 
-    def __init__(self, device_detail: UpnpDeviceDetail):
+    def __init__(self, presence: "UpnpPresence", device_detail: UpnpDeviceDetail):
         """
             Creates a root device object.
         """
-        super(UpnpRootDevice, self).__init__()
+        super(UpnpRootDevice, self).__init__(device_detail)
+
+        self._presence_ref = weakref.ref(presence)
 
         self._server = None        
 
@@ -185,6 +185,7 @@ class UpnpRootDevice(UpnpDeviceBase):
         self._last_alive = datetime.min
         self._last_byebye = datetime.min
         self._available = False
+
         return
 
     @property
@@ -310,6 +311,13 @@ class UpnpRootDevice(UpnpDeviceBase):
         if desc is not None:
             mnumber = desc.modelNumber
         return mnumber
+
+    @property
+    def presence(self) -> "UpnpPresence":
+        """
+            Returns the presence object associated with the UPNP device.
+        """
+        return self._presence_ref()
 
     @property
     def primary_route(self):
@@ -619,7 +627,7 @@ class UpnpRootDevice(UpnpDeviceBase):
                 # later remove the subscription from the subscription table.
 
                 serviceManufacturer = normalize_name_for_path(self.MANUFACTURER)
-                svckey = generate_extension_key(serviceManufacturer, service_type)
+                svckey = service.get_extension_key()
                 service = self._services[svckey]
 
                 subscribe_url = urljoin(self.URLBase, service.eventSubURL)
@@ -776,7 +784,7 @@ class UpnpRootDevice(UpnpDeviceBase):
         """
         for deviceInfo in description.deviceList:
     
-            devkey = deviceInfo.generate_extension_key()
+            devkey = deviceInfo.get_extension_key()
 
             if devkey not in self._embedded_devices:
                 dev_inst = factory.(manufacturer, modelNumber, modelDescription)

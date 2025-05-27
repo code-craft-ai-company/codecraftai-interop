@@ -204,7 +204,7 @@ class Basic1DeviceDesc:
         
         return desc
     
-    def generate_extension_key(self) -> str:
+    def get_extension_key(self) -> str:
         """
             Generates a unique key that identifies an extension type based on where
             it was found in a hiearchy of code containers.

@@ -407,7 +407,7 @@ class UpnpPresence:
             
             msg_info = parse_ssdp_message(response)
             
-            print(f"M-SEARCH: from={from_ip} ST={msg_info["ST"]}\n")
+            logger.debug(f"M-SEARCH: from={from_ip} ST={msg_info["ST"]}\n")
         
         return
 
@@ -582,7 +582,7 @@ class UpnpPresence:
                         logger.error(f"Unable to get device description for {location}.")
 
         else:
-            print(f"REPLY: from={from_ip} usn=<not found>")
+            logger.debug(f"REPLY: from={from_ip} usn=<not found>")
 
         return
 

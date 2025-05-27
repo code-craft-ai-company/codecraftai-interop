@@ -25,7 +25,9 @@ logger = logging.getLogger()
 
 class DeviceQueryManager:
     """
-        The :class:`DeviceQueryManager` is a class that manages the querying of device details from UPnP devices.
+        The :class:`DeviceQueryManager` is a class that manages the querying of device details from UPnP devices.  It is used
+        by the :class:`UpnpSearchWindow`to queery device for thier device descriptions in order to provide the additional information
+        needed to combine the :class:`UpnpDeviceEvidence` and UpnpDeviceDescription into a a :class:`UpnpDeviceDetail` object.
     """
 
     def __init__(self):

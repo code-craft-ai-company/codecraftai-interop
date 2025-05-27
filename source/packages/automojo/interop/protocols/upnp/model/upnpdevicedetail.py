@@ -54,6 +54,6 @@ class UpnpDeviceDetail:
 
             :returns: A unique path like string that is an identifier used to lookup a device type.
         """
-        extkey = self._description.generate_extension_key()
+        extkey = self._description.get_extension_key()
         return extkey
     

@@ -73,6 +73,8 @@ class UpnpServiceProxy(EventedVariableSink):
         self._service_lock = threading.RLock()
 
         self._device_ref = None
+        self._service_description
+
         self._soap_processor = SoapProcessor()
 
         self._host = None
@@ -376,6 +378,15 @@ class UpnpServiceProxy(EventedVariableSink):
 
         return rtnval
 
+    def get_extension_key(self) -> str:
+        """
+            Returns the extension key for this service proxy.  The extension key is used to identify
+            the service proxy in the context of the UPnP extension protocol.
+        """
+        ekey = self._service_description.get_extension_key()
+        return ekey
+
+
     def invalidate_subscription(self):
         """
             Called in order to invalidate the subscription(s) specified by scope.
@@ -485,15 +496,16 @@ class UpnpServiceProxy(EventedVariableSink):
         device: "UpnpDeviceBase" = device_ref()
 
         self._device_ref = device_ref
+        self._service_description = service_description
 
         self._host = device.host
         self._baseURL = device.URLBase
 
-        self._controlURL = service_description.control_url
-        self._eventSubURL = service_description.event_sub_url
-        self._SCPDURL = service_description.scpd_url
-        self._serviceId = service_description.service_id
-        self._serviceType = service_description.service_type
+        self._controlURL = service_description.controlURL
+        self._eventSubURL = service_description.eventSubURL
+        self._SCPDURL = service_description.SCPDURL
+        self._serviceId = service_description.serviceId
+        self._serviceType = service_description.serviceType
 
         return
 
@@ -595,9 +607,13 @@ class UpnpServiceProxy(EventedVariableSink):
         """
 
         for _ in self.yield_state_lock():
+            
+            propNodeOuter : XmlElement
+            propNode : XmlElement
+
             for propNodeOuter in propertyNodeList:
                 # Get the first node of the outer property node
-                propNode = propNodeOuter.getchildren()[0]
+                propNode = propNodeOuter[0]
 
                 event_name = propNode.tag
                 event_value = propNode.text

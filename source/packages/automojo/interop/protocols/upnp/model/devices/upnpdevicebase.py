@@ -36,7 +36,6 @@ from automojo.interop.protocols.upnp.model.description.basic1devicedesc import B
 
 # Types imported only for type checking purposes
 if TYPE_CHECKING:
-    from automojo.interop.protocols.upnp.upnppresence import UpnpPresence
     from automojo.interop.protocols.upnp.model.devices.upnpdevicefactory import UpnpDeviceFactory
 
 
@@ -56,13 +55,12 @@ class UpnpDeviceBase:
     MODEL_NUMBER = "unknown"
     MODEL_DESCRIPTION = "unknown"
 
-    def __init__(self, presence: "UpnpPresence", device_detail: UpnpDeviceDetail):
+    def __init__(self, device_detail: UpnpDeviceDetail):
         """
             Creates a root device object.
         """
         super(UpnpDeviceBase, self).__init__()
 
-        self._presence_ref = weakref.ref(presence)
         self._device_detail = device_detail
         self._device_description = device_detail.description
         self._device_evidence = device_detail.evidence
@@ -92,14 +90,14 @@ class UpnpDeviceBase:
         serviceList = self._device_description.serviceList
         if serviceList is not None:
             for serviceInfo in serviceList:
-                svckey = serviceInfo.generate_extension_key()
+                svckey = serviceInfo.get_extension_key()
                 self._service_descriptions[svckey] = serviceInfo
 
         self._embedded_device_descriptions = {}
         deviceList = self._device_description.deviceList
         if deviceList is not None:
             for deviceInfo in self._device_description.deviceList:
-                devkey = deviceInfo.generate_extension_key()
+                devkey = deviceInfo.get_extension_key()
                 self._embedded_device_descriptions[devkey] = deviceInfo
 
         return
@@ -131,13 +129,6 @@ class UpnpDeviceBase:
             Returns the host associated with the UPNP device.
         """
         return self._host
-
-    @property
-    def presence(self) -> "UpnpPresence":
-        """
-            Returns the presence object associated with the UPNP device.
-        """
-        return self._presence_ref()
 
     @property
     def services(self) -> List[UpnpServiceProxy]:

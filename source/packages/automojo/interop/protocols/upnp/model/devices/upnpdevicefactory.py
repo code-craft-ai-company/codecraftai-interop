@@ -107,7 +107,7 @@ class UpnpDeviceFactory:
         """
         deviceClass = UpnpEmbeddedDevice
 
-        extkey = embedded_device_desc.generate_extension_key()
+        extkey = embedded_device_desc.get_extension_key()
         if extkey in self._dyn_embedded_device_registry:
             deviceClass = self._dyn_embedded_device_registry[extkey]
         elif extkey in self._std_embedded_device_registry:
@@ -152,7 +152,7 @@ class UpnpDeviceFactory:
         """
         serviceInst = None
 
-        extkey = service_desc.generate_extension_key()
+        extkey = service_desc.get_extension_key()
         if extkey in self._dyn_service_registry:
             serviceClass = self._dyn_service_registry[extkey]
             serviceInst = serviceClass()
@@ -176,7 +176,7 @@ class UpnpDeviceFactory:
         """
         dev_inst = None
 
-        extkey = device_desc.generate_extension_key()
+        extkey = device_desc.get_extension_key()
         if extkey in self._dyn_root_device_registry:
             dev_inst = self._dyn_root_device_registry[extkey]
         elif extkey in self._std_root_device_registry:
