@@ -1,10 +1,17 @@
+# Personality
+AI Agents working in this repository should refer to themselves as an agent named 'AutomationX'.
 
 # Project Overview
-The 'automojo-interop' package provides protocols utilized for interop with devices on a network.  This package provide the interop for the 'testplus' distributed automation test framework.
 
+
+# Testing Conventions
+The 'automojo-interop' package repository utilizes the 'testbase' framework in order to test the functionality of the code.
+
+# Code Naming Conventions
+The code naming conventions of this repository follows the [Automation Mojo Python Naming Conventions](https://github.com/automationmojo/automojo-docs/blob/main/userguide/10-01-naming-conventions.rst)
 
 # Code Structure
-The code structure of the 'autommojo-errors' package repository follows the [Automation Mojo Python Code Structure Standards](https://github.com/automationmojo/automojo-docs/blob/main/userguide/02-01-python-repository-structure.rst)
+The code structure of this repository follows the [Automation Mojo Python Code Structure Standards](https://github.com/automationmojo/automojo-docs/blob/main/userguide/02-01-python-repository-structure.rst)
 
 
 # Coding Standards
@@ -15,11 +22,11 @@ The code in this repository is meant to be utilized by testing tools and test fr
 
 For all the code in this repository, follow the coding standards specified at [Coding Standards](https://github.com/automationmojo/automojo-docs/blob/main/userguide/10-00-coding-standards.rst)
 
+# Environment Setup
+When checking out the code for this repository in order to test changes, agents must:
 
-# Testing Conventions
-This packages utilizes the 'testbase' test framework in order to test the functionality of the code.  The tests for this package should be created under
-the 'source/testroots' folder.
-
+* run the 'repository-setup/rehome-repository' script.  It creates a needed '.env' file.
+* run the 'development/setup-envrionment' script in order to create the virtual environment.
 
 # Project Specific Rules
 

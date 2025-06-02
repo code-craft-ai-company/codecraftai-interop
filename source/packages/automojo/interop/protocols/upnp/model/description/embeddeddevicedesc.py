@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from automojo.interop.protocols.upnp.model.description.specversion import SpecVersion
 from automojo.interop.protocols.upnp.model.description.icondesc import IconDesc
-from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
+from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
 
@@ -21,7 +21,7 @@ class EmbeddedDeviceDesc(Basic1DeviceDesc):
 
     def __init__(self, specVersion: SpecVersion, deviceType: str, friendlyName: str, manufacturer: str, modelName: str, modelNumber: str,
                  UDN: str, serialNumber: str="", manufacturerURL: str="", modelDescription: str = "", modelURL: str = "", UPC: str="",
-                presentationURL: str="", iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceDesc]] = None,
+                presentationURL: str="", iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None,
                 deviceList: Optional[List['EmbeddedDeviceDesc']] = None, **extras: dict):
         super().__init__(specVersion, deviceType, friendlyName, manufacturer, manufacturerURL,
                          modelDescription, modelName, modelNumber, modelURL,

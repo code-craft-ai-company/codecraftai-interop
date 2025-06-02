@@ -24,7 +24,9 @@ import weakref
 
 from datetime import datetime, timedelta
 
-from automojo.networking.multicast import create_multicast_listener_socket
+from automojo.networking.constants import HTTP1_1_LINESEP
+from automojo.networking.multicast import create_multicast_listener_socket, create_multicast_listener_socket_for_iface
+from automojo.networking.interfaces import get_correspondance_ip_address
 
 from automojo.interop.protocols.upnp.constants import MSearchTargets, MSearchKeys, MSearchRouteKeys
 
@@ -37,8 +39,8 @@ from automojo.interop.protocols.upnp.constants import (
 )
 
 from automojo.interop.protocols.upnp.model.upnpdevicehint import UpnpDeviceHint
-from automojo.interop.protocols.upnp.model.evidence.upnpdeviceevidence import UpnpDeviceEvidence
-from automojo.interop.protocols.upnp.model.evidence.upnpserviceevidence import UpnpServiceEvidence
+from automojo.interop.protocols.upnp.model.description.deviceevidence import DeviceEvidence
+from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 
 
 REGEX_NOTIFY_HEADER = re.compile("NOTIFY[ ]+[*/]+[ ]+HTTP/1")
@@ -171,7 +173,8 @@ class UpnpPresence:
 
 
     def __init__(self, agent_id: Optional[UpnpPresenceId] = None, multicast_address = SsdpProtocol.MULTICAST_ADDRESS,
-                 multicast_port = SsdpProtocol.PORT, discover_interval: int = 60, ttl: int=32):
+                 multicast_port = SsdpProtocol.PORT, presence_interfaces: Optional[List[str]] = None, interface_port: int = 80,
+                 discover_interval: int = 60, ttl: int=32):
         """
             :param agent_id: The id that is used to provide a presence for this node.  If not provided, the agent will
                              not respond to M-SEARCH events.
@@ -187,6 +190,7 @@ class UpnpPresence:
 
         self._multicast_address = multicast_address
         self._multicast_port = multicast_port
+        self._interface_port = interface_port
 
         self._discover_interval = discover_interval
         self._ttl = ttl
@@ -198,8 +202,8 @@ class UpnpPresence:
         self._msearch_sock = None
         self._msearch_thread = None
         
-        self._presence_sock = None
-        self._presence_thread = None
+        self._presence_sockets = {}
+        self._presence_threads = {}
 
         self._inactive_devices: Dict[str, UpnpDeviceDetail] = {}
         self._active_devices: Dict[str, UpnpDeviceDetail] = {}
@@ -214,6 +218,12 @@ class UpnpPresence:
         self._root_device_notifications_by_usn: Dict[str, List[Callable]] = {}
         self._service_notifications_by_usn: Dict[str, List[Callable]] = {}
 
+        self._presence_interfaces = None
+        if presence_interfaces is not None:
+            self._presence_interfaces = presence_interfaces
+        else:
+            # If no interfaces are specified, then we will listen on all interfaces
+            self._presence_interfaces = ["any"]
 
         return
 
@@ -314,7 +324,7 @@ class UpnpPresence:
         return self._multicast_address, self._multicast_port
 
 
-    def dispatch_embedded_device_notification(self, usn: str, msg_info: Dict[str, str]):
+    def dispatch_embedded_device_notification(self, ifname: str, from_ip: str, usn: str, nt: str, nts: str, msg_info: Dict[str, str]):
         """
             Dispatch a notification to the registered callback functions for an embedded device.
 
@@ -332,7 +342,7 @@ class UpnpPresence:
                 self._lock.release()
                 try:
                     for callback in receipients:
-                        callback(usn, msg_info)
+                        callback(ifname, from_ip, usn, nt, nts, msg_info)
                 finally:
                     self._lock.acquire()
 
@@ -342,7 +352,7 @@ class UpnpPresence:
         return
 
 
-    def dispatch_root_device_notification(self, usn: str, msg_info: Dict[str, str]):
+    def dispatch_root_device_notification(self, ifname: str, from_ip: str, usn: str, nt: str, nts: str, msg_info: Dict[str, str]):
         """
             Dispatch a notification to the registered callback functions for the root device.
 
@@ -360,7 +370,7 @@ class UpnpPresence:
                 self._lock.release()
                 try:
                     for callback in receipients:
-                        callback(usn, msg_info)
+                        callback(ifname, from_ip, usn, nt, nts, msg_info)
                 finally:
                     self._lock.acquire()
 
@@ -369,12 +379,15 @@ class UpnpPresence:
 
         return
 
-
-    def dispatch_service_notification(self, usn: str, msg_info: Dict[str, str]):
+    def dispatch_service_notification(self, ifname: str, from_ip: str, usn: str, nt: str, nts: str, msg_info: Dict[str, str]):
         """
             Dispatch a notification to the registered callback functions for a device service.
 
+            :param ifname: The interface name that the notification was received on.
+            :param from_ip: The IP address that the notification was received from.
             :param usn: The USN of the root device.
+            :param nt: The NT (Notification Type) header value from the notification.
+            :param nts: The NTS (Notification Sub-Type) header value from the notification.
             :param msg_info: The message detail of the notification.
         """
         self._lock.acquire()
@@ -388,7 +401,7 @@ class UpnpPresence:
                 self._lock.release()
                 try:
                     for callback in receipients:
-                        callback(usn, msg_info)
+                        callback(ifname, from_ip, usn, nt, nts, msg_info)
                 finally:
                     self._lock.acquire()
 
@@ -398,7 +411,7 @@ class UpnpPresence:
         return
 
 
-    def process_msearch(self, from_endpoint: Tuple[str, int], response: bytes):
+    def process_msearch(self, ifname: str, from_endpoint: Tuple[str, int], response: bytes):
         
         # We only process and respond to M-SEARCH messages if we have been given an identity
         # to respond as
@@ -407,12 +420,47 @@ class UpnpPresence:
             
             msg_info = parse_ssdp_message(response)
             
-            logger.debug(f"M-SEARCH: from={from_ip} ST={msg_info["ST"]}\n")
+            # Process the M-SEARCH message info
+            st = msg_info.get(MSearchKeys.ST, None)
+            if st is not None:
+                mx = msg_info.get(MSearchKeys.MX, "1")
+
+                # Check the ST header to see if it is a request for the root device
+                if st == MSearchTargets.ROOTDEVICE:
+
+                    # Get the IP that should be used by a specific client to attempt to communicate with the local device
+                    # We need to get the IP address that corresponds to the interface that the M-SEARCH request came in on
+                    # because we might be listening on multiple networks, if we respond with the wrong IP address, then the
+                    # client might not be able to communicate with us.
+                    interface_ip = get_correspondance_ip_address(from_ip)
+
+                    # If the ST header is for the root device, then we will respond with our presence
+                    usn = self._agent_id.to_usn()
+                    server = "Automation Mojo UPnP Presence Agent/1.0"
+                    location = f"http://{interface_ip}:{self._interface_port}/upnp/device.xml"
+
+                    response_lines = [
+                        b"HTTP/1.1 200 OK",
+                        b"ST: upnp:rootdevice",
+                        b"USN: %s" % usn.encode("utf-8"),
+                        b"SERVER: %s" % server.encode("utf-8"),
+                        b"LOCATION: %s" % location.encode("utf-8"),
+                        b"CACHE-CONTROL: max-age=1800",
+                        b"",
+                        b""
+                    ]
+
+                    response_msg = HTTP1_1_LINESEP.join(response_lines)
+
+                    sock = self._get_presence_socket(ifname)
+                    sock.sendto(response_msg, from_endpoint)
+
+            logger.debug(f"M-SEARCH: ifname={ifname} from={from_ip} ST={msg_info["ST"]}")
         
         return
 
 
-    def process_notify(self, from_endpoint: Tuple[str, int], message: bytes):
+    def process_notify(self, ifname: str, from_endpoint: Tuple[str, int], message: bytes):
 
         from_ip = from_endpoint[0]
 
@@ -425,105 +473,41 @@ class UpnpPresence:
 
                 if "NT" in msg_info:
                     nt = msg_info["NT"]
-                    usn = msg_info.pop("USN")
+                    usn = msg_info["USN"]
                     status = None
 
-                    location = msg_info.pop("LOCATION")
-                    if "location" in msg_info:
-                        location = msg_info.pop("LOCATION")
-
+                    ntparts = nt.split(":")
+                    
                     if nt == 'upnp:rootdevice':
 
                         if "NTS" in msg_info:
                             nts = msg_info["NTS"]
-                            server = msg_info.pop("SERVER")
+                            
+                            self._update_device("NOTIFY", from_ip, usn, nts, msg_info)
+                            
+                        self.dispatch_root_device_notification(ifname, from_ip, usn, nt, nts, msg_info)
 
-                            if nts == "ssdp:alive":
-                                status = 'active'
-                                
-                                device_evidence = UpnpDeviceEvidence(usn=usn, status=status, server=server, location=location, ip=from_ip, other=msg_info, presence=self)
-                                
-                                device_desc = self._query_manager.query_device_details(location)
-
-                                device_detail = UpnpDeviceDetail(device_evidence, device_desc)
-
-                                self._lock.acquire()
-                                try:
-                                    # If we got an alive message and were able to get a new description from the device,
-                                    # then we know it is now active, remove the old device detail from the inactive devices
-                                    # list and add our new device detail to the active devices list. 
-                                    if usn in self._inactive_devices:
-                                        del self._inactive_devices[usn]
-
-                                    self._active_devices[usn] = device_detail
-                                finally:
-                                    self._lock.release()
-
-                            elif nts == "ssdp:byebye":
-                                status = 'inactive'
-
-                                device_detail = None
-
-                                # this is a device bye-bye
-                                device_evidence = UpnpDeviceEvidence(usn=usn, status=status, server=server, location=location, ip=from_ip, other=msg_info, presence=self)
-
-                                self._lock.acquire()
-                                try:
-                                    device_desc = None
-
-                                    if usn in self._active_devices:
-                                        old_device_detail = self._active_devices[usn]
-                                        device_desc = old_device_detail.description
-                                        del self._active_devices[usn]
-
-                                    device_detail = UpnpDeviceDetail(device_evidence, device_desc)
-
-                                    self._inactive_devices[usn] = device_detail
-                                finally:
-                                    self._lock.release()
-
-                                if device_detail is not None:
-                                    self._update_device("NOTIFY", usn, status, device_detail)
-
-                        print(f"NOTIFY - DEVICE: usn={usn} from={from_ip}")
+                        print(f"NOTIFY - DEVICE: ifname={ifname} nt={nt} usn={usn} from={from_ip}")
     
-                    elif nt.startswith("urn:schemas-upnp-org:service"):
-                        nts = msg_info["NTS"]
+                    elif len(ntparts) > 2:
+                        nt_comp_group = ntparts[1]
+                        nt_comp_type = ntparts[2]
 
-                        status = 'unknown'
-                        if nts == "ssdp:alive":
-                            status = 'active'
-                        elif nts == "ssdp:byebye":
-                            status = 'inactive'
+                        if nt_comp_type == "service":
+                            nts = msg_info["NTS"]
 
-                        devusn, _ = usn.split("::")
+                            self.dispatch_service_notification(ifname, from_ip, usn, nt, nts, msg_info)
 
-                        self._lock.acquire()
-                        try:
-                            if devusn in self._active_devices:
+                            print(f"NOTIFY - SERVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} service={nt} status={status}")
+                        elif nt_comp_type == "device":
+                            # This is an embedded device notification
+                            self.dispatch_embedded_device_notification(ifname, from_ip, usn, nt, nts, msg_info)
 
-                                service_evidence = UpnpServiceEvidence(device=devusn, service=nt, location=location, status=status, presence=self)
-                                service_desc = self._query_manager.query_service_details(location)
-
-                                service_detail = UpnpDeviceDetail(service_evidence, service_desc)
-
-                                service_key = service_detail.generate_extension_key()
-
-                                # If the device is active, then register the service and associate it with the device
-                                if devusn in self._services_by_device:
-                                    self._services_by_device[devusn] = { service_key: service_evidence }
-                                else:
-                                    service_table = self._services_by_device[devusn]
-                                    service_table[service_key] = service_evidence
-
-
-                        finally:
-                            self._lock.release()
-
-                        print(f"NOTIFY - SERVICE usn={devusn} from={from_ip} service={nt} status={status}")
-
+                            print(f"NOTIFY - EMBEDDED DEVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>")
+                        else:
+                            print(f"NOTIFY - UNKNOWN TYPE ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>")
                     else:
-                        print(f"NOTIFY - OTHER usn={usn} from={from_ip}")
+                        print(f"NOTIFY - OTHER ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>")
 
         else:
             logger.debug("msg_info was None.")
@@ -542,42 +526,42 @@ class UpnpPresence:
                 st = reply_info["ST"]
 
                 if st == 'upnp:rootdevice':
-                    usn = reply_info.pop("USN")
-                    server = reply_info.pop("SERVER")
-                    location = reply_info.pop("LOCATION")
+                    usn = reply_info["USN"]
+                    server = reply_info["SERVER"]
+                    location = reply_info["LOCATION"]
 
-                    device_desc = self._query_manager.query_device_details(location)
-                    if device_desc is not None:
+                    # Update our active device tables with then newly discovered device, pass along the 'ssdp:alive'
+                    # notification subtype as a constant.  If a device replies to m-search requests, it is considered alive.
+                    self._update_device("M-SEARCH", from_ip, usn, "ssdp:alive", reply_info)
+                    
+                    active_search_windows: List[weakref.ref] = []
 
-                        device_evidence = UpnpDeviceEvidence(usn=usn, status="alive", server=server, location=location, ip=from_ip, other=reply_info, presence=self)
-
-                        device_detail = UpnpDeviceDetail(device_evidence, device_desc)
-
-                        self._lock.acquire()
-                        try:
-                            if usn in self._inactive_devices:
-                                del self._inactive_devices[usn]
-
-                            self._active_devices[usn] = device_detail
-
-                            for wid, search_window_ref in self._search_windows.items():
+                    # Check to see if there are any active search windows searching for devices
+                    self._lock.acquire()
+                    try:
+                        for wid, search_window_ref in self._search_windows.items():
 
                                 search_window: UpnpSearchWindow = search_window_ref()
                                 if search_window is not None:
                                     # If the search window is still active, then add the device to the search window
                                     if search_window.is_active():
-                                        search_window.add_device(usn, device_detail)
-                                    else:
-                                        # If the search window is not active, then remove it from the list of search windows
-                                        del self._search_windows[wid]
-                                else:
-                                    # If the search window reference is None, then remove it from the list of search windows
-                                    del self._search_windows[wid]
+                                        active_search_windows.append(search_window)
 
-                        finally:
-                            self._lock.release()
+                    finally:
+                        self._lock.release()
 
-                        self._update_device("M-SEARCH", usn, "active", device_detail)
+                    # If there are any active search windows, then we will need to query the device for its description and then pass the device detail
+                    # to the any active search windows.
+                    if len(active_search_windows):
+                        device_evidence = DeviceEvidence(usn=usn, status="alive", server=server, location=location, ip=from_ip, other=reply_info, presence=self)
+                        device_desc = self._query_manager.query_device_description(location)
+                        if device_desc is not None:
+
+                            device_detail = UpnpDeviceDetail(device_evidence, device_desc)
+
+                            for search_window in active_search_windows:
+                                search_window.add_device(usn, device_detail)
+
                     else:
                         logger.error(f"Unable to get device description for {location}.")
 
@@ -663,13 +647,17 @@ class UpnpPresence:
             raise RuntimeError("SSDP Scanner is already running.")
 
         sgate = threading.Event()
-
-        sgate.clear()
         
-        self._presence_thread = threading.Thread(target=self._presence_thread_entry, name="am-upnp-presence", args=(sgate,), daemon=True)
-        self._presence_thread.start()
-
-        sgate.wait()
+        for ifname in self._presence_interfaces:
+            sgate.clear()
+            presence_thread = threading.Thread(target=self._presence_thread_entry, name=f"am-upnp-presence-{ifname}", args=(sgate, ifname), daemon=True)
+            self._lock.acquire()
+            try:
+                self._presence_threads[ifname] = presence_thread
+            finally:
+                self._lock.release()
+            presence_thread.start()
+            sgate.wait()
 
         sgate.clear()
         
@@ -681,32 +669,66 @@ class UpnpPresence:
         return
 
 
-    def _update_device(self, context: str, usn: str, status: str, device_detail: UpnpDeviceDetail):
+    def _update_device(self, context: str, from_ip: str, usn: str, nts: str, msg_info: Dict[str, str]):
 
-        location = device_detail.evidence.location
+        location = msg_info.get("LOCATION")
+        server = msg_info.get("SERVER")
+        status = "unknown"
+
+        if nts == "ssdp:alive":
+            status = 'active'
+            
+            device_evidence = DeviceEvidence(usn=usn, status=status, server=server, location=location, ip=from_ip, other=msg_info, presence=self)
+            
+            self._lock.acquire()
+            try:
+                # If we got an alive message and were able to get a new description from the device,
+                # then we know it is now active, remove the old device detail from the inactive devices
+                # list and add our new device detail to the active devices list. 
+                if usn in self._inactive_devices:
+                    del self._inactive_devices[usn]
+
+                self._active_devices[usn] = device_evidence
+            finally:
+                self._lock.release()
+
+        elif nts == "ssdp:byebye":
+            status = 'inactive'
+
+            # this is a device bye-bye
+            device_evidence = DeviceEvidence(usn=usn, status=status, server=server, location=location, ip=from_ip, other=msg_info, presence=self)
+
+            self._lock.acquire()
+            try:
+
+                if usn in self._active_devices:
+                    del self._active_devices[usn]
+
+
+                self._inactive_devices[usn] = device_evidence
+            finally:
+                self._lock.release()
 
         print(f"UPDATE DEVICE: context={context} usn={usn} status={status} location={location}")
 
         return
 
 
-    def _update_service(self, context: str, usn: str, service: str, status: str, device_info: UpnpDeviceEvidence):
-
-        print(f"UPDATE DEVICE SERVICE: context={context} usn={usn} service={service} status={status}")
-
-        return
-
-
-    def _get_presence_socket(self) -> socket.socket:
+    def _get_presence_socket(self, ifname: str) -> socket.socket:
 
         sock = None
 
         self._lock.acquire()
         try:
-            if self._presence_sock is None:
-                self._presence_sock: socket.socket = create_multicast_listener_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
-            
-            sock = self._presence_sock
+            if ifname not in self._presence_sockets:
+                if ifname == "any":
+                    sock: socket.socket = create_multicast_listener_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
+                else:
+                    sock: socket.socket = create_multicast_listener_socket_for_iface(ifname, self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
+
+                self._presence_sockets[ifname] = sock
+            else:
+                sock = self._presence_sockets[ifname]
         finally:
             self._lock.release()
             
@@ -764,31 +786,32 @@ class UpnpPresence:
                     self._lock.release()
 
         return
-    
 
-    def _presence_thread_entry(self, sgate: threading.Event):
+    def _presence_thread_entry(self, sgate: threading.Event, ifname: str):
+        """
+            The presence thread entry point.  This method is called when the presence thread is started.
+            It listens for incoming SSDP messages and processes or dispatches them.
+        """
 
         self._running = True
-
-        self._presence_sock: socket.socket = create_multicast_listener_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
 
         sgate.set()
 
         while self._running:
 
-            sock = self._get_presence_socket()
+            sock = self._get_presence_socket(ifname)
 
             try:
-                resp, addr = sock.recvfrom(1024)
+                msg_in, addr = sock.recvfrom(1024)
 
-                if resp.startswith(b"M-SEARCH * HTTP/"):
-                    self.process_msearch(addr, resp)
+                if msg_in.startswith(b"M-SEARCH * HTTP/"):
+                    self.process_msearch(ifname, addr, msg_in)
 
-                elif resp.startswith(b"NOTIFY * HTTP/"):
-                    self.process_notify(addr, resp)
+                elif msg_in.startswith(b"NOTIFY * HTTP/"):
+                    self.process_notify(ifname, addr, msg_in)
                 
                 else:
-                    print(resp)
+                    logger.debug(msg_in)
 
             except socket.timeout:
                 pass
@@ -799,7 +822,7 @@ class UpnpPresence:
                     if sock is not None:
                         sock.close()
 
-                    self._presence_sock = None
+                    del self._presence_sockets[ifname]
                 finally:
                     self._lock.release()
 

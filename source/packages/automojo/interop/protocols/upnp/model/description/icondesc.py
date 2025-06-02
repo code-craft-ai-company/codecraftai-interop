@@ -3,6 +3,9 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
+import json
+
+from automojo.networking.constants import HTTP1_1_LINESEP
 
 def xml_format_icon_desc(mimetype: str, width: int, height: int, depth: str, url: str, indent: str = "") -> str:
     """
@@ -30,7 +33,7 @@ def xml_format_icon_desc(mimetype: str, width: int, height: int, depth: str, url
         f"{indent}</icon>"
     ]
 
-    desc = "\r\n".join(desc_lines)
+    desc = HTTP1_1_LINESEP.join(desc_lines)
 
     return desc
 
@@ -72,7 +75,17 @@ class IconDesc:
         }
         return desc
 
-    def as_xml(self, indent="") -> str:
+    def to_json(self) -> str:
+        """
+            Convert the IconDesc object to a JSON string.
+
+            :returns: JSON string representation of the IconDesc object.
+        """
+        desc = self.as_dict()
+        json_desc = json.dumps(desc, indent=4)
+        return json_desc
+
+    def to_xml(self, indent="") -> str:
         """
             Convert the IconDesc object to an XML string.
 

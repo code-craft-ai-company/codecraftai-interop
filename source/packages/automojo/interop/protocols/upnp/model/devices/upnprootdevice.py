@@ -14,6 +14,7 @@ __credits__ = []
 
 from typing import Dict, List, Optional, Tuple, Union, TYPE_CHECKING
 
+import logging
 import os
 import re
 import threading
@@ -40,7 +41,7 @@ from automojo.interop.protocols.upnp.aliases import StrSvcId, StrSvcType, StrSub
 from automojo.interop.protocols.upnp.constants import TIMEDELTA_RENEWAL_WINDOW, UPNP_HEADERS
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
 from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
-from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
+from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 from automojo.interop.protocols.upnp.model.devices.upnpdevicebase import UpnpDeviceBase
 from automojo.interop.protocols.upnp.model.devices.upnpembeddeddevice import UpnpEmbeddedDevice
 from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
@@ -68,6 +69,8 @@ if TYPE_CHECKING:
 UPNP_DIR = os.path.dirname(upnp_module.__file__)
 
 REGEX_SUBSCRIPTION_TIMEOUT = re.compile("^Second-([0-9]+|infinite)", flags=re.IGNORECASE)
+
+logger = logging.getLogger()
 
 def device_description_load(location: str) -> Union[ElementTree, None]:
     """
@@ -271,18 +274,6 @@ class UpnpRootDevice(UpnpDeviceBase):
         return locurl
 
     @property
-    def MACAddress(self) -> Union[str, None]:
-        """
-            The MAC address of the device if specified in the device description or None.
-        """
-        macaddr = None
-        dev_evidence = self._device_evidence
-        if dev_evidence is not None:
-            macaddr = dev_evidence.macAddress
-
-        return macaddr
-
-    @property
     def mode(self) -> str:
         """
             The virtual mode assocatied with a device.  A device might present a different set of
@@ -379,64 +370,181 @@ class UpnpRootDevice(UpnpDeviceBase):
         """
         return self._device_evidence.usn_cls
 
+    def as_dict(self, brief=False) -> dict:
+        """
+            Returns a description of this device as a python dictionary.
+
+            :param brief: A booliean value which indicates if a brief or full description is desired.
+
+            :returns: The python dictionary description of the device.
+        """
+        dval = super(UpnpRootDevice, self).as_dict(brief=brief)
+        dval["IPAddress"] = self.IPAddress
+        dval["USN"] = self.USN
+        dval["USN_DEV"] = self.USN_DEV
+        dval["USN_CLS"] = self.USN_CLS
+        return dval
+
+    def events_subscribe(self, service: UpnpServiceProxy, renew: bool=False, timeout: Optional[float] = None)-> Union[Tuple[str, datetime], Tuple[None, None]]:
+        """
+            Creates a subscription to the events for a UPNP service.
+
+            :param service: A :class:`mojo.protocols.upnp.services.upnpserviceproxy.UpnpServiceProxy`
+                            for which to subscribe to events.
+            :param renew: A boolean value indicating if the subscription is being renewed.
+            :param timeout: The timeout to pass as a header when creating the subscription.
+
+            :returns: A tuple with the subscription ID and the expiration datetime for the subscription.
+        """
+        sub_sid = None
+        sub_expires = None
+
+        if len(service.SERVICE_EVENT_VARIABLES) > 0:
+
+            service_type = service.SERVICE_TYPE
+
+            new_subscription = False
+            self._device_lock.acquire()
+            try:
+                if service_type not in self._subscriptions:
+                    new_subscription = True
+                    self._subscriptions[service_type] = (None, None)
+                else:
+                    sub_sid, sub_expires = self._subscriptions[service_type]
+
+                    if sub_sid is None and sub_expires is None:
+                        # The service was unsubscribed so this is the same as a new
+                        # subscription.
+                        new_subscription = True
+            finally:
+                self._device_lock.release()
+
+            check_time = datetime.now() + timedelta(seconds=TIMEDELTA_RENEWAL_WINDOW)
+            if sub_expires is not None and check_time > sub_expires:
+                renew = True
+
+            if new_subscription or renew:
+                # If we created an uninitialized variable and added it to the subsciptions table
+                # we need to statup the subsciption here.  If the startup process fails, we can
+                # later remove the subscription from the subscription table.
+
+                svckey = service.get_extension_key()
+                service = self._services[svckey]
+
+                subscribe_url = urljoin(self.URLBase, service.eventSubURL)
+                subscribe_auth = ""
+
+                ifname = self._primary_route[MSearchRouteKeys.IFNAME]
+
+                callback_url = coord.lookup_callback_url_for_interface(ifname)
+                if callback_url is None:
+                    errmsg = "No callback url found for ifname={}".format(ifname)
+                    raise RuntimeError(errmsg) from None
+
+                headers = { "HOST": self._host, "User-Agent": UPNP_HEADERS.USER_AGENT, "CALLBACK": callback_url, "NT": "upnp:event"}
+                if timeout is not None:
+                    headers["TIMEOUT"] = "Seconds-%s" % timeout
+
+                custom_headers = self.get_custom_subscribe_headers()
+                if custom_headers is not None:
+                    headers.update(custom_headers)
+
+                resp: requests.Response = requests.request(
+                    "SUBSCRIBE", subscribe_url, headers=headers, auth=subscribe_auth
+                )
+
+                if resp.status_code == 200:
+                    #============================== Expected Response Headers ==============================
+                    # SID: uuid:RINCON_7828CA09247C01400_sub0000000207
+                    # TIMEOUT: Second-86400
+                    # Server: Linux UPnP/1.0 Sonos/62.1-82260-monaco_dev (ZPS13)
+                    # Connection: close
+                    resp_headers = {k.upper(): v for k, v in resp.headers.items()}
+
+                    nxtheader = None
+                    try:
+                        nxtheader = "SID"
+                        sub_sid = resp_headers[nxtheader]
+
+                        nxtheader = "TIMEOUT"
+                        sub_timeout_str = resp_headers[nxtheader]
+                    except KeyError as kerr:
+                        errmsg = "Event subscription response was missing in %r header." % nxtheader
+                        raise ProtocolError(errmsg) from kerr
+
+                    sub_timeout = None
+                    mobj = REGEX_SUBSCRIPTION_TIMEOUT.match(sub_timeout_str)
+                    if mobj is not None:
+                        timeout_str = mobj.groups()[0]
+                        sub_timeout = 86400 if timeout_str == "infinite" else int(timeout_str)
+
+                    if sub_sid is not None:
+                        sub_expires = datetime.now() + timedelta(seconds=sub_timeout)
+                        self._device_lock.acquire()
+                        try:
+                            self._sid_to_service_lookup[sub_sid] = service
+                            self._subscriptions[service_type] = (sub_sid, sub_expires)
+                        finally:
+                            self._device_lock.release()
+
+                        # Notify the coordinator which device has this subscription, we need to
+                        # register the subscription ID so the coordinator can forward along
+                        # notify message content
+                        coord.register_subscription_for_device(sub_sid, self)
+                    else:
+                        self._device_lock.acquire()
+                        try:
+                            if service_type in self._subscriptions:
+                                del self._subscriptions[service_type]
+                        finally:
+                            self._device_lock.release()
+
+                else:
+                    context_msg = "SUBSCRIBING at {}:".format(subscribe_url)
+                    details = {
+                        "SERVICE_KEY:": svckey,
+                        "URL_BASE": self.URLBase,
+                        "EVENT_SUB_URL": service.eventSubURL
+                    }
+                    raise_for_http_status(context_msg, resp, details=details)
+
+        return sub_sid, sub_expires
+
+    def events_unsubscribe(self, service: UpnpServiceProxy, subscription_id: Optional[str]=None):
+        """
+            Unsubscribes from the events for a UPNP service.
+            
+            :param service: A :class:`mojo.protocols.upnp.services.upnpserviceproxy.UpnpServiceProxy`
+                            for which to unsubscribe from events.
+            :param subscription_id: The subscription ID to use for the unsubscribe request. If None, the
+                                    subscription ID will be taken from the service instance.
+        """
+
+        if len(service.SERVICE_EVENT_VARIABLES) > 0:
+            if subscription_id is None:
+                subscription_id = service.subscriptionId
+
+            service._clear_subscription()
+
+            subscribe_url = urljoin(self.URLBase, service.eventSubURL)
+            subscribe_auth = ""
+            headers = { "HOST": self._host, "User-Agent": UPNP_HEADERS.USER_AGENT, "SID": subscription_id}
+                
+            resp: requests.Response = requests.request(
+                    "UNSUBSCRIBE", subscribe_url, headers=headers, auth=subscribe_auth
+                )
+
+            if resp.status_code != 200 and resp.status_code != 412:
+                errmsg = "Error while unsubscribing from service."
+                raise UpnpError(resp.status_code, errmsg)
+
+        return
+
     def get_custom_subscribe_headers(self) -> Optional[Dict[str, str]]:
         """
             An override-able method that allows for customization of the subscribe headers.
         """
         return None
-
-    def initialize(self, coord_ref: weakref.ReferenceType, basedevice_ref: weakref.ReferenceType, extid: str, location: str, configinfo: dict, devinfo: dict):
-        """
-            Initializes the landscape device extension.
-
-            :param coord_ref: A weak reference to the coordinator that is managing interactions through this
-                              device extension.
-            :param extid: A unique reference that can be used to identify this device via the coordinator even if its location changes.
-            :param location: The location reference where this device can be found via the coordinator.
-            :param configinfo: The UPNP configuration information associated with a device in the landscape configuration file.
-            :param devinfo:  The device configuration information from the landscape configuration file.
-        """
-        # pylint: disable=arguments-differ
-
-        # We have to make a copy of the dictionary because we use
-        # pop semantics to remove the items so we can pass on remaining
-        # items to `_consume_upnp_extra`
-        devinfo = devinfo.copy()
-
-        self._cachecontrol = None
-        if MSearchKeys.CACHE_CONTROL in devinfo:
-            self._cachecontrol = devinfo.pop(MSearchKeys.CACHE_CONTROL)
-
-        self._ext = None
-        if MSearchKeys.EXT in devinfo:
-            self._ext = devinfo.pop(MSearchKeys.EXT)
-
-        self._server = None
-        if MSearchKeys.SERVER in devinfo:
-            self._server = devinfo.pop(MSearchKeys.SERVER)
-
-        self._st = None
-        if MSearchKeys.ST in devinfo:
-            self._st = devinfo.pop(MSearchKeys.ST)
-
-        self._usn = None
-        if MSearchKeys.USN in devinfo:
-            self._usn = devinfo.pop(MSearchKeys.USN)
-
-        self._usn_dev = None
-        if MSearchKeys.USN_DEV in devinfo:
-            self._usn_dev = devinfo.pop(MSearchKeys.USN_DEV)
-
-        self._usn_cls = None
-        if MSearchKeys.USN_CLS in devinfo:
-            self._usn_cls = devinfo.pop(MSearchKeys.USN_CLS)
-
-        self._routes = [r for r in devinfo.pop(MSearchKeys.ROUTES).values()]
-
-        self._primary_route = self._routes[0]
-
-        self._consume_upnp_extra(devinfo)
-        return
 
     def lookup_embedded_device(self, device_type: str) -> Union[UpnpEmbeddedDevice, None]:
         """
@@ -577,185 +685,20 @@ class UpnpRootDevice(UpnpDeviceBase):
                     self.subscribe_to_events(svc)
                 except:
                     errmsg = traceback.format_exc()
-                    self._logger.debug(errmsg)
+                    logger.debug(errmsg)
             else:
                 errmsg = "Lookup service failed for mfg={} svc={}".format(self.MANUFACTURER, svc_name)
-                self._logger.debug(errmsg)
+                logger.debug(errmsg)
 
         return
 
-    def subscribe_to_events(self, service: UpnpServiceProxy, renew: bool=False, timeout: Optional[float] = None):
-        """
-            Creates a subscription to the event name specified and returns a
-            UpnpEventVar object that can be used to read the current value for
-            the given event.
-
-            :param service: A :class:`mojo.protocols.upnp.services.upnpserviceproxy.UpnpServiceProxy`
-                            for which to subscribe to events.
-            :param timeout: The timeout to pass as a header when creating the subscription.
-        """
-        sub_sid = None
-        sub_expires = None
-
-        if len(service.SERVICE_EVENT_VARIABLES) > 0:
-
-            service_type = service.SERVICE_TYPE
-
-            new_subscription = False
-            self._device_lock.acquire()
-            try:
-                if service_type not in self._subscriptions:
-                    new_subscription = True
-                    self._subscriptions[service_type] = (None, None)
-                else:
-                    sub_sid, sub_expires = self._subscriptions[service_type]
-
-                    if sub_sid is None and sub_expires is None:
-                        # The service was unsubscribed so this is the same as a new
-                        # subscription.
-                        new_subscription = True
-            finally:
-                self._device_lock.release()
-
-            check_time = datetime.now() + timedelta(seconds=TIMEDELTA_RENEWAL_WINDOW)
-            if sub_expires is not None and check_time > sub_expires:
-                renew = True
-
-            if new_subscription or renew:
-                # If we created an uninitialized variable and added it to the subsciptions table
-                # we need to statup the subsciption here.  If the startup process fails, we can
-                # later remove the subscription from the subscription table.
-
-                serviceManufacturer = normalize_name_for_path(self.MANUFACTURER)
-                svckey = service.get_extension_key()
-                service = self._services[svckey]
-
-                subscribe_url = urljoin(self.URLBase, service.eventSubURL)
-                subscribe_auth = ""
-
-                coord = self._coord_ref()
-
-                ifname = self._primary_route[MSearchRouteKeys.IFNAME]
-
-                callback_url = coord.lookup_callback_url_for_interface(ifname)
-                if callback_url is None:
-                    errmsg = "No callback url found for ifname={}".format(ifname)
-                    raise RuntimeError(errmsg) from None
-
-                headers = { "HOST": self._host, "User-Agent": UPNP_HEADERS.USER_AGENT, "CALLBACK": callback_url, "NT": "upnp:event"}
-                if timeout is not None:
-                    headers["TIMEOUT"] = "Seconds-%s" % timeout
-
-                custom_headers = self.get_custom_subscribe_headers()
-                if custom_headers is not None:
-                    headers.update(custom_headers)
-
-                resp = requests.request(
-                    "SUBSCRIBE", subscribe_url, headers=headers, auth=subscribe_auth
-                )
-
-                if resp.status_code == 200:
-                    #============================== Expected Response Headers ==============================
-                    # SID: uuid:RINCON_7828CA09247C01400_sub0000000207
-                    # TIMEOUT: Second-86400
-                    # Server: Linux UPnP/1.0 Sonos/62.1-82260-monaco_dev (ZPS13)
-                    # Connection: close
-                    resp_headers = {k.upper(): v for k, v in resp.headers.items()}
-
-                    nxtheader = None
-                    try:
-                        nxtheader = "SID"
-                        sub_sid = resp_headers[nxtheader]
-
-                        nxtheader = "TIMEOUT"
-                        sub_timeout_str = resp_headers[nxtheader]
-                    except KeyError as kerr:
-                        errmsg = "Event subscription response was missing in %r header." % nxtheader
-                        raise ProtocolError(errmsg) from kerr
-
-                    sub_timeout = None
-                    mobj = REGEX_SUBSCRIPTION_TIMEOUT.match(sub_timeout_str)
-                    if mobj is not None:
-                        timeout_str = mobj.groups()[0]
-                        sub_timeout = 86400 if timeout_str == "infinite" else int(timeout_str)
-
-                    if sub_sid is not None:
-                        sub_expires = datetime.now() + timedelta(seconds=sub_timeout)
-                        self._device_lock.acquire()
-                        try:
-                            self._sid_to_service_lookup[sub_sid] = service
-                            self._subscriptions[service_type] = (sub_sid, sub_expires)
-                        finally:
-                            self._device_lock.release()
-
-                        # Notify the coordinator which device has this subscription, we need to
-                        # register the subscription ID so the coordinator can forward along
-                        # notify message content
-                        coord.register_subscription_for_device(sub_sid, self)
-                    else:
-                        self._device_lock.acquire()
-                        try:
-                            if service_type in self._subscriptions:
-                                del self._subscriptions[service_type]
-                        finally:
-                            self._device_lock.release()
-
-                else:
-                    context_msg = "SUBSCRIBING at {}:".format(subscribe_url)
-                    details = {
-                        "SERVICE_KEY:": svckey,
-                        "URL_BASE": self.URLBase,
-                        "EVENT_SUB_URL": service.eventSubURL
-                    }
-                    raise_for_http_status(context_msg, resp, details=details)
-
-        return sub_sid, sub_expires
-
-    def unsubscribe_to_events(self, service: UpnpServiceProxy, subscription_id: Optional[str]=None):
-        """
-        """
-
-        if len(service.SERVICE_EVENT_VARIABLES) > 0:
-            if subscription_id is None:
-                subscription_id = service.subscriptionId
-
-            service._clear_subscription()
-
-            subscribe_url = urljoin(self.URLBase, service.eventSubURL)
-            subscribe_auth = ""
-            headers = { "HOST": self._host, "User-Agent": UPNP_HEADERS.USER_AGENT, "SID": subscription_id}
-                
-            resp = requests.request(
-                    "UNSUBSCRIBE", subscribe_url, headers=headers, auth=subscribe_auth
-                )
-            if resp.status_code != 200 and resp.status_code != 412:
-                errmsg = "Error while unsubscribing from service."
-                raise UpnpError(resp.status_code, errmsg)
-
-        return
-
-    def switchModes(self, mode: str):
+    def switch_modes(self, mode: str):
         """
             Called to trigger the switching of a devices mode of operation.  This function is
             device specific and needs to be overloaded by custom UPNP device implementations.
         """
         self._mode = mode
         raise NotImplementedError("UpnpRootDevice.switchModes must be overloaded by custom UPNP devices.") from None
-
-    def as_dict(self, brief=False) -> dict:
-        """
-            Returns a description of this device as a python dictionary.
-
-            :param brief: A booliean value which indicates if a brief or full description is desired.
-
-            :returns: The python dictionary description of the device.
-        """
-        dval = super(UpnpRootDevice, self).as_dict(brief=brief)
-        dval["IPAddress"] = self.IPAddress
-        dval["USN"] = self.USN
-        dval["USN_DEV"] = self.USN_DEV
-        dval["USN_CLS"] = self.USN_CLS
-        return dval
 
     def to_json(self, brief=False) -> str:
         """

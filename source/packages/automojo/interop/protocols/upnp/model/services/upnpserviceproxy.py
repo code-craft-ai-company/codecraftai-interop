@@ -45,7 +45,7 @@ from automojo.interop.protocols.upnp.upnperrors import UpnpError
 from automojo.interop.protocols.upnp.model.services.upnpdefaultvar import UpnpDefaultVar
 
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
-from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
+from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 
 
 logger = logging.getLogger()
@@ -482,7 +482,7 @@ class UpnpServiceProxy(EventedVariableSink):
             self._create_default_variable(event_name, **event_info)
         return
 
-    def _proxy_link_service_to_device(self, device_ref: weakref.ReferenceType, service_description: ServiceDesc):
+    def _proxy_link_service_to_device(self, device_ref: weakref.ReferenceType, service_description: ServiceEvidence):
         """
             Called to link a :class:`UpnpServiceProxy` instance to a :class:`UpnpDevice` instance.  The link to the parent
             device allows device users to find the service instance and to link the service proxy with the host it interacts

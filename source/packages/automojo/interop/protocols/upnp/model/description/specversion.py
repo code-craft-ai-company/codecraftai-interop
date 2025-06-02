@@ -3,6 +3,19 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
+from typing import Dict, Optional
+
+from xml.etree.ElementTree import Element
+
+def process_spec_version(spec_ver_el: Element, namespaces: Dict[str, str]) -> "SpecVersion":
+        
+    major = int(spec_ver_el.find("major", namespaces=namespaces).text)
+    minor = int(spec_ver_el.find("minor", namespaces=namespaces).text)
+
+    spec_ver = SpecVersion(major=major, minor=minor)
+
+    return spec_ver
+
 
 def xml_format_spec_version(
     major: int,
@@ -50,7 +63,7 @@ class SpecVersion:
         return desc
         
 
-    def as_xml(self, indent="") -> str:
+    def to_xml(self, indent="") -> str:
         """
         Convert the SpecVersion object to an XML string.
 

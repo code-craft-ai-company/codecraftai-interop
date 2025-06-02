@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 from automojo.interop.protocols.upnp.model.description.specversion import SpecVersion
 from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
 from automojo.interop.protocols.upnp.model.description.icondesc import IconDesc
-from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
+from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 
 from automojo.interop.manufacturers.bose.description.bosedevicedetail import BoseDeviceDetail
 from automojo.interop.manufacturers.bose.description.bosemultiroomversions import BoseMultiRoomVersions
@@ -20,7 +20,7 @@ class BoseEmbeddedDeviceDetail(BoseDeviceDetail):
     def __init__(self, *, specVersion: SpecVersion, deviceType: str, friendlyName: str, manufacturer: str, modelName: str, UDN: str,
                  mac_addr: str, generation: str, codename: str, color: str, software_version: str, multi_room: BoseMultiRoomVersions,
                  modelNumber: str="", serialNumber: str="", manufacturerURL: str="", modelDescription: str = "", modelURL: str = "",
-                 UPC: str="", presentationURL: str="", iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceDesc]] = None,
+                 UPC: str="", presentationURL: str="", iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None,
                  deviceList: Optional[List['EmbeddedDeviceDesc']] = None, **extra: Dict[str, str]):
         
         super().__init__(specVersion=specVersion, deviceType=deviceType, friendlyName=friendlyName,

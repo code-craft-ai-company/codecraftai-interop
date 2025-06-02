@@ -12,8 +12,9 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import List, Optional, Union, TYPE_CHECKING
+from typing import Dict, List, Optional, Union, TYPE_CHECKING
 
+import logging
 import threading
 import weakref
 
@@ -24,14 +25,18 @@ import requests
 
 from automojo.foundation.fspath import normalize_name_for_path
 
+
+from automojo.interop.protocols.upnp.constants import UPNP_HEADERS
 from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
 
 from automojo.interop.protocols.upnp.upnperrors import UpnpServiceNotAvailableError
 
 from automojo.interop.protocols.upnp.model.services.upnpserviceproxy import UpnpServiceProxy
 
-from automojo.interop.protocols.upnp.model.evidence.upnpdeviceevidence import UpnpDeviceEvidence
+from automojo.interop.protocols.upnp.model.description.deviceevidence import DeviceEvidence
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
+from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
+from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
 
 
 # Types imported only for type checking purposes
@@ -39,7 +44,7 @@ if TYPE_CHECKING:
     from automojo.interop.protocols.upnp.model.devices.upnpdevicefactory import UpnpDeviceFactory
 
 
-UPNP_SERVICE1_NAMESPACE = "urn:schemas-upnp-org:service-1-0"
+logger = logging.getLogger()
 
 
 class UpnpDeviceBase:
@@ -75,11 +80,13 @@ class UpnpDeviceBase:
             self.MODEL_DESCRIPTION = self.device_description.modelDescription
 
         self._host = None
-        self._urlBase = None
+        self._urlBase: str = None
 
         self._device_lock = threading.RLock()
 
         self._embedded_devices = {}
+        
+        self._services_descriptions = {}
         self._services = {}
         
         # We must have an initial device description in order to be able to create a
@@ -117,7 +124,7 @@ class UpnpDeviceBase:
         return self._device_detail
 
     @property
-    def device_evidence(self) -> UpnpDeviceEvidence:
+    def device_evidence(self) -> DeviceEvidence:
         """
             Returns the device evidence from the UPNP device.
         """
@@ -160,7 +167,41 @@ class UpnpDeviceBase:
         """
         return self._urlBase
 
-    def get_service_description(self, serviceType: str) -> Union[dict, None]:
+    def as_dict(self, brief=False):
+        """
+            Creates a dictionary description of the device and its sub devices and services.
+        """
+        rtnval = None
+        
+        self._device_lock.acquire()
+        try:
+            rtnval = self._device_description.as_dict(brief=brief)
+        finally:
+            self._device_lock.release()
+
+        return rtnval
+
+    def assemble_device(self, factory: "UpnpDeviceFactory"):
+        """
+            Assembles any additional information needed for the device to transition to an operational state.  This is
+            called after the device has been created and the root device description has been loaded.  The root device
+            description contains brief information about services so it is necessary to formalize a way to take a device
+            with incomplete information and retrieve the extended information needed for full operation.
+
+            :param factory: The UpnpDeviceFactory that is used to create the device.
+        """
+        
+        # When we enhance the device, we go out and retrieve the service descriptions and populate the
+        # service descriptions table.  We also populate the embedded device descriptions table.
+        self._populate_services_descriptions(self._device_description)
+
+        for device_desc in self._device_description.deviceList:
+
+            self._populate_embedded_device_descriptions(factory, device_desc)
+
+        return
+
+    def get_service_description(self, serviceType: str, extra_headers: Optional[Dict[str, str]] = None) -> ServiceDesc:
         """
             Gets the service description for the specified service type.
 
@@ -168,18 +209,26 @@ class UpnpDeviceBase:
 
             :returns: Returns the description information for the service type if found or None if not found.
         """
-        svc_content = None
+        svc_desc = None
 
         for nxtsvc in self._device_description.serviceList:
             if nxtsvc.serviceType == serviceType:
                 fullurl = self.URLBase.rstrip("/") + "/" + nxtsvc.SCPDURL.lstrip("/")
 
-                resp: requests.Response = requests.get(fullurl)
+                headers = {
+                    "User-Agent": UPNP_HEADERS.USER_AGENT
+                }
+
+                if extra_headers is not None:
+                    headers.update(extra_headers)
+
+                resp: requests.Response = requests.get(fullurl, headers=headers)
                 if resp.status_code == 200:
                     svc_content = resp.text
+                    svc_desc = ServiceDesc.query_service_description(svc_content)
                     break
 
-        return svc_content
+        return svc_desc
 
     def lookup_service(self, service_key: str, allow_none: bool=False, factory: Optional["UpnpDeviceFactory"] = None) -> Union[UpnpServiceProxy, None]:
         """
@@ -218,55 +267,21 @@ class UpnpDeviceBase:
 
         return svc
 
-    def as_dict(self, brief=False):
-        """
-            Creates a dictionary description of the device and its sub devices and services.
-        """
-        dval = None
-
-        self._device_lock.acquire()
-        try:
-            desc = self._device_description
-
-            if desc is not None:
-                dval = desc.as_dict(brief=brief)
-
-                dval["URLBase"] = self.URLBase
-
-                if not brief:
-                    serviceDescList = []
-                    serviceList = dval["serviceList"]
-                    for svc_info in serviceList:
-                        svc_type = svc_info["serviceType"]
-                        sdurl = self._urlBase.rstrip("/") + "/" + svc_info["SCPDURL"].lstrip("/")
-                        sdesc = self._locked_process_full_service_description(sdurl)
-                        sdesc["serviceType"] = svc_type
-                        serviceDescList.append(sdesc)
-
-                    dval["serviceDescriptionList"] = serviceDescList
-        finally:
-            self._device_lock.release()
-
-        return dval
-
     def to_json(self, brief=False):
         """
             Creates a json description of the device and its sub devices and services.
         """
-        json_str = None
-
+        rtnval = None
+        
         self._device_lock.acquire()
         try:
-            desc = self._description
-
-            if desc is not None:
-                json_str = self._description.to_json(brief=brief)
+            rtnval = self._device_description.as_json(brief=brief)
         finally:
             self._device_lock.release()
 
-        return json_str
+        return rtnval
 
-    def _locked_populate_embedded_device_descriptions(self, factory: "UpnpDeviceFactory", description: Basic1DeviceDesc):
+    def _populate_embedded_device_descriptions(self, factory: "UpnpDeviceFactory", device_description: EmbeddedDeviceDesc):
         """
             Takes in a device description and processes it for embedded devices.
 
@@ -274,144 +289,64 @@ class UpnpDeviceBase:
                             embedded devices when the UPNP device description is processed.
             :param description: The Basic1DeviceDesc object that contains information about the device and its embedded devices.
         """
-        # pylint: disable=no-self-use,unused-argument
-        raise NotImplementedError("UpnpDevice._populate_embedded_devices: must be overridden.") from None
+        devkey = device_description.get_extension_key()
+        
+        dev_instance: "UpnpDeviceBase" = factory.create_embedded_device_instance(
+            device_description=device_description,
+            urlBase=self._urlBase,
+            host=self._host
+        )
 
-    def _locked_populate_services_descriptions(self, factory: "UpnpDeviceFactory", description: Basic1DeviceDesc):
-        """
-            Takes in a device description and processes it for service descriptions.
+        self._device_lock.acquire()
+        try:
+            if devkey not in self._embedded_device_descriptions:
+                self._embedded_device_descriptions[devkey] = device_description
 
-            :param factory: The UpnpDeviceFactory that has registered exentsion types that is used to instantiate
-                            services when the UPNP device description is processed.
-            :param description: The Basic1DeviceDesc object that contains information about the device and its services.
-        """
-        # pylint: disable=protected-access
-        for serviceInfo in description.serviceList:
-            serviceManufacturer = normalize_name_for_path(serviceInfo.serviceManufacturer)
-            serviceType = serviceInfo.serviceType
+            self._embedded_devices[devkey] = dev_instance
+        finally:
+            self._device_lock.release()
 
-            svckey = generate_extension_key(serviceManufacturer, serviceType)
-            if serviceType not in self._services_descriptions:
-                self._services_descriptions[svckey] = serviceInfo
-
-                svc_inst = factory.create_service_instance(serviceManufacturer, serviceType)
-                if svc_inst is not None:
-                    device_ref = weakref.ref(self)
-                    svc_inst._proxy_link_service_to_device(device_ref, serviceInfo)
-                    self._services[svckey] = svc_inst
-            else:
-                svc_inst = self._services[svckey]
+        dev_instance.enhance_device(factory)
 
         return
 
-    def _locked_process_full_service_description(self, sdurl: str):
+    def _populate_services_descriptions(self, device_description: Basic1DeviceDesc):
         """
-            Downloads and processes the service description document.
+            Takes in a device description and processes it for service descriptions.
 
-            :param sdurl: The url of the service description document to process.
+            :param device_description: The Basic1DeviceDesc object that contains information about the device and its services. This could be the
+                                       root device description or an embedded device description.
+
         """
-        svcdesc = None
 
-        resp = requests.get(sdurl)
-        if resp.status_code == 200:
-            svcdesc = {}
+        service_descriptions = {}
 
-            namespaces = {"": UPNP_SERVICE1_NAMESPACE}
+        # pylint: disable=protected-access
+        for serviceInfo in device_description.serviceList:
 
-            try:
-                xml_content = resp.text
-                descDoc = xml_fromstring(xml_content)
+            service_url = serviceInfo.SCPDURL
+            if service_url is not None and not service_url.startswith("http"):
+                if self._urlBase is None:
+                    raise ValueError("The URLBase for the device must be set before processing service descriptions.")
 
-                specVersionNode = descDoc.find("specVersion", namespaces=namespaces)
-                verInfo = self._locked_process_node_spec_version(specVersionNode, namespaces=namespaces)
-                svcdesc["specVersion"] = verInfo
+                service_url = self._urlBase.rstrip("/") + "/" + service_url.lstrip("/")
 
-                serviceStateTableNode = descDoc.find("serviceStateTable", namespaces=namespaces)
-                variablesTable, typesTable, eventsTable = self._locked_process_node_state_table(serviceStateTableNode, namespaces=namespaces)
-                svcdesc["variablesTable"] = variablesTable
-                svcdesc["typesTable"] = typesTable
-                svcdesc["eventsTable"] = eventsTable
+                svc_desc_resp: requests.Response = requests.get(service_url)
+                if svc_desc_resp.status_code == 200:
+                    # If we were able to obtain the service description document, then we can process it in order to
+                    # get the extended service description information needed to lookup any pre-existing code generated
+                    # service interop proxy classes.
 
-                actionListNode = descDoc.find("actionList", namespaces=namespaces)
-                actionsTable = self._locked_process_node_action_list(actionListNode, namespaces=namespaces)
-                svcdesc["actionsTable"] = actionsTable
-            except:
-                print("Service Description Failure: %s" % sdurl)
-                raise
+                    svckey = serviceInfo.get_extension_key()
 
-        return svcdesc
+                    service_descriptions[svckey] = ServiceDesc.query_service_description(service_url)
 
-    def _locked_process_node_action_list(self, actionListNode: Element, namespaces: Optional[dict] = None) -> dict:
-        """
-            Processes the node action list and creates a dictionary of the actions supported by the service.
+        self._device_lock.acquire()
+        try:
+            self._services_descriptions = service_descriptions
+        finally:
+            self._device_lock.release()
 
-            :param actionListNode: The parent node for all the action list node.
-            :param namespaces: A dictionary of namespaces to use when processing the XML.
-        """
-        # pylint: disable=no-self-use
-        actionTable = {}
+        return
 
-        actionNodeList = actionListNode.findall("action", namespaces=namespaces)
-        for actionNode in actionNodeList:
-            actionName = actionNode.find("name", namespaces=namespaces).text
-            actionArgs = {}
-
-            argumentListNode = actionNode.find("argumentList", namespaces=namespaces)
-            if argumentListNode is not None:
-                argumentNodeList = argumentListNode.findall("argument", namespaces=namespaces)
-                for argumentNode in argumentNodeList:
-                    argName = argumentNode.find("name", namespaces=namespaces).text
-                    argDirection = argumentNode.find("direction", namespaces=namespaces).text
-
-                    argRelStateVar = None
-                    argRelStateNode = argumentNode.find("relatedStateVariable", namespaces=namespaces)
-                    if argRelStateNode is not None:
-                        argRelStateVar = argRelStateNode.text
-
-                    actionArgs[argName] = {
-                        "name": argName,
-                        "direction": argDirection,
-                        "relatedStateVariable": argRelStateVar
-                        }
-
-            actionTable[actionName] = {
-                    "name": actionName,
-                    "arguments" : actionArgs
-                }
-
-        return actionTable
-
-    def _locked_process_node_spec_version(self, specVersionNode: Element, namespaces: Optional[dict] = None) -> dict:
-        # pylint: disable=no-self-use
-        verInfo = {}
-
-        verInfo["major"] = specVersionNode.find("major", namespaces=namespaces).text
-        verInfo["minor"] = specVersionNode.find("minor", namespaces=namespaces).text
-
-        return verInfo
-
-    def _locked_process_node_state_table(self, serviceStateTableNode: Element, namespaces: Optional[dict] = None) -> dict:
-        # pylint: disable=no-self-use
-        variablesTable = {}
-        typesTable = {}
-        eventsTable = {}
-
-        stateVariableList = serviceStateTableNode.findall("stateVariable", namespaces=namespaces)
-        for stateVariableNode in stateVariableList:
-            name = stateVariableNode.find("name", namespaces=namespaces).text
-            dataType = stateVariableNode.find("dataType", namespaces=namespaces).text
-
-            varInfo = { "name": name, "dataType": dataType}
-            if name.startswith("A_ARG_TYPE_"):
-                typesTable[name] = varInfo
-            else:
-                variablesTable[name] = varInfo
-
-                sendEvents = "no"
-                if "sendEvents" in stateVariableNode.attrib:
-                    sendEvents = stateVariableNode.attrib["sendEvents"]
-
-                if sendEvents == "yes":
-                    eventsTable[name] = varInfo
-
-        return variablesTable, typesTable, eventsTable
+    

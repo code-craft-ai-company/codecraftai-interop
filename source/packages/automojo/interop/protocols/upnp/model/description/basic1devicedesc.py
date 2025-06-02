@@ -4,16 +4,19 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import List, Optional, Union, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 
+import json
+
+from automojo.networking.constants import HTTP1_1_LINESEP
 from automojo.interop.protocols.upnp.model.description.icondesc import IconDesc
-from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
+from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 from automojo.interop.protocols.upnp.model.description.specversion import SpecVersion
 
 if TYPE_CHECKING:
     from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
 
-def xml_format_basci1_device_desc(iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceDesc]] = None,
+def xml_format_basci1_device_desc(iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None,
                                   deviceList: Optional[List["EmbeddedDeviceDesc"]] = None, indent: str = "") -> str:
 
     desc_lines = [
@@ -83,7 +86,7 @@ def xml_format_basci1_device_desc(iconList: Optional[List[IconDesc]] = None, ser
         f'{indent}</root>'
     ])
 
-    desc = "\r\n".join(desc_lines)
+    desc = HTTP1_1_LINESEP.join(desc_lines)
 
     return desc
 
@@ -95,30 +98,160 @@ class Basic1DeviceDesc:
 
     def __init__(self, *, specVersion: SpecVersion, deviceType: str, friendlyName: str, manufacturer: str, modelName: str, UDN: str, 
                  modelNumber: str="", serialNumber: str="", manufacturerURL: str="", modelDescription: str = "", modelURL: str = "", UPC: str="", presentationURL: str="",
-                 iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceDesc]] = None, deviceList: Optional[List['EmbeddedDeviceDesc']] = None,
+                 iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None, deviceList: Optional[List['EmbeddedDeviceDesc']] = None,
                  locationURL: Optional[str]=None, **extras: dict):
-        self.deviceType = deviceType
-        self.specVersion = specVersion
-        self.friendlyName = friendlyName
-        self.manufacturer = manufacturer
-        self.manufacturerURL = manufacturerURL
-        self.modelDescription = modelDescription
-        self.modelName = modelName
-        self.modelNumber = modelNumber
-        self.serialNumber = serialNumber
-        self.UDN = UDN
-        self.UPC = UPC
-        self.modelURL = modelURL
-        self.presentationURL = presentationURL
+        self._deviceType = deviceType
+        self._specVersion = specVersion
+        self._friendlyName = friendlyName
+        self._manufacturer = manufacturer
+        self._manufacturerURL = manufacturerURL
+        self._modelDescription = modelDescription
+        self._modelName = modelName
+        self._modelNumber = modelNumber
+        self._serialNumber = serialNumber
+        self._UDN = UDN
+        self._UPC = UPC
+        self._modelURL = modelURL
+        self._presentationURL = presentationURL
 
-        self.iconList = iconList if iconList is not None else []
-        self.deviceList = deviceList if deviceList is not None else []
-        self.serviceList = serviceList if serviceList is not None else []
+        self.iconList: List[IconDesc] = iconList if iconList is not None else []
+        self.deviceList: List["EmbeddedDeviceDesc"] = deviceList if deviceList is not None else []
+        self.serviceList: List[ServiceEvidence] = serviceList if serviceList is not None else []
         
-        self.locationURL = locationURL
+        self._locationURL = locationURL
 
-        self.extras = extras
+        self._extras = extras
         return
+
+    @property
+    def deviceType(self) -> str:
+        """
+            The type of the device, typically in the format 'urn:schemas-upnp-org:device:Basic:1'.
+        """
+        return self._deviceType
+    
+    @property
+    def extras(self) -> Dict[str, Any]:
+        """
+            Additional metadata or information about the device.
+        
+            :returns: Dictionary containing additional metadata.
+        """
+        return self._extras
+
+    @property
+    def friendlyName(self) -> str:  # noqa: A003
+        """
+            The friendly name of the device.
+        
+            :returns: String representing the friendly name of the device.
+        """
+        return self._friendlyName
+    
+    @property
+    def locationURL(self) -> Optional[str]:
+        """
+            The URL of the device's location on the network.
+            This is typically used to access the device's web interface or API.
+        """
+        return self._locationURL
+
+    @property
+    def manufacturer(self) -> str:
+        """
+            The manufacturer of the device.
+        
+            :returns: String representing the manufacturer of the device.
+        """
+        return self._manufacturer
+    @property
+    def manufacturerURL(self) -> str:   # noqa: A003
+        """
+            The URL of the manufacturer's website.
+        
+            :returns: String representing the manufacturer's URL.
+        """
+        return self._manufacturerURL
+    @property
+    def modelDescription(self) -> str:
+        """
+            The description of the device model.
+        
+            :returns: String representing the model description.
+        """
+        return self._modelDescription
+    
+    @property
+    def modelName(self) -> str:
+        """
+           The name of the device model. 
+        
+            :returns: String representing the model name.
+        """
+        return self._modelName
+    
+    @property
+    def modelNumber(self) -> str:
+        """
+            The model number of the device.
+        
+            :returns: String representing the model number.
+        """
+        return self._modelNumber
+    
+    @property
+    def modelURL(self) -> str:
+        """
+            The URL of the device model.
+        
+            :returns: String representing the model URL.
+        """
+        return self._modelURL
+
+    @property
+    def presentationURL(self) -> str:
+        """
+            The URL for the device's presentation page.
+        
+            :returns: String representing the presentation URL.
+        """
+        return self._presentationURL
+
+    @property
+    def serialNumber(self) -> str:
+        """
+            The serial number of the device.
+        
+            :returns: String representing the serial number.
+        """
+        return self._serialNumber
+    
+    @property
+    def specVersion(self) -> SpecVersion:
+        """
+            The specification version of the UPnP device description.
+        
+            :returns: SpecVersion object representing the specification version.
+        """
+        return self._specVersion
+    
+    @property
+    def UDN(self) -> str:
+        """
+            The Unique Device Name (UDN) of the device.
+        
+            :returns: String representing the UDN.
+        """
+        return self._UDN
+
+    @property
+    def UPC(self) -> str:
+        """
+            The Universal Product Code (UPC) of the device.
+        
+            :returns: String representing the UPC.
+        """
+        return self._UPC
 
     def add_icon(self, icon: "IconDesc"):
         """
@@ -138,7 +271,7 @@ class Basic1DeviceDesc:
         self.deviceList.append(device)
         return
 
-    def add_service(self, service: "ServiceDesc"):
+    def add_service(self, service: "ServiceEvidence"):
         """
             Add a service to the device description.
         
@@ -147,7 +280,7 @@ class Basic1DeviceDesc:
         self.serviceList.append(service)
         return
 
-    def as_dict(self, brief: bool = False) -> dict:
+    def as_dict(self, brief: bool = False) -> Dict[str, Any]:
         """
             Convert the Basic1DeviceDesc object to a dictionary.
         
@@ -186,12 +319,39 @@ class Basic1DeviceDesc:
                 desc.update(self.extras)
 
         return desc
+    
+    def get_extension_key(self) -> str:
+        """
+            Generates a unique key that identifies an extension type based on where it was found in a hiearchy of code containers.
 
-    def as_xml(self, indent="") -> str:
+            :returns: A unique path like string that is an identifier used to lookup a device type.
+        """
+        
+        extkey = f"{self._manufacturer}/{self._modelName}/{self._modelNumber}"
+        
+        return extkey
+    
+    def to_json(self, brief: bool = False) -> str:
+        """
+            Convert the Basic1DeviceDesc object to a JSON string.
+        
+            :param brief: If True, returns a brief representation of the device description.
+            
+            :returns: JSON string representation of the Basic1DeviceDesc object.
+        """
+        
+        dict_val = self.as_dict(brief=brief)
+
+        json_val = json.dumps(dict_val, indent=4)
+        
+        return json_val
+
+    def to_xml(self, indent="") -> str:
         """
             Convert the Basic1DeviceDesc object to an XML string.
         
             :param indent: Indentation for the XML string.
+
             :returns: XML string representation of the Basic1DeviceDesc object.
         """
         
@@ -203,22 +363,14 @@ class Basic1DeviceDesc:
         )
         
         return desc
-    
-    def get_extension_key(self) -> str:
-        """
-            Generates a unique key that identifies an extension type based on where
-            it was found in a hiearchy of code containers.
 
-            :returns: A unique path like string that is an identifier used to lookup a device type.
-        """
-        extkey = f"{self.manufacturer}/{self.modelName}/{self.modelNumber}"
-        return extkey
-    
     def __str__(self) -> str:
         """
             Convert the Basic1DeviceDesc object to a string.
         
             :returns: String representation of the Basic1DeviceDesc object.
         """
+        
         sval = f'Basic1DeviceDesc(friendlyName={self.friendlyName}, modelName={self.modelName}, modelNumber={self.modelNumber}, serialNumber={self.serialNumber}, UDN={self.UDN}, UPC={self.UPC}, presentationURL={self.presentationURL})'
+        
         return sval

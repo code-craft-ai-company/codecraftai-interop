@@ -21,7 +21,9 @@ from automojo.interop.protocols.upnp.model.description.basic1devicedesc import B
 
 from automojo.interop.protocols.upnp.wellknown import DeviceDetailMapperRegistrySingleton
 
+
 logger = logging.getLogger()
+
 
 class DeviceQueryManager:
     """
@@ -34,14 +36,15 @@ class DeviceQueryManager:
         self._mapper_registry = DeviceDetailMapperRegistrySingleton()
         return
 
-    def query_device_details(self, location: str) -> Optional[Basic1DeviceDesc]:
+    def query_device_description(self, query_url: str) -> Optional[Basic1DeviceDesc]:
 
         device_desc = None
 
         try:
-            resp: requests.Response = requests.get(location, timeout=2)
+            resp: requests.Response = requests.get(query_url, timeout=2)
 
             if resp.status_code == HTTPStatus.OK:
+
                 try:
                     default_namespaces = {"": UPNP_DEVICE1_NAMESPACE}
                     xml_content = resp.content.decode("utf-8")
@@ -53,7 +56,7 @@ class DeviceQueryManager:
 
                         mapper = self._mapper_registry.lookup_device_detail_mapper(manufacturer)
                         
-                        device_desc = mapper.create_root_device_description(root_el, default_namespaces, spec_ver, locationURL=location)
+                        device_desc = mapper.create_root_device_description(root_el, default_namespaces, spec_ver, locationURL=query_url)
                     
                 except Exception as parse_err:
                     err_msg = f"Error parsing device description XML: {parse_err}"
@@ -61,7 +64,7 @@ class DeviceQueryManager:
 
         except Exception as req_err:
             err_msg_lines = [
-                f"Error querying device at {location}:"
+                f"Error querying device at {query_url}:"
             ]
             err_msg_lines.extend(f"{req_err}".splitlines(False))
 
@@ -69,3 +72,15 @@ class DeviceQueryManager:
             logger.error(err_msg)
 
         return device_desc
+    
+    def query_service_desciption(self, query_url: str) -> Optional[Basic1DeviceDesc]:
+        """
+            Queries the service description from the given service URL.
+
+            :param query_url: The URL of the service to query.
+
+            :returns: A Basic1DeviceDesc object containing the service description or None if the query fails.
+        """
+        service_desc = None
+
+        return service_desc

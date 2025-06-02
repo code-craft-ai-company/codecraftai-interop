@@ -15,7 +15,7 @@ from xml.etree.ElementTree import Element
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
 from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
 from automojo.interop.protocols.upnp.model.description.icondesc import IconDesc
-from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
+from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 from automojo.interop.protocols.upnp.model.description.specversion import SpecVersion
 
 from automojo.interop.protocols.upnp.constants import (
@@ -198,7 +198,7 @@ class DeviceDetailMapper:
 
 
     @classmethod
-    def _process_services_list(cls, services_el: Element, namespaces: Dict[str, str]) -> List[ServiceDesc]:
+    def _process_services_list(cls, services_el: Element, namespaces: Dict[str, str]) -> List[ServiceEvidence]:
         
         servicesList = []
 
@@ -224,14 +224,14 @@ class DeviceDetailMapper:
                     propEl = nxtEl.find("eventSubURL", namespaces=namespaces)
                     eventSubURL = propEl.text
 
-                    svcInfo = ServiceDesc(serviceType=serviceType, serviceId=serviceId, controlURL=controlURL, eventSubURL=eventSubURL, SCPDURL=SCPDURL)
+                    svcInfo = ServiceEvidence(serviceType=serviceType, serviceId=serviceId, controlURL=controlURL, eventSubURL=eventSubURL, SCPDURL=SCPDURL)
                     
                     servicesList.append(svcInfo)
 
         return servicesList
 
     @classmethod
-    def _process_spec_version(cls, spec_ver_el: Element, namespaces: Dict[str, str]) -> SpecVersion:
+    def process_spec_version(cls, spec_ver_el: Element, namespaces: Dict[str, str]) -> SpecVersion:
         
         major = int(spec_ver_el.find("major", namespaces=namespaces).text)
         minor = int(spec_ver_el.find("minor", namespaces=namespaces).text)

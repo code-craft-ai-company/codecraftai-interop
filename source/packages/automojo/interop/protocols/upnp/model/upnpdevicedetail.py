@@ -7,7 +7,7 @@ __credits__ = []
 from typing import Union
 
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
-from automojo.interop.protocols.upnp.model.evidence.upnpdeviceevidence import UpnpDeviceEvidence
+from automojo.interop.protocols.upnp.model.description.deviceevidence import DeviceEvidence
 
 
 
@@ -19,7 +19,7 @@ class UpnpDeviceDetail:
         Class to represent UPnP device details.
     """
 
-    def __init__(self, evidence: UpnpDeviceEvidence, description: Union[Basic1DeviceDesc, None]):
+    def __init__(self, evidence: DeviceEvidence, description: Union[Basic1DeviceDesc, None]):
         """
             Initialize the UPnP device details.
 
@@ -30,7 +30,7 @@ class UpnpDeviceDetail:
         return
     
     @property
-    def evidence(self) -> UpnpDeviceEvidence:
+    def evidence(self) -> DeviceEvidence:
         """
             Get the UPnP device evidence from the las M-Search response or Notify message.
 

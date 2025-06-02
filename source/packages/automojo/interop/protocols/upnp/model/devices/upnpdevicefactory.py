@@ -26,7 +26,7 @@ from automojo.foundation.collections.context import Context
 
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
 from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
-from automojo.interop.protocols.upnp.model.description.servicedesc import ServiceDesc
+from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 
 from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
 
@@ -140,7 +140,7 @@ class UpnpDeviceFactory:
 
         return dev_inst
 
-    def create_service_instance(self, service_desc: ServiceDesc) -> Union[UpnpServiceProxy, None]:
+    def create_service_instance(self, service_desc: ServiceEvidence) -> Union[UpnpServiceProxy, None]:
         """
             Method that is called to create an instance of an extension for a specific UPnP service proxy.  If a
             service proxy extension is not found matching the specified parameters then None is returned.

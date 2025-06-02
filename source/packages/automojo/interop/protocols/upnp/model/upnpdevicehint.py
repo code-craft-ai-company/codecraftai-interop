@@ -4,7 +4,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from automojo.interop.protocols.upnp.model.evidence.upnpdeviceevidence import UpnpDeviceEvidence
+from automojo.interop.protocols.upnp.model.description.deviceevidence import DeviceEvidence
 
 class UpnpDeviceHint:
     """
@@ -29,7 +29,7 @@ class UpnpDeviceHint:
         """
         return self._hint
 
-    def matches(self, exhibit: UpnpDeviceEvidence) -> bool:
+    def matches(self, exhibit: DeviceEvidence) -> bool:
         """
             Check if the hint provided by the user configuration matches the device exhibit.
 

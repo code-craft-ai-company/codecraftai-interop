@@ -14,9 +14,9 @@ __credits__ = []
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.interop.protocols.upnp.devices.upnpdevice import UpnpDevice
+from automojo.interop.protocols.upnp.model.devices.upnpdevicebase import UpnpDeviceBase
 
-class UpnpEmbeddedDevice(UpnpDevice):
+class UpnpEmbeddedDevice(UpnpDeviceBase):
     """
         The UPNP Embedded device is the base device for the hierarchy that is
         associated with a unique network devices location.  The :class:`UpnpEmbeddedDevice`

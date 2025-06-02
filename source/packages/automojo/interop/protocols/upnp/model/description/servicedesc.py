@@ -1,105 +1,62 @@
 
-__author__ = "Myron Walker"
-__copyright__ = "Copyright 2025, Automation Mojo LLC"
-__credits__ = []
+from typing import Dict, Optional
 
+from xml.etree.ElementTree import fromstring as xml_fromstring
+from xml.etree.ElementTree import Element
 
-def xml_format_service_desc(
-    serviceType: str,
-    serviceId: str,
-    controlURL: str,
-    eventSubURL: str,
-    SCPDURL: str,
-    indent: str = ""
-) -> str:
-    """
-    Create an XML representation of a service description.
+import requests
 
-    :param service_type: Type of the service.
-    :param service_id: ID of the service.
-    :param control_url: Control URL of the service.
-    :param event_sub_url: Event subscription URL of the service.
-    :param scpd_url: SCPD URL of the service.
-    :param indent: Indentation for the XML string.
-    :returns: XML string representation of the service description.
-    """
-    
-    desc_lines = [
-        f"{indent}<service>",
-        f"{indent}    <serviceType>{serviceType}</serviceType>",
-        f"{indent}    <serviceId>{serviceId}</serviceId>",
-        f"{indent}    <controlURL>{controlURL}</controlURL>",
-        f"{indent}    <eventSubURL>{eventSubURL}</eventSubURL>",
-        f"{indent}    <SCPDURL>{SCPDURL}</SCPDURL>",
-        f"{indent}</service>"
-    ]
+from automojo.interop.protocols.upnp.constants import UPNP_SERVICE1_NAMESPACE
 
-    desc = "\r\n".join(desc_lines)
-
-    return desc
-
+from automojo.interop.protocols.upnp.model.description.specversion import SpecVersion, process_spec_version
+from automojo.interop.protocols.upnp.model.description.serviceaction import ServiceAction, process_action_list
+from automojo.interop.protocols.upnp.model.description.servicestatetables import ServiceStateTables, process_state_table
 
 class ServiceDesc:
     """
-        Class representing a UPnP service description.
+        Represents a service description in the UPnP protocol.
     """
-
-    def __init__(self, *, serviceType: str, serviceId: str, controlURL: str, eventSubURL: str, SCPDURL: str):
-        self.serviceType = serviceType
-        self.serviceId = serviceId
-        self.controlURL = controlURL
-        self.eventSubURL = eventSubURL
-        self.SCPDURL = SCPDURL
+    
+    def __init__(self, *, specVersion: SpecVersion, serviceStateTables: ServiceStateTables, actionsTable: Dict[str, ServiceAction]):
+        self.specVersion = specVersion
+        self.serviceStateTables = serviceStateTables
+        self.actionsTable = actionsTable
         return
+
+    @classmethod
+    def query_service_description(cls, serv_desc_url: str) -> "ServiceDesc":
+        """
+            Downloads and processes the service description document.
+
+            :param serv_desc_url: The url of the service description document to process.
+        """
+        svcdesc = None
+
+        resp: requests.Response = requests.get(serv_desc_url)
+        if resp.status_code == 200:
+            svcdesc = {}
+
+            namespaces = {"": UPNP_SERVICE1_NAMESPACE}
+
+            try:
+                xml_content = resp.text
+                descDoc = xml_fromstring(xml_content)
+
+                specVersionNode = descDoc.find("specVersion", namespaces=namespaces)
+                specVersion = process_spec_version(specVersionNode, namespaces=namespaces)
+
+                serviceStateTableNode = descDoc.find("serviceStateTable", namespaces=namespaces)
+                variablesTable, typesTable, eventsTable = process_state_table(serviceStateTableNode, namespaces=namespaces)
     
-    def as_dict(self) -> dict:
-        """
-        Convert the ServiceDesc object to a dictionary.
+                serviceStateTables = ServiceStateTables(variablesTable=variablesTable, typesTable=typesTable, eventsTable=eventsTable)
 
-        :returns: Dictionary representation of the ServiceDesc object.
-        """
-        
-        desc = {
-            "serviceType": self.serviceType,
-            "serviceId": self.serviceId,
-            "controlURL": self.controlURL,
-            "eventSubURL": self.eventSubURL,
-            "SCPDURL": self.SCPDURL
-        }
+                actionListNode = descDoc.find("actionList", namespaces=namespaces)
+                actionsTable = process_action_list(actionListNode, namespaces=namespaces)
+                
+                svcdesc = ServiceDesc(specVersion=)
 
-        return desc 
-    
-    def as_xml(self, indent="") -> str:
-        """
-        Convert the ServiceDesc object to an XML string.
+            except:
+                print("Service Description Failure: %s" % serv_desc_url)
+                raise
 
-        :param indent: Indentation for the XML string.
-
-        :returns: XML string representation of the ServiceDesc object.
-        """
-        
-        desc = xml_format_service_desc(
-            serviceType=self.serviceType,
-            serviceId=self.serviceId,
-            controlURL=self.controlURL,
-            eventSubURL=self.eventSubURL,
-            SCPDURL=self.SCPDURL,
-            indent=indent
-        )
-
-        return desc
-    
-    def get_extension_key(self) -> str:
-        """
-            Generates a unique key that identifies an extension type based on where
-            it was found in a hiearchy of code containers.
-
-            :returns: A unique path like string that is an identifier used to lookup a device type.
-        """
-        extkey = f"{self.serviceType}/{self.serviceId}"
-        return extkey
-
-    def __repr__(self):
-        rval = f"ServiceDesc(serviceType={self.serviceType}, serviceId={self.serviceId})"
-        return rval
-
+        return svcdesc
