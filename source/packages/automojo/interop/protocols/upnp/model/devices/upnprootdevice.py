@@ -719,7 +719,7 @@ class UpnpRootDevice(UpnpDeviceBase):
         # pylint: disable=no-self-use
         return
 
-    def _locked_populate_embedded_devices(self, factory: "UpnpDeviceFactory", description: Basic1DeviceDesc):
+    def _locked_populate_embedded_devices(self, factory: "UpnpDeviceFactory", description: EmbeddedDeviceDesc):
         """
             Called in order to process embedded device descriptions and to instantiate embedded device instances.
 
@@ -730,7 +730,7 @@ class UpnpRootDevice(UpnpDeviceBase):
             devkey = deviceInfo.get_extension_key()
 
             if devkey not in self._embedded_devices:
-                dev_inst = factory.(manufacturer, modelNumber, modelDescription)
+                dev_inst = factory.create_embedded_device_instance(description)
                 self._embedded_devices[devkey] = dev_inst
 
                 self._locked_populate_services_descriptions(factory, deviceInfo)
