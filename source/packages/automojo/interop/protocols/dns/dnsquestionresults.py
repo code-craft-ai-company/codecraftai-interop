@@ -50,8 +50,10 @@ class DnsQuestionResults:
         return rlist
 
     def add_response(self, response):
+        """Adds a response object to the results list."""
         self._responses.append(response)
         return
     
     def cleanup(self):
+        """Placeholder for future cleanup logic."""
         return

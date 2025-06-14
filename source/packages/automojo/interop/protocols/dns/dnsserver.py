@@ -75,7 +75,8 @@ class DnsServer:
         return
 
     def wait(self, timeout=None):
-        
+        """Blocks until the server stops running or until *timeout* expires."""
+
         if self._running:
             self._shutdown_gate.wait(timeout)
 
