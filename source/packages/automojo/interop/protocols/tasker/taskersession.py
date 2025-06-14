@@ -98,6 +98,18 @@ class TaskerSession:
     def __init__(self, service_class: "TaskerService", worker: str, wref: str, output_directory: str, log_level: int,
                  notify_url: str = None, notify_headers: Dict[str, str] = None,
                  aspects: TaskerAspects = DEFAULT_TASKER_ASPECTS):
+        """
+            Creates a session for managing taskings on a tasker service.
+
+            :param service_class: The service class controlling this session.
+            :param worker: Worker name for logging and identification.
+            :param wref: Worker reference value.
+            :param output_directory: Directory for output files.
+            :param log_level: Logging level for taskings.
+            :param notify_url: Optional notification callback URL.
+            :param notify_headers: Optional HTTP headers for notifications.
+            :param aspects: Default aspects for task execution.
+        """
 
         self._service_class = service_class
 

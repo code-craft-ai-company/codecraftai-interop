@@ -54,6 +54,19 @@ class TaskingResultPromise:
 
     def __init__(self, client, responder, module_name: str, tasking_id: str, task_name: str, log_dir: str,
                  session_id: str, node: "TaskerNode", progress_monitor: Optional[TaskingProgressMonitor] = None):
+        """
+            Creates a promise object that references a remote tasking instance.
+
+            :param client: The RPyC client used to communicate with the remote tasker.
+            :param responder: The background serving thread for the client.
+            :param module_name: Module name of the tasking class.
+            :param tasking_id: Identifier of the remote tasking instance.
+            :param task_name: Name of the tasking class.
+            :param log_dir: Log directory for the tasking.
+            :param session_id: The owning session identifier.
+            :param node: Node object used to communicate with the tasker service.
+            :param progress_monitor: Optional monitor tracking progress.
+        """
         self._client = client
         self._responder = responder
         self._module_name = module_name
@@ -67,6 +80,7 @@ class TaskingResultPromise:
         return
 
     def __del__(self):
+        """Cleans up the promise and stops the responder thread."""
 
         if self._progress_monitor is not None:
             self._progress_monitor.release(self._tasking_id)

@@ -20,4 +20,9 @@ class INetworkClient(Protocol):
 
     @property
     def ipaddr(self) -> str:
+        """
+            Returns the IPv4 or IPv6 address for this network client.
+
+            :returns: The IP address associated with the client.
+        """
         ...

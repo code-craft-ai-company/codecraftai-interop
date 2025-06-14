@@ -23,22 +23,36 @@ class ITaskingSequencer(Protocol):
 
     def create_tasking_result(self, scope_id: str, name: str, parent_inst: str) -> TaskingResult:
         """
-            Method for creating a tasking result that is used to record tasking results in
-            a test framework.
+            Creates a :class:`TaskingResult` object used to capture the outcome of a task.
+
+            :param scope_id: The scope identifier for the result.
+            :param name: The name of the tasking instance.
+            :param parent_inst: The parent instance identifier.
+
+            :returns: A :class:`TaskingResult` instance.
         """
     
     def create_tasking_group(self, scope_id: str, name: str, parent_inst: str) -> TaskingGroup:
         """
-            Method for creating a tasking result group that is used for grouping tasking
-            results by a test framework.
+            Creates a :class:`TaskingGroup` for grouping related tasking results.
+
+            :param scope_id: The scope identifier for the group.
+            :param name: The name of the tasking group.
+            :param parent_inst: The parent instance identifier.
+
+            :returns: A :class:`TaskingGroup` instance.
         """
 
     def get_recorder(self) -> ResultRecorder:
         """
-            Method to get the 'ResultRecorder' recorder for a job run from the sequencer.
+            Retrieves the :class:`ResultRecorder` used for recording results.
+
+            :returns: The active :class:`ResultRecorder` instance.
         """
 
     def get_top_scope_id(self) -> str:
         """
-            Gets the scope id that is on top of the scope stack.
+            Gets the identifier of the current top-level scope.
+
+            :returns: The active scope identifier.
         """

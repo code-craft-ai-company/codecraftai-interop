@@ -21,10 +21,18 @@ from automojo.testbase.results.model.progressinfo import ProgressInfo, ProgressT
 from automojo.interop.protocols.tasker.tasking import Tasking
 
 class HelloWorldTasking(Tasking):
+    """
+        Simple example tasking that writes a message a number of times.
+    """
 
     PREFIX = "helloworld"
 
     def begin(self, kwparams: dict):
+        """
+            Called when the task is beginning execution.
+
+            :param kwparams: Parameters describing the task execution.
+        """
 
         self._message = kwparams["message"]
         self._iterations = kwparams["iterations"]
@@ -40,16 +48,19 @@ class HelloWorldTasking(Tasking):
         return
 
     def mark_progress_start(self):
+        """Marks the start of progress for the tasking."""
         now = datetime.now()
         self._current_progress = ProgressInfo(self._tasking_id, "hello", self.full_name, ProgressType.NumericRange,
                                               0, self._iterations, 0, ProgressCode.Running, now, self._data)
         return
 
     def log_message(self, message) -> bool:
+        """Logs a message to the tasking logger."""
         self._logger.info(message)
         return True
 
     def perform(self):
+        """Performs one iteration of work."""
 
         position = self._current_progress.position
 

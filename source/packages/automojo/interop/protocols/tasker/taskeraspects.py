@@ -35,6 +35,16 @@ class TaskerAspects:
                        inactivity_interval: Optional[float] = DEFAULT_INACTIVITY_INTERVAL,
                        progress_delivery: Optional[Dict[str, float]]= None,
                        sync_request_timeout: Optional[float]=None):
+        """
+            Constructs a :class:`TaskerAspects` object describing task execution parameters.
+
+            :param completion_timeout: Maximum wait time for a task to complete.
+            :param completion_interval: Polling interval while waiting for completion.
+            :param inactivity_timeout: Timeout for detecting inactivity.
+            :param inactivity_interval: Polling interval for inactivity checks.
+            :param progress_delivery: Progress delivery settings.
+            :param sync_request_timeout: Timeout for synchronous requests.
+        """
         
         self.completion_timeout = completion_timeout
         self.completion_interval = completion_interval
@@ -45,6 +55,11 @@ class TaskerAspects:
         return
 
     def as_dict(self) -> dict:
+        """
+            Returns this instance as a dictionary.
+
+            :returns: Dictionary representation of the aspects.
+        """
         data = {
             "completion_timeout": self.completion_timeout,
             "completion_interval": self.completion_interval,
@@ -57,6 +72,14 @@ class TaskerAspects:
     
     @classmethod
     def from_dict(self, data: dict) -> "TaskerAspects":
+        """
+            Creates a :class:`TaskerAspects` from a dictionary.
+
+            :param data: Dictionary of aspect values.
+
+            :returns: A new :class:`TaskerAspects` instance.
+        """
+
         obj = TaskerAspects(**data)
         return obj
 
