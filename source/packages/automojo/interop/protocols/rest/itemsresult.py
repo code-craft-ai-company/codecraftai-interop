@@ -81,34 +81,74 @@ class Paging:
     
     @property
     def count(self) -> int:
+        """
+            Number of items returned in the current result.
+
+            :returns: Count of items in this page.
+        """
         return self._count
     
     @property
     def first_page(self) -> int:
+        """
+            First page number available in the result set.
+
+            :returns: Integer index of the first page.
+        """
         return self._first_page
     
     @property
     def last_page(self) -> int:
+        """
+            Last page number available in the result set.
+
+            :returns: Integer index of the last page.
+        """
         return self._last_page
 
     @property
     def page(self) -> int:
+        """
+            Current page number of the results.
+
+            :returns: Page index beginning at ``1``.
+        """
         return self._page
     
     @property
     def per_page(self) -> int:
+        """
+            Maximum number of items returned per page.
+
+            :returns: Items per page value.
+        """
         return self._per_page
 
     @property
     def request_next(self) -> Union[PreCannedRequest, None]:
+        """
+            Stored callable to retrieve the next page of results.
+
+            :returns: A :class:`PreCannedRequest` for the next page or ``None``.
+        """
         return self._request_next
         
     @property
     def request_prev(self) -> Union[PreCannedRequest, None]:
+        """
+            Stored callable to retrieve the previous page of results.
+
+            :returns: A :class:`PreCannedRequest` for the previous page or ``None``.
+        """
         return self._request_prev
 
     @property
     def total_count(self) -> int:
+        """
+            Total number of items available across all pages.
+
+            :returns: Overall item count.
+        """
         return self._total_count
 
 

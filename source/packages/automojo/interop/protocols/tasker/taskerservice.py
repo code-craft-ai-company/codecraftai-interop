@@ -76,6 +76,16 @@ class TaskerService(rpyc.Service):
 
 
     def exposed_archive_folder(self, *, folder_to_archive: str, dest_folder: str, archive_name: str, compression_level: int = 7) -> str:
+        """
+            Archive a folder on the server into a zip file.
+
+            :param folder_to_archive: Folder to compress.
+            :param dest_folder: Destination directory for the archive.
+            :param archive_name: Name of the archive file.
+            :param compression_level: Compression level for the archive.
+
+            :returns: Path to the created archive file.
+        """
 
         this_type = type(self)
 
@@ -107,6 +117,12 @@ class TaskerService(rpyc.Service):
 
 
     def exposed_cancel_tasking(self, *, session_id: str, tasking_id: str):
+        """
+            Cancel a running task on behalf of a session.
+
+            :param session_id: Identifier of the session requesting cancellation.
+            :param tasking_id: Identifier of the tasking to cancel.
+        """
 
         this_type = type(self)
 
@@ -129,6 +145,17 @@ class TaskerService(rpyc.Service):
         return
 
     def exposed_call_tasking_method(self, *, session_id: str, tasking_id: str, method_name: str, pkl_args: bytes, pkl_kwargs: bytes) -> bytes:
+        """
+            Invoke a method on a running tasking instance.
+
+            :param session_id: Session requesting the call.
+            :param tasking_id: Task identifier.
+            :param method_name: Method to invoke on the tasking.
+            :param pkl_args: Pickled positional arguments.
+            :param pkl_kwargs: Pickled keyword arguments.
+
+            :returns: Pickled return value from the method call.
+        """
 
         tasking = None
 

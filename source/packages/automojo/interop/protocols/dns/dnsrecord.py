@@ -89,30 +89,65 @@ class DnsRecord:
 
     @property
     def key(self) -> str:
+        """
+            Normalized lowercase name used as a dictionary key.
+
+            :returns: Key string for the record.
+        """
         return self._key
 
     @property
     def name(self) -> str:
+        """
+            Canonical name of the DNS record.
+
+            :returns: The record name.
+        """
         return self._name
 
     @property
     def rclass(self) -> DnsRecordClass:
+        """
+            Record class for the DNS entry.
+
+            :returns: A :class:`DnsRecordClass` value.
+        """
         return self._rclass
 
     @property
     def rtype(self) -> DnsRecordType:
+        """
+            Record type for the DNS entry.
+
+            :returns: A :class:`DnsRecordType` value.
+        """
         return self._rtype
 
     @property
     def ttl(self) -> int:
+        """
+            Time-to-live value for the record in seconds.
+
+            :returns: TTL of the record.
+        """
         return self._ttl
 
     @property
     def unique(self) -> bool:
+        """
+            Indicates if the record is expected to be unique.
+
+            :returns: ``True`` if the record is unique.
+        """
         return self._unique
 
     @property
     def updated(self) -> bool:
+        """
+            Timestamp when the record was last updated.
+
+            :returns: Milliseconds since epoch when updated.
+        """
         return self._updated
 
     def as_dns_string(self, other: Optional[str] = None) -> str:

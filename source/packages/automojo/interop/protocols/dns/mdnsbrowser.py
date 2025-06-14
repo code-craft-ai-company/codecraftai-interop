@@ -75,27 +75,37 @@ class MdnsBrowseSearchWindow:
         """Time span in seconds that the search will run."""
         return self._span
 
-    def begin(self, span: float):    
+    def begin(self, span: float):
+        """
+            Begin the search window for the specified span of time.
+
+            :param span: Duration in seconds to wait for results.
+        """
         self._span = span
         self._start = datetime.now()
         self._stop = self._start + timedelta(seconds=self._span)
         return
 
     def wait_for_results(self, interval: float=DEFAULT_RETRY_INTERVAL):
+        """
+            Wait for the search window to expire while polling for results.
+
+            :param interval: Seconds between checks for completion.
+        """
 
         if self._start is None:
             errmsg = "You must call 'begin' before calling 'wait'"
             raise SemanticError(errmsg)
 
         while True:
-        
+
             now = datetime.now()
             if now >= self._stop:
                 # We always wait a specific amount of time, so its not an error to timeout, we just exit
                 break
 
             time.sleep(interval)
-    
+
         self.browser.close_search_window(self)
 
         return

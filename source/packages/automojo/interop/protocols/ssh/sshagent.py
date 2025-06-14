@@ -42,6 +42,19 @@ class SshAgent(SshBase):
     """
     def __init__(self, host: str, primary_credential: SshCredential, users: Optional[dict] = None, port: int = 22, jump: Union[str, SshJumpParams, None] = None,
                  pty_params: Optional[dict] = None, called_id: Optional[str]=None, look_for_keys: bool = False, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS):
+        """
+            Initialize an :class:`SshAgent` instance.
+
+            :param host: Hostname or IP address of the target.
+            :param primary_credential: Primary SSH credential.
+            :param users: Optional dictionary of additional credentials.
+            :param port: SSH port number.
+            :param jump: Optional jump host settings.
+            :param pty_params: Parameters used when requesting a PTY.
+            :param called_id: Friendly identifier for logging purposes.
+            :param look_for_keys: Search for SSH keys in default locations.
+            :param aspects: Default command aspects for operations.
+        """
         SshBase.__init__(self, host, primary_credential, users=users, port=port, jump=jump,
                          pty_params=pty_params, called_id=called_id, look_for_keys=look_for_keys, aspects=aspects)
         return

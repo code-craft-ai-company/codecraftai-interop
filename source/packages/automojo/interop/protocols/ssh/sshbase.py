@@ -661,6 +661,14 @@ class SshBase(ISystemContext):
         return
 
     def _load_key(self, keyraw: str, keypasswd: str):
+        """
+            Load a private key from raw text.
+
+            :param keyraw: Raw private key content.
+            :param keypasswd: Password protecting the key.
+
+            :returns: Loaded Paramiko key object.
+        """
 
         keybuffer = StringIO(keyraw)
 
@@ -689,6 +697,14 @@ class SshBase(ISystemContext):
         return
 
     def _load_key_file(self, keyfile: str, keypasswd: str):
+        """
+            Load a private key from a file path.
+
+            :param keyfile: Path to the key file.
+            :param keypasswd: Password protecting the key.
+
+            :returns: Loaded Paramiko key object.
+        """
 
         keyfile = os.path.expanduser(os.path.expandvars(keyfile))
 

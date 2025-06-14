@@ -301,14 +301,25 @@ class DnsOutboundMessage:
         return
 
     def _pack(self, format_: Union[bytes, str], value: Any) -> None:
+        """
+            Packs a value using the provided struct format and appends it to the packet.
+
+            :param format_: Struct format string.
+            :param value: Value to be packed into the packet buffer.
+        """
+
         self._data.append(struct.pack(format_, value))
         self._packet_offset += struct.calcsize(format_)
         return
 
     def _reset_for_next_packet(self) -> None:
+        """
+            Resets state to begin building a new packet.
+        """
+
         self._compression_names = {}
         self._data = []
-        self._packet_offset = 12 # Initialize to 12 to account for the packet header size
+        self._packet_offset = 12  # Initialize to 12 to account for the packet header size
 
     def _write_bytes(self, buffer: bytes) -> None:
         """
@@ -473,6 +484,11 @@ class DnsOutboundMessage:
         return
     
     def __str__(self) -> str:
+        """
+            Returns a human readable description of the outbound message.
+
+            :returns: String summarizing the packet contents.
+        """
         strval = '<DnsOutboundMessage:{%s}>' % ', '.join(
             [
                 'multicast=%s' % self._multicast,

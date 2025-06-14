@@ -50,6 +50,11 @@ class DnsQuestion:
 
     @property
     def unique(self):
+        """
+            Indicates whether this question expects a unique record.
+
+            :returns: ``True`` if a unique record is requested.
+        """
         return self._unique
 
     def answered_by(self, rec: DnsRecord) -> bool:

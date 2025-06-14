@@ -54,18 +54,51 @@ class AspectsRest(Aspects):
                 must_connect: bool = DEFAULT_MUST_CONNECT,
                 logger: Optional[logging.Logger]=None,
                 session: Optional[Session] = None):
-        super().__init__(action_pattern=action_pattern, completion_timeout=completion_timeout,
-                         completion_interval=completion_interval, connection_timeout=connection_timeout,
-                         connection_interval=connection_interval, inactivity_timeout=inactivity_timeout,
-                         inactivity_interval=inactivity_interval, monitor_delay=monitor_delay,
-                         logging_pattern=logging_pattern, retry_logging_interval=retry_logging_interval,
-                         allowed_error_codes=allowed_error_codes, allowed_connection_exceptions=allowed_connection_exceptions,
-                         must_connect=must_connect, logger=logger)
+        """
+            Initialize a set of REST call aspects.
+
+            :param action_pattern: Default action pattern for calls.
+            :param completion_timeout: Time in seconds to wait for completion.
+            :param completion_interval: Polling interval when waiting.
+            :param connection_timeout: Timeout for establishing connections.
+            :param connection_interval: Retry interval for connection attempts.
+            :param inactivity_timeout: Timeout for inactivity in seconds.
+            :param inactivity_interval: Interval between inactivity checks.
+            :param monitor_delay: Delay before monitoring begins.
+            :param logging_pattern: Pattern used for call logging.
+            :param retry_logging_interval: Interval for retry log messages.
+            :param allowed_error_codes: HTTP status codes considered success.
+            :param allowed_connection_exceptions: Exceptions allowed during connect.
+            :param must_connect: Whether a connection must be established.
+            :param logger: Logger to use for messages.
+            :param session: Requests session to reuse.
+        """
+        super().__init__(
+            action_pattern=action_pattern,
+            completion_timeout=completion_timeout,
+            completion_interval=completion_interval,
+            connection_timeout=connection_timeout,
+            connection_interval=connection_interval,
+            inactivity_timeout=inactivity_timeout,
+            inactivity_interval=inactivity_interval,
+            monitor_delay=monitor_delay,
+            logging_pattern=logging_pattern,
+            retry_logging_interval=retry_logging_interval,
+            allowed_error_codes=allowed_error_codes,
+            allowed_connection_exceptions=allowed_connection_exceptions,
+            must_connect=must_connect,
+            logger=logger,
+        )
         self._session = session
         return
     
     @property
     def session(self) -> Union[Session, None]:
+        """
+            Requests :class:`Session` object associated with the aspects.
+
+            :returns: A :class:`requests.Session` or ``None``.
+        """
         return self._session
 
 
