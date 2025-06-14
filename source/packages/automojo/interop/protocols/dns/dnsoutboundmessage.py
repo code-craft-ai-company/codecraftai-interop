@@ -149,39 +149,39 @@ class DnsOutboundMessage:
 
     def add_additional_answer(self, record: 'DnsRecord') -> None:
         """
-        Adds an additional answer
+            Adds an additional answer
 
-        From: RFC 6763, DNS-Based Service Discovery, February 2013
+            From: RFC 6763, DNS-Based Service Discovery, February 2013
 
-        12.  DNS Additional Record Generation
+            12.  DNS Additional Record Generation
 
-           DNS has an efficiency feature whereby a DNS server may place
-           additional records in the additional section of the DNS message.
-           These additional records are records that the client did not
-           explicitly request, but the server has reasonable grounds to expect
-           that the client might request them shortly, so including them can
-           save the client from having to issue additional queries.
+               DNS has an efficiency feature whereby a DNS server may place
+               additional records in the additional section of the DNS message.
+               These additional records are records that the client did not
+               explicitly request, but the server has reasonable grounds to expect
+               that the client might request them shortly, so including them can
+               save the client from having to issue additional queries.
 
-           This section recommends which additional records SHOULD be generated
-           to improve network efficiency, for both Unicast and Multicast DNS-SD
-           responses.
+               This section recommends which additional records SHOULD be generated
+               to improve network efficiency, for both Unicast and Multicast DNS-SD
+               responses.
 
-        12.1.  PTR Records
+            12.1.  PTR Records
 
-           When including a DNS-SD Service Instance Enumeration or Selective
-           Instance Enumeration (subtype) PTR record in a response packet, the
-           server/responder SHOULD include the following additional records:
+               When including a DNS-SD Service Instance Enumeration or Selective
+               Instance Enumeration (subtype) PTR record in a response packet, the
+               server/responder SHOULD include the following additional records:
 
-           o  The SRV record(s) named in the PTR rdata.
-           o  The TXT record(s) named in the PTR rdata.
-           o  All address records (type "A" and "AAAA") named in the SRV rdata.
+               o  The SRV record(s) named in the PTR rdata.
+               o  The TXT record(s) named in the PTR rdata.
+               o  All address records (type "A" and "AAAA") named in the SRV rdata.
 
-        12.2.  SRV Records
+            12.2.  SRV Records
 
-           When including an SRV record in a response packet, the
-           server/responder SHOULD include the following additional records:
+               When including an SRV record in a response packet, the
+               server/responder SHOULD include the following additional records:
 
-           o  All address records (type "A" and "AAAA") named in the SRV rdata.
+               o  All address records (type "A" and "AAAA") named in the SRV rdata.
 
         """
         self._additionals.append(record)

@@ -33,15 +33,22 @@ if TYPE_CHECKING:
 
 class ApiNodeRelay:
 
-    def __init__(self, client: "DliPowerRestClient"):
+    def __init__(self, client: "DliPowerRestClient") -> None:
+        """
+            Initializes an :class:`ApiNodeRelay` instance.
+
+            :param client: Client used to issue REST requests.
+        """
         self._client_ref = weakref.ref(client)
         return
     
     def client(self) -> "DliPowerRestClient":
+        """Returns the associated :class:`DliPowerRestClient` instance."""
         return self._client_ref()
     
 
     def get_outlets(self, aspects: Optional[AspectsRest] = None) -> List[Outlet]:
+        """Retrieves outlet details from the power controller."""
 
         leaf = "restapi/relay/outlets"
 

@@ -27,7 +27,17 @@ from automojo.interop.protocols.power.dlipower.restapis.apinoderelay import ApiN
 
 class DliPowerRestClient(RestClientBase):
 
-    def __init__(self, host: str, credential: BasicCredential, port: Optional[int] = None, scheme: Optional[str] = "https", aspects: AspectsRest = DEFAULT_REST_ASPECTS):
+    def __init__(self, host: str, credential: BasicCredential, port: Optional[int] = None,
+                 scheme: Optional[str] = "https", aspects: AspectsRest = DEFAULT_REST_ASPECTS) -> None:
+        """
+            Initializes a :class:`DliPowerRestClient` instance.
+
+            :param host: Hostname or IP address of the power controller.
+            :param credential: Credentials used for authentication.
+            :param port: Optional TCP port for the REST service.
+            :param scheme: HTTP scheme used to communicate with the service.
+            :param aspects: Default REST aspects used when making calls.
+        """
         super().__init__(host, credential, port, scheme, aspects)
 
         self._node_relay = ApiNodeRelay(self)
@@ -36,6 +46,7 @@ class DliPowerRestClient(RestClientBase):
     
     @property
     def relay(self) -> ApiNodeRelay:
+        """Provides access to the node relay REST interface."""
         return self._node_relay
 
 
