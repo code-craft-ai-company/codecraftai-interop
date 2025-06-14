@@ -67,17 +67,23 @@ class TaskerNode:
 
     @property
     def ipaddr(self):
-        """IP address of the tasker service."""
+        """
+        IP address of the tasker service.
+        """
         return self._ipaddr
     
     @property
     def port(self):
-        """Port number of the tasker service."""
+        """
+        Port number of the tasker service.
+        """
         return self._port
 
     @property
     def session_id(self):
-        """Current session identifier."""
+        """
+        Current session identifier.
+        """
         return self._session_id
 
     def archive_folder(self, *, folder_to_archive: str, dest_folder: str, archive_name: str, compression_level: int = 7) -> str:
@@ -397,7 +403,9 @@ class TaskerNode:
         return full_path
 
     def _create_connection(self):
-        """Create and return an RPyC connection using the configured aspects."""
+        """
+        Create and return an RPyC connection using the configured aspects.
+        """
         
         if self._aspects is not None:
             self._protocol_config["sync_request_timeout"] = self._aspects.sync_request_timeout
@@ -410,12 +418,16 @@ class TaskerNode:
 class TaskerClientNode(TaskerNode):
 
     def __init__(self, client: Any, ipaddr: str, port: int):
-        """Create a tasker node backed by an existing client connection."""
+        """
+        Create a tasker node backed by an existing client connection.
+        """
         self._client_ref = weakref.ref(client)
         super().__init__(ipaddr, port)
         return
 
     @property
     def client(self) -> Any:
-        """Return the client object backing this node."""
+        """
+        Return the client object backing this node.
+        """
         return self._client_ref()

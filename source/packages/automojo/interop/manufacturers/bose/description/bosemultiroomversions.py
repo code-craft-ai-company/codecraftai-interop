@@ -42,31 +42,43 @@ class BoseMultiRoomVersions:
 
     @property
     def audio_control(self) -> BoseFeatureVersion:
-        """Returns the audio control protocol version."""
+        """
+        Returns the audio control protocol version.
+        """
         return self._audio_control
     
     @property
     def audio_payload(self) -> BoseFeatureVersion:
-        """Returns the audio payload protocol version."""
+        """
+        Returns the audio payload protocol version.
+        """
         return self._audio_payload
     
     @property
     def clock_sync(self) -> BoseFeatureVersion:
-        """Returns the clock synchronization protocol version."""
+        """
+        Returns the clock synchronization protocol version.
+        """
         return self._clock_sync
     
     @property
     def now_playing(self) -> BoseFeatureVersion:
-        """Returns the now playing protocol version."""
+        """
+        Returns the now playing protocol version.
+        """
         return self._now_playing
     
     @property
     def playback_request(self) -> BoseFeatureVersion:
-        """Returns the playback request protocol version."""
+        """
+        Returns the playback request protocol version.
+        """
         return self._playback_request
     
     @property
     def zone_control(self) -> BoseFeatureVersion:
-        """Returns the zone control protocol version."""
+        """
+        Returns the zone control protocol version.
+        """
         return self._zone_control
 

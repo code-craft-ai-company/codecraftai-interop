@@ -333,7 +333,9 @@ class UpnpRootDevice(UpnpDeviceBase):
 
     @property
     def services(self) -> List[UpnpServiceProxy]:
-        """List of service proxies associated with this device."""
+        """
+        List of service proxies associated with this device.
+        """
         services_list = None
 
         services = self._services
@@ -566,7 +568,9 @@ class UpnpRootDevice(UpnpDeviceBase):
         return device
 
     def mark_alive(self):
-        """Mark the device as alive and update the last seen timestamp."""
+        """
+        Mark the device as alive and update the last seen timestamp.
+        """
 
         self._device_lock.acquire()
         try:
@@ -578,7 +582,9 @@ class UpnpRootDevice(UpnpDeviceBase):
         return
 
     def mark_byebye(self):
-        """Mark the device as unavailable due to a byebye notification."""
+        """
+        Mark the device as unavailable due to a byebye notification.
+        """
 
         self.mark_unavailable(reason="byebye", byebye=True)
 
@@ -668,7 +674,9 @@ class UpnpRootDevice(UpnpDeviceBase):
 
 
     def set_auto_subscribe(self, val, factory: Optional["UpnpDeviceFactory"] = None):
-        """Enable or disable automatic service subscriptions."""
+        """
+        Enable or disable automatic service subscriptions.
+        """
 
         self._auto_subscribe = val
         return

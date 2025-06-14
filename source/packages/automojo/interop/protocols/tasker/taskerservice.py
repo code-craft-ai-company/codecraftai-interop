@@ -269,7 +269,9 @@ class TaskerService(rpyc.Service):
 
 
     def exposed_file_exists(self, *, filename) -> bool:
-        """Check if a file exists on the server."""
+        """
+        Check if a file exists on the server.
+        """
 
         this_type = type(self)
 
@@ -292,7 +294,9 @@ class TaskerService(rpyc.Service):
     
 
     def exposed_folder_exists(self, *, folder) -> bool:
-        """Check if a folder exists on the server."""
+        """
+        Check if a folder exists on the server.
+        """
 
         this_type = type(self)
 
@@ -502,7 +506,9 @@ class TaskerService(rpyc.Service):
 
 
     def exposed_make_folder(self, *, folder: str):
-        """Create a folder on the tasker host."""
+        """
+        Create a folder on the tasker host.
+        """
 
         this_type = type(self)
 
@@ -553,7 +559,9 @@ class TaskerService(rpyc.Service):
         return session_id
 
     def exposed_session_close_all(self) -> str:
-        """Close all active sessions and return the last closed session id."""
+        """
+        Close all active sessions and return the last closed session id.
+        """
 
         this_type = type(self)
 
@@ -679,7 +687,9 @@ class TaskerService(rpyc.Service):
 
     @classmethod
     def log_debug(cls, message: str):
-        """Log a debug level message from within the service."""
+        """
+        Log a debug level message from within the service.
+        """
 
         try:
             cls.logger.debug(message)
@@ -690,7 +700,9 @@ class TaskerService(rpyc.Service):
 
     @classmethod
     def log_error(cls, message: str):
-        """Log an error level message from within the service."""
+        """
+        Log an error level message from within the service.
+        """
 
         try:
             cls.logger.error(message)
@@ -701,7 +713,9 @@ class TaskerService(rpyc.Service):
     
     @classmethod
     def log_info(cls, message: str):
-        """Log an info level message from within the service."""
+        """
+        Log an info level message from within the service.
+        """
 
         try:
             cls.logger.info(message)
@@ -712,7 +726,9 @@ class TaskerService(rpyc.Service):
     
     @classmethod
     def log_warn(cls, message: str):
-        """Log a warning level message from within the service."""
+        """
+        Log a warning level message from within the service.
+        """
 
         try:
             cls.logger.warn(message)
@@ -722,7 +738,9 @@ class TaskerService(rpyc.Service):
         return
 
     def _locked_get_session(self, session_id: str) -> TaskerSession:
-        """Retrieve a session object while holding the service lock."""
+        """
+        Retrieve a session object while holding the service lock.
+        """
 
         this_type = type(self)
 
@@ -743,7 +761,9 @@ class TaskerService(rpyc.Service):
 
 
     def _reinitialize_service_logging(self):
-        """Reset the service logger using current configuration values."""
+        """
+        Reset the service logger using current configuration values.
+        """
 
         this_type = type(self)
 

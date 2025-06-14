@@ -122,7 +122,9 @@ class ServiceEvidence:
         return desc
 
     def __repr__(self):
-        """Return debug representation for the service evidence."""
+        """
+        Return debug representation for the service evidence.
+        """
         rval = f"ServiceEvidence(serviceType={self.serviceType}, serviceId={self.serviceId})"
         return rval
 

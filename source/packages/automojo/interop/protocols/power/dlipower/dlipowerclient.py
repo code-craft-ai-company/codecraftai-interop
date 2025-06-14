@@ -46,7 +46,9 @@ class DliPowerRestClient(RestClientBase):
     
     @property
     def relay(self) -> ApiNodeRelay:
-        """Provides access to the node relay REST interface."""
+        """
+        Provides access to the node relay REST interface.
+        """
         return self._node_relay
 
 
