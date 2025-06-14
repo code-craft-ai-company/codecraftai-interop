@@ -148,15 +148,20 @@ class DidlObject:
         return self._title
 
     def create_opening_element(self):
+        """Return the opening XML element string for this object."""
+
         estr = "<{} id='{}' parentID='{}' restricted='{}' >".format(
             self.element_tag, self._oid, self._parent_id, self._restricted)
         return estr
     
     def create_closing_element(self):
+        """Return the closing XML element string for this object."""
+
         estr = "</{}>".format(self.element_tag)
         return estr
 
     def to_xml_lines(self, indent=""):
+        """Return a list of XML lines describing this DIDL object."""
 
         xlines = [
             self.create_opening_element()
@@ -177,6 +182,7 @@ class DidlObject:
         return xlines
 
     def to_xml(self):
+        """Return the XML string representation of this DIDL object."""
 
         xml_parts = [
             self.create_opening_element()
@@ -415,6 +421,7 @@ class DidlLitePacket:
         return xstr
 
 def parse_didl_lite_packet(content, namespaces=DIDL_NAMESPACES):
+    """Parse a DIDL-Lite XML packet into DIDL object instances."""
 
     root_element: Element = from_xml_string(content)
 

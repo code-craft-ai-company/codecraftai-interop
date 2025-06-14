@@ -58,6 +58,8 @@ class ServiceVariableDesc:
     """
     
     def __init__(self, *, name: str, dataType: str, sendEvents: bool = False):
+        """Create a :class:`ServiceVariableDesc` instance."""
+
         self.name = name
         self.dataType = dataType
         self.sendEvents = sendEvents
@@ -86,6 +88,8 @@ class ServiceStateTables:
     """
     
     def __init__(self, *, variablesTable=None, typesTable=None, eventsTable=None):
+        """Initialize tables describing a service's state variables."""
+
         self.variablesTable = variablesTable if variablesTable is not None else {}
         self.typesTable = typesTable if typesTable is not None else {}
         self.eventsTable = eventsTable if eventsTable is not None else {}

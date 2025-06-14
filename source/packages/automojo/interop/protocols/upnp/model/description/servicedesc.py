@@ -30,6 +30,8 @@ class ServiceDesc:
     """
     
     def __init__(self, *, specVersion: SpecVersion, serviceStateTables: ServiceStateTables, actionsTable: Dict[str, ServiceAction]):
+        """Initialize a :class:`ServiceDesc` instance."""
+
         self.specVersion = specVersion
         self.serviceStateTables = serviceStateTables
         self.actionsTable = actionsTable

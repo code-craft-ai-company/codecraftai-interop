@@ -274,6 +274,15 @@ class DnsInboundMessage:
 
 
     def _read_name_at_offset(self, start: int, cursor: int, followed: List[int]) -> str:
+        """
+            Reads a domain name component starting at the specified offset.
+
+            :param start: Offset in the packet where the name began.
+            :param cursor: Current read position within the packet buffer.
+            :param followed: List of offsets already followed to detect loops.
+
+            :returns: Tuple of the decoded name fragment and bytes consumed.
+        """
 
         result = ''
         consumed = 0

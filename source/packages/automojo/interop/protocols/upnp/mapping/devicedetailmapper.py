@@ -90,7 +90,8 @@ class DeviceDetailMapper:
     @classmethod
     def _create_basic1_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                                    locationURL: str, params: Dict[str, Any]) -> Basic1DeviceDesc:
-        
+        """Instantiate a :class:`Basic1DeviceDesc` using parsed parameters."""
+
         device = Basic1DeviceDesc(specVersion=specVersion, **params, locationURL=locationURL)
 
         return device
@@ -98,7 +99,8 @@ class DeviceDetailMapper:
     @classmethod
     def _create_embedded_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                                      params: Dict[str, Any]) -> Basic1DeviceDesc:
-        
+        """Instantiate an :class:`EmbeddedDeviceDesc` from parsed parameters."""
+
         device = EmbeddedDeviceDesc(specVersion=specVersion, **params)
 
         return device
@@ -106,6 +108,7 @@ class DeviceDetailMapper:
     @classmethod
     def _process_device(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                         locationURL: Optional[str] = None, is_embedded: bool = False) -> Basic1DeviceDesc:
+        """Process a ``device`` element and return a device description object."""
 
         required_elements = ['deviceType', 'friendlyName', 'manufacturer', 'modelName', 'UDN']
         
@@ -156,7 +159,8 @@ class DeviceDetailMapper:
 
     @classmethod
     def _process_icons_list(cls, icons_el: Element, namespaces: Dict[str, str]) -> List[IconDesc]:
-        
+        """Parse an ``iconList`` element into a list of :class:`IconDesc`."""
+
         iconsList = []
 
         for nxtEl in icons_el:
@@ -189,7 +193,8 @@ class DeviceDetailMapper:
 
     @classmethod
     def _process_embedded_devices_list(cls, devices_el: Element, namespaces: Dict[str, str]) -> List[EmbeddedDeviceDesc]:
-        
+        """Parse a list of embedded devices from a ``deviceList`` element."""
+
         devicesList = []
 
         specVersion = None
@@ -216,7 +221,8 @@ class DeviceDetailMapper:
 
     @classmethod
     def _process_services_list(cls, services_el: Element, namespaces: Dict[str, str]) -> List[ServiceEvidence]:
-        
+        """Parse a ``serviceList`` element into :class:`ServiceEvidence` objects."""
+
         servicesList = []
 
         for nxtEl in services_el:
@@ -249,7 +255,8 @@ class DeviceDetailMapper:
 
     @classmethod
     def process_spec_version(cls, spec_ver_el: Element, namespaces: Dict[str, str]) -> SpecVersion:
-        
+        """Create a :class:`SpecVersion` from the ``specVersion`` element."""
+
         major = int(spec_ver_el.find("major", namespaces=namespaces).text)
         minor = int(spec_ver_el.find("minor", namespaces=namespaces).text)
 

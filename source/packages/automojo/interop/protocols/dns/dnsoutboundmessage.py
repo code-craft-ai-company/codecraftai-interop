@@ -137,10 +137,24 @@ class DnsOutboundMessage:
 
     @property
     def state(self) -> DnsPacketBuilderState:
+        """
+            Current build state of the DNS packet.
+
+            :returns: A :class:`DnsPacketBuilderState` enumeration value.
+        """
+
         return self._state
 
     @staticmethod
     def is_type_unique(rtype: int) -> bool:
+        """
+            Indicates if the DNS record type should appear only once in a packet.
+
+            :param rtype: Numeric record type value.
+
+            :returns: ``True`` if the type is unique, otherwise ``False``.
+        """
+
         rtnval = rtype == DnsRecordType.TXT or rtype == DnsRecordType.SRV or rtype == DnsRecordType.A or rtype == DnsRecordType.AAAA
         return rtnval
 

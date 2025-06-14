@@ -115,10 +115,12 @@ class Basic1DeviceDesc:
         Class representing a UPnP Basic 1 device description.
     """
 
-    def __init__(self, *, specVersion: SpecVersion, deviceType: str, friendlyName: str, manufacturer: str, modelName: str, UDN: str, 
+    def __init__(self, *, specVersion: SpecVersion, deviceType: str, friendlyName: str, manufacturer: str, modelName: str, UDN: str,
                  modelNumber: str="", serialNumber: str="", manufacturerURL: str="", modelDescription: str = "", modelURL: str = "", UPC: str="", presentationURL: str="",
                  iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None, deviceList: Optional[List['EmbeddedDeviceDesc']] = None,
                  locationURL: Optional[str]=None, **extras: dict):
+        """Create a new :class:`Basic1DeviceDesc` instance."""
+
         self._deviceType = deviceType
         self._specVersion = specVersion
         self._friendlyName = friendlyName
