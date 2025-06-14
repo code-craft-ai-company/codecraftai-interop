@@ -1,10 +1,10 @@
 
 """
-.. module:: basic1devicedesc
+    .. module:: basic1devicedesc
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: basic1devicedesc module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

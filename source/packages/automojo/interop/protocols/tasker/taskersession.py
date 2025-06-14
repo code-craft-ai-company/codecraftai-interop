@@ -1,11 +1,11 @@
 """
-.. module:: taskersession
+    .. module:: taskersession
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the :class:`TaskerSession` class which is used to
-               store the tasking data associated with a session.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    store the tasking data associated with a session.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

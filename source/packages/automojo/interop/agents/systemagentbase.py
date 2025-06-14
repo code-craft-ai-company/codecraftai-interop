@@ -1,12 +1,12 @@
 
 """
-.. module:: commandagentbase
+    .. module:: commandagentbase
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module contains the :class:`CommandAgentBase` object which is a base
-               class for object that allow running commands via some protocol interface.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    class for object that allow running commands via some protocol interface.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

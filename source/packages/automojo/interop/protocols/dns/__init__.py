@@ -1,9 +1,9 @@
 """
-.. module:: dns
+    .. module:: dns
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: The dns package contains modules for engaging DNS operations and MDNS discovery operations.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

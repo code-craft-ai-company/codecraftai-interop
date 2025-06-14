@@ -1,11 +1,11 @@
 """
-.. module:: poweragentbase
+    .. module:: poweragentbase
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module contains the :class:`PowerAgentBase` object which is a base
-               class for object that allow for controlling the power of devices.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    class for object that allow for controlling the power of devices.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

@@ -1,10 +1,10 @@
 
 """
-.. module:: helloworldtasking
+    .. module:: helloworldtasking
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: helloworldtasking module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

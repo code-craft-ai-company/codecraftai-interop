@@ -1,10 +1,10 @@
 
 """
-.. module:: taskingadapter
+    .. module:: taskingadapter
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: taskingadapter module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

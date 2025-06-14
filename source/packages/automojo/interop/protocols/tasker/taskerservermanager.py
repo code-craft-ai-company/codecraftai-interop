@@ -1,11 +1,11 @@
 """
-.. module:: taskerservermanager
+    .. module:: taskerservermanager
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the :class:`TaskerServerManager` class which is used to create
-               a remote :class:`TaskServer` process.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    a remote :class:`TaskServer` process.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

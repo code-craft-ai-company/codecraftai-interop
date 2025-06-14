@@ -1,10 +1,10 @@
 """
-.. module:: paths
+    .. module:: paths
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing constants for different paths utilize by the code generator that are relative to the test framework.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

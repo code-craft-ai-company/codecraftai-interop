@@ -1,12 +1,12 @@
 """
-.. module:: serialagentbase
+    .. module:: serialagentbase
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module contains the :class:`SerialAgentBase` object which is a base
-               class for objects that allow for sending commands to a device via a
-               serial interface.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    class for objects that allow for sending commands to a device via a
+    serial interface.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

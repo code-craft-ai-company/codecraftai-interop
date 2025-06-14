@@ -1,11 +1,11 @@
 """
-.. module:: taskerserver
+    .. module:: taskerserver
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the :class:`TaskerServer` class which is a host server for the
-               tasker :class:`TaskerService`.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    tasker :class:`TaskerService`.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

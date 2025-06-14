@@ -1,10 +1,10 @@
 
 """
-.. module:: mdnsbrowser
+    .. module:: mdnsbrowser
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: mdnsbrowser module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

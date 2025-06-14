@@ -1,10 +1,10 @@
 
 """
-.. module:: taskingprogressmonitor
+    .. module:: taskingprogressmonitor
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: taskingprogressmonitor module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

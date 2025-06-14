@@ -1,10 +1,10 @@
 
 """
-.. module:: icondesc
+    .. module:: icondesc
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: icondesc module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

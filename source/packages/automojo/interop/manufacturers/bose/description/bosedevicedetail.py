@@ -1,10 +1,10 @@
 
 """
-.. module:: model
+    .. module:: model
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing data description classes that describe Bose UPNP devices.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

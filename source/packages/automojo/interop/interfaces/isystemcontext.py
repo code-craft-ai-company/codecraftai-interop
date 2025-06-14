@@ -1,11 +1,11 @@
 """
-.. module:: isystemcontext
+    .. module:: isystemcontext
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module that contains the `ISystemContext` protocol object which is used for conduction
-               basic operations with a system such as running commands and working with directories
-               and files.  
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    basic operations with a system such as running commands and working with directories
+    and files.  
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

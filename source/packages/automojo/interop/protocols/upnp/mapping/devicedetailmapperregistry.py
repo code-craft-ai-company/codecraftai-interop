@@ -1,10 +1,10 @@
 
 """
-.. module:: devicedetailmapperregistry
+    .. module:: devicedetailmapperregistry
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: devicedetailmapperregistry module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

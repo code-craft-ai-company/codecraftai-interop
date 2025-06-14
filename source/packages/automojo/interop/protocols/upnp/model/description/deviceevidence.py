@@ -1,11 +1,11 @@
 """
-.. module:: upnpdeviceevidence
+    .. module:: upnpdeviceevidence
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the UpnpDeviceEvidence object which profides basic contact information about
-               the presence of a UPNP device that is available on the network.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    the presence of a UPNP device that is available on the network.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

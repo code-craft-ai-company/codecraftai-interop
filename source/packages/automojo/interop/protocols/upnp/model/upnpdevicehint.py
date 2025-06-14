@@ -1,11 +1,11 @@
 
 
 """
-.. module:: upnpdevicehint
+    .. module:: upnpdevicehint
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: upnpdevicehint module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

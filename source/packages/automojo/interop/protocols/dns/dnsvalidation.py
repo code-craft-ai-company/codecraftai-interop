@@ -1,11 +1,11 @@
 """
-.. module:: dnsvalidation
+    .. module:: dnsvalidation
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing method used to validate DNS record information in accordance
-               with RFC6763.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    with RFC6763.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

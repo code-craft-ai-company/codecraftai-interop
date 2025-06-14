@@ -1,10 +1,10 @@
 """
-.. module:: dnsoutgoing
+    .. module:: dnsoutgoing
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsOutgoing object which is used to write out DNS records of different types into
-               a DNS packet.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    a DNS packet.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

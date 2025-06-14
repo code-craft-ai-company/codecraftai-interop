@@ -1,11 +1,11 @@
 """
-.. module:: taskerdaemon
+    .. module:: taskerdaemon
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the :class:`TaskerServerDaemon` class which is a used to create a
-               daemonized instance of the TaskerServer.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    daemonized instance of the TaskerServer.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 

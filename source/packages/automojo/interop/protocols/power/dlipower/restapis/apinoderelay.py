@@ -1,11 +1,11 @@
 
 
 """
-.. module:: apinoderelay
+    .. module:: apinoderelay
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: apinoderelay module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

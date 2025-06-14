@@ -1,9 +1,9 @@
 """
-.. module:: inetworkclient
+    .. module:: inetworkclient
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module that contains the `INetworkClient` protocol.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

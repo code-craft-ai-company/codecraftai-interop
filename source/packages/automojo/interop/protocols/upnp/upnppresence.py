@@ -1,10 +1,10 @@
 """
-.. module:: UpnpPresence
+    .. module:: UpnpPresence
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the :class:`UpnpPresence` class and associated diagnostic.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

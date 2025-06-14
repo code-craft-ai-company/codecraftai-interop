@@ -1,10 +1,10 @@
 
 """
-.. module:: aspectsrest
+    .. module:: aspectsrest
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: aspectsrest module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

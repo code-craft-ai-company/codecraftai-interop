@@ -1,9 +1,9 @@
 """
-.. module:: dnsquestion
+    .. module:: dnsquestion
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsQuestion object which represents a DNS question to be posed to the DNS service.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

@@ -1,10 +1,10 @@
 """
-.. module:: soap
+    .. module:: soap
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains classes and constants for working with SOAP message processing.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

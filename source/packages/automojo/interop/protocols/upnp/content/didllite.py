@@ -1,9 +1,9 @@
 """
-.. module:: didllite
+    .. module:: didllite
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: didllite module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 
