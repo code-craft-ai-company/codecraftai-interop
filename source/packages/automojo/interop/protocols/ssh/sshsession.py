@@ -47,6 +47,22 @@ class SshSession(SshBase):
     def __init__(self, host: str, primary_credential: SshCredential, users: Optional[dict] = None, port:int=22, jump: Union[str, SshJumpParams, None] = None,
                  pty_params: Optional[dict] = None, session_user=None, interactive=False, basis_session: Optional["SshSession"]=None,
                  called_id: Optional[str]=None, look_for_keys: bool = False, aspects: AspectsCmd=DEFAULT_CMD_ASPECTS):
+        """
+            Create a new :class:`SshSession` instance.
+
+            :param host: Target host name.
+            :param primary_credential: Primary credential for authentication.
+            :param users: Additional credential mappings.
+            :param port: SSH port number.
+            :param jump: Optional jump host settings.
+            :param pty_params: Default PTY parameters for command execution.
+            :param session_user: Username to use for the session.
+            :param interactive: Flag indicating an interactive shell is desired.
+            :param basis_session: Optional session to base this one on.
+            :param called_id: Friendly identifier used in logs.
+            :param look_for_keys: Search for SSH keys in default locations.
+            :param aspects: Default command aspects for operations.
+        """
         SshBase.__init__(self, host, primary_credential, users=users, port=port, jump=jump,
                          pty_params=pty_params, called_id=called_id, look_for_keys=look_for_keys, aspects=aspects)
 

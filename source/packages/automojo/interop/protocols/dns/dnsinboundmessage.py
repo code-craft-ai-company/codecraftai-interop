@@ -382,12 +382,25 @@ class DnsInboundMessage:
         return utfval
 
     def _unpack(self, format_: bytes) -> tuple:
+        """
+            Unpacks bytes from the internal buffer using the supplied format.
+
+            :param format_: Struct format specifier for the unpack operation.
+
+            :returns: Tuple of unpacked values.
+        """
+
         length = struct.calcsize(format_)
         info = struct.unpack(format_, self._data[self._offset : self._offset + length])
         self._offset += length
         return info
 
     def __str__(self) -> str:
+        """
+            Returns a formatted string describing the inbound message.
+
+            :returns: Readable representation of the message contents.
+        """
         strval = '<DnsInboundMessage:{%s}>' % ', '.join(
             [
                 'id=%s' % self._id,

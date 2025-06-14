@@ -39,6 +39,11 @@ class DnsText(DnsRecord):
 
     @property
     def text(self) -> str:
+        """
+            Raw text payload associated with the record.
+
+            :returns: Byte string of the text data.
+        """
         return self._text
 
     def write(self, out: 'DnsOutboundMessage') -> None:

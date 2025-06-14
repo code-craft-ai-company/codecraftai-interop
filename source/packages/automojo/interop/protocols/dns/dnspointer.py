@@ -39,6 +39,11 @@ class DnsPointer(DnsRecord):
 
     @property
     def alias(self):
+        """
+            The alias name pointed to by this record.
+
+            :returns: Alias value as a string.
+        """
         return self._alias
 
     def write(self, out: 'DnsOutboundMessage') -> None:

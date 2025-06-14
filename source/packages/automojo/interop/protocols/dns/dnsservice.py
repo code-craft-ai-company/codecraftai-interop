@@ -53,18 +53,38 @@ class DnsService(DnsRecord):
 
     @property
     def port(self):
+        """
+            TCP/UDP port number of the service.
+
+            :returns: Port as an integer.
+        """
         return self._port
 
     @property
     def priority(self):
+        """
+            Service priority value used when multiple records exist.
+
+            :returns: Priority value.
+        """
         return self._priority
 
     @property
     def server(self):
+        """
+            Hostname providing the service.
+
+            :returns: Server host name.
+        """
         return self._server
 
     @property
     def weight(self):
+        """
+            Service weight used for load balancing.
+
+            :returns: Weight value.
+        """
         return self._weight
     
     def write(self, out: 'DnsOutboundMessage') -> None:

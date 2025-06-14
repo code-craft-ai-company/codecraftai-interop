@@ -51,6 +51,13 @@ class TaskerController:
     def __init__(self, logging_directory: Optional[str] = None,
                  summary_progress: Optional[SummaryProgressDelivery] = None,
                  aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS):
+        """
+            Initialize the :class:`TaskerController`.
+
+            :param logging_directory: Directory where task logs are stored.
+            :param summary_progress: Optional summary progress delivery settings.
+            :param aspects: Default tasker aspects for operations.
+        """
         self._logging_directory = logging_directory
         self._summary_progress = summary_progress
         self._aspects = aspects

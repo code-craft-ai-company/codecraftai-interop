@@ -34,10 +34,20 @@ class SshDevice(LandscapeDevice):
 
     @property
     def host(self) -> str:
+        """
+            Hostname or IP address of the device.
+
+            :returns: Device host string.
+        """
         return self._host
 
     @property
     def ssh(self) -> SshAgent:
+        """
+            :class:`SshAgent` extension associated with the device.
+
+            :returns: The instantiated :class:`SshAgent`.
+        """
         ext = self._extensions["network/ssh"]
         return ext
 

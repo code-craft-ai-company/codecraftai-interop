@@ -35,10 +35,20 @@ class DnsQuestionResults:
     
     @property
     def owner(self):
+        """
+            Object that initiated the query associated with these results.
+
+            :returns: The query owner instance.
+        """
         return self._owner_ref()
 
     @property
     def responses(self):
+        """
+            List of response records accumulated for the query.
+
+            :returns: Copy of the list of responses.
+        """
         rlist = []
 
         self._lock.acquire()

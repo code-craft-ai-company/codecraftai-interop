@@ -216,7 +216,21 @@ class RestClientBase:
     def _perform_single_connected_call(self, leaf: str, method: str, params: Union[Dict[str, str], None], body: Union[Dict[str, str], None],
                                        exp_status: Union[int, List[int]], headers: Union[Dict[str, str], None],
                                        context_msg: Union[str, None], aspects: AspectsRest) -> Response:
-        
+        """
+            Perform a single call using an existing connection.
+
+            :param leaf: API leaf path to call.
+            :param method: HTTP method to use.
+            :param params: Query parameters for the call.
+            :param body: Body payload for the call.
+            :param exp_status: Expected HTTP status code(s).
+            :param headers: Optional HTTP headers.
+            :param context_msg: Context message for error reporting.
+            :param aspects: REST aspects controlling the call.
+
+            :returns: Response returned from the request.
+        """
+
         call_url = self._format_call_url(leaf)
 
         logger = aspects.logger
@@ -240,7 +254,12 @@ class RestClientBase:
     def _perform_call_until_connection_failure(self, leaf: str, method: str, params: Union[Dict[str, str], None], body: Union[Dict[str, str], None],
                                                exp_status: Union[int, List[int]], headers: Union[Dict[str, str], None],
                                                context_msg: Union[str, None], aspects: AspectsRest) -> Response:
-        
+        """
+            Perform repeated calls until the connection fails.
+
+            :returns: The last response obtained before failure.
+        """
+
         call_url = self._format_call_url(leaf)
 
         logger = aspects.logger
@@ -264,7 +283,12 @@ class RestClientBase:
     def _perform_call_until_success(self, leaf: str, method: str, params: Union[Dict[str, str], None], body: Union[Dict[str, str], None],
                                     exp_status: Union[int, List[int]], headers: Union[Dict[str, str], None],
                                     context_msg: Union[str, None], aspects: AspectsRest) -> Response:
-        
+        """
+            Perform repeated calls until one succeeds.
+
+            :returns: The successful response object.
+        """
+
         call_url = self._format_call_url(leaf)
 
         logger = aspects.logger
@@ -288,7 +312,12 @@ class RestClientBase:
     def _perform_call_while_success(self, leaf: str, method: str, params: Union[Dict[str, str], None], body: Union[Dict[str, str], None],
                                     exp_status: Union[int, List[int]], headers: Union[Dict[str, str], None],
                                     context_msg: Union[str, None], aspects: AspectsRest) -> Response:
-        
+        """
+            Continue performing calls while each one succeeds.
+
+            :returns: The last response object received.
+        """
+
         call_url = self._format_call_url(leaf)
 
         logger = aspects.logger

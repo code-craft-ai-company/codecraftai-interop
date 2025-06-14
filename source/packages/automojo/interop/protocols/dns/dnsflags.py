@@ -168,13 +168,25 @@ class DnsFlags:
         return fobj
     
     def __repr__(self):
-        
-        repval = f"DnsFlags(qr={self._qr}, opcode={self._opcode}, aa={self._aa}, tc={self._tc}," \
+        """
+            Provides a reproducible string representation of the instance.
+
+            :returns: A string that can be used to reconstruct the object.
+        """
+
+        repval = (
+            f"DnsFlags(qr={self._qr}, opcode={self._opcode}, aa={self._aa}, tc={self._tc},"
             f" rd={self._rd}, ra={self._ra}, rcode={self._rcode}, z={self._z})"
+        )
 
         return repval
 
     def __str__(self) -> str:
+        """
+            Returns a user friendly string representation of the instance.
+
+            :returns: Readable string describing the flags.
+        """
         return repr(self)
 
 

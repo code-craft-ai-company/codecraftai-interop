@@ -143,6 +143,13 @@ class TaskerNode:
         return
 
     def file_exists(self, *, filename: str) -> bool:
+        """
+            Determine if a file exists on the remote node.
+
+            :param filename: Path to the remote file.
+
+            :returns: ``True`` if the file exists.
+        """
 
         client = self._create_connection()
 
@@ -154,6 +161,13 @@ class TaskerNode:
         return exists
     
     def folder_exists(self, *, folder: str) -> bool:
+        """
+            Determine if a folder exists on the remote node.
+
+            :param folder: Path to the remote directory.
+
+            :returns: ``True`` if the folder exists.
+        """
 
         client = self._create_connection()
 
