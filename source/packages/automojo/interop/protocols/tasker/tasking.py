@@ -178,16 +178,19 @@ class Tasking:
 
     @property
     def full_name(self) -> str:
+        """Return the fully qualified class name for this tasking."""
         this_type = type(self)
         fname = f"{this_type.__module__}@{this_type.__name__}"
         return fname
 
     @property
     def result(self) -> TaskingResult:
+        """Current :class:`TaskingResult` for this tasking."""
         return self._result
 
     @property
     def task_status(self) -> ProgressCode:
+        """Status code for the running task."""
         return self._task_status
 
     def add_metrics_stream(self, stream_name: str, stream_type: str):

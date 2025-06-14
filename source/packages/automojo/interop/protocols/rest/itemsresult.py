@@ -28,6 +28,20 @@ class PreCannedRequest(Generic[CT]):
     def __init__(self, *, leaf: str, method: str, params: Union[Dict[str, str], None],
                      body: Union[Dict[str, Any], None], exp_status: Union[int, List[int]],
                      aspects: Union[AspectsRest, None], perform_call: Callable, package_result: Callable):
+        """
+            Stores call details for later execution.
+
+            :param leaf: API leaf path.
+            :param method: HTTP method name.
+            :param params: Query parameters for the call.
+            :param body: Body payload for the call.
+            :param exp_status: Expected HTTP status codes.
+            :param aspects: Optional call aspects.
+            :param perform_call: Callable used to perform the call.
+            :param package_result: Callable used to package the response.
+
+            :returns: None
+        """
         
         self._leaf = leaf
         self._method = method
@@ -102,6 +116,7 @@ class Paging:
 class ItemsResult(Generic[CT]):
 
     def __init__(self, items: List[CT], paging: Optional[Paging] = None):
+        """Container object for paged or unpaged collections."""
         self._items = items
         self._paging = paging
         return

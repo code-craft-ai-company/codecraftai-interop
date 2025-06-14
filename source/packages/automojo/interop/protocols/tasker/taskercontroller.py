@@ -62,12 +62,14 @@ class TaskerController:
 
     @property
     def tasker_clients(self) -> List[INetworkClient]:
-        clients = [ tn.client for tn in self._tasker_nodes]
+        """List of network clients associated with tasker nodes."""
+        clients = [tn.client for tn in self._tasker_nodes]
         return clients
 
 
     @property
     def tasker_nodes(self):
+        """List of tasker nodes under management."""
         return self._tasker_nodes
 
 

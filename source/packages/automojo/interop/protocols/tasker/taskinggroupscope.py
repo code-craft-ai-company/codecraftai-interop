@@ -90,33 +90,40 @@ class TaskingGroupScope:
 
     @property
     def adapter(self) -> "TaskingAdapter":
+        """Returns the adapter that owns this scope."""
         return self._adapter_ref()
 
 
     @property
     def name(self) -> str:
+        """Name of the tasking group."""
         return self._name
 
 
     @property
     def promises(self) -> List[TaskingResultPromise]:
+        """List of promises associated with the group."""
         plist = [p for p in self._promises]
         return plist
 
     @property
     def sequencer(self) -> "TestSequencer":
+        """Return the associated test sequencer."""
         return self._sequencer
     
     @property
     def nodes(self) -> List[TaskerNode]:
+        """List of tasker nodes used by the group."""
         return self._tnodes
 
     def __enter__(self) -> "TaskingGroupScope":
+        """Initializes and returns this context manager."""
         self.initialize()
         return self
 
 
     def __exit__(self, ex_type, ex_inst, ex_tb) -> bool:
+        """Context manager exit handler."""
 
         if ex_inst is not None:
             err_msg = format_exception(ex_inst)
@@ -134,10 +141,12 @@ class TaskingGroupScope:
         return False
 
     def initialize(self):
+        """Records the initial task group state."""
         self._recorder.record(self._tgroup)
         return
 
     def cancel_tasks(self):
+        """Cancel all running taskings in the group."""
 
         errors = []
 
@@ -165,6 +174,7 @@ class TaskingGroupScope:
 
     def execute_tasking(self, *, tasking: Union[TaskingIdentity, Type[Tasking]], ncount: int = 1, aspects: Optional[TaskerAspects] = None,
                         **kwargs) -> List[TaskingResultPromise]:
+        """Execute a tasking across multiple nodes."""
 
         if aspects is None:
             aspects = self._aspects
@@ -184,6 +194,7 @@ class TaskingGroupScope:
 
     def execute_tasking_on_node(self, node: TaskerNode, *, tasking: Union[TaskingIdentity, Type[Tasking]], ncount: int = 1, aspects: Optional[TaskerAspects] = None,
                         **kwargs) -> List[TaskingResultPromise]:
+        """Execute a tasking on a single node."""
 
         if aspects is None:
             aspects = self._aspects
@@ -202,6 +213,7 @@ class TaskingGroupScope:
         return promise
 
     def finalize(self, sync: bool = True):
+        """Finalize the task group and optionally synchronize."""
 
         adapter = self.adapter
 
@@ -224,6 +236,7 @@ class TaskingGroupScope:
         return
 
     def synchronize(self):
+        """Synchronize results for all promises."""
 
         adapter = self.adapter
 
@@ -234,6 +247,7 @@ class TaskingGroupScope:
 
 
     def wait_for_all_to_event(self, event_name: str, aspects: Optional[TaskerAspects] = None) -> List[TaskingEvent]:
+        """Wait for all taskings to fire a specific event."""
 
         if aspects is None:
             aspects = self._aspects
@@ -243,6 +257,7 @@ class TaskingGroupScope:
         return events_found
 
     def wait_for_any_to_event(self, event_name: str, aspects: Optional[TaskerAspects] = None) -> List[TaskingEvent]:
+        """Wait for any tasking to fire a specific event."""
 
         if aspects is None:
             aspects = self._aspects
@@ -252,6 +267,7 @@ class TaskingGroupScope:
         return events_found
 
     def wait_for_tasking_results(self, aspects: Optional[TaskerAspects] = None) -> List[TaskingResult]:
+        """Wait for completion and return all tasking results."""
 
         if aspects is None:
             aspects = self._aspects
@@ -264,6 +280,7 @@ class TaskingGroupScope:
     
 
     def _clear_summary_progress(self):
+        """Clear summary progress information."""
 
         task_ids = []
     
@@ -279,6 +296,7 @@ class TaskingGroupScope:
 
     def _notify_summary_progress(self, progress_list: List[ProgressInfo]):
         self._progress_reported = True
+        """Update summary progress using the recorder."""
 
         self._recorder.post_task_progress(progress_list)
         self._recorder.update_summary()
@@ -287,6 +305,8 @@ class TaskingGroupScope:
 
 
     def _update_group(self):
+
+        """Record results for the group once."""
 
         if not self._results_written:
             self._results_written = True

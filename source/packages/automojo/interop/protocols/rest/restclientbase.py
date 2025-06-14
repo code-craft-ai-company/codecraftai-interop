@@ -46,6 +46,18 @@ class RestClientBase:
     AUTHENTICATION_FAILURES = (HttpForbiddenError)
 
     def __init__(self, host: str, credential: BaseCredential, port: Optional[int] = None, scheme: Optional[str] = "https", aspects: AspectsRest = DEFAULT_REST_ASPECTS):
+        """
+            Initialize the REST client base.
+
+            :param host: Hostname for the REST service.
+            :param credential: Credential used for authentication.
+            :param port: Optional port for the service.
+            :param scheme: URL scheme, default is ``https``.
+            :param aspects: Default REST aspects.
+
+            :returns: None
+        """
+
         self._host = host
         self._credential = credential
         self._aspects = aspects
@@ -134,6 +146,7 @@ class RestClientBase:
 
 
     def _format_call_url(self, leaf) -> str:
+        """Compose the full request URL for an API leaf."""
 
         call_url = f"{self._host_url}{leaf}"
 
@@ -141,6 +154,7 @@ class RestClientBase:
 
 
     def _get_session(self, aspects: AspectsRest) -> Session:
+        """Retrieve or create the requests session for the given aspects."""
 
         session = None
 

@@ -38,8 +38,7 @@ from automojo.interop.aspects import (
 )
 
 class AspectsRest(Aspects):
-    """
-    """
+    """Aspects container specialized for REST operations."""
     def __init__(self, *, action_pattern: ActionPattern = ActionPattern.SINGLE_CALL,
                 completion_timeout: float = DEFAULT_COMPLETION_TIMEOUT,
                 completion_interval: float = DEFAULT_COMPLETION_INTERVAL,

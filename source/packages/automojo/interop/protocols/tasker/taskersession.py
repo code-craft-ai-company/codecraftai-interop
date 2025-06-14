@@ -143,43 +143,53 @@ class TaskerSession:
         return
     
     @property
-    def aspects(self): 
+    def aspects(self):
+        """Default aspects used for task execution."""
         return self._aspects
     
     @property
-    def last_activity(self) -> datetime: 
+    def last_activity(self) -> datetime:
+        """Timestamp of the last session activity."""
         return self._last_activity
 
     @property
     def output_directory(self):
+        """Directory where task outputs are written."""
         return self._output_directory
 
     @property
-    def progresses(self) -> OrderedDict: 
+    def progresses(self) -> OrderedDict:
+        """Dictionary mapping tasking ids to progress info."""
         return self._progress_table
 
     @property
-    def results(self) -> OrderedDict: 
+    def results(self) -> OrderedDict:
+        """Dictionary of task results."""
         return self._results_table
     
     @property
     def session_id(self) -> str:
+        """Identifier for this session."""
         return self._session_id
 
     @property
-    def start(self) -> datetime: 
+    def start(self) -> datetime:
+        """Timestamp when the session was created."""
         return self._start
     
     @property
-    def statuses(self) -> OrderedDict: 
+    def statuses(self) -> OrderedDict:
+        """Dictionary mapping tasking ids to status codes."""
         return self._status_table
     
     @property
-    def taskings(self) -> OrderedDict: 
+    def taskings(self) -> OrderedDict:
+        """Dictionary of active tasking objects."""
         return self._taskings_table
     
     @property
     def log_level(self) -> int:
+        """Logging level used for task output."""
         return self.log_level
 
     def dispose_tasking(self, tasking_id: str):

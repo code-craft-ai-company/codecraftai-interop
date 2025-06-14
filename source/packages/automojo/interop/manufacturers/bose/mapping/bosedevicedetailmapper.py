@@ -40,6 +40,18 @@ class BoseDeviceDetailMapper(DeviceDetailMapper):
     @classmethod
     def _create_basic1_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                                   locationURL: str, params: Dict[str, Any]) -> BoseDeviceDetail:
+        """
+            Creates a :class:`BoseDeviceDetail` from a basic device description element.
+
+            :param root_el: Root XML element.
+            :param device_el: Device element to process.
+            :param namespaces: XML namespace mappings.
+            :param specVersion: UPnP specification version object.
+            :param locationURL: URL where the device description was retrieved.
+            :param params: Dictionary of parsed parameters.
+
+            :returns: A populated :class:`BoseDeviceDetail` instance.
+        """
 
         ext_params = {
             "mac_addr": None,
@@ -84,6 +96,17 @@ class BoseDeviceDetailMapper(DeviceDetailMapper):
     @classmethod
     def _create_embedded_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                                    params: Dict[str, Any]) -> EmbeddedDeviceDesc:
+        """
+            Creates an :class:`EmbeddedDeviceDesc` for a Bose embedded device.
+
+            :param root_el: Root XML element.
+            :param device_el: Device element to process.
+            :param namespaces: XML namespace mappings.
+            :param specVersion: UPnP specification version object.
+            :param params: Dictionary of parsed parameters.
+
+            :returns: A populated :class:`EmbeddedDeviceDesc` instance.
+        """
         ext_params = {
             "mac_addr": None,
             "generation":  None,
@@ -126,6 +149,14 @@ class BoseDeviceDetailMapper(DeviceDetailMapper):
 
     @classmethod
     def process_device_multiroom_versions(cls, multiroom_el: Element, namespaces: Dict[str, str] ) -> BoseMultiRoomVersions:
+        """
+            Processes the Bose multi-room version section of a device description.
+
+            :param multiroom_el: Element containing multi-room version data.
+            :param namespaces: XML namespace mappings.
+
+            :returns: A :class:`BoseMultiRoomVersions` instance.
+        """
 
         bmrv = None
 
@@ -171,6 +202,14 @@ class BoseDeviceDetailMapper(DeviceDetailMapper):
     
     @classmethod
     def process_bose_feature_version(cls, version_el: Element, namespaces: Dict[str, str] ) -> BoseFeatureVersion:
+        """
+            Processes a Bose feature version element.
+
+            :param version_el: XML element describing the version.
+            :param namespaces: XML namespace mappings.
+
+            :returns: A :class:`BoseFeatureVersion` instance.
+        """
 
         major = None
         minor = None

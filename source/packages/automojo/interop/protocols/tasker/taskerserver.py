@@ -86,6 +86,7 @@ class TaskerServer(ThreadedServer):
 
 
     def get_service_endpoint(self) -> Tuple[str, int]:
+        """Return the IP address and port the service is bound to."""
         ipaddr, port = self.listener.getsockname()
         return ipaddr, port
 
@@ -119,6 +120,7 @@ class TaskerServer(ThreadedServer):
 
 
     def _service_thread_entry(self, start_gate: Optional[threading.Event] = None):
+        """Internal thread entry point used to run the service."""
         
         # If we were passed a start_gate, it means a thread is waiting for
         # us to kick off.  Set the start_gate to indicate we are running in

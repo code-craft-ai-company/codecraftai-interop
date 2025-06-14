@@ -81,6 +81,17 @@ class TcpSerialBase(SerialAgentBase):
 class TcpSerialSession(TcpSerialBase):
 
     def __init__(self, host: str, port:int=22, session_basis: Optional["TcpSerialSession"]=None, aspects: AspectsCmd=DEFAULT_CMD_ASPECTS):
+        """
+            Initialize a TCP serial session.
+
+            :param host: Hostname of the serial concentrator.
+            :param port: TCP port number.
+            :param session_basis: Optional existing session to base new session on.
+            :param aspects: Default command aspects for operations.
+
+            :returns: None
+        """
+
         super().__init__(host, port=port, aspects=aspects)
         self._session_basis = session_basis
         self._telnet_conn = None

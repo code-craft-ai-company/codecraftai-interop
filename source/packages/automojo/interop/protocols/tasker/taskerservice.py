@@ -601,6 +601,7 @@ class TaskerService(rpyc.Service):
         return
 
     def _locked_get_session(self, session_id: str) -> TaskerSession:
+        """Retrieve a session object while holding the service lock."""
 
         this_type = type(self)
 
