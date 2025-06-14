@@ -132,6 +132,11 @@ class DnsFlags:
         return flags
 
     def _compile_flags(self, flags: int):
+        """
+            Decomposes a flags integer into the individual flag fields.
+
+            :param flags: Integer containing the encoded flag bits.
+        """
 
         self._rcode = DnsRespCode((flags & 0xF000) >> 12)
         z = int((flags & 0x0E00) >> 9)

@@ -22,9 +22,15 @@ from automojo.credentials.basiccredential import BasicCredential
 
 
 class PowerAgentBase:
-    """
-    """
+    """Base class for objects that control power of devices."""
+
     def __init__(self, host: str, credential: BaseCredential):
+        """
+            Initializes the :class:`PowerAgentBase` instance.
+
+            :param host: Hostname or address of the power device.
+            :param credential: Credentials used to authenticate to the device.
+        """
         self._host = host
         self._credential = credential
         return

@@ -43,6 +43,12 @@ class DnsOutboundMessage:
 
     def __init__(self, flags: DnsFlags, id: int=0, multicast: bool = True, use_compression: Optional[bool] = None) -> None:
         """
+            Initializes a :class:`DnsOutboundMessage` instance.
+
+            :param flags: Flags describing the packet attributes.
+            :param id: Message identifier.
+            :param multicast: Indicates if this packet will be multicast.
+            :param use_compression: Overrides compression behavior when provided.
         """
         self._finished = False
         self._id = id

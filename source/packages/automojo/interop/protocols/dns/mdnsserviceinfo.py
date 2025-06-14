@@ -17,7 +17,10 @@ import socket
 
 class MdnsServiceInfo:
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """
+            Initializes the :class:`MdnsServiceInfo` object.
+        """
         self._addresses = []
         self._host_ttl = None
         self._other_ttl = None
@@ -37,10 +40,12 @@ class MdnsServiceInfo:
 
     @property
     def addresses(self):
+        """List of raw addresses associated with the service."""
         return self._addresses
 
     @property
     def first_ipv4_address(self):
+        """First IPv4 address for the service if one exists."""
         fipv4_addr = None
 
         for addr in self._addresses:

@@ -18,7 +18,10 @@ __credits__ = []
 from automojo.interop.interfaces.isystemcontext import ISystemContext
 
 class SystemAgentBase(ISystemContext):
-    """
-    """
-    def __init__(self):
+    """Base class for agents that execute system commands on a device."""
+
+    def __init__(self) -> None:
+        """
+            Initializes the :class:`SystemAgentBase` instance.
+        """
         return

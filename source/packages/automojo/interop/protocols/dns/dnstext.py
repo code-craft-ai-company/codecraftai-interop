@@ -24,6 +24,15 @@ class DnsText(DnsRecord):
     """
 
     def __init__(self, name: str, rtype: int, rclass: int, ttl: int, text: bytes) -> None:
+        """
+            Constructs a DNS text record.
+
+            :param name: Record name.
+            :param rtype: Record type.
+            :param rclass: Record class.
+            :param ttl: Time-to-live for the record.
+            :param text: Text payload as bytes.
+        """
         assert isinstance(text, (bytes, type(None)))
         DnsRecord.__init__(self, name, rtype, rclass, ttl)
         self._text = text

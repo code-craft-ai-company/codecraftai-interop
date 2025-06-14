@@ -24,6 +24,16 @@ class DnsHostInfo(DnsRecord):
     """
 
     def __init__(self, name: str, rtype: int, rclass: int, ttl: int, cpu: str, os: str) -> None:
+        """
+            Constructs a DNS host information record.
+
+            :param name: Record name.
+            :param rtype: Record type.
+            :param rclass: Record class.
+            :param ttl: Time-to-live for the record.
+            :param cpu: CPU architecture string.
+            :param os: Operating system description.
+        """
         DnsRecord.__init__(self, name, rtype, rclass, ttl)
         self._cpu = cpu
         self._os = os

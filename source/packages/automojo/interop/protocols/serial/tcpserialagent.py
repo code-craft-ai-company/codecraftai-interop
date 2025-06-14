@@ -33,13 +33,25 @@ class TcpSerialBase(SerialAgentBase):
     SERIAL_PROMPT=b"@@@&@@@&"
     NORMAL_PROMPT=b"#"
 
-    def __init__(self, host: str, port: int=22, aspects: AspectsCmd=DEFAULT_CMD_ASPECTS):
+    def __init__(self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS) -> None:
+        """
+            Constructs a :class:`TcpSerialBase` instance.
+
+            :param host: Hostname or IP address of the telnet server.
+            :param port: Telnet port of the remote server.
+            :param aspects: Default command aspects used when executing commands.
+        """
         self._host = host
         self._port = port
         self._aspects = aspects
         return
     
     def _create_connection(self) -> telnetlib.Telnet:
+        """
+            Creates a telnet connection and configures the shell prompt.
+
+            :returns: A connected :class:`telnetlib.Telnet` object.
+        """
 
         tnconn = telnetlib.Telnet(host=self._host, port=self._port)
 
@@ -58,7 +70,10 @@ class TcpSerialBase(SerialAgentBase):
         cmd_out = tnconn.read_until(self.SERIAL_PROMPT)
         return tnconn
 
-    def _restore_prompt(self, tnconn: telnetlib.Telnet):
+    def _restore_prompt(self, tnconn: telnetlib.Telnet) -> None:
+        """
+            Restores the shell prompt after a telnet session.
+        """
         tnconn.write(b"echo $PS1\n")
         ps1_out = tnconn.read_until(self.NORMAL_PROMPT)
         return
