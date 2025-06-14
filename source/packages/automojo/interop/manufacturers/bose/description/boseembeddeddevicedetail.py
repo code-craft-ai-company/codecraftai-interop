@@ -1,5 +1,17 @@
 
 
+"""
+.. module:: boseembeddeddevicedetail
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: boseembeddeddevicedetail module.
+
+.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+"""
+
+__author__ = "Myron Walker"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
+__credits__ = []
+
 from typing import Dict, List, Optional
 
 from automojo.interop.protocols.upnp.model.description.specversion import SpecVersion
