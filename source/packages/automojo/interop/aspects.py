@@ -120,6 +120,7 @@ class Aspects:
         return
 class AspectsCmd(Aspects):
     """
+        Extends :class:`Aspects` with command-specific parameters.
     """
     def __init__(self, expected_status: Union[int, List[int]]=0,
                        user: Optional[str]=None,
@@ -137,7 +138,14 @@ class AspectsCmd(Aspects):
                        allowed_error_codes: List[int] = DEFAULT_ALLOWED_ERROR_CODES,
                        allowed_connection_exceptions: List[BaseException] = DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS,
                        logger: Optional[logging.Logger]=None):
-        
+        """
+            Creates an :class:`AspectsCmd` instance.
+
+            :param expected_status: Status code or list of acceptable status codes.
+            :param user: Optional user name to use for command execution.
+            :param pty_params: Dictionary of pseudo-terminal parameters.
+        """
+
         Aspects.__init__(self, action_pattern=action_pattern, completion_timeout=completion_timeout,
                             completion_interval=completion_interval, connection_timeout=connection_timeout,
                             connection_interval=connection_interval, inactivity_timeout=inactivity_timeout,
