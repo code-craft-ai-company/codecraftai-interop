@@ -63,9 +63,9 @@ class ServiceAction:
 
     def __init__(self, actions=None):
         """
-        Initializes the ServiceActionList with an optional list of actions.
+            Initializes the ServiceActionList with an optional list of actions.
 
-        :param actions: A list of action names (optional).
+            :param actions: A list of action names (optional).
         """
         self.actions = actions if actions is not None else []
 

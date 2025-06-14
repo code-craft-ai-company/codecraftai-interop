@@ -205,8 +205,8 @@ class Basic1DeviceDesc:
     @property
     def modelName(self) -> str:
         """
-           The name of the device model. 
-        
+            The name of the device model.
+
             :returns: String representing the model name.
         """
         return self._modelName

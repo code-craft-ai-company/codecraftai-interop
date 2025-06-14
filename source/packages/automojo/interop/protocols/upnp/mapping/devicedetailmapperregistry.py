@@ -54,7 +54,7 @@ class DeviceDetailMapperRegistry:
 
     def lookup_device_detail_mapper(self, manufacturer: str) -> DeviceDetailMapper:
         """
-        Get the detail mapper for a specific device type.
+            Get the detail mapper for a specific device type.
         """
         mapper = DeviceDetailMapper
         
