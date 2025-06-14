@@ -32,13 +32,13 @@ def xml_format_spec_version(
     indent: str = ""
 ) -> str:
     """
-    Create an XML representation of the spec version.
+        Create an XML representation of the spec version.
 
-    :param major: Major version number.
-    :param minor: Minor version number.
-    :param indent: Indentation for the XML string.
+        :param major: Major version number.
+        :param minor: Minor version number.
+        :param indent: Indentation for the XML string.
 
-    :returns: XML string representation of the spec version.
+        :returns: XML string representation of the spec version.
     """
 
     desc_lines = [
@@ -56,15 +56,21 @@ def xml_format_spec_version(
 class SpecVersion:
 
     def __init__(self, *, major: int, minor: int):
+        """
+            Constructs a :class:`SpecVersion` instance.
+
+            :param major: Major version number.
+            :param minor: Minor version number.
+        """
         self.major = major
         self.minor = minor
         return
 
-    def as_dict(self) -> dict:  
+    def as_dict(self) -> dict:
         """
-        Convert the SpecVersion object to a dictionary.
+            Convert the SpecVersion object to a dictionary.
 
-        :returns: Dictionary representation of the SpecVersion object.
+            :returns: Dictionary representation of the SpecVersion object.
         """
         desc = {
             "major": self.major,
@@ -75,11 +81,11 @@ class SpecVersion:
 
     def to_xml(self, indent="") -> str:
         """
-        Convert the SpecVersion object to an XML string.
+            Convert the SpecVersion object to an XML string.
 
-        :param indent: Indentation for the XML string.
+            :param indent: Indentation for the XML string.
 
-        :returns: XML string representation of the SpecVersion object.
+            :returns: XML string representation of the SpecVersion object.
         """
 
         desc = xml_format_spec_version(

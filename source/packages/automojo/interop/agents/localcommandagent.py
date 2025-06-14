@@ -39,6 +39,12 @@ class LocalCommandAgent(ISystemContext):
         for APIs between the :class:`SshSession` object and the :class:`LocalAgent`.
     """
     def __init__(self, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS):
+        """
+            Initializes a :class:`LocalCommandAgent` instance.
+
+            :param aspects: The default :class:`AspectsCmd` object to use when
+                             running commands.
+        """
 
         self._aspects = aspects
         return
