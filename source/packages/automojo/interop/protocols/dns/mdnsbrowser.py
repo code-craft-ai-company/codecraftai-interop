@@ -41,13 +41,11 @@ DEFAULT_RETRY_INTERVAL = 2.0
 
 
 class MdnsServiceInfo:
-    """
-    """
+    """Container for information about a discovered mDNS service."""
 
 
 class MdnsBrowseSearchWindow:
-    """
-    """
+    """Represents a window of time where mDNS browse results are collected."""
 
     def __init__(self, browser: "MdnsBrowseSearchWindow", id: int):
         """
@@ -187,7 +185,9 @@ class MdnsBrowser:
         return
 
     def start(self):
-        
+        """
+            Start background threads used for presence and search operations.
+        """
         if self._running:
             raise RuntimeError("SSDP Scanner is already running.")
 

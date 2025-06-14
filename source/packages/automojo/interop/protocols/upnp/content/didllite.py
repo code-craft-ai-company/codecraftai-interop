@@ -34,6 +34,10 @@ DIDL_NAMESPACES = {
 class DidlDesc:
 
     def __init__(self, *, desc: str, **attrs):
+        """
+            :param desc: Description string.
+            :param attrs: Optional attributes for the desc element.
+        """
         self._desc = desc
         self._attrs = attrs
         return
@@ -69,6 +73,7 @@ class DidlResource(NamedTuple):
 
     @classmethod
     def from_xml(cls, res_element: Element):
+        """Create a :class:`DidlResource` from an XML element."""
         return
 
     def to_xml_lines(self, indent=""):

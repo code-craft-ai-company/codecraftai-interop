@@ -71,10 +71,20 @@ class RestClientBase:
     
     @property
     def credential(self):
+        """
+            Credential object used for authentication with the REST service.
+
+            :returns: The credential instance supplied at construction time.
+        """
         return self._credential
 
     @property
     def host(self):
+        """
+            Hostname assigned to this REST client.
+
+            :returns: The host string passed to the constructor.
+        """
         return self._host
     
 
@@ -172,7 +182,20 @@ class RestClientBase:
     def _perform_single_call(self, leaf: str, method: str, params: Union[Dict[str, str], None], body: Union[Dict[str, str], None],
                              exp_status: Union[int, List[int]], headers: Union[Dict[str, str], None],
                              context_msg: Union[str, None], aspects: AspectsRest) -> Response:
-        
+        """
+            Perform a REST call using a newly authenticated session.
+
+            :param leaf: API leaf path for the request.
+            :param method: HTTP method to invoke.
+            :param params: Query parameters for the request.
+            :param body: Request body payload.
+            :param exp_status: Expected HTTP status code(s).
+            :param headers: Optional HTTP headers.
+            :param context_msg: Context message for error reporting.
+            :param aspects: Aspects controlling execution behaviour.
+
+            :returns: The :class:`Response` object from the request.
+        """
         call_url = self._format_call_url(leaf)
 
         logger = aspects.logger

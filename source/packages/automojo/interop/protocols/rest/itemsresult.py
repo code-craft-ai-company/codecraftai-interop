@@ -54,8 +54,21 @@ class PreCannedRequest(Generic[CT]):
         return
 
     def perform_call(self) -> "ItemsResult[CT]":
+        """
+            Perform the pre-canned REST call stored on this instance and
+            package the result into an :class:`ItemsResult` object.
 
-        resp: Response = self._perform_call(leaf=self.leaf, method=self._method, params=self._params, body=self._body, exp_status=self._exp_status, aspects=self._aspects)
+            :returns: The result object created from the REST call.
+        """
+
+        resp: Response = self._perform_call(
+            leaf=self.leaf,
+            method=self._method,
+            params=self._params,
+            body=self._body,
+            exp_status=self._exp_status,
+            aspects=self._aspects,
+        )
         result = self._package_result(resp)
 
         return result

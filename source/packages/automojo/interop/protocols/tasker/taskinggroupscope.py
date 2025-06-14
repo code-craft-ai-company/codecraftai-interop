@@ -295,8 +295,12 @@ class TaskingGroupScope:
 
 
     def _notify_summary_progress(self, progress_list: List[ProgressInfo]):
+        """
+            Update summary progress information using the result recorder.
+
+            :param progress_list: List of :class:`ProgressInfo` objects to post.
+        """
         self._progress_reported = True
-        """Update summary progress using the recorder."""
 
         self._recorder.post_task_progress(progress_list)
         self._recorder.update_summary()

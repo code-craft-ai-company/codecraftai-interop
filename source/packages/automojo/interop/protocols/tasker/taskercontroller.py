@@ -153,6 +153,7 @@ class TaskerController:
 
 
     def stop_tasker_network(self):
+        """Stop the tasker network. Must be implemented by subclasses."""
 
         raise AbstractMethodError("The 'stop_tasker_network' method must be overloaded.")
 

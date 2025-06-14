@@ -239,6 +239,7 @@ class DnsRecord:
         raise NotImplementedError(errmsg)
 
     def _compute_time_marker(self, percent: int) -> int:
+        """Calculate a future time marker based on a percentage of the TTL."""
         marker = math.floor(self._updated + (percent * self._ttl * 10))
         return marker
 
