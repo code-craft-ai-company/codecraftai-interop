@@ -260,6 +260,16 @@ class UpnpPresence:
     def discover_devices(self, limit_to: List[UpnpDeviceHint]=None, custom_headers: Optional[Dict[str, str]] = None,
                          window_length: float = UPNP_DEFAULT_SEARCH_WINDOW_LENGTH,
                          monitor_interval: float = UPNP_DEFAULT_SEARCH_MONITOR_INTERVAL) -> UpnpSearchWindow:
+        """
+            Begin discovery of UPnP devices on the network.
+
+            :param limit_to: Optional device hints to limit the search.
+            :param custom_headers: Optional additional search headers.
+            :param window_length: How long the search window remains active.
+            :param monitor_interval: Polling interval for search window updates.
+
+            :returns: The created :class:`UpnpSearchWindow` instance.
+        """
 
         st: str = MSearchTargets.ROOTDEVICE
 
@@ -416,7 +426,8 @@ class UpnpPresence:
 
 
     def process_msearch(self, ifname: str, from_endpoint: Tuple[str, int], response: bytes):
-        
+        """Handle an incoming M-SEARCH message."""
+
         # We only process and respond to M-SEARCH messages if we have been given an identity
         # to respond as
         if self._agent_id is not None:
@@ -465,6 +476,7 @@ class UpnpPresence:
 
 
     def process_notify(self, ifname: str, from_endpoint: Tuple[str, int], message: bytes):
+        """Process a NOTIFY message from a UPnP device."""
 
         from_ip = from_endpoint[0]
 
@@ -520,7 +532,8 @@ class UpnpPresence:
 
 
     def process_msearch_reply(self, from_endpoint: Tuple[str, int], response: bytes):
-        
+        """Handle a reply to one of our M-SEARCH queries."""
+
         from_ip = from_endpoint[0]
 
         reply_info = parse_ssdp_message(response)

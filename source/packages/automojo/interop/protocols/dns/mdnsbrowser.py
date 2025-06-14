@@ -177,10 +177,22 @@ class MdnsBrowser:
 
     @property
     def known_service_classes(self) -> List[str]:
+        """
+            List of service classes discovered so far.
+
+            :returns: List of service class identifiers.
+        """
+
         rtnval = list(self._known_service_classes)
         return rtnval
 
     def close_search_window(self, search_window: MdnsBrowseSearchWindow):
+        """
+            Remove a completed search window from management.
+
+            :param search_window: Window instance to remove.
+        """
+
         del self._search_windows[search_window.id]
         return
 
@@ -210,6 +222,15 @@ class MdnsBrowser:
         return
 
     def discover_service_classes(self, domain: str = "local", span: float = DEFAULT_SEARCH_TIMEOUT, custom_headers: Optional[Dict[str, str]] = None) -> MdnsBrowseSearchWindow:
+        """
+            Issue a query to discover service classes being advertised.
+
+            :param domain: DNS domain to search within.
+            :param span: Time span in seconds to keep the search window open.
+            :param custom_headers: Optional additional headers for the query.
+
+            :returns: An :class:`MdnsBrowseSearchWindow` tracking the search.
+        """
 
         svc_type = f"_services._dns-sd._udp.{domain}"
 
@@ -243,6 +264,13 @@ class MdnsBrowser:
         return bsearch_window
 
     def discover_services(self, service_classes: List[str] = None, domain: str = "local", custom_headers: Optional[Dict[str, str]] = None):
+        """
+            Discover services for the specified service classes.
+
+            :param service_classes: List of service classes to query.
+            :param domain: DNS domain to search within.
+            :param custom_headers: Optional additional headers for queries.
+        """
 
         if service_classes is None:
             service_classes = []
@@ -278,6 +306,12 @@ class MdnsBrowser:
         return
 
     def process_presence_message(self, from_endpoint: Tuple[str, int], msg_bytes: bytes):
+        """
+            Handle an mDNS presence announcement.
+
+            :param from_endpoint: Tuple of source IP and port.
+            :param msg_bytes: Raw message bytes received.
+        """
 
         from_ip = from_endpoint[0]
 
@@ -308,7 +342,13 @@ class MdnsBrowser:
         return
 
     def process_search_response(self, from_endpoint: Tuple[str, int], msg_bytes: bytes):
-        
+        """
+            Process a response to a search query.
+
+            :param from_endpoint: Tuple of source IP and port.
+            :param msg_bytes: Raw message bytes received.
+        """
+
         from_ip = from_endpoint[0]
 
         msg_resp = DnsInboundMessage(msg_bytes, source_endpoint=from_endpoint)
@@ -339,14 +379,28 @@ class MdnsBrowser:
         return
 
     def service_updated(self, context: str, status: str, service_info: MdnsServiceInfo):
+        """
+            Notification callback when a service update is detected.
+
+            :param context: Context string identifying the update.
+            :param status: Status of the service change.
+            :param service_info: Information describing the service.
+        """
 
         print(f"UPDATE SERVICE: context={context} status={status}")
 
         return
 
     def _create_search_window(self, span: float) -> MdnsBrowseSearchWindow:
-        
-        bsearch_id = self._next_search_id() 
+        """
+            Create and register a new search window for operations.
+
+            :param span: Amount of time in seconds to keep the window open.
+
+            :returns: The created :class:`MdnsBrowseSearchWindow` instance.
+        """
+
+        bsearch_id = self._next_search_id()
         bwindow = MdnsBrowseSearchWindow(self, bsearch_id)
         self._search_windows[bsearch_id] = bwindow
         bwindow.begin(span)
@@ -354,6 +408,11 @@ class MdnsBrowser:
         return bwindow
 
     def _get_presence_socket(self) -> socket.socket:
+        """
+            Retrieve or create the socket used to receive presence messages.
+
+            :returns: Multicast listener socket for presence traffic.
+        """
 
         sock = None
 
@@ -369,6 +428,11 @@ class MdnsBrowser:
         return sock
 
     def _get_search_socket(self) -> socket.socket:
+        """
+            Retrieve or create the socket used for search queries.
+
+            :returns: Datagram socket for search traffic.
+        """
 
         sock = None
 
@@ -384,6 +448,11 @@ class MdnsBrowser:
         return sock
 
     def _mdns_presence_thread_entry(self, sgate: threading.Event):
+        """
+            Thread entry point for processing presence messages.
+
+            :param sgate: Synchronization gate used to signal startup.
+        """
 
         self._running = True
 
@@ -415,6 +484,11 @@ class MdnsBrowser:
         return
 
     def _mdns_search_thread_entry(self, sgate: threading.Event):
+        """
+            Thread entry point for processing search responses.
+
+            :param sgate: Synchronization gate used to signal startup.
+        """
 
         self._running = True
 
@@ -447,6 +521,8 @@ class MdnsBrowser:
         return
 
     def _next_search_id(self) -> int:
+        """Generate and return the next search identifier."""
+
         search_id = self._search_id
         self._search_id += 1
         return search_id

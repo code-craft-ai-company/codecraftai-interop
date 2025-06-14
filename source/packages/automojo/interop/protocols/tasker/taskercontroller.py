@@ -417,6 +417,13 @@ class TaskerController:
 class ProcessTaskerController(TaskerController):
 
     def __init__(self, logging_directory: Optional[str] = None, aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS):
+        """
+            Initialize a :class:`ProcessTaskerController`.
+
+            :param logging_directory: Directory where server logs are written.
+            :param aspects: Default tasker aspects for spawned processes.
+        """
+
         super().__init__(logging_directory=logging_directory, aspects=aspects)
 
         self._svr_manager: List[TaskerServerManager] = []
@@ -460,6 +467,7 @@ class ProcessTaskerController(TaskerController):
         return
     
     def stop_tasker_network(self):
+        """Stop all running tasker server processes."""
 
         for node in self._tasker_nodes:
             node.session_close()
@@ -470,6 +478,13 @@ class ProcessTaskerController(TaskerController):
 class ClientTaskerController(TaskerController):
 
     def __init__(self, logging_directory: Optional[str] = None, aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS):
+        """
+            Initialize a :class:`ClientTaskerController`.
+
+            :param logging_directory: Directory where client logs are written.
+            :param aspects: Default tasker aspects used when executing tasks.
+        """
+
         super().__init__(logging_directory=logging_directory, aspects=aspects)
         return
 
@@ -503,6 +518,7 @@ class ClientTaskerController(TaskerController):
         return
     
     def stop_tasker_network(self):
+        """Close all tasker client sessions."""
 
         for node in self._tasker_nodes:
             node.session_close()

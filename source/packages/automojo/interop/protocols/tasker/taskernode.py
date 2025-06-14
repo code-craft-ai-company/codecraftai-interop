@@ -262,6 +262,13 @@ class TaskerNode:
         return tresult
 
     def has_completed_and_result_ready(self, *, tasking_id: str) -> bool:
+        """
+            Check if a tasking has completed and the result is available.
+
+            :param tasking_id: Identifier of the tasking to check.
+
+            :returns: ``True`` if the task finished and the result can be fetched.
+        """
 
         client = self._create_connection()
 
@@ -272,8 +279,19 @@ class TaskerNode:
         
         return complete_and_ready
 
-    def execute_tasking(self, *, module_name: str, tasking_name: str, summary_progress: Optional[SummaryProgressDelivery] = None, 
+    def execute_tasking(self, *, module_name: str, tasking_name: str, summary_progress: Optional[SummaryProgressDelivery] = None,
                         aspects: Optional[TaskerAspects]=None, **kwargs) -> TaskingResultPromise:
+        """
+            Execute a tasking on the remote node.
+
+            :param module_name: Name of the module containing the tasking.
+            :param tasking_name: Name of the tasking class to execute.
+            :param summary_progress: Optional summary progress delivery instance.
+            :param aspects: Optional tasker aspects controlling execution.
+            :param kwargs: Additional parameters passed to the tasking.
+
+            :returns: A :class:`TaskingResultPromise` tracking the tasking.
+        """
 
         # We are not going to automatically close this as there may be
         client = self._create_connection()

@@ -215,6 +215,8 @@ class Tasking:
 
     @classmethod
     def get_identity(cls) -> TaskingIdentity:
+        """Return the :class:`TaskingIdentity` for this tasking class."""
+
         module_name = cls.__module__
         tasking_name = cls.__name__
         identity = TaskingIdentity(module_name=module_name, tasking_name=tasking_name)
@@ -456,6 +458,8 @@ class Tasking:
         return
 
     def mark_failed(self, err: BaseException):
+        """Record a failure for this tasking and log the error."""
+
         tbdetail = create_traceback_detail(err)
 
         errmsg = format_traceback_detail(tbdetail)

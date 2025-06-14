@@ -59,6 +59,13 @@ if TYPE_CHECKING:
 class EventNotificationHandler(BaseHTTPRequestHandler):
 
             def __init__(self, service_class, session, *args, **kwargs):
+                """
+                    Initialize the notification handler used for event callbacks.
+
+                    :param service_class: Service class controlling this session.
+                    :param session: Owning :class:`TaskerSession` instance.
+                """
+
                 self._service_class = service_class
                 self._tasker_session_ref = weakref.ref(session)
                 self._logger = self._service_class.logger
@@ -67,9 +74,12 @@ class EventNotificationHandler(BaseHTTPRequestHandler):
             
             @property
             def tasker_session(self) -> "TaskerSession":
+                """Return the owning :class:`TaskerSession` instance."""
+
                 return self._tasker_session_ref()
 
             def do_POST(self):
+                """Handle HTTP POST callbacks containing progress events."""
 
                 if "Content-Type" in self.headers:
                     content_type = self.headers["Content-Type"].lower()
@@ -517,6 +527,7 @@ class TaskerSession:
         return
 
     def shutdown(self):
+        """Shutdown running taskings and stop the event server."""
 
         # Go through all of the tasks and if they have not completed, cancel them
         tasking_id: str
