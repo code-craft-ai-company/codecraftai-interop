@@ -67,14 +67,17 @@ class TaskerNode:
 
     @property
     def ipaddr(self):
+        """IP address of the tasker service."""
         return self._ipaddr
     
     @property
     def port(self):
+        """Port number of the tasker service."""
         return self._port
 
     @property
     def session_id(self):
+        """Current session identifier."""
         return self._session_id
 
     def archive_folder(self, *, folder_to_archive: str, dest_folder: str, archive_name: str, compression_level: int = 7) -> str:
@@ -325,4 +328,5 @@ class TaskerClientNode(TaskerNode):
 
     @property
     def client(self) -> Any:
+        """Return the client object backing this node."""
         return self._client_ref()

@@ -36,6 +36,14 @@ SERVICE_LOGGER = "TASKER"
 
 
 def write_trace(logfile: str, message: str):
+    """
+        Append a message to a trace file.
+
+        :param logfile: Target log file path.
+        :param message: Message text to append.
+
+        :returns: None
+    """
 
     with open(logfile, 'a+') as tf:
         tf.write(message)
@@ -257,6 +265,11 @@ class TaskerServerDaemon(object):
         return
 
     def run_debug_assistant(self):
+        """
+            Starts the debug assistant used to attach a debugger remotely.
+
+            :returns: None
+        """
 
         from automojo.foundation.xdebugger import DebugPyAssistant, PORT_DEBUGPY_ASSISTANT
 
@@ -354,6 +367,11 @@ class TaskerServerDaemon(object):
         return
 
     def _remove_pidfile(self):
+        """
+            Removes the daemon PID file if it exists.
+
+            :returns: None
+        """
         if os.path.exists(self._pid_file):
             os.remove(self._pid_file)
         return

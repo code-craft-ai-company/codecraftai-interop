@@ -15,6 +15,15 @@ __credits__ = []
 class BoseFeatureVersion:
 
     def __init__(self, major: int, minor: int):
+        """
+            Creates a Bose feature version object.
+
+            :param major: Major version value.
+            :param minor: Minor version value.
+
+            :returns: None
+        """
+
         self._major = major
         self._minor = minor
         return

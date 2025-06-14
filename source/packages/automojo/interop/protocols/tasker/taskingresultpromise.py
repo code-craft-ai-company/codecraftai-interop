@@ -46,6 +46,7 @@ class TaskingRef:
     log_dir: str
 
     def as_dict(self):
+        """Return dictionary representation of this reference."""
         rtnval = asdict(self)
         return rtnval
 
@@ -99,22 +100,27 @@ class TaskingResultPromise:
 
     @property
     def log_dir(self) -> str:
+        """Directory containing logs for the tasking."""
         return self._log_dir
 
     @property
     def module_name(self) -> str:
+        """Module name of the tasking class."""
         return self._module_name
     
     @property
     def session_id(self) -> str:
+        """Owning session identifier."""
         return self._session_id
 
     @property
     def tasking_id(self) -> str:
+        """Identifier of the associated tasking instance."""
         return self._tasking_id
     
     @property
     def task_name(self) -> str:
+        """Name of the tasking class."""
         return self._task_name
 
     def cancel(self):
