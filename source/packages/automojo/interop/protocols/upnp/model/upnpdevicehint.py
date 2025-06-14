@@ -22,10 +22,10 @@ class UpnpDeviceHint:
 
     def __init__(self, hint: str):
         """
-        Initialize the UPnP device hint with device type and friendly name.
+            Initialize the UPnP device hint with device type and friendly name.
 
-        :param device_type: The type of the UPnP device.
-        :param friendly_name: The friendly name of the UPnP device.
+            :param device_type: The type of the UPnP device.
+            :param friendly_name: The friendly name of the UPnP device.
         """
         self._hint = hint
         return

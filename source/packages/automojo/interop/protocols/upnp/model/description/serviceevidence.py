@@ -23,16 +23,16 @@ def xml_format_service_desc(
     indent: str = ""
 ) -> str:
     """
-    Create an XML representation of a service description.
+        Create an XML representation of a service description.
 
-    :param service_type: Type of the service.
-    :param service_id: ID of the service.
-    :param control_url: Control URL of the service.
-    :param event_sub_url: Event subscription URL of the service.
-    :param scpd_url: SCPD URL of the service.
-    :param indent: Indentation for the XML string.
+        :param service_type: Type of the service.
+        :param service_id: ID of the service.
+        :param control_url: Control URL of the service.
+        :param event_sub_url: Event subscription URL of the service.
+        :param scpd_url: SCPD URL of the service.
+        :param indent: Indentation for the XML string.
 
-    :returns: XML string representation of the service description.
+        :returns: XML string representation of the service description.
     """
     
     desc_lines = [
@@ -76,9 +76,9 @@ class ServiceEvidence:
     
     def as_dict(self) -> dict:
         """
-        Convert the ServiceDesc object to a dictionary.
+            Convert the ServiceDesc object to a dictionary.
 
-        :returns: Dictionary representation of the ServiceEvidence object.
+            :returns: Dictionary representation of the ServiceEvidence object.
         """
         
         desc = {
@@ -103,11 +103,11 @@ class ServiceEvidence:
 
     def to_xml(self, indent="") -> str:
         """
-        Convert the ServiceEvidence object to an XML string.
+            Convert the ServiceEvidence object to an XML string.
 
-        :param indent: Indentation for the XML string.
+            :param indent: Indentation for the XML string.
 
-        :returns: XML string representation of the ServiceEvidence object.
+            :returns: XML string representation of the ServiceEvidence object.
         """
         
         desc = xml_format_service_desc(

@@ -43,8 +43,9 @@ class DidlDesc:
         return
 
     def to_xml_lines(self, indent=""):
-        """Return XML lines representing this DIDL object."""
-        """Return XML lines representing this description element."""
+        """
+            Return XML lines representing this description element.
+        """
 
         xlines = [
             "{}<desc{}>".format(indent),
@@ -55,8 +56,9 @@ class DidlDesc:
         return xlines
     
     def to_xml(self):
-        """Return the XML string for this DIDL object."""
-        """Return the XML string for this description element."""
+        """
+            Return the XML string for this description element.
+        """
 
         attrs_str = ""
 
@@ -120,6 +122,15 @@ class DidlObject:
     upnp_class = None
 
     def __init__(self, *, oid: str, parent_id: str, restricted: bool, title: str, res: DidlResource):
+        """
+            Initialize a new :class:`DidlObject` instance.
+
+            :param oid: Object identifier for the DIDL object.
+            :param parent_id: Identifier of the parent object.
+            :param restricted: Indicates if the object is read-only.
+            :param title: Title string for the object.
+            :param res: Resource associated with the object.
+        """
         self._oid = oid
         self._parent_id = parent_id
         self._restricted = restricted
@@ -129,22 +140,27 @@ class DidlObject:
 
     @property
     def oid(self) -> str:
+        """Unique object identifier."""
         return self._oid
     
     @property
     def parent_id(self) -> str:
+        """Identifier of the parent object."""
         return self._parent_id
     
     @property
     def restricted(self) -> bool:
+        """Indicates if the object is read-only."""
         return self._restricted
 
     @property
     def res(self) -> DidlResource:
+        """Primary :class:`DidlResource` for this object."""
         return self._res
 
     @property
     def title(self) -> str:
+        """Title string for this object."""
         return self._title
 
     def create_opening_element(self):
@@ -210,6 +226,17 @@ class DidlContainerPhotoAlbum(DidlObject):
 
     def __init__(self, *, oid: str, parent_id: str, restricted: bool, title:str, child_count: int,
                  storage_used: int, write_status: str = DidlWriteStatus.UNKNOWN):
+        """
+            Initialize a photo album container.
+
+            :param oid: Object identifier for the album.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the album is read-only.
+            :param title: Title string for the album.
+            :param child_count: Number of child items.
+            :param storage_used: Storage used by this album.
+            :param write_status: Write status for the album.
+        """
         super().__init__(oid=oid, parent_id=parent_id, restricted=restricted, title=title)
         self._child_count = child_count
         self._storage_used = storage_used
@@ -241,6 +268,17 @@ class DidlContainerStorageFolder(DidlObject):
 
     def __init__(self, *, oid: str, parent_id: str, restricted: bool, title:str, child_count: int,
                  storage_used: int, write_status: str = DidlWriteStatus.UNKNOWN):
+        """
+            Initialize a storage folder container.
+
+            :param oid: Object identifier for the folder.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the folder is read-only.
+            :param title: Title string for the folder.
+            :param child_count: Number of child items.
+            :param storage_used: Storage used by this folder.
+            :param write_status: Write status for the folder.
+        """
         super().__init__(oid=oid, parent_id=parent_id, restricted=restricted, title=title)
         self._child_count = child_count
         self._storage_used = storage_used
@@ -276,6 +314,15 @@ class DidlItemAlbumArt(DidlObject):
     upnp_class = "object.item.imageItem.photo.vendorAlbumArt"
 
     def __init__(self, *, oid: str, parent_id: str, restricted: bool, title:str, res: DidlResource):
+        """
+            Initialize a vendor album art item.
+
+            :param oid: Object identifier for the item.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the item is read-only.
+            :param title: Title string for the item.
+            :param res: Resource for the album art image.
+        """
         super().__init__(oid=oid, parent_id=parent_id, restricted=restricted, title=title, res=res)
         return
 
@@ -297,6 +344,18 @@ class DidlItemMusicTrack(DidlObject):
 
     def __init__(self, *, oid: str, parent_id: str, restricted: bool, title: str, res: DidlResource, creator: str,
                  album_art: Optional[str] = None, genre: Optional[str] = None):
+        """
+            Initialize a music track item.
+
+            :param oid: Object identifier for the item.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the item is read-only.
+            :param title: Title string for the item.
+            :param res: Primary resource for the music track.
+            :param creator: Creator of the track.
+            :param album_art: Album art URI if available.
+            :param genre: Genre of the track.
+        """
         super().__init__(oid=oid, parent_id=parent_id, restricted=restricted, title=title, res=res)
         self._creator = creator
         self._album_art = album_art
@@ -346,12 +405,23 @@ class DidlItemPhoto(DidlObject):
     upnp_class = "object.item.imageItem.photo"
 
     def __init__(self, *, oid: str, parent_id: str, restricted: bool, title:str, res: DidlResource, date: str):
+        """
+            Initialize a photo item.
+
+            :param oid: Object identifier for the item.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the item is read-only.
+            :param title: Title string for the item.
+            :param res: Primary resource for the photo.
+            :param date: Date associated with the photo.
+        """
         super().__init__(oid=oid, parent_id=parent_id, restricted=restricted, title=title, res=res)
         self._date = date
         return
 
     @property
     def date(self):
+        """Date string associated with the photo item."""
         return self._date
     
     @classmethod
@@ -375,11 +445,17 @@ class DidlLitePacket:
     }
 
     def __init__(self, objects: List[DidlObject] = []):
+        """
+            Initialize a :class:`DidlLitePacket` instance.
+
+            :param objects: Optional list of :class:`DidlObject` instances.
+        """
         self._objects = objects
         return
 
     @property
     def objects(self):
+        """List of contained :class:`DidlObject` instances."""
         return self._objects
 
     def to_xml_lines(self, indent=""):
