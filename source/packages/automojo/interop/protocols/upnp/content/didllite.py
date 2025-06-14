@@ -245,6 +245,14 @@ class DidlContainerPhotoAlbum(DidlObject):
     
     @classmethod
     def from_xml(cls, obj_element: Element, namespaces: Optional[dict]=None):
+        """
+            Create a :class:`DidlContainerPhotoAlbum` from an XML element.
+
+            :param obj_element: XML element describing the DIDL container.
+            :param namespaces: Optional namespace map for element lookup.
+
+            :return: Instance of :class:`DidlContainerPhotoAlbum`.
+        """
         
         oid = obj_element.attrib["id"]
         parent_id = obj_element.attrib["parentID"]
@@ -287,6 +295,14 @@ class DidlContainerStorageFolder(DidlObject):
     
     @classmethod
     def from_xml(cls, obj_element: Element, namespaces: Optional[dict]=None):
+        """
+            Create a :class:`DidlContainerStorageFolder` from an XML element.
+
+            :param obj_element: XML element describing the folder.
+            :param namespaces: Optional namespace map for element lookup.
+
+            :return: Instance of :class:`DidlContainerStorageFolder`.
+        """
         
         oid = obj_element.attrib["id"]
         parent_id = obj_element.attrib["parentID"]
@@ -328,7 +344,15 @@ class DidlItemAlbumArt(DidlObject):
 
     @classmethod
     def from_xml(cls, obj_element: Element, namespaces: Optional[dict]=None):
-        
+        """
+            Create a :class:`DidlItemAlbumArt` from an XML element.
+
+            :param obj_element: XML element describing the item.
+            :param namespaces: Optional namespace map for element lookup.
+
+            :return: Instance of :class:`DidlItemAlbumArt`.
+        """
+
         # Read the Required attributes
         oid = obj_element.attrib["id"]
         parent_id = obj_element.attrib["parentID"]
@@ -364,6 +388,14 @@ class DidlItemMusicTrack(DidlObject):
     
     @classmethod
     def from_xml(self, obj_element: Element, namespaces: Optional[dict]=None):
+        """
+            Create a :class:`DidlItemMusicTrack` from an XML element.
+
+            :param obj_element: XML element describing the item.
+            :param namespaces: Optional namespace map for element lookup.
+
+            :return: Instance of :class:`DidlItemMusicTrack`.
+        """
 
         # Read the Required attributes
         oid = obj_element.attrib["id"]
@@ -426,7 +458,15 @@ class DidlItemPhoto(DidlObject):
     
     @classmethod
     def from_xml(self, obj_element: Element, namespaces: Optional[dict]=None):
-        
+        """
+            Create a :class:`DidlItemPhoto` from an XML element.
+
+            :param obj_element: XML element describing the item.
+            :param namespaces: Optional namespace map for element lookup.
+
+            :return: Instance of :class:`DidlItemPhoto`.
+        """
+
         # Read the Required attributes
         oid = obj_element.attrib["id"]
         parent_id = obj_element.attrib["parentID"]
@@ -459,6 +499,13 @@ class DidlLitePacket:
         return self._objects
 
     def to_xml_lines(self, indent=""):
+        """
+            Return a list of XML lines representing this DIDL packet.
+
+            :param indent: Optional indentation prefix for each line.
+
+            :return: List of XML strings.
+        """
 
         attrs_str = ""
         for ak, av in self.xml_namespaces.items():
@@ -477,6 +524,11 @@ class DidlLitePacket:
         return xlines
 
     def to_xml(self):
+        """
+            Return the XML string representation of this DIDL packet.
+
+            :return: XML string for the packet.
+        """
 
         attrs_str = ""
         for ak, av in self.xml_namespaces.items():
