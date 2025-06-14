@@ -30,36 +30,36 @@ def service_type_name(service_type: str, *, allow_underscores: bool = False) -> 
 
         Returns fully qualified service name.
 
-    Domain names used by mDNS-SD take the following forms:
+        Domain names used by mDNS-SD take the following forms:
 
-                   <sn> . <_tcp|_udp> . local.
-      <Instance> . <sn> . <_tcp|_udp> . local.
-      <sub>._sub . <sn> . <_tcp|_udp> . local.
+            <sn> . <_tcp|_udp> . local.
+            <Instance> . <sn> . <_tcp|_udp> . local.
+            <sub>._sub . <sn> . <_tcp|_udp> . local.
 
-    1) must end with 'local.'
+        1) must end with 'local.'
 
-      This is true because we are implementing mDNS and since the 'm' means
-      multi-cast, the 'local.' domain is mandatory.
+            This is true because we are implementing mDNS and since the 'm'
+            means multi-cast, the 'local.' domain is mandatory.
 
-    2) local is preceded with either '_udp.' or '_tcp.'
+        2) local is preceded with either '_udp.' or '_tcp.'
 
-    3) service name <sn> precedes <_tcp|_udp>
+        3) service name <sn> precedes <_tcp|_udp>
 
-      The rules for Service Names [RFC6335] state that they may be no more
-      than fifteen characters long (not counting the mandatory underscore),
-      consisting of only letters, digits, and hyphens, must begin and end
-      with a letter or digit, must not contain consecutive hyphens, and
-      must contain at least one letter.
+            The rules for Service Names [RFC6335] state that they may be no more
+            than fifteen characters long (not counting the mandatory underscore),
+            consisting of only letters, digits, and hyphens, must begin and end
+            with a letter or digit, must not contain consecutive hyphens, and
+            must contain at least one letter.
 
-    The instance name <Instance> and sub type <sub> may be up to 63 bytes.
+        The instance name <Instance> and sub type <sub> may be up to 63 bytes.
 
-    The portion of the Service Instance Name is a user-
-    friendly name consisting of arbitrary Net-Unicode text [RFC5198]. It
-    MUST NOT contain ASCII control characters (byte values 0x00-0x1F and
-    0x7F) [RFC20] but otherwise is allowed to contain any characters,
-    without restriction, including spaces, uppercase, lowercase,
-    punctuation -- including dots -- accented characters, non-Roman text,
-    and anything else that may be represented using Net-Unicode.
+        The portion of the Service Instance Name is a user-friendly name
+        consisting of arbitrary Net-Unicode text [RFC5198]. It MUST NOT contain
+        ASCII control characters (byte values 0x00-0x1F and 0x7F) [RFC20] but
+        otherwise is allowed to contain any characters, without restriction,
+        including spaces, uppercase, lowercase, punctuation -- including dots --
+        accented characters, non-Roman text, and anything else that may be
+        represented using Net-Unicode.
 
         :param type_: Type, SubType or service name to validate
 
