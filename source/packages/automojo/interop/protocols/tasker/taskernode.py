@@ -48,6 +48,15 @@ class TaskerNode:
 
     def __init__(self, ipaddr: str, port: int, summary_progress: Optional[SummaryProgressDelivery] = None,
                  protocol_config: Optional[Dict[str, Any]] = TASKER_PROTOCOL_CONFIG, aspect: TaskerAspects=DEFAULT_TASKER_ASPECTS):
+        """
+            Initializes a :class:`TaskerNode` that communicates with a tasker service.
+
+            :param ipaddr: IP address of the tasker service.
+            :param port: Port number of the service.
+            :param summary_progress: Optional summary progress delivery settings.
+            :param protocol_config: Optional RPyC protocol configuration.
+            :param aspect: Default tasker aspects for operations.
+        """
         self._ipaddr = ipaddr
         self._port = port
         self._summary_progress = summary_progress
@@ -69,6 +78,16 @@ class TaskerNode:
         return self._session_id
 
     def archive_folder(self, *, folder_to_archive: str, dest_folder: str, archive_name: str, compression_level: int = 7) -> str:
+        """
+            Creates a compressed archive of a folder on the remote node.
+
+            :param folder_to_archive: Folder path to archive.
+            :param dest_folder: Destination folder for the archive.
+            :param archive_name: Name of the created archive file.
+            :param compression_level: Compression level for the archive.
+
+            :returns: The full path to the remote archive file.
+        """
         
         client = self._create_connection()
 

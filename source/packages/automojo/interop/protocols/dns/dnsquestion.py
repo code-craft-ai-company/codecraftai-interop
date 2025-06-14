@@ -20,6 +20,13 @@ class DnsQuestion:
         see if a :class:`DnsRecord` answers the query provided.
     """
     def __init__(self, name: str, rtype: DnsRecordType, rclass: DnsRecordClass) -> None:
+        """
+            Constructs a DNS query question.
+
+            :param name: Name to query.
+            :param rtype: Record type.
+            :param rclass: Record class with flags.
+        """
         self._name = name
         self._rtype = rtype
         self._rclass = DnsRecordClass(rclass & DnsRecordClass.MASK)

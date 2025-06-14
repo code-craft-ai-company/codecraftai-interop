@@ -139,8 +139,7 @@ class TaskerController:
 
 
     def start_tasker_network(self):
-        """
-        """
+        """Starts the tasker network.  Must be implemented by subclasses."""
         raise AbstractMethodError("The 'start_task_network' method must be overloaded.")
 
 
@@ -373,6 +372,11 @@ class ProcessTaskerController(TaskerController):
 
     def start_tasker_network(self, node_count=5, output_directory: Optional[str] = None, log_level: Optional[int] = logging.DEBUG):
         """
+            Starts a number of local tasker server processes.
+
+            :param node_count: Number of tasker nodes to start.
+            :param output_directory: Optional directory for task output.
+            :param log_level: Logging level for the servers.
         """
 
         if self._network_started:
@@ -419,6 +423,11 @@ class ClientTaskerController(TaskerController):
     def start_tasker_network(self, clients: List[INetworkClient], output_directory: Optional[str] = None,
                              log_level: Optional[int] = logging.DEBUG):
         """
+            Starts a tasker network using existing client connections.
+
+            :param clients: List of network clients to use.
+            :param output_directory: Optional directory for task outputs.
+            :param log_level: Logging level for the servers.
         """
 
         if self._network_started:

@@ -29,12 +29,23 @@ class DnsAddress(DnsRecord):
     """
 
     def __init__(self, name: str, rtype: int, rclass: int, ttl: int, address: bytes) -> None:
+        """
+            Constructs a DNS address record.
+
+            :param name: Record name.
+            :param rtype: Record type.
+            :param rclass: Record class.
+            :param ttl: Time-to-live for the record.
+            :param address: Raw address bytes.
+        """
+
         DnsRecord.__init__(self, name, rtype, rclass, ttl)
         self._address = address
         return
 
     @property
     def address(self):
+        """Returns the raw address bytes for this record."""
         return self._address
 
     def write(self, out: "DnsOutboundMessage") -> None:

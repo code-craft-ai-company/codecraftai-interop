@@ -33,6 +33,15 @@ TaskerServerManager.register("TaskerServer", TaskerServer)
 
 
 def spawn_tasking_server_process(svc_endpoint: Tuple[str, int], logging_directory: Optional[str] = None) -> Tuple[TaskerServerManager, TaskerServer]:
+    """
+        Spawns a new :class:`TaskerServer` in a separate process.
+
+        :param svc_endpoint: Tuple of IP address and port to bind the server.
+        :param logging_directory: Optional directory for log files.
+
+        :returns: A tuple containing the manager and the server proxy.
+    """
+
     ipaddr, port = svc_endpoint
 
     svr_manager = TaskerServerManager()

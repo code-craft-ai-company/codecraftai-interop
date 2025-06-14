@@ -26,8 +26,13 @@ if TYPE_CHECKING:
     
 
 class TaskingProgressMonitor:
-
     def __init__(self, summary_progress: SummaryProgressDelivery, monitored_promises: List["TaskingResultPromise"]):
+        """
+            Creates a monitor object that polls promises for progress updates.
+
+            :param summary_progress: The progress delivery information.
+            :param monitored_promises: A list of promises to monitor.
+        """
 
         self._progress_callback = summary_progress.progress_callback
         self._progress_interval = summary_progress.progress_interval
@@ -38,6 +43,11 @@ class TaskingProgressMonitor:
         return
     
     def release(self, tasking_id: str):
+        """
+            Stops monitoring progress for the specified tasking.
+
+            :param tasking_id: The identifier of the tasking to release.
+        """
 
         self._lock.acquire()
         try:
@@ -48,6 +58,9 @@ class TaskingProgressMonitor:
         return
 
     def start(self):
+        """
+            Starts the monitoring thread that polls promises for progress.
+        """
 
         sgate = threading.Event()
         sgate.clear()
@@ -60,6 +73,11 @@ class TaskingProgressMonitor:
         return
 
     def _pull_progress_entry(self, sgate: threading.Event):
+        """
+            Internal thread entry used to periodically poll task promises for progress.
+
+            :param sgate: A startup gate used to signal that the thread has begun execution.
+        """
 
         self._pulling_progress = True
 

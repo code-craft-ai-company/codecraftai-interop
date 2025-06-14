@@ -29,6 +29,12 @@ class DnsServer:
     """
 
     def __init__(self, endpoint=(MDNS_GROUP_ADDR, MDNS_PORT) ) -> None:
+        """
+            Initializes the DNS server instance.
+
+            :param endpoint: Tuple containing address and port for the service.
+        """
+
         self._svc_addr, self._svc_port = endpoint
         
         self._thread_response = None
@@ -46,6 +52,8 @@ class DnsServer:
         return self._svc_port
 
     def start(self):
+        """Starts the responder thread for the server."""
+
         sgate = threading.Event()
         sgate.clear()
 
@@ -58,6 +66,7 @@ class DnsServer:
         return
     
     def query_all_services(self):
+        """Queries all services by broadcasting a DNS-SD request."""
 
         qpacket = DnsQuestion()
 

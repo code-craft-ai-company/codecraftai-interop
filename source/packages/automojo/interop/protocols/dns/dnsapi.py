@@ -22,6 +22,16 @@ from automojo.interop.protocols.dns.dnsserver import DnsServer
 
 def dns_query_name(name: str, rtype: DnsRecordType, rclass: DnsRecordClass):
 
+    """
+        Builds a DNS query string for a single name.
+
+        :param name: The name to query.
+        :param rtype: Record type to request.
+        :param rclass: Record class to request.
+
+        :returns: A string formatted for DNS query transmission.
+    """
+
     question = DnsQuestion(name, rtype, rclass)
 
     query_str = question.as_dns_string()
@@ -29,9 +39,16 @@ def dns_query_name(name: str, rtype: DnsRecordType, rclass: DnsRecordClass):
     return query_str
 
 def dns_query_services(service_types: List[str], rtype: DnsRecordType=DnsRecordType.PTR, rclass: DnsRecordClass=DnsRecordClass.IN):
-    
+    """
+        Queries for DNS services of the specified types using mDNS.
+
+        :param service_types: List of service types to query.
+        :param rtype: DNS record type used for the query.
+        :param rclass: DNS record class used for the query.
+    """
+
     service = DnsServer()
-    
+
     service.start()
 
     service.wait()

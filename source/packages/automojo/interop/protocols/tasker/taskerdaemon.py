@@ -360,6 +360,12 @@ class TaskerServerDaemon(object):
 
 
 def tasker_daemon_main():
+    """
+        Entry point for starting, stopping or restarting the tasker daemon.
+
+        The command line accepts ``start``, ``stop`` or ``restart`` actions and
+        an optional ``--debug`` flag that runs without daemonizing.
+    """
 
     global DAEMON_DEBUG_MODE
 

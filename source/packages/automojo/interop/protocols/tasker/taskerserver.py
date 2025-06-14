@@ -51,6 +51,14 @@ class TaskerServer(ThreadedServer):
                  backlog=socket.SOMAXCONN, reuse_addr=True, authenticator=None, registrar=None,
                  auto_register=None, protocol_config=TASKER_PROTOCOL_CONFIG, logging_directory: Optional[str]=None,
                  listener_timeout=0.5, socket_path=None):
+        """
+            Initializes the tasker service server.
+
+            :param hostname: Host name to bind.
+            :param ipv6: True to use IPv6.
+            :param port: Port to bind.
+            :param logging_directory: Optional directory for log files.
+        """
         
         if logging_directory is None:
             logging_directory = tempfile.mkdtemp(prefix=f"taskerserver-{os.getpid()}-")

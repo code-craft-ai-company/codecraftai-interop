@@ -57,6 +57,10 @@ class TaskerService(rpyc.Service):
 
 
     def __init__(self) -> None:
+        """
+            Initializes the :class:`TaskerService` instance and ensures logging is configured.
+        """
+
         super().__init__()
 
         this_type = type(self)

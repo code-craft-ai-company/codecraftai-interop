@@ -50,11 +50,24 @@ class TaskingGroupState:
 
 class TaskingGroupScope:
     """
+        Context manager used to coordinate the execution of a group of taskings.
     """
 
     def __init__(self, name: str, adapter: "TaskingAdapter", controller: TaskerController,
                  recorder: ResultRecorder, tgroup: TaskingGroup, tnodes: List[TaskerNode],
                  aspects: TaskerAspects, sequencer: Optional["TestSequencer"]=None):
+        """
+            Creates a :class:`TaskingGroupScope` used to manage a set of tasks.
+
+            :param name: The name of the tasking group.
+            :param adapter: Adapter providing access to tasker nodes.
+            :param controller: Controller used to dispatch taskings.
+            :param recorder: Result recorder for this group.
+            :param tgroup: The :class:`TaskingGroup` result container.
+            :param tnodes: Nodes the tasking will execute on.
+            :param aspects: Default aspects for task execution.
+            :param sequencer: Optional test sequencer instance.
+        """
 
         self._name = name
         self._adapter_ref = weakref.ref(adapter)
