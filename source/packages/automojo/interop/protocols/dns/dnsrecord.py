@@ -1,9 +1,9 @@
 """
-.. module:: dnsrecord
+    .. module:: dnsrecord
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsRecord object which serves as the base object type for other DNS record types.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

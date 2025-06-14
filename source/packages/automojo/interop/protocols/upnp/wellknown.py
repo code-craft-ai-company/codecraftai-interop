@@ -1,11 +1,11 @@
 
 
 """
-.. module:: wellknown
+    .. module:: wellknown
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: wellknown module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

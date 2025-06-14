@@ -1,10 +1,10 @@
 
 """
-.. module:: itemsresult
+    .. module:: itemsresult
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: itemsresult module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

@@ -1,10 +1,10 @@
 """
-.. module:: dnsincoming
+    .. module:: dnsincoming
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsIncoming object which is used to represent an incoming DNS packet and to provide
-               methods for processing the packet.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    methods for processing the packet.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

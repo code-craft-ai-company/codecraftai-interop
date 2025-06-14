@@ -1,10 +1,10 @@
 
 """
-.. module:: serviceevidence
+    .. module:: serviceevidence
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: serviceevidence module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 
@@ -31,6 +31,7 @@ def xml_format_service_desc(
     :param event_sub_url: Event subscription URL of the service.
     :param scpd_url: SCPD URL of the service.
     :param indent: Indentation for the XML string.
+
     :returns: XML string representation of the service description.
     """
     

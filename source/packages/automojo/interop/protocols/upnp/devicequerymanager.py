@@ -1,10 +1,10 @@
 
 """
-.. module:: devicequerymanager
+    .. module:: devicequerymanager
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: devicequerymanager module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

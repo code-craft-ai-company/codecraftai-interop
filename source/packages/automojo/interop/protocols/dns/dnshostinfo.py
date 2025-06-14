@@ -1,9 +1,9 @@
 """
-.. module:: dnshostinfo
+    .. module:: dnshostinfo
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsHostInfo object which provides a record type for host information.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

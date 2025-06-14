@@ -1,11 +1,11 @@
 """
-.. module:: upnpserviceproxy
+    .. module:: upnpserviceproxy
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the :class:`UpnpServiceProxy` class which is the base class
-               all services proxied.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    all services proxied.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

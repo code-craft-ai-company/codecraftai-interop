@@ -1,10 +1,10 @@
 
 """
-.. module:: upnpsearchwindow
+    .. module:: upnpsearchwindow
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: upnpsearchwindow module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

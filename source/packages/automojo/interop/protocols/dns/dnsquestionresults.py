@@ -1,10 +1,10 @@
 
 """
-.. module:: dnsquestionresults
+    .. module:: dnsquestionresults
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: dnsquestionresults module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

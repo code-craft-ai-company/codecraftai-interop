@@ -1,11 +1,11 @@
 
 
 """
-.. module:: boseembeddeddevicedetail
+    .. module:: boseembeddeddevicedetail
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: boseembeddeddevicedetail module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

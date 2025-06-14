@@ -1,11 +1,11 @@
 
 
 """
-.. module:: upnpextensionprotocol
+    .. module:: upnpextensionprotocol
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: upnpextensionprotocol module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

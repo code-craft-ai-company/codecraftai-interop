@@ -1,11 +1,11 @@
 """
-.. module:: taskerservice
+    .. module:: taskerservice
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the :class:`TaskerService` class which is an rypc service
-               for running and monitoring remote tasks.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    for running and monitoring remote tasks.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

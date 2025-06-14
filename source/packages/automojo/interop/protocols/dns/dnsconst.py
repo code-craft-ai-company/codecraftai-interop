@@ -1,10 +1,10 @@
 """
-.. module:: dnsconst
+    .. module:: dnsconst
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the constants that are used in association with multicast DNS.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"

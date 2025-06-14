@@ -1,9 +1,9 @@
 """
-.. module:: dnspointer
+    .. module:: dnspointer
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsPointer which represents a DNS record pointer.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

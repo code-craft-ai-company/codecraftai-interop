@@ -1,10 +1,10 @@
 """
-.. module:: taskercontroller
+    .. module:: taskercontroller
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: The :class:`TaskerController` package contains the controller object used to create a distributed
-               network of :class:`TaskerService` objects.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    network of :class:`TaskerService` objects.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

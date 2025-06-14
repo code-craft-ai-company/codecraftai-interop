@@ -1,11 +1,11 @@
 
 
 """
-.. module:: mdnsserviceinfo
+    .. module:: mdnsserviceinfo
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: mdnsserviceinfo module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

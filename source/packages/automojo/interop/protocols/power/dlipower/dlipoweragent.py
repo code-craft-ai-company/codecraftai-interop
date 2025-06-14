@@ -1,9 +1,9 @@
 """
-.. module:: poweragents
+    .. module:: poweragents
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DliPowerAgent object instances used to communicate with power controllers.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

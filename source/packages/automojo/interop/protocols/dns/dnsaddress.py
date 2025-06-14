@@ -1,9 +1,9 @@
 """
-.. module:: dnsaddress
+    .. module:: dnsaddress
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsAddress record type.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

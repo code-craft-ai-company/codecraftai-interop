@@ -1,10 +1,10 @@
 
 """
-.. module:: specversion
+    .. module:: specversion
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: specversion module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 
@@ -37,6 +37,7 @@ def xml_format_spec_version(
     :param major: Major version number.
     :param minor: Minor version number.
     :param indent: Indentation for the XML string.
+
     :returns: XML string representation of the spec version.
     """
 
@@ -77,6 +78,7 @@ class SpecVersion:
         Convert the SpecVersion object to an XML string.
 
         :param indent: Indentation for the XML string.
+
         :returns: XML string representation of the SpecVersion object.
         """
 

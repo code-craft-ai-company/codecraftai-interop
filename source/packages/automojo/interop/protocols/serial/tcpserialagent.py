@@ -1,9 +1,9 @@
 """
-.. module:: tcpserialagent
+    .. module:: tcpserialagent
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the TcpSerialObject object.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

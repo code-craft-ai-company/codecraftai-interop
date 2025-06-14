@@ -1,10 +1,10 @@
 
 """
-.. module:: aspects
+    .. module:: aspects
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: aspects module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 

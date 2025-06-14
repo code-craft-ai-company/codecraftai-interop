@@ -1,9 +1,9 @@
 """
-.. module:: dnstext
+    .. module:: dnstext
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsText objec which reprsents a DNS text record type.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

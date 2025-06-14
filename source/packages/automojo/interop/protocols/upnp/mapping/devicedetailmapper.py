@@ -1,11 +1,11 @@
 
 
 """
-.. module:: devicedetailmapper
+    .. module:: devicedetailmapper
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: devicedetailmapper module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 
