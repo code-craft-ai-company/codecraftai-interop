@@ -166,7 +166,14 @@ class TcpSerialAgent(TcpSerialBase):
             3333:telnet:0:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT banner
     """
 
-    def __init__(self, host, port:int=22, aspects: AspectsCmd=DEFAULT_CMD_ASPECTS):
+    def __init__(self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS) -> None:
+        """
+            Creates a :class:`TcpSerialAgent` instance.
+
+            :param host: Hostname or IP address of the TCP serial concentrator.
+            :param port: Port on the concentrator to connect to.
+            :param aspects: Default command aspects for command execution.
+        """
         super().__init__(host, port=port, aspects=aspects)
         return
 

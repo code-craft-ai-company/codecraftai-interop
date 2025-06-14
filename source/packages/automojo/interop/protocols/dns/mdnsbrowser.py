@@ -104,8 +104,17 @@ class MdnsBrowseSearchWindow:
 
 class MdnsBrowser:
 
-    def __init__(self, multicast_address = MDNS_GROUP_ADDR, multicast_port = MDNS_PORT, discover_interval: int = 60, ttl: int=32):
-        
+    def __init__(self, multicast_address: str = MDNS_GROUP_ADDR, multicast_port: int = MDNS_PORT,
+                 discover_interval: int = 60, ttl: int = 32) -> None:
+        """
+            Initializes the :class:`MdnsBrowser` instance.
+
+            :param multicast_address: Multicast group address used for mDNS.
+            :param multicast_port: UDP port used for mDNS traffic.
+            :param discover_interval: Interval in seconds for presence discovery.
+            :param ttl: Time-to-live used for outbound multicast packets.
+        """
+
         self._multicast_address = multicast_address
         self._multicast_port = multicast_port
         self._discover_interval = discover_interval
@@ -135,6 +144,7 @@ class MdnsBrowser:
     
     @property
     def active_devices(self) -> Dict[str, Dict[str, str]]:
+        """Dictionary of devices that have recently advertised services."""
         rtnval = None
 
         self._lock.acquire()
@@ -147,6 +157,7 @@ class MdnsBrowser:
     
     @property
     def inactive_devices(self) -> Dict[str, Dict[str, str]]:
+        """Dictionary of devices no longer advertising services."""
 
         self._lock.acquire()
         try:
