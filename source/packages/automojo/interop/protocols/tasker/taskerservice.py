@@ -226,6 +226,18 @@ class TaskerService(rpyc.Service):
 
     def exposed_execute_tasking(self, *, session_id: str, module_name: str, tasking_name: str, parent_id: Optional[str] = None,
                                 aspects: Optional[TaskerAspects]=None, **kwargs) -> dict:
+        """
+            Execute a tasking on behalf of a session.
+
+            :param session_id: Identifier of the owning session.
+            :param module_name: Module containing the tasking class.
+            :param tasking_name: Name of the tasking class.
+            :param parent_id: Optional parent tasking identifier.
+            :param aspects: Pickled aspects controlling execution.
+            :param kwargs: Additional arguments passed to the tasking.
+
+            :returns: Dictionary representation of a :class:`TaskingRef`.
+        """
 
         this_type = type(self)
 
@@ -257,6 +269,7 @@ class TaskerService(rpyc.Service):
 
 
     def exposed_file_exists(self, *, filename) -> bool:
+        """Check if a file exists on the server."""
 
         this_type = type(self)
 
@@ -279,6 +292,7 @@ class TaskerService(rpyc.Service):
     
 
     def exposed_folder_exists(self, *, folder) -> bool:
+        """Check if a folder exists on the server."""
 
         this_type = type(self)
 
@@ -677,6 +691,7 @@ class TaskerService(rpyc.Service):
 
 
     def _reinitialize_service_logging(self):
+        """Reset the service logger using current configuration values."""
 
         this_type = type(self)
 

@@ -82,6 +82,17 @@ class TaskerController:
 
     def execute_tasking_on_all_nodes(self, *, tasking: Union[TaskingIdentity, Type[Tasking]], parent_id: str = None,
                                      summary_progress: Optional[SummaryProgressDelivery] = None, aspects: Optional[TaskerAspects] = None, **kwargs) -> List[TaskingResultPromise]:
+        """
+            Execute a tasking on every node managed by this controller.
+
+            :param tasking: Tasking identity or type to execute.
+            :param parent_id: Optional parent task identifier.
+            :param summary_progress: Optional summary progress handler.
+            :param aspects: Aspects controlling tasking behavior.
+            :param kwargs: Additional keyword arguments passed to the tasking.
+
+            :returns: List of promises for each dispatched tasking.
+        """
 
         if aspects is None:
             aspects = self._aspects
@@ -101,6 +112,18 @@ class TaskerController:
 
     def execute_tasking_on_node(self, node: TaskerNode, *, tasking: Union[TaskingIdentity, Type[Tasking]], parent_id: str = None,
                                 summary_progress: Optional[SummaryProgressDelivery] = None, aspects: Optional[TaskerAspects] = None, **kwargs) -> TaskingResultPromise:
+        """
+            Execute a tasking on a specific node.
+
+            :param node: Node on which to run the tasking.
+            :param tasking: Tasking identity or type to execute.
+            :param parent_id: Optional parent task identifier.
+            :param summary_progress: Optional summary progress handler.
+            :param aspects: Aspects controlling tasking behavior.
+            :param kwargs: Additional keyword arguments passed to the tasking.
+
+            :returns: Promise for the dispatched tasking.
+        """
 
         if aspects is None:
             aspects = self._aspects
@@ -118,6 +141,18 @@ class TaskerController:
 
     def execute_tasking_on_node_list(self, node_list: List[TaskerNode], *, tasking: Union[TaskingIdentity, Type[Tasking]], parent_id: str = None,
                                      summary_progress: Optional[SummaryProgressDelivery] = None, aspects: Optional[TaskerAspects] = None, **kwargs) -> List[TaskingResultPromise]:
+        """
+            Execute a tasking on a list of nodes.
+
+            :param node_list: List of nodes where the tasking will run.
+            :param tasking: Tasking identity or type to execute.
+            :param parent_id: Optional parent task identifier.
+            :param summary_progress: Optional summary progress handler.
+            :param aspects: Aspects controlling tasking behavior.
+            :param kwargs: Additional keyword arguments passed to the tasking.
+
+            :returns: List of promises for the dispatched taskings.
+        """
 
         if aspects is None:
             aspects = self._aspects
@@ -139,6 +174,14 @@ class TaskerController:
                                       logging_level: Optional[int] = None,
                                       taskings_log_directory: Optional[str] = None,
                                       taskings_log_level: Optional[int] = None):
+        """
+            Reconfigure logging for all tasker nodes.
+
+            :param logging_directory: Directory for controller logs.
+            :param logging_level: Logging level for controller logs.
+            :param taskings_log_directory: Directory for task logs.
+            :param taskings_log_level: Logging level for task logs.
+        """
 
         for node in self._tasker_nodes:
             node.reinitialize_logging(logging_directory=logging_directory, logging_level=logging_level,

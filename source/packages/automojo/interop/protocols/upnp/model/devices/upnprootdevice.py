@@ -333,6 +333,7 @@ class UpnpRootDevice(UpnpDeviceBase):
 
     @property
     def services(self) -> List[UpnpServiceProxy]:
+        """List of service proxies associated with this device."""
         services_list = None
 
         services = self._services

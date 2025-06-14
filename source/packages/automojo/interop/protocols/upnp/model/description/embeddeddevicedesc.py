@@ -32,6 +32,7 @@ class EmbeddedDeviceDesc(Basic1DeviceDesc):
                  UDN: str, serialNumber: str="", manufacturerURL: str="", modelDescription: str = "", modelURL: str = "", UPC: str="",
                 presentationURL: str="", iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None,
                 deviceList: Optional[List['EmbeddedDeviceDesc']] = None, **extras: dict):
+        """Initialize the embedded device description structure."""
         super().__init__(specVersion, deviceType, friendlyName, manufacturer, manufacturerURL,
                          modelDescription, modelName, modelNumber, modelURL,
                          serialNumber, UDN, UPC, deviceList=deviceList, iconList=iconList,

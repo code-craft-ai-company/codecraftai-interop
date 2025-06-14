@@ -81,6 +81,18 @@ class Paging:
     """
     def __init__(self, *, page: int, count: int, total_count: int, per_page: int, first_page: int, last_page: int,
                  request_next: Optional[PreCannedRequest] = None, request_prev: Optional[PreCannedRequest] = None):
+        """
+            Construct a paging descriptor for REST collection results.
+
+            :param page: Current page number.
+            :param count: Number of items in this page.
+            :param total_count: Total items across all pages.
+            :param per_page: Maximum items per page.
+            :param first_page: First page index available.
+            :param last_page: Last page index available.
+            :param request_next: Callable request for the next page.
+            :param request_prev: Callable request for the previous page.
+        """
         self._page = page
         self._count = count
         self._total_count = total_count
