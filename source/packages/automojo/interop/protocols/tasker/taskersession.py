@@ -193,6 +193,11 @@ class TaskerSession:
         return self.log_level
 
     def dispose_tasking(self, tasking_id: str):
+        """
+            Dispose of a tasking and release its resources.
+
+            :param tasking_id: Identifier of the tasking to dispose.
+        """
         
         self._session_lock.acquire()
 
@@ -213,6 +218,11 @@ class TaskerSession:
         return
 
     def cancel_tasking(self, tasking_id: str):
+        """
+            Cancel a running tasking if it is in a cancellable state.
+
+            :param tasking_id: Identifier of the tasking to cancel.
+        """
 
         self._session_lock.acquire()
 
@@ -238,6 +248,13 @@ class TaskerSession:
         return
 
     def get_tasking(self, tasking_id: str) -> Tasking:
+        """
+            Retrieve the tasking instance for a given tasking identifier.
+
+            :param tasking_id: Identifier of the tasking to retrieve.
+
+            :returns: The :class:`Tasking` object for the id.
+        """
 
         tasking = None
 
@@ -257,6 +274,17 @@ class TaskerSession:
 
     def execute_tasking(self, module_name: str, tasking_name: str,
                                parent_id: Optional[str] = None, aspects: Optional[TaskerAspects]=None, **kwargs) -> TaskingRef:
+        """
+            Instantiate and execute a tasking in a separate process.
+
+            :param module_name: Module containing the tasking class.
+            :param tasking_name: Name of the tasking class to instantiate.
+            :param parent_id: Optional parent tasking identifier.
+            :param aspects: Tasker aspects controlling execution parameters.
+            :param kwargs: Additional keyword arguments for the tasking.
+
+            :returns: A :class:`TaskingRef` referencing the running task.
+        """
         
         if aspects is None:
             aspects = self._aspects
@@ -346,6 +374,13 @@ class TaskerSession:
     
 
     def get_tasking_events(self, tasking_id: str) -> str:
+        """
+            Retrieve all events posted for a tasking.
+
+            :param tasking_id: Identifier of the tasking to query.
+
+            :returns: Pickled list of event dictionaries.
+        """
 
         events = []
 
@@ -362,6 +397,13 @@ class TaskerSession:
 
 
     def get_tasking_progress(self, tasking_id: str) -> str:
+        """
+            Obtain the progress information for a running tasking.
+
+            :param tasking_id: Identifier of the tasking to query.
+
+            :returns: Pickled :class:`ProgressInfo` or ``None``.
+        """
 
         progress = None
 
@@ -379,6 +421,13 @@ class TaskerSession:
         return progress_str
 
     def get_tasking_result(self, tasking_id: str) -> str:
+        """
+            Retrieve the final :class:`TaskingResult` for a tasking.
+
+            :param tasking_id: Identifier of the tasking whose result is requested.
+
+            :returns: Pickled :class:`TaskingResult` data.
+        """
 
         self._session_lock.acquire()
         try:
@@ -402,6 +451,13 @@ class TaskerSession:
         return result_str
 
     def get_tasking_status(self, tasking_id: str) -> str:
+        """
+            Return the current status code for a running tasking.
+
+            :param tasking_id: Identifier of the tasking.
+
+            :returns: Status string from the progress table.
+        """
 
         self._session_lock.acquire()
         try:
@@ -413,6 +469,13 @@ class TaskerSession:
         return tstatus
 
     def has_completed_and_result_ready(self, tasking_id) -> bool:
+        """
+            Check if a tasking has completed and its result is available.
+
+            :param tasking_id: Identifier of the tasking.
+
+            :returns: ``True`` if the tasking finished and a result exists.
+        """
 
         complete_and_ready = False
 
@@ -503,6 +566,20 @@ class TaskerSession:
     def _dispatch_task(self, sgate: threading.Event, tasking_manager: TaskingManager, tasking: Tasking,
                       tasking_name: str, tasking_id: str, prefix: str, parent_id: str,
                       log_file: str, kwparams: dict, aspects: TaskerAspects):
+        """
+            Thread entry point used to execute a tasking in a remote process.
+
+            :param sgate: Synchronization gate to signal start.
+            :param tasking_manager: Manager controlling the tasking process.
+            :param tasking: Tasking instance to run.
+            :param tasking_name: Name of the tasking class.
+            :param tasking_id: Identifier for the tasking instance.
+            :param prefix: Prefix for log files.
+            :param parent_id: Parent task identifier.
+            :param log_file: Path to the task log file.
+            :param kwparams: Keyword parameters for the task execution.
+            :param aspects: Task execution aspects.
+        """
 
         # Notify the thread starting us that we have started.
         sgate.set()
@@ -577,6 +654,12 @@ class TaskerSession:
         return
 
     def _event_server_thread(self, sgate: threading.Event):
+        """
+            Thread responsible for hosting the HTTP server used to receive tasking
+            progress events.
+
+            :param sgate: Synchronization gate used to signal when the server is ready.
+        """
         
         handler_type = partial(EventNotificationHandler, self._service_class, self)
 

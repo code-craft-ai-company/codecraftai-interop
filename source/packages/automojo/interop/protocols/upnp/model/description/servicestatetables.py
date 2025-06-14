@@ -16,6 +16,14 @@ from typing import Dict, Optional
 from xml.etree.ElementTree import Element
 
 def process_state_table(service_state_table_el: Element, namespaces: Optional[dict] = None) -> dict:
+    """
+        Parse the ``serviceStateTable`` element of a service description.
+
+        :param service_state_table_el: Element containing the state table.
+        :param namespaces: Optional namespace mapping for XML parsing.
+
+        :returns: Tuple of variable, argument and event tables.
+    """
     # pylint: disable=no-self-use
     variablesTable = {}
     typesTable = {}

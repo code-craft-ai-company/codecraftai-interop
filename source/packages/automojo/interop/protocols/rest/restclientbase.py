@@ -130,6 +130,20 @@ class RestClientBase:
     def perform_call(self, *, leaf: str, method: str, params: Union[Dict[str, str], None], body: Union[Dict[str, str], None],
                      exp_status: Union[int, List[int]], headers: Optional[Dict[str, str]] = None,
                      context_msg: Optional[str] = None, aspects: Union[AspectsRest, None]) -> Response:
+        """
+            Perform a REST call using the specified execution aspects.
+
+            :param leaf: API leaf path.
+            :param method: HTTP method name.
+            :param params: Optional query parameters.
+            :param body: Optional request body.
+            :param exp_status: Expected HTTP status codes.
+            :param headers: Optional request headers.
+            :param context_msg: Optional context message for logging.
+            :param aspects: Aspects controlling call behavior.
+
+            :returns: The :class:`Response` object for the call.
+        """
         
         if aspects is None:
             aspects = self._aspects

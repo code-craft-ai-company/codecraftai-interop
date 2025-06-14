@@ -145,11 +145,13 @@ def parse_ssdp_message(content: bytes) -> Dict[str, str]:
 class UpnpPresenceId:
 
     def __init__(self, device_id: str, device_class: str):
+        """Construct an identifier for a device and its class."""
         self._device_id = device_id
         self._device_class = device_class
         return
 
     def to_usn(self) -> str:
+        """Return the USN string for this presence identifier."""
         usn = f"uuid:{self._device_id}::{self._device_class}"
         return usn
 
@@ -230,6 +232,7 @@ class UpnpPresence:
 
     @property
     def active_devices(self) -> Dict[str, Dict[str, str]]:
+        """Return a copy of the currently active devices."""
         rtnval = None
 
         self._lock.acquire()
@@ -243,6 +246,7 @@ class UpnpPresence:
 
     @property
     def inactive_devices(self) -> Dict[str, Dict[str, str]]:
+        """Return a copy of devices that have gone inactive."""
 
         self._lock.acquire()
         try:
@@ -670,6 +674,7 @@ class UpnpPresence:
 
 
     def _update_device(self, context: str, from_ip: str, usn: str, nts: str, msg_info: Dict[str, str]):
+        """Update the device tables based on an SSDP notification."""
 
         location = msg_info.get("LOCATION")
         server = msg_info.get("SERVER")
@@ -715,6 +720,7 @@ class UpnpPresence:
 
 
     def _get_presence_socket(self, ifname: str) -> socket.socket:
+        """Return or create the multicast socket for a given interface."""
 
         sock = None
 
@@ -736,6 +742,7 @@ class UpnpPresence:
 
 
     def _get_search_socket(self) -> socket.socket:
+        """Return or create the socket used for M-SEARCH operations."""
 
         sock = None
 
@@ -752,6 +759,7 @@ class UpnpPresence:
 
 
     def _msearch_thread_entry(self, sgate: threading.Event):
+        """Thread loop used to send and receive M-SEARCH discovery messages."""
 
         self._running = True
 
@@ -788,6 +796,7 @@ class UpnpPresence:
         return
 
     def _presence_thread_entry(self, sgate: threading.Event, ifname: str):
+        """Thread loop used to listen for SSDP presence messages."""
         """
             The presence thread entry point.  This method is called when the presence thread is started.
             It listens for incoming SSDP messages and processes or dispatches them.

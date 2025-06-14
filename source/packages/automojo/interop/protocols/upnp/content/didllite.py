@@ -43,6 +43,8 @@ class DidlDesc:
         return
 
     def to_xml_lines(self, indent=""):
+        """Return XML lines representing this DIDL object."""
+        """Return XML lines representing this description element."""
 
         xlines = [
             "{}<desc{}>".format(indent),
@@ -53,6 +55,8 @@ class DidlDesc:
         return xlines
     
     def to_xml(self):
+        """Return the XML string for this DIDL object."""
+        """Return the XML string for this description element."""
 
         attrs_str = ""
 
@@ -77,6 +81,7 @@ class DidlResource(NamedTuple):
         return
 
     def to_xml_lines(self, indent=""):
+        """Return XML lines for this resource."""
 
         sizeattr = ""
         if self.size is not None:
@@ -91,6 +96,7 @@ class DidlResource(NamedTuple):
         return xlines
 
     def to_xml(self):
+        """Return the XML string for this resource."""
         
         sizeattr = ""
         if self.size is not None:

@@ -17,6 +17,14 @@ from typing import Dict, Optional
 from xml.etree.ElementTree import Element
 
 def process_spec_version(spec_ver_el: Element, namespaces: Dict[str, str]) -> "SpecVersion":
+    """
+        Parse a ``specVersion`` XML element into a :class:`SpecVersion` instance.
+
+        :param spec_ver_el: XML element containing spec version.
+        :param namespaces: Namespace mapping for XML parsing.
+
+        :returns: Parsed :class:`SpecVersion` object.
+    """
         
     major = int(spec_ver_el.find("major", namespaces=namespaces).text)
     minor = int(spec_ver_el.find("minor", namespaces=namespaces).text)

@@ -132,6 +132,7 @@ class DnsOutboundMessage:
 
     @property
     def size(self) -> int:
+        """Current size in bytes of the packet being built."""
         return self._packet_offset
 
     @property
@@ -341,6 +342,7 @@ class DnsOutboundMessage:
         return
 
     def _write_compressed_name(self, name: str, parts: List[str]) -> None:
+        """Write a domain name using DNS name compression."""
 
         if name not in self._compression_names:
             self._compression_names[name] = self._packet_offset
@@ -372,6 +374,7 @@ class DnsOutboundMessage:
         return
 
     def _write_compressed_name_index(self, name_index: int) -> None:
+        """Write a pointer to a previously written name."""
         self._write_single_byte((name_index >> 8) | 0xC0)
         self._write_single_byte(name_index & 0xFF)
         return

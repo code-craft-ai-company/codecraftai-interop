@@ -69,7 +69,7 @@ class UpnpServiceProxy(EventedVariableSink):
     SERVICE_EVENT_VARIABLES = {}
 
     def __init__(self):
-
+        """Initialize the proxy for interacting with a UPnP service."""
         self._service_lock = threading.RLock()
 
         self._device_ref = None
@@ -447,6 +447,7 @@ class UpnpServiceProxy(EventedVariableSink):
         return
 
     def _clear_subscription(self):
+        """Reset subscription tracking information."""
 
         for _ in self.yield_state_lock():
             self._subscription_id = None
