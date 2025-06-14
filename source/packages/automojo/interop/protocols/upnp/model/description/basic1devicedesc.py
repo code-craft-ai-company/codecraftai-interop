@@ -27,6 +27,16 @@ if TYPE_CHECKING:
 
 def xml_format_basci1_device_desc(iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None,
                                   deviceList: Optional[List["EmbeddedDeviceDesc"]] = None, indent: str = "") -> str:
+    """
+        Create an XML representation of a basic device description.
+
+        :param iconList: Optional list of icon descriptors.
+        :param serviceList: Optional list of service descriptors.
+        :param deviceList: Optional list of embedded device descriptors.
+        :param indent: String used to indent the XML.
+
+        :returns: XML string for the device description.
+    """
 
     desc_lines = [
         f'{indent}<?xml version="1.0"?>'

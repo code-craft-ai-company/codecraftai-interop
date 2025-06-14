@@ -125,6 +125,11 @@ class TaskingIdentity:
     tasking_name: str
 
     def as_tuple(self) -> Tuple[str, str]:
+        """
+            Return the module and class name for this identity.
+
+            :returns: Tuple ``(module_name, tasking_name)``.
+        """
         return self.module_name, self.tasking_name
 
 
@@ -138,9 +143,25 @@ class Tasking:
     PREFIX = "tasking"
 
     def __init__(self, worker: str, wref: str,  tasking_id: str, parent_id: str, output_dir: str, logdir: str,
-                 logfile: str, logger: logging.Logger, events_endpoint: Optional[Tuple[str, int]], 
+                 logfile: str, logger: logging.Logger, events_endpoint: Optional[Tuple[str, int]],
                  notify_url: Optional[str] = None, notify_headers: Optional[dict] = None,
                  aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS):
+        """
+            Initialize a new tasking instance.
+
+            :param worker: Name of the worker executing the tasking.
+            :param wref: Worker reference value.
+            :param tasking_id: Identifier for this tasking instance.
+            :param parent_id: Parent tasking identifier.
+            :param output_dir: Directory to write output files.
+            :param logdir: Directory to write logs.
+            :param logfile: Log file path.
+            :param logger: Logger to use for output.
+            :param events_endpoint: Host/port tuple for event notifications.
+            :param notify_url: Optional URL for completion notification.
+            :param notify_headers: Optional headers for notification.
+            :param aspects: Default aspects controlling execution.
+        """
 
         self._worker = worker
         self._wref = wref
@@ -639,6 +660,13 @@ class Tasking:
         return
 
     def _task_thread_entry(self, sgate: threading.Event, progress_queue: multiprocessing.JoinableQueue, kwparams: dict):
+        """
+            Entry point for the thread that performs the tasking work.
+
+            :param sgate: Event used to signal when the thread has initialized.
+            :param progress_queue: Queue used to report progress back to the service.
+            :param kwparams: Keyword parameters provided for the tasking.
+        """
 
         # Update our local in process copy of these queues, because we have forked
         self._progress_queue = progress_queue

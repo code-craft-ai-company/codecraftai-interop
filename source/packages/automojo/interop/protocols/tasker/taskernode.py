@@ -298,6 +298,9 @@ class TaskerNode:
         return promise
 
     def session_close(self):
+        """
+            Close the currently open tasking session on the node.
+        """
 
         client = self._create_connection()
 
@@ -311,6 +314,17 @@ class TaskerNode:
 
     def session_open(self, *, worker: str, wref: str, output_directory: Optional[str] = None, log_level: Optional[int] = logging.DEBUG,
                      aspects: Optional[TaskerAspects] = None) -> str:
+        """
+            Open a new tasking session on the node.
+
+            :param worker: Worker name for identification.
+            :param wref: Worker reference value.
+            :param output_directory: Directory for task outputs.
+            :param log_level: Logging level for the remote tasker.
+            :param aspects: Tasker aspects controlling session defaults.
+
+            :returns: The session identifier string.
+        """
         
         if aspects is None:
             aspects = self._aspects
@@ -330,6 +344,12 @@ class TaskerNode:
 
     def reinitialize_logging(self, *, logging_directory: Optional[str] = None,
                                       logging_level: Optional[int] = None):
+        """
+            Request the remote tasker service reinitialize its logging.
+
+            :param logging_directory: Directory to place logs.
+            :param logging_level: Logging level to set.
+        """
         
         client = self._create_connection()
         
@@ -341,6 +361,13 @@ class TaskerNode:
         return
 
     def resolve_path(self, *, path) -> str:
+        """
+            Resolve a path on the remote node returning the absolute path.
+
+            :param path: Path to resolve.
+
+            :returns: The resolved absolute path string.
+        """
 
         client = self._create_connection()
 
@@ -352,6 +379,7 @@ class TaskerNode:
         return full_path
 
     def _create_connection(self):
+        """Create and return an RPyC connection using the configured aspects."""
         
         if self._aspects is not None:
             self._protocol_config["sync_request_timeout"] = self._aspects.sync_request_timeout
@@ -364,6 +392,7 @@ class TaskerNode:
 class TaskerClientNode(TaskerNode):
 
     def __init__(self, client: Any, ipaddr: str, port: int):
+        """Create a tasker node backed by an existing client connection."""
         self._client_ref = weakref.ref(client)
         super().__init__(ipaddr, port)
         return

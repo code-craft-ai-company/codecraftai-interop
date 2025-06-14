@@ -58,6 +58,15 @@ class ServiceEvidence:
     """
 
     def __init__(self, *, serviceType: str, serviceId: str, controlURL: str, eventSubURL: str, SCPDURL: str):
+        """
+            Create a new :class:`ServiceEvidence` instance describing a UPnP service.
+
+            :param serviceType: The service type string.
+            :param serviceId: Service identifier string.
+            :param controlURL: Control URL for invoking actions.
+            :param eventSubURL: Event subscription URL.
+            :param SCPDURL: URL to the service description document.
+        """
         self.serviceType = serviceType
         self.serviceId = serviceId
         self.controlURL = controlURL
@@ -113,6 +122,7 @@ class ServiceEvidence:
         return desc
 
     def __repr__(self):
+        """Return debug representation for the service evidence."""
         rval = f"ServiceEvidence(serviceType={self.serviceType}, serviceId={self.serviceId})"
         return rval
 

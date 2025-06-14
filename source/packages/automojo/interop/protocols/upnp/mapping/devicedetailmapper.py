@@ -56,6 +56,14 @@ class DeviceDetailMapper:
 
     @classmethod
     def pull_spec_version_and_manufacturer(cls, root_el: Element, namespaces: Dict[str, str]) -> SpecVersion:
+        """
+            Extract the spec version and manufacturer from a device description document.
+
+            :param root_el: Root element of the device description.
+            :param namespaces: Namespace mapping for XML parsing.
+
+            :returns: Tuple of :class:`SpecVersion` and manufacturer string.
+        """
 
         spec_ver = None
         manufacturer = None

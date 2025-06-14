@@ -29,6 +29,17 @@ class DeviceEvidence:
     """
 
     def __init__(self, *, usn: str, status: str, server: str, location: str, ip: str, other: Dict[str, str], presence: "UpnpPresence"):
+        """
+            Initialize evidence describing a detected device.
+
+            :param usn: The unique service name for the device.
+            :param status: Current status string.
+            :param server: Server header reported by the device.
+            :param location: URL of the device description document.
+            :param ip: IP address where the device was discovered.
+            :param other: Dictionary of additional headers.
+            :param presence: UpnpPresence instance that reported the device.
+        """
         self._usn = usn
         self._status = status
         self._server = server

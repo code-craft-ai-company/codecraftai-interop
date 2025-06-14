@@ -166,6 +166,7 @@ class UpnpDefaultVar:
         return
 
     def __str__(self) -> str:
+        """Return a friendly string representation of the variable."""
         value, updated, changed, state = self.sync_read()
         rtnstr = "name={} value={} updated={} changed={} state={}".format(self._name, value, updated, changed, state.name)
         return rtnstr
