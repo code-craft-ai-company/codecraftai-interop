@@ -21,6 +21,13 @@ class UpnpError(ProtocolError):
         The base class for UPnP based errors.
     """
     def __init__(self, errorCode, errorDescription, extra=None):
+        """
+            Initializes the :class:`UpnpError` instance.
+
+            :param errorCode: Numeric UPnP error code.
+            :param errorDescription: Description of the error.
+            :param extra: Optional extra information for the error message.
+        """
         self.errorCode = errorCode
         self.errorDescription = errorDescription
         self.extra = extra

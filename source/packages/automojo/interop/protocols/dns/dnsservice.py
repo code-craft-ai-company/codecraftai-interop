@@ -26,7 +26,19 @@ class DnsService(DnsRecord):
     """
 
     def __init__(self, name: str, rtype: int, rclass: int, ttl: Union[float, int], priority: int,
-                 weight: int, port: int, server: str ) -> None:
+                 weight: int, port: int, server: str) -> None:
+        """
+            Constructs a DNS service record.
+
+            :param name: Record name.
+            :param rtype: Record type.
+            :param rclass: Record class.
+            :param ttl: Time-to-live for the record.
+            :param priority: Service priority.
+            :param weight: Service weight.
+            :param port: Service port number.
+            :param server: Hostname providing the service.
+        """
         DnsRecord.__init__(self, name, rtype, rclass, ttl)
         self._priority = priority
         self._weight = weight

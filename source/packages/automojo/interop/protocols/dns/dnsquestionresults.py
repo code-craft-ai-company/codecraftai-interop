@@ -22,6 +22,11 @@ class DnsQuestionResults:
     """
 
     def __init__(self, owner):
+        """
+            Constructs a :class:`DnsQuestionResults` object used to accumulate answers.
+
+            :param owner: The object that initiated the query.
+        """
         self._owner_ref = weakref.ref(owner)
 
         self._lock = threading.Lock()

@@ -62,14 +62,17 @@ class MdnsBrowseSearchWindow:
 
     @property
     def browser(self) -> "MdnsBrowser":
+        """The :class:`MdnsBrowser` instance that created this window."""
         return self._browser_ref()
     
     @property
     def id(self) -> int:
+        """Identifier for the search window."""
         return self._id
 
     @property
     def span(self) -> float:
+        """Time span in seconds that the search will run."""
         return self._span
 
     def begin(self, span: float):    

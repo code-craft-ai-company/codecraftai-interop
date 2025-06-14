@@ -26,9 +26,9 @@ from automojo.interop.protocols.dns.dnsvalidation import validate_service_name
 
 def service_type_name(service_type: str, *, allow_underscores: bool = False) -> str:
     """
-    Validate a fully qualified service name, instance or subtype. [rfc6763]
+        Validate a fully qualified service name, instance or subtype. [rfc6763]
 
-    Returns fully qualified service name.
+        Returns fully qualified service name.
 
     Domain names used by mDNS-SD take the following forms:
 
@@ -61,9 +61,9 @@ def service_type_name(service_type: str, *, allow_underscores: bool = False) -> 
     punctuation -- including dots -- accented characters, non-Roman text,
     and anything else that may be represented using Net-Unicode.
 
-    :param type_: Type, SubType or service name to validate
+        :param type_: Type, SubType or service name to validate
 
-    :return: fully qualified service name (eg: _http._tcp.local.)
+        :return: fully qualified service name (eg: _http._tcp.local.)
     """
     service_type = service_type.rstrip(".")
     service_type_parts = service_type.split(".").reverse()

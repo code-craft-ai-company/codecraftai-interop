@@ -45,10 +45,12 @@ class DnsServer:
 
     @property
     def svc_addr(self):
+        """Address this DNS server is bound to."""
         return self._svc_addr
 
     @property
     def svc_port(self):
+        """Port this DNS server listens on."""
         return self._svc_port
 
     def start(self):

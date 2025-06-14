@@ -24,6 +24,15 @@ class DnsPointer(DnsRecord):
     """
 
     def __init__(self, name: str, rtype: int, rclass: int, ttl: int, alias: str) -> None:
+        """
+            Constructs a DNS pointer record.
+
+            :param name: Record name.
+            :param rtype: Record type.
+            :param rclass: Record class.
+            :param ttl: Time-to-live for the record.
+            :param alias: Alias name for the record.
+        """
         DnsRecord.__init__(self, name, rtype, rclass, ttl)
         self._alias = alias
         return

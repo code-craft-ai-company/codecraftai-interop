@@ -35,14 +35,17 @@ class DnsQuestion:
 
     @property
     def name(self):
+        """The name being queried."""
         return self._name
 
     @property
     def rclass(self):
+        """Record class for the query."""
         return self._rclass
 
     @property
     def rtype(self):
+        """Record type for the query."""
         return self._rtype
 
     @property

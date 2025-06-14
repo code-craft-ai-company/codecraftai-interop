@@ -65,6 +65,14 @@ class DnsRecord:
 
     """
     def __init__(self, name: str, rtype: DnsRecordType, rclass: DnsRecordClass, ttl: Union[float, int]) -> None:
+        """
+            Constructs a DNS record.
+
+            :param name: Record name.
+            :param rtype: Record type.
+            :param rclass: Record class.
+            :param ttl: Time-to-live for the record.
+        """
         self._key = name.lower()
         self._name = name
         self._rtype = rtype
