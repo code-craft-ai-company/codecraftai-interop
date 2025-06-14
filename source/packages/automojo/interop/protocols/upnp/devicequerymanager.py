@@ -42,10 +42,18 @@ class DeviceQueryManager:
     """
 
     def __init__(self):
+        """Initialize the query manager and cache the mapper registry."""
         self._mapper_registry = DeviceDetailMapperRegistrySingleton()
         return
 
     def query_device_description(self, query_url: str) -> Optional[Basic1DeviceDesc]:
+        """
+            Query a UPnP device for its description XML.
+
+            :param query_url: URL from which to request the device description.
+
+            :returns: Parsed :class:`Basic1DeviceDesc` or ``None`` on failure.
+        """
 
         device_desc = None
 

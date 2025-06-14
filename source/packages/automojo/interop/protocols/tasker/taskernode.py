@@ -179,6 +179,13 @@ class TaskerNode:
         return exists
 
     def get_tasking_events(self, *, tasking_id: str) -> List[dict]:
+        """
+            Retrieve any events that have been posted for the specified tasking.
+
+            :param tasking_id: Identifier of the tasking whose events are requested.
+
+            :returns: A list of event dictionaries.
+        """
 
         client = self._create_connection()
 
@@ -195,6 +202,13 @@ class TaskerNode:
         return tevents
 
     def get_tasking_progress(self, *, tasking_id: str) -> ProgressInfo:
+        """
+            Obtain progress information for a running tasking.
+
+            :param tasking_id: Identifier of the tasking to query.
+
+            :returns: A :class:`ProgressInfo` instance or ``None`` if not available.
+        """
 
         client = self._create_connection()
 
@@ -209,6 +223,13 @@ class TaskerNode:
         return tprog
 
     def get_tasking_status(self, *, tasking_id: str) -> str:
+        """
+            Retrieve the current status string for the given tasking.
+
+            :param tasking_id: Identifier of the tasking to query.
+
+            :returns: Status string reported by the tasker service.
+        """
 
         client = self._create_connection()
 
@@ -221,6 +242,13 @@ class TaskerNode:
         return tstatus
     
     def get_tasking_result(self, *, tasking_id: str) -> TaskingResult:
+        """
+            Fetch the final :class:`TaskingResult` for a completed tasking.
+
+            :param tasking_id: Identifier of the tasking whose result is requested.
+
+            :returns: The deserialized :class:`TaskingResult` instance.
+        """
 
         client = self._create_connection()
 

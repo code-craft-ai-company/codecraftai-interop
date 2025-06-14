@@ -92,18 +92,38 @@ class DnsInboundMessage:
 
     @property
     def data(self) -> bytes:
+        """
+            Raw packet bytes that were received.
+
+            :returns: Byte string containing the DNS message.
+        """
         return self._data
 
     @property
     def flags(self) -> DnsFlags:
+        """
+            Parsed DNS flags describing the message attributes.
+
+            :returns: A :class:`DnsFlags` instance.
+        """
         return self._flags
 
     @property
     def id(self) -> int:
+        """
+            Identifier associated with this DNS message.
+
+            :returns: Numeric message id.
+        """
         return self._id
 
     @property
     def questions(self) -> List[DnsQuestion]:
+        """
+            List of DNS questions contained within the message.
+
+            :returns: List of :class:`DnsQuestion` objects.
+        """
         return self._questions
 
     def is_query(self) -> bool:

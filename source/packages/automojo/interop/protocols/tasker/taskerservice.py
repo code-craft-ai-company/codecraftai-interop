@@ -196,6 +196,12 @@ class TaskerService(rpyc.Service):
         return pkl_rtnval
 
     def exposed_dispose_tasking(self, *, session_id: str, tasking_id: str):
+        """
+            Dispose of a completed tasking object and free associated resources.
+
+            :param session_id: Session owning the tasking.
+            :param tasking_id: Identifier of the tasking to dispose.
+        """
 
         this_type = type(self)
 
@@ -461,6 +467,13 @@ class TaskerService(rpyc.Service):
 
 
     def exposed_session_close(self, *, session_id: str) -> str:
+        """
+            Close a single tasking session and stop any running taskings.
+
+            :param session_id: Identifier of the session to close.
+
+            :returns: The closed session identifier.
+        """
 
         this_type = type(self)
 
@@ -485,6 +498,7 @@ class TaskerService(rpyc.Service):
         return session_id
 
     def exposed_session_close_all(self) -> str:
+        """Close all active sessions and return the last closed session id."""
 
         this_type = type(self)
 
@@ -511,6 +525,20 @@ class TaskerService(rpyc.Service):
                              log_level: Optional[int] = logging.DEBUG, notify_url: Optional[str] = None,
                              notify_headers: Optional[Dict[str, str]] = None,
                              aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS) -> str:
+
+        """
+            Open a new tasking session for a client connection.
+
+            :param worker: Name of the worker for logging purposes.
+            :param wref: Worker reference value.
+            :param output_directory: Directory for task logs.
+            :param log_level: Logging level for the session.
+            :param notify_url: Optional notification callback URL.
+            :param notify_headers: Optional headers for notifications.
+            :param aspects: Default aspects for task execution.
+
+            :returns: The newly created session identifier.
+        """
 
         this_type = type(self)
 

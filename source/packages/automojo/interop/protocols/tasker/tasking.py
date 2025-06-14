@@ -56,7 +56,27 @@ from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 def instantiate_tasking(worker: str, wref: str, module_name: str, tasking_name: str, tasking_id: str, parent_id: str, output_dir: str,
                         logdir: str, logfile: str, log_level: int, events_endpoint: Tuple[str, int], notify_url: Optional[str], notify_headers: Optional[Dict[str, str]],
                         aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS) -> "Tasking":
+    """
+        Factory function used by :class:`TaskerService` to instantiate a tasking class in a
+        separate process.
 
+        :param worker: Name of the worker running the tasking.
+        :param wref: Worker reference identifier.
+        :param module_name: Module containing the tasking class.
+        :param tasking_name: Name of the tasking class to instantiate.
+        :param tasking_id: Instance identifier for the tasking.
+        :param parent_id: Parent identifier for result chaining.
+        :param output_dir: Directory for task outputs.
+        :param logdir: Directory to place log files.
+        :param logfile: Log file name for the tasking.
+        :param log_level: Logging level to configure.
+        :param events_endpoint: Tuple host/port for event notifications.
+        :param notify_url: Optional notification URL.
+        :param notify_headers: Optional HTTP headers for notification.
+        :param aspects: Default tasker aspects.
+
+        :returns: Instantiated :class:`Tasking` or ``None`` if not found.
+    """
     logger = None
     tasking = None
 
@@ -110,6 +130,9 @@ class TaskingIdentity:
 
 class Tasking:
     """
+        Base class for task implementations executed by the tasker service.
+        Subclasses should implement the :meth:`perform` method to define the work
+        performed by the tasking.
     """
 
     PREFIX = "tasking"
@@ -525,6 +548,11 @@ class Tasking:
         raise AbstractMethodError(errmsg)
     
     def post_event(self, event: TaskingEvent):
+        """
+            Post an event to the configured event endpoint.
+
+            :param event: Event object describing the occurrence.
+        """
 
         if self._events_endpoint is not None:
             headers = { "Content-Type": "application/json"}

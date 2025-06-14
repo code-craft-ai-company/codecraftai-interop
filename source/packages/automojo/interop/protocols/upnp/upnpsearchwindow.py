@@ -44,6 +44,14 @@ class UpnpSearchWindow:
     """
 
     def __init__(self, presence: "UpnpPresence", id: str, start: datetime, end: datetime, monitor_interval: float, limit_to: List[UpnpDeviceHint]=None):
+        """
+            :param presence: The owning :class:`UpnpPresence` instance.
+            :param id: Identifier for this search window.
+            :param start: Start time of the search window.
+            :param end: End time of the search window.
+            :param monitor_interval: Polling interval for window monitoring.
+            :param limit_to: Optional list of device hints to limit the search.
+        """
 
         self._presence_ref = weakref.ref(presence)
         self._id = id
@@ -133,7 +141,7 @@ class UpnpSearchWindow:
 
 
     def start(self):
-
+        """Begin monitoring for search results in a background thread."""
         self._lock.acquire()
         try:
             start_gate = threading.Event()

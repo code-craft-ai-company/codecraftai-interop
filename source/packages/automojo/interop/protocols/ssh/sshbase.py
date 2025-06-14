@@ -67,7 +67,19 @@ class SshBase(ISystemContext):
                  port: int = 22, jump: Union[str, SshJumpParams, None] = None, pty_params: Optional[dict] = None,
                  called_id: Optional[str]=None, look_for_keys: bool = False,
                  aspects: AspectsCmd = DEFAULT_CMD_ASPECTS):
+        """
+            Initialize the base SSH helper class.
 
+            :param host: Target host to connect to.
+            :param primary_credential: Primary credential for authentication.
+            :param users: Optional dictionary of additional users.
+            :param port: SSH port number.
+            :param jump: Optional jump host specification.
+            :param pty_params: Optional PTY parameters for interactive sessions.
+            :param called_id: Identifier used in logs.
+            :param look_for_keys: If ``True`` search for SSH keys automatically.
+            :param aspects: Default command aspects for operations.
+        """
         self._host = host
 
         self._primary_credential = primary_credential

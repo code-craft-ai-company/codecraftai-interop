@@ -642,7 +642,7 @@ class UpnpPresence:
 
 
     def start(self):
-        
+        """Start background threads for presence monitoring and discovery."""
         if self._running:
             raise RuntimeError("SSDP Scanner is already running.")
 

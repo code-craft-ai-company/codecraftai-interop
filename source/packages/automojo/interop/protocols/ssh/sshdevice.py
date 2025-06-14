@@ -27,6 +27,16 @@ class SshDevice(LandscapeDevice):
 
     def __init__(self, lscape: "Landscape", coordinator: "CoordinatorBase",
                  friendly_id:FriendlyIdentifier, device_type: str, device_config: dict):
+        """
+            Initialize an :class:`SshDevice` representing a remote host.
+
+            :param lscape: Owning landscape instance.
+            :param coordinator: Coordinator managing this device.
+            :param friendly_id: Friendly identifier object.
+            :param device_type: Type of device being represented.
+            :param device_config: Configuration dictionary for the device.
+        """
+
         super().__init__(lscape, coordinator, friendly_id, device_type, device_config)
 
         self._host = device_config["host"]

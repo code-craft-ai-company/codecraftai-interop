@@ -76,6 +76,12 @@ class SoapProcessor:
         senti to and from a UPNP device.
     """
     def __init__(self, encoding=URI_SOAP_ENCODING, envelope_attrib=None, typed=None):
+        """
+            :param encoding: URI string describing the SOAP encoding.
+            :param envelope_attrib: Optional attributes to apply to the envelope element.
+            :param typed: Optional namespace used for typed parameters.
+        """
+
         self._encoding = encoding
         self._envelope_attrib = envelope_attrib
         self._typed = typed
