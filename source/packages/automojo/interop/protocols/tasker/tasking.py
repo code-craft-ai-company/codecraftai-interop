@@ -215,7 +215,9 @@ class Tasking:
 
     @classmethod
     def get_identity(cls) -> TaskingIdentity:
-        """Return the :class:`TaskingIdentity` for this tasking class."""
+        """
+        Return the :class:`TaskingIdentity` for this tasking class.
+        """
 
         module_name = cls.__module__
         tasking_name = cls.__name__
@@ -224,19 +226,25 @@ class Tasking:
 
     @property
     def full_name(self) -> str:
-        """Return the fully qualified class name for this tasking."""
+        """
+        Return the fully qualified class name for this tasking.
+        """
         this_type = type(self)
         fname = f"{this_type.__module__}@{this_type.__name__}"
         return fname
 
     @property
     def result(self) -> TaskingResult:
-        """Current :class:`TaskingResult` for this tasking."""
+        """
+        Current :class:`TaskingResult` for this tasking.
+        """
         return self._result
 
     @property
     def task_status(self) -> ProgressCode:
-        """Status code for the running task."""
+        """
+        Status code for the running task.
+        """
         return self._task_status
 
     def add_metrics_stream(self, stream_name: str, stream_type: str):
@@ -458,7 +466,9 @@ class Tasking:
         return
 
     def mark_failed(self, err: BaseException):
-        """Record a failure for this tasking and log the error."""
+        """
+        Record a failure for this tasking and log the error.
+        """
 
         tbdetail = create_traceback_detail(err)
 

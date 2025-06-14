@@ -119,7 +119,9 @@ class Basic1DeviceDesc:
                  modelNumber: str="", serialNumber: str="", manufacturerURL: str="", modelDescription: str = "", modelURL: str = "", UPC: str="", presentationURL: str="",
                  iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None, deviceList: Optional[List['EmbeddedDeviceDesc']] = None,
                  locationURL: Optional[str]=None, **extras: dict):
-        """Create a new :class:`Basic1DeviceDesc` instance."""
+        """
+        Create a new :class:`Basic1DeviceDesc` instance.
+        """
 
         self._deviceType = deviceType
         self._specVersion = specVersion

@@ -79,11 +79,15 @@ class DidlResource(NamedTuple):
 
     @classmethod
     def from_xml(cls, res_element: Element):
-        """Create a :class:`DidlResource` from an XML element."""
+        """
+        Create a :class:`DidlResource` from an XML element.
+        """
         return
 
     def to_xml_lines(self, indent=""):
-        """Return XML lines for this resource."""
+        """
+        Return XML lines for this resource.
+        """
 
         sizeattr = ""
         if self.size is not None:
@@ -98,7 +102,9 @@ class DidlResource(NamedTuple):
         return xlines
 
     def to_xml(self):
-        """Return the XML string for this resource."""
+        """
+        Return the XML string for this resource.
+        """
         
         sizeattr = ""
         if self.size is not None:
@@ -140,44 +146,60 @@ class DidlObject:
 
     @property
     def oid(self) -> str:
-        """Unique object identifier."""
+        """
+        Unique object identifier.
+        """
         return self._oid
     
     @property
     def parent_id(self) -> str:
-        """Identifier of the parent object."""
+        """
+        Identifier of the parent object.
+        """
         return self._parent_id
     
     @property
     def restricted(self) -> bool:
-        """Indicates if the object is read-only."""
+        """
+        Indicates if the object is read-only.
+        """
         return self._restricted
 
     @property
     def res(self) -> DidlResource:
-        """Primary :class:`DidlResource` for this object."""
+        """
+        Primary :class:`DidlResource` for this object.
+        """
         return self._res
 
     @property
     def title(self) -> str:
-        """Title string for this object."""
+        """
+        Title string for this object.
+        """
         return self._title
 
     def create_opening_element(self):
-        """Return the opening XML element string for this object."""
+        """
+        Return the opening XML element string for this object.
+        """
 
         estr = "<{} id='{}' parentID='{}' restricted='{}' >".format(
             self.element_tag, self._oid, self._parent_id, self._restricted)
         return estr
     
     def create_closing_element(self):
-        """Return the closing XML element string for this object."""
+        """
+        Return the closing XML element string for this object.
+        """
 
         estr = "</{}>".format(self.element_tag)
         return estr
 
     def to_xml_lines(self, indent=""):
-        """Return a list of XML lines describing this DIDL object."""
+        """
+        Return a list of XML lines describing this DIDL object.
+        """
 
         xlines = [
             self.create_opening_element()
@@ -198,7 +220,9 @@ class DidlObject:
         return xlines
 
     def to_xml(self):
-        """Return the XML string representation of this DIDL object."""
+        """
+        Return the XML string representation of this DIDL object.
+        """
 
         xml_parts = [
             self.create_opening_element()
@@ -453,7 +477,9 @@ class DidlItemPhoto(DidlObject):
 
     @property
     def date(self):
-        """Date string associated with the photo item."""
+        """
+        Date string associated with the photo item.
+        """
         return self._date
     
     @classmethod
@@ -495,7 +521,9 @@ class DidlLitePacket:
 
     @property
     def objects(self):
-        """List of contained :class:`DidlObject` instances."""
+        """
+        List of contained :class:`DidlObject` instances.
+        """
         return self._objects
 
     def to_xml_lines(self, indent=""):
@@ -549,7 +577,9 @@ class DidlLitePacket:
         return xstr
 
 def parse_didl_lite_packet(content, namespaces=DIDL_NAMESPACES):
-    """Parse a DIDL-Lite XML packet into DIDL object instances."""
+    """
+    Parse a DIDL-Lite XML packet into DIDL object instances.
+    """
 
     root_element: Element = from_xml_string(content)
 

@@ -27,11 +27,15 @@ class DliPowerAgent:
         return
 
     def on(self) -> bool:
-        """Turns the attached outlet on."""
+        """
+        Turns the attached outlet on.
+        """
         success = self._interface.on(outlet=self._attachment)
         return success
 
     def off(self) -> bool:
-        """Turns the attached outlet off."""
+        """
+        Turns the attached outlet off.
+        """
         success = self._interface.off(outlet=self._attachment)
         return success
