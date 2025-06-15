@@ -22,7 +22,9 @@ from automojo.credentials.basiccredential import BasicCredential
 
 
 class PowerAgentBase:
-    """Base class for objects that control power of devices."""
+    """
+        Base class for objects that control power of devices.
+    """
 
     def __init__(self, host: str, credential: BaseCredential):
         """
@@ -38,6 +40,10 @@ class PowerAgentBase:
     def _lookup_power_interface(self, interface_name: str) -> Union[dict, None]:
         """
             Looks up a power interface by power interface name.
+
+            :param interface_name: The name of the interface to look up.
+
+            :returns: The power interface information or ``None`` if not found.
         """
         power_iface = None
 

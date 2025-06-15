@@ -18,7 +18,9 @@ __credits__ = []
 from automojo.interop.interfaces.isystemcontext import ISystemContext
 
 class SerialAgentBase(ISystemContext):
-    """Base class for agents that interact over a serial connection."""
+    """
+        Base class for agents that interact over a serial connection.
+    """
 
     def __init__(self) -> None:
         """

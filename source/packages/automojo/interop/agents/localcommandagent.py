@@ -52,29 +52,39 @@ class LocalCommandAgent(ISystemContext):
     @property
     def aspects(self) -> AspectsCmd:
         """
-            The logging, iteration and other aspects that have been assigned to be used with interacting with the remote SSH service.
+            The logging, iteration and other aspects that have been assigned to
+            be used with interacting with the remote SSH service.
         """
         return self._aspects
 
-    def open_session(self, sysctx: Optional[ISystemContext] = None, aspects: Optional[AspectsCmd] = None, **kwargs) -> ISystemContext: # pylint: disable=arguments-differ
+    def open_session(self, sysctx: Optional[ISystemContext] = None, aspects: Optional[AspectsCmd] = None, **kwargs) -> ISystemContext:  # pylint: disable=arguments-differ
         """
-            Provides a mechanism to create a :class:`SshSession` object with derived settings.  This method allows various parameters for the session
-            to be overridden.  This allows for the performing of a series of SSH operations under a particular set of shared settings and or credentials.
+            Provides a mechanism to create a :class:`SshSession` object with
+            derived settings.  This method allows various parameters for the
+            session to be overridden.  This allows for the performing of a
+            series of SSH operations under a particular set of shared settings
+            and or credentials.
 
-            :param cmd_context: An optional ISystemContext instance to use.  This allows re-use of sessions.
-            :param aspects: The default run aspects to use for the operations performed by the session.
+            :param cmd_context: An optional :class:`ISystemContext` instance to
+                                 use.  This allows re-use of sessions.
+            :param aspects: The default run aspects to use for the operations
+                             performed by the session.
         """
         return self
 
-    def run_cmd(self, command: str, exp_status: Union[int, Sequence]=0, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
+    def run_cmd(self, command: str, exp_status: Union[int, Sequence] = 0, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
         """
-            Runs a command on the designated host using the specified parameters.
+            Runs a command on the designated host using the specified
+            parameters.
 
             :param command: The command to run.
-            :param exp_status: An integer or sequence of integers that specify the set of expected status codes from the command.
+            :param exp_status: An integer or sequence of integers that specify
+                               the set of expected status codes from the
+                               command.
             :param aspects: The run aspects to use when running the command.
 
-            :returns: The status, stderr and stdout from the command that was run.
+            :returns: The status, stderr and stdout from the command that was
+                      run.
         """
         # Go through the overrides and if they are not passed use the agent defaults.
 
@@ -198,24 +208,29 @@ class LocalCommandAgent(ISystemContext):
 
     def verify_connectivity(self) -> bool:
         """
-            Method that can be used to verify connectivity to the target computer.
+            Method that can be used to verify connectivity to the target
+            computer.
 
-            :returns: A boolean value indicating whether connectivity with the remote machine was successful.
+            :returns: A boolean value indicating whether connectivity with the
+                      remote machine was successful.
         """
         return True
 
     def _log_command_result(self, command: str, status: int, stdout: str, stderr: str, exp_status: Union[int, Sequence[int]],
                             logging_pattern: LoggingPattern):
         """
-            Private method that handles the logging of command results based on the expected status and logging pattern
-            specified.
+            Private method that handles the logging of command results based on
+            the expected status and logging pattern specified.
 
             :param command: The command that was run.
             :param status: The status code returned from running the command.
-            :param stdout: The contents of the standard output from running the command.
-            :param stderr: The contents of the error output from running the command.
-            :param exp_status: The status code or possible status codes that was expected to be returned from running the command.
-            :param logging_pattern: The result logging pattern (LoggingPattern) to use when logging.
+            :param stdout: The contents of the standard output from running the
+                           command.
+            :param stderr: The contents of the error output from running the
+                           command.
+            :param exp_status: The status code or possible status codes that was
+                               expected to be returned from running the command.
+            :param logging_pattern: The result logging pattern (:class:`LoggingPattern`) to use when logging.
         """
         # pylint: disable=no-self-use
 
