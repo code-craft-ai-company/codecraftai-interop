@@ -64,9 +64,9 @@ class ISystemContext(Protocol):
     
     def file_exists(self, filepath: str) -> bool:
         """
-            Method used to pull a remote file to check for existance.
+            Method used to check for the existence of a remote file.
 
-            :param remotepath: The remote file path to check for existance.
+            :param filepath: The remote file path to check for existance.
 
             :returns: A boolean value indicating if the remote file exists.
         """

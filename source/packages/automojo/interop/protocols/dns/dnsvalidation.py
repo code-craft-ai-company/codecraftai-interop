@@ -32,6 +32,9 @@ def validate_service_name(service_name: str, allow_underscores: bool = False):
            decimal 45)
         4. MAY not use consecutive hyphen characters '-'.
         5. MAY not use the hyphen character '-' as the first character after the underscore.
+
+        :param service_name: The service name string to validate.
+        :param allow_underscores: Allows underscores in the service name when True.
     """
 
     if service_name[0] != '_':

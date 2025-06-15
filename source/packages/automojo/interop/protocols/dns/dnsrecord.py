@@ -153,6 +153,8 @@ class DnsRecord:
     def as_dns_string(self, other: Optional[str] = None) -> str:
         """
             Creates a DNS string representation of the DNS record.
+
+            :param other: Optional additional information to append.
         """
         remaining_ttl = int(self.get_remaining_ttl(current_time_millis()))
         other = "%s/%s,%s" % (self.ttl, remaining_ttl, other)

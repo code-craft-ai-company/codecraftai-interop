@@ -60,6 +60,8 @@ class DnsHostInfo(DnsRecord):
     def write(self, out: 'DnsOutboundMessage') -> None:
         """
             Used in constructing an outgoing packet
+
+            :param out: The outbound DNS message to write the record to.
         """
         out.write(self._cpu.encode('utf-8'))
         out.write_character_string(self._os.encode('utf-8'))

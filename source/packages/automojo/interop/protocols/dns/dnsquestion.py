@@ -72,6 +72,8 @@ class DnsQuestion:
     def answered_by(self, rec: DnsRecord) -> bool:
         """
             Returns true if the question is answered by the record.
+
+            :param rec: Record to test against this question.
         """
         bval = False
         if self._rclass == rec._rclass:

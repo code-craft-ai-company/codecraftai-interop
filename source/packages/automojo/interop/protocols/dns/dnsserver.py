@@ -85,6 +85,8 @@ class DnsServer:
     def wait(self, timeout=None):
         """
             Blocks until the server stops running or until *timeout* expires.
+
+            :param timeout: Number of seconds to wait before giving up.
         """
 
         if self._running:

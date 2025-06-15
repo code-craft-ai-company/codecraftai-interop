@@ -61,7 +61,7 @@ def service_type_name(service_type: str, *, allow_underscores: bool = False) -> 
         accented characters, non-Roman text, and anything else that may be
         represented using Net-Unicode.
 
-        :param type_: Type, SubType or service name to validate
+        :param service_type: Type, sub-type or service name to validate
 
         :returns: fully qualified service name (eg: _http._tcp.local.)
     """

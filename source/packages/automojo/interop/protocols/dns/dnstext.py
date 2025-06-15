@@ -49,6 +49,8 @@ class DnsText(DnsRecord):
     def write(self, out: 'DnsOutboundMessage') -> None:
         """
             Used in constructing an outgoing packet
+
+            :param out: The outbound DNS message to write the record to.
         """
         out.write_string(self._text)
 
