@@ -323,7 +323,7 @@ class DidlContainerPhotoAlbum(DidlObject):
         :param obj_element: XML element describing the DIDL container.
         :param namespaces: Optional namespace map for element lookup.
 
-        :return: Instance of :class:`DidlContainerPhotoAlbum`.
+        :returns: Instance of :class:`DidlContainerPhotoAlbum`.
         """
 
         oid = obj_element.attrib["id"]
@@ -389,7 +389,7 @@ class DidlContainerStorageFolder(DidlObject):
         :param obj_element: XML element describing the folder.
         :param namespaces: Optional namespace map for element lookup.
 
-        :return: Instance of :class:`DidlContainerStorageFolder`.
+        :returns: Instance of :class:`DidlContainerStorageFolder`.
         """
 
         oid = obj_element.attrib["id"]
@@ -458,7 +458,7 @@ class DidlItemAlbumArt(DidlObject):
         :param obj_element: XML element describing the item.
         :param namespaces: Optional namespace map for element lookup.
 
-        :return: Instance of :class:`DidlItemAlbumArt`.
+        :returns: Instance of :class:`DidlItemAlbumArt`.
         """
 
         # Read the Required attributes
@@ -518,7 +518,7 @@ class DidlItemMusicTrack(DidlObject):
         :param obj_element: XML element describing the item.
         :param namespaces: Optional namespace map for element lookup.
 
-        :return: Instance of :class:`DidlItemMusicTrack`.
+        :returns: Instance of :class:`DidlItemMusicTrack`.
         """
 
         # Read the Required attributes
@@ -613,7 +613,7 @@ class DidlItemPhoto(DidlObject):
         :param obj_element: XML element describing the item.
         :param namespaces: Optional namespace map for element lookup.
 
-        :return: Instance of :class:`DidlItemPhoto`.
+        :returns: Instance of :class:`DidlItemPhoto`.
         """
 
         # Read the Required attributes
@@ -660,7 +660,7 @@ class DidlLitePacket:
 
         :param indent: Optional indentation prefix for each line.
 
-        :return: List of XML strings.
+        :returns: List of XML strings.
         """
 
         attrs_str = ""
@@ -681,7 +681,7 @@ class DidlLitePacket:
         """
         Return the XML string representation of this DIDL packet.
 
-        :return: XML string for the packet.
+        :returns: XML string for the packet.
         """
 
         attrs_str = ""
