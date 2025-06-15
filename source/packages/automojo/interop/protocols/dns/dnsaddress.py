@@ -63,7 +63,11 @@ class DnsAddress(DnsRecord):
 
     def __eq__(self, other: DnsRecord) -> bool:
         """
-            Tests equality on priority, weight, port and server
+            Tests equality on priority, weight, port and server.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if records are equal.
         """
         # Call DnsRecord equality operator first because it can eliminate alot of equality checks early
         iseq = False
@@ -73,14 +77,20 @@ class DnsAddress(DnsRecord):
 
     def __ne__(self, other: DnsRecord) -> bool:
         """
-            Non-equality test
+            Non-equality test.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if the records are not equal.
         """
         isneq = not self.__eq__(other)
         return isneq
 
     def __str__(self) -> str:
         """
-            String representation
+            String representation.
+
+            :returns: Formatted string describing the address record.
         """
         strval = None
 

@@ -98,7 +98,7 @@ class DeviceQueryManager:
 
             :param query_url: The URL of the service to query.
 
-            :returns: A Basic1DeviceDesc object containing the service description or None if the query fails.
+            :returns: Parsed :class:`Basic1DeviceDesc` or ``None`` if the query fails.
         """
         service_desc = None
 

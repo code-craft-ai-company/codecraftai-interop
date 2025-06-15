@@ -45,6 +45,13 @@ class DeviceDetailMapper:
                                        locationURL: Optional[str] = None) -> Basic1DeviceDesc:
         """
             Creates a device description object from the root device element.
+
+            :param root_el: Root element from the device description document.
+            :param namespaces: Namespace mapping for XML parsing.
+            :param specVersion: Parsed :class:`SpecVersion` information.
+            :param locationURL: Optional location URL for the device.
+
+            :returns: Newly created :class:`Basic1DeviceDesc` instance.
         """
 
         device_el: Element = root_el.find("device", namespaces=namespaces)
@@ -92,6 +99,15 @@ class DeviceDetailMapper:
                                    locationURL: str, params: Dict[str, Any]) -> Basic1DeviceDesc:
         """
             Instantiate a :class:`Basic1DeviceDesc` using parsed parameters.
+
+            :param root_el: Root element of the description document.
+            :param device_el: Device element being processed.
+            :param namespaces: Namespace mapping for XML parsing.
+            :param specVersion: Parsed :class:`SpecVersion` information.
+            :param locationURL: URL where the device was located.
+            :param params: Parameter dictionary for constructor.
+
+            :returns: Created :class:`Basic1DeviceDesc` instance.
         """
 
         device = Basic1DeviceDesc(specVersion=specVersion, **params, locationURL=locationURL)
@@ -103,6 +119,14 @@ class DeviceDetailMapper:
                                      params: Dict[str, Any]) -> Basic1DeviceDesc:
         """
             Instantiate an :class:`EmbeddedDeviceDesc` from parsed parameters.
+
+            :param root_el: Root element of the description document.
+            :param device_el: Device element being processed.
+            :param namespaces: Namespace mapping for XML parsing.
+            :param specVersion: Parsed :class:`SpecVersion` information.
+            :param params: Parameter dictionary for constructor.
+
+            :returns: Created :class:`EmbeddedDeviceDesc` instance.
         """
 
         device = EmbeddedDeviceDesc(specVersion=specVersion, **params)
@@ -114,6 +138,15 @@ class DeviceDetailMapper:
                         locationURL: Optional[str] = None, is_embedded: bool = False) -> Basic1DeviceDesc:
         """
             Process a ``device`` element and return a device description object.
+
+            :param root_el: Root element of the description document.
+            :param device_el: Device element being processed.
+            :param namespaces: Namespace mapping for XML parsing.
+            :param specVersion: Parsed :class:`SpecVersion` information.
+            :param locationURL: Optional location URL for the device.
+            :param is_embedded: ``True`` if the device is an embedded device.
+
+            :returns: Parsed device description instance.
         """
 
         required_elements = ['deviceType', 'friendlyName', 'manufacturer', 'modelName', 'UDN']
@@ -167,6 +200,11 @@ class DeviceDetailMapper:
     def _process_icons_list(cls, icons_el: Element, namespaces: Dict[str, str]) -> List[IconDesc]:
         """
         Parse an ``iconList`` element into a list of :class:`IconDesc`.
+
+        :param icons_el: The ``iconList`` element to parse.
+        :param namespaces: Namespace mapping for XML parsing.
+
+        :returns: List of :class:`IconDesc` objects.
         """
 
         iconsList = []
@@ -203,6 +241,11 @@ class DeviceDetailMapper:
     def _process_embedded_devices_list(cls, devices_el: Element, namespaces: Dict[str, str]) -> List[EmbeddedDeviceDesc]:
         """
         Parse a list of embedded devices from a ``deviceList`` element.
+
+        :param devices_el: The ``deviceList`` element to parse.
+        :param namespaces: Namespace mapping for XML parsing.
+
+        :returns: List of :class:`EmbeddedDeviceDesc` objects.
         """
 
         devicesList = []
@@ -233,6 +276,11 @@ class DeviceDetailMapper:
     def _process_services_list(cls, services_el: Element, namespaces: Dict[str, str]) -> List[ServiceEvidence]:
         """
         Parse a ``serviceList`` element into :class:`ServiceEvidence` objects.
+
+        :param services_el: The ``serviceList`` element to parse.
+        :param namespaces: Namespace mapping for XML parsing.
+
+        :returns: List of :class:`ServiceEvidence` objects.
         """
 
         servicesList = []
@@ -269,6 +317,11 @@ class DeviceDetailMapper:
     def process_spec_version(cls, spec_ver_el: Element, namespaces: Dict[str, str]) -> SpecVersion:
         """
         Create a :class:`SpecVersion` from the ``specVersion`` element.
+
+        :param spec_ver_el: The ``specVersion`` element from the description.
+        :param namespaces: Namespace mapping for XML parsing.
+
+        :returns: Parsed :class:`SpecVersion` instance.
         """
 
         major = int(spec_ver_el.find("major", namespaces=namespaces).text)

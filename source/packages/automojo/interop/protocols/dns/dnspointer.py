@@ -57,7 +57,11 @@ class DnsPointer(DnsRecord):
 
     def __eq__(self, other: DnsRecord) -> bool:
         """
-            Tests equality on alias
+            Tests equality on alias.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if records are equal.
         """
         # Call DnsRecord equality operator first because it can eliminate alot of equality checks early
         iseq = False
@@ -67,13 +71,19 @@ class DnsPointer(DnsRecord):
 
     def __ne__(self, other: DnsRecord) -> bool:
         """
-            Non-equality test
+            Non-equality test.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if the records are not equal.
         """
         return not self.__eq__(other)
 
     def __str__(self) -> str:
         """
-            String representation
+            String representation.
+
+            :returns: Formatted string representing the pointer record.
         """
         other = self._alias
         strval = self.as_dns_string(other=other)
