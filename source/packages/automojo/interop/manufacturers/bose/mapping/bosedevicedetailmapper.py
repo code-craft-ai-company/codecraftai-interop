@@ -1,5 +1,5 @@
 """
-    .. module:: bosehints
+    .. module:: bosedevicedetailmapper
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing data description classes that describe Bose UPNP devices.
     

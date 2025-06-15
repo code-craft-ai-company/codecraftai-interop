@@ -1,7 +1,7 @@
 """
     .. module:: taskernode
     :platform: Darwin, Linux, Unix, Windows
-    :synopsis: The :class:`TaskerNode` object that is used to.
+    :synopsis: The :class:`TaskerNode` object used to interact with a remote tasker service.
     
     .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """

@@ -1,7 +1,7 @@
 """
     .. module:: tcpserialagent
     :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Contains the TcpSerialObject object.
+    :synopsis: Contains the TCP serial agent classes.
     
     .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """

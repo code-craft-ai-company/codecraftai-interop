@@ -1,7 +1,7 @@
 """
-    .. module:: sshbase
+    .. module:: sshagent
     :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Module containing the :class:`SshBase` class.
+    :synopsis: Module containing the :class:`SshAgent` class.
     
     .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
     

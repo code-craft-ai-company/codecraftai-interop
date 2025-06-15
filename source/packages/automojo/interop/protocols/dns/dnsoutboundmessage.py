@@ -1,5 +1,5 @@
 """
-    .. module:: dnsoutgoing
+    .. module:: dnsoutboundmessage
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsOutgoing object which is used to write out DNS records of different types into
     a DNS packet.
