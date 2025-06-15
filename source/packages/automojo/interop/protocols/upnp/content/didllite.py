@@ -38,8 +38,8 @@ class DidlDesc:
 
     def __init__(self, *, desc: str, **attrs):
         """
-        :param desc: Description string.
-        :param attrs: Optional attributes for the desc element.
+            :param desc: Description string.
+            :param attrs: Optional attributes for the desc element.
         """
         self._desc = desc
         self._attrs = attrs
@@ -155,13 +155,13 @@ class DidlObject:
         res: DidlResource
     ):
         """
-        Initialize a new :class:`DidlObject` instance.
+            Initialize a new :class:`DidlObject` instance.
 
-        :param oid: Object identifier for the DIDL object.
-        :param parent_id: Identifier of the parent object.
-        :param restricted: Indicates if the object is read-only.
-        :param title: Title string for the object.
-        :param res: Resource associated with the object.
+            :param oid: Object identifier for the DIDL object.
+            :param parent_id: Identifier of the parent object.
+            :param restricted: Indicates if the object is read-only.
+            :param title: Title string for the object.
+            :param res: Resource associated with the object.
         """
         self._oid = oid
         self._parent_id = parent_id
@@ -173,35 +173,45 @@ class DidlObject:
     @property
     def oid(self) -> str:
         """
-        Unique object identifier.
+            Unique object identifier.
+
+            :returns: Object identifier string.
         """
         return self._oid
 
     @property
     def parent_id(self) -> str:
         """
-        Identifier of the parent object.
+            Identifier of the parent object.
+
+            :returns: Identifier of the parent object.
         """
         return self._parent_id
 
     @property
     def restricted(self) -> bool:
         """
-        Indicates if the object is read-only.
+            Indicates if the object is read-only.
+
+            :returns: ``True`` if the object is read-only.
         """
         return self._restricted
 
     @property
     def res(self) -> DidlResource:
         """
-        Primary :class:`DidlResource` for this object.
+            Primary :class:`DidlResource` for this object.
+
+            :returns: The primary :class:`DidlResource` instance.
         """
         return self._res
 
     @property
     def title(self) -> str:
         """
-        Title string for this object.
+            Title string for this object.
+
+            :returns: Title string value.
         """
         return self._title
 
@@ -287,15 +297,15 @@ class DidlContainerPhotoAlbum(DidlObject):
         write_status: str = DidlWriteStatus.UNKNOWN
     ):
         """
-        Initialize a photo album container.
+            Initialize a photo album container.
 
-        :param oid: Object identifier for the album.
-        :param parent_id: Identifier of the parent container.
-        :param restricted: Indicates if the album is read-only.
-        :param title: Title string for the album.
-        :param child_count: Number of child items.
-        :param storage_used: Storage used by this album.
-        :param write_status: Write status for the album.
+            :param oid: Object identifier for the album.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the album is read-only.
+            :param title: Title string for the album.
+            :param child_count: Number of child items.
+            :param storage_used: Storage used by this album.
+            :param write_status: Write status for the album.
         """
         super().__init__(
             oid=oid, parent_id=parent_id, restricted=restricted, title=title
@@ -353,15 +363,15 @@ class DidlContainerStorageFolder(DidlObject):
         write_status: str = DidlWriteStatus.UNKNOWN
     ):
         """
-        Initialize a storage folder container.
+            Initialize a storage folder container.
 
-        :param oid: Object identifier for the folder.
-        :param parent_id: Identifier of the parent container.
-        :param restricted: Indicates if the folder is read-only.
-        :param title: Title string for the folder.
-        :param child_count: Number of child items.
-        :param storage_used: Storage used by this folder.
-        :param write_status: Write status for the folder.
+            :param oid: Object identifier for the folder.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the folder is read-only.
+            :param title: Title string for the folder.
+            :param child_count: Number of child items.
+            :param storage_used: Storage used by this folder.
+            :param write_status: Write status for the folder.
         """
         super().__init__(
             oid=oid, parent_id=parent_id, restricted=restricted, title=title
@@ -571,14 +581,14 @@ class DidlItemPhoto(DidlObject):
         date: str
     ):
         """
-        Initialize a photo item.
+            Initialize a photo item.
 
-        :param oid: Object identifier for the item.
-        :param parent_id: Identifier of the parent container.
-        :param restricted: Indicates if the item is read-only.
-        :param title: Title string for the item.
-        :param res: Primary resource for the photo.
-        :param date: Date associated with the photo.
+            :param oid: Object identifier for the item.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the item is read-only.
+            :param title: Title string for the item.
+            :param res: Primary resource for the photo.
+            :param date: Date associated with the photo.
         """
         super().__init__(
             oid=oid, parent_id=parent_id, restricted=restricted, title=title, res=res
@@ -589,7 +599,9 @@ class DidlItemPhoto(DidlObject):
     @property
     def date(self):
         """
-        Date string associated with the photo item.
+            Date string associated with the photo item.
+
+            :returns: The date string for the photo.
         """
         return self._date
 
@@ -626,9 +638,9 @@ class DidlLitePacket:
 
     def __init__(self, objects: List[DidlObject] = []):
         """
-        Initialize a :class:`DidlLitePacket` instance.
+            Initialize a :class:`DidlLitePacket` instance.
 
-        :param objects: Optional list of :class:`DidlObject` instances.
+            :param objects: Optional list of :class:`DidlObject` instances.
         """
         self._objects = objects
         return
@@ -636,7 +648,9 @@ class DidlLitePacket:
     @property
     def objects(self):
         """
-        List of contained :class:`DidlObject` instances.
+            List of contained :class:`DidlObject` instances.
+
+            :returns: Sequence of :class:`DidlObject` instances.
         """
         return self._objects
 

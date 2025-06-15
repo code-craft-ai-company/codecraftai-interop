@@ -45,7 +45,11 @@ class DnsAddress(DnsRecord):
 
     @property
     def address(self):
-        """Returns the raw address bytes for this record."""
+        """
+            Returns the raw address bytes for this record.
+
+            :returns: The raw address bytes for this record.
+        """
         return self._address
 
     def write(self, out: "DnsOutboundMessage") -> None:

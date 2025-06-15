@@ -97,33 +97,33 @@ class BoseDeviceDetail(Basic1DeviceDesc):
         **extra: Dict[str, str]
     ):
         """
-        Initializes a Bose device detail object.
+            Initializes a Bose device detail object.
 
-        :param specVersion: UPnP specification version for the device.
-        :param deviceType: Device type string.
-        :param friendlyName: Human friendly device name.
-        :param manufacturer: Manufacturer name.
-        :param modelName: Device model name.
-        :param UDN: Unique device name identifier.
-        :param mac_addr: MAC address of the device.
-        :param generation: Device generation value.
-        :param codename: Product code name.
-        :param color: Product color.
-        :param software_version: Firmware version.
-        :param multi_room: Multi room version information.
-        :param modelNumber: Optional model number string.
-        :param serialNumber: Optional serial number.
-        :param manufacturerURL: Optional manufacturer URL.
-        :param modelDescription: Optional model description.
-        :param modelURL: Optional model URL.
-        :param UPC: Optional UPC value.
-        :param presentationURL: Optional presentation URL.
-        :param iconList: Optional list of icon descriptors.
-        :param serviceList: Optional list of service descriptors.
-        :param deviceList: Optional list of embedded devices.
-        :param locationURL: Optional device location URL.
+            :param specVersion: UPnP specification version for the device.
+            :param deviceType: Device type string.
+            :param friendlyName: Human friendly device name.
+            :param manufacturer: Manufacturer name.
+            :param modelName: Device model name.
+            :param UDN: Unique device name identifier.
+            :param mac_addr: MAC address of the device.
+            :param generation: Device generation value.
+            :param codename: Product code name.
+            :param color: Product color.
+            :param software_version: Firmware version.
+            :param multi_room: Multi room version information.
+            :param modelNumber: Optional model number string.
+            :param serialNumber: Optional serial number.
+            :param manufacturerURL: Optional manufacturer URL.
+            :param modelDescription: Optional model description.
+            :param modelURL: Optional model URL.
+            :param UPC: Optional UPC value.
+            :param presentationURL: Optional presentation URL.
+            :param iconList: Optional list of icon descriptors.
+            :param serviceList: Optional list of service descriptors.
+            :param deviceList: Optional list of embedded devices.
+            :param locationURL: Optional device location URL.
 
-        :returns: None
+            :returns: None
         """
 
         super().__init__(

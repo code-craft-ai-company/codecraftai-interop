@@ -31,16 +31,16 @@ class BoseMultiRoomVersions:
         zone_control: BoseFeatureVersion,
     ):
         """
-        Stores a collection of Bose feature versions for multi-room support.
+            Stores a collection of Bose feature versions for multi-room support.
 
-        :param audio_control: Audio control protocol version.
-        :param audio_payload: Audio payload protocol version.
-        :param clock_sync: Clock synchronization protocol version.
-        :param now_playing: Now playing protocol version.
-        :param playback_request: Playback request protocol version.
-        :param zone_control: Zone control protocol version.
+            :param audio_control: Audio control protocol version.
+            :param audio_payload: Audio payload protocol version.
+            :param clock_sync: Clock synchronization protocol version.
+            :param now_playing: Now playing protocol version.
+            :param playback_request: Playback request protocol version.
+            :param zone_control: Zone control protocol version.
 
-        :returns: None
+            :returns: None
         """
 
         self._audio_control = audio_control
@@ -54,41 +54,53 @@ class BoseMultiRoomVersions:
     @property
     def audio_control(self) -> BoseFeatureVersion:
         """
-        Returns the audio control protocol version.
+            Returns the audio control protocol version.
+
+            :returns: The audio control :class:`BoseFeatureVersion`.
         """
         return self._audio_control
 
     @property
     def audio_payload(self) -> BoseFeatureVersion:
         """
-        Returns the audio payload protocol version.
+            Returns the audio payload protocol version.
+
+            :returns: The audio payload :class:`BoseFeatureVersion`.
         """
         return self._audio_payload
 
     @property
     def clock_sync(self) -> BoseFeatureVersion:
         """
-        Returns the clock synchronization protocol version.
+            Returns the clock synchronization protocol version.
+
+            :returns: The clock synchronization :class:`BoseFeatureVersion`.
         """
         return self._clock_sync
 
     @property
     def now_playing(self) -> BoseFeatureVersion:
         """
-        Returns the now playing protocol version.
+            Returns the now playing protocol version.
+
+            :returns: The now playing :class:`BoseFeatureVersion`.
         """
         return self._now_playing
 
     @property
     def playback_request(self) -> BoseFeatureVersion:
         """
-        Returns the playback request protocol version.
+            Returns the playback request protocol version.
+
+            :returns: The playback request :class:`BoseFeatureVersion`.
         """
         return self._playback_request
 
     @property
     def zone_control(self) -> BoseFeatureVersion:
         """
-        Returns the zone control protocol version.
+            Returns the zone control protocol version.
+
+            :returns: The zone control :class:`BoseFeatureVersion`.
         """
         return self._zone_control

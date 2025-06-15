@@ -170,7 +170,13 @@ class RestClientBase:
 
 
     def _format_call_url(self, leaf) -> str:
-        """Compose the full request URL for an API leaf."""
+        """
+            Compose the full request URL for an API leaf.
+
+            :param leaf: API path segment to append to the host URL.
+
+            :returns: Fully qualified URL for the call.
+        """
 
         call_url = f"{self._host_url}{leaf}"
 
@@ -178,7 +184,13 @@ class RestClientBase:
 
 
     def _get_session(self, aspects: AspectsRest) -> Session:
-        """Retrieve or create the requests session for the given aspects."""
+        """
+            Retrieve or create the requests session for the given aspects.
+
+            :param aspects: Execution aspects that may supply a pre-created session.
+
+            :returns: :class:`Session` object for REST calls.
+        """
 
         session = None
 

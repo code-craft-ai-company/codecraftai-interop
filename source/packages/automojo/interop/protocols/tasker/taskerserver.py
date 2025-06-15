@@ -86,12 +86,18 @@ class TaskerServer(ThreadedServer):
 
 
     def get_service_endpoint(self) -> Tuple[str, int]:
-        """Return the IP address and port the service is bound to."""
+        """
+            Return the IP address and port the service is bound to.
+
+            :returns: Tuple containing the IP address and port number.
+        """
         ipaddr, port = self.listener.getsockname()
         return ipaddr, port
 
     def start(self):
-        """Starts the server request accept thread."""
+        """
+            Starts the server request accept thread.
+        """
         start_gate = threading.Event()
         start_gate.clear()
 
@@ -110,14 +116,19 @@ class TaskerServer(ThreadedServer):
         return
 
     def serve_forever(self):
-        """Called when the taskerserver is run from the main thread of a service instance."""
+        """
+            Called when the :class:`TaskerServer` is run from the main thread of
+            a service instance.
+        """
 
         self._service_thread_entry()
 
         return
 
     def _service_thread_entry(self, start_gate: Optional[threading.Event] = None):
-        """Internal thread entry point used to run the service."""
+        """
+            Internal thread entry point used to run the service.
+        """
         
         # If we were passed a start_gate, it means a thread is waiting for
         # us to kick off.  Set the start_gate to indicate we are running in

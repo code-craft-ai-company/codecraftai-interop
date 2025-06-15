@@ -17,7 +17,12 @@ import urllib.parse
 
 def normalize_query_arg_value(val) -> str:
     """
-        Converts values to a normalized string that cen be used to fill a query string.
+        Converts values to a normalized string that can be used to fill a query
+        string.
+
+        :param val: Value to normalize for use in a query string.
+
+        :returns: Normalized string representation of ``val``.
     """
 
     norm_val = None
@@ -33,6 +38,10 @@ def normalize_query_arg_value(val) -> str:
 def convert_to_foundation_datatype(val) -> dict:
     """
         Helper function for converting a value to a dictionary.
+
+        :param val: Value to convert.
+
+        :returns: A dictionary or dictionary-compatible representation of ``val``.
     """
 
     dval = None

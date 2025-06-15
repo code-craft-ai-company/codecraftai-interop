@@ -76,13 +76,21 @@ class TaskerController:
 
     @property
     def tasker_clients(self) -> List[INetworkClient]:
-        """List of network clients associated with tasker nodes."""
+        """
+            List of network clients associated with tasker nodes.
+
+            :returns: A list of :class:`INetworkClient` objects.
+        """
         clients = [tn.client for tn in self._tasker_nodes]
         return clients
 
     @property
     def tasker_nodes(self):
-        """List of tasker nodes under management."""
+        """
+            List of tasker nodes under management.
+
+            :returns: List of :class:`TaskerNode` objects.
+        """
         return self._tasker_nodes
 
     def execute_tasking_on_all_nodes(

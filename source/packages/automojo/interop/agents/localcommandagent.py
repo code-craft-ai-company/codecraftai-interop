@@ -1,11 +1,10 @@
 """
     .. module:: localcommandagent
     :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Module contains the :class:`PowerAgentBase` object which is a base
-    class for object that allow for controlling the power of devices.
-    
+    :synopsis: Module containing the :class:`LocalCommandAgent` class used to
+        execute commands on the local host.
+
     .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-    
 """
 
 __author__ = "Myron Walker"
@@ -35,8 +34,8 @@ logger = getLogger()
 
 class LocalCommandAgent(ISystemContext):
     """
-        The :class:`SshBase` object provides for the sharing of state and fuctional patterns
-        for APIs between the :class:`SshSession` object and the :class:`LocalAgent`.
+        Provides command execution capabilities on the local host without
+        relying on a remote connection.
     """
     def __init__(self, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS):
         """
@@ -59,16 +58,12 @@ class LocalCommandAgent(ISystemContext):
 
     def open_session(self, sysctx: Optional[ISystemContext] = None, aspects: Optional[AspectsCmd] = None, **kwargs) -> ISystemContext:  # pylint: disable=arguments-differ
         """
-            Provides a mechanism to create a :class:`SshSession` object with
-            derived settings.  This method allows various parameters for the
-            session to be overridden.  This allows for the performing of a
-            series of SSH operations under a particular set of shared settings
-            and or credentials.
+            Create and return a system context for executing commands locally.
 
-            :param cmd_context: An optional :class:`ISystemContext` instance to
-                                 use.  This allows re-use of sessions.
-            :param aspects: The default run aspects to use for the operations
-                             performed by the session.
+            :param sysctx: Optional :class:`ISystemContext` instance to reuse.
+            :param aspects: Execution aspects to apply for the session.
+
+            :returns: The current :class:`LocalCommandAgent` instance.
         """
         return self
 
