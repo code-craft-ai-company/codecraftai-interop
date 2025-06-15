@@ -115,7 +115,8 @@ class UpnpSearchWindow:
         """
             Add a device to the list of devices found during the search window.
 
-            :param device: The device to add to the list of devices found.
+            :param identifier: The USN identifier for the device being added.
+            :param device_detail: The :class:`UpnpDeviceDetail` object describing the device.
         """
 
         self._lock.acquire()
