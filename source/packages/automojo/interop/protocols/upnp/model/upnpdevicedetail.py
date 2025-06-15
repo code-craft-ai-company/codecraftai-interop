@@ -32,7 +32,8 @@ class UpnpDeviceDetail:
         """
             Initialize the UPnP device details.
 
-            :param device: The UPnP device object.
+            :param evidence: Evidence about the UPnP device from discovery.
+            :param description: Parsed device description object or ``None``.
         """
         self._evidence = evidence
         self._description = description
@@ -43,7 +44,7 @@ class UpnpDeviceDetail:
         """
             Get the UPnP device evidence from the las M-Search response or Notify message.
 
-            :return: The UPnP device evidence.
+            :returns: The UPnP device evidence.
         """
         return self._evidence
     
@@ -52,7 +53,7 @@ class UpnpDeviceDetail:
         """
             Get the UPnP device description for the device or None if the device description was not available.
 
-            :return: The last UPnP device description obtained for the device or None if a device description has not been obtained.
+            :returns: The last UPnP device description obtained for the device or ``None`` if a device description has not been obtained.
         """
         return self._description
     

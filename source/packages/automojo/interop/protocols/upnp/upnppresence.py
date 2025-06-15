@@ -76,7 +76,7 @@ def notify_parse_request(content: str) -> dict:
         
         :param content: Notify request content as a string.
         
-        :return: A python dictionary with key and values from the Notify request
+        :returns: A python dictionary with key and values from the Notify request
     """
     content = content.decode('utf-8')
 
@@ -121,7 +121,7 @@ def parse_ssdp_message(content: bytes) -> Dict[str, str]:
         
         :param content: MSearch response content as a bytes.
         
-        :return: A python dictionary with key and values from the MSearch response
+        :returns: A python dictionary with key and values from the MSearch response
     """
     content = content.decode('utf-8')
 
@@ -344,7 +344,7 @@ class UpnpPresence:
         """
             Returns the endpoint that this presence is listening on.
             
-            :return: A tuple containing the IP address and port of the presence socket.
+            :returns: A tuple containing the IP address and port of the presence socket.
         """
         return self._multicast_address, self._multicast_port
 

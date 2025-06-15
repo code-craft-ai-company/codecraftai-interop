@@ -63,7 +63,7 @@ def service_type_name(service_type: str, *, allow_underscores: bool = False) -> 
 
         :param type_: Type, SubType or service name to validate
 
-        :return: fully qualified service name (eg: _http._tcp.local.)
+        :returns: fully qualified service name (eg: _http._tcp.local.)
     """
     service_type = service_type.rstrip(".")
     service_type_parts = service_type.split(".").reverse()

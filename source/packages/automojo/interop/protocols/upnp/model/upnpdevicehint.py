@@ -22,10 +22,9 @@ class UpnpDeviceHint:
 
     def __init__(self, hint: str):
         """
-            Initialize the UPnP device hint with device type and friendly name.
+            Initialize the UPnP device hint.
 
-            :param device_type: The type of the UPnP device.
-            :param friendly_name: The friendly name of the UPnP device.
+            :param hint: The configured hint string.
         """
         self._hint = hint
         return
@@ -34,7 +33,7 @@ class UpnpDeviceHint:
         """
             Get the hint that can be used to identify a Upnp device.
 
-            :return: The hint for the UPnP device.
+            :returns: The hint for the UPnP device.
         """
         return self._hint
 
@@ -44,7 +43,7 @@ class UpnpDeviceHint:
 
             :param exhibit: The UPnP device exhibit to check against.
 
-            :return: True if the hint matches the device exhibit, False otherwise.
+            :returns: ``True`` if the hint matches the device exhibit, ``False`` otherwise.
         """
         rtnval = False
 

@@ -1,10 +1,10 @@
 """
-.. module:: bosefeatureversion
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: Module containing the BoseMultiRoomVersions class which describes the various feature versions
-associated with a bose player.
+    .. module:: bosefeatureversion
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: Module containing the BoseMultiRoomVersions class which describes the various feature versions
+        associated with a bose player.
 
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
