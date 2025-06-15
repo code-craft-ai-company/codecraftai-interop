@@ -237,7 +237,7 @@ class UpnpPresence:
     @property
     def active_devices(self) -> Dict[str, Dict[str, str]]:
         """
-        Return a copy of the currently active devices.
+            Return a copy of the currently active devices.
         """
         rtnval = None
 
@@ -253,7 +253,7 @@ class UpnpPresence:
     @property
     def inactive_devices(self) -> Dict[str, Dict[str, str]]:
         """
-        Return a copy of devices that have gone inactive.
+            Return a copy of devices that have gone inactive.
         """
 
         self._lock.acquire()

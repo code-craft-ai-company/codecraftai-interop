@@ -120,7 +120,7 @@ class Basic1DeviceDesc:
                  iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None, deviceList: Optional[List['EmbeddedDeviceDesc']] = None,
                  locationURL: Optional[str]=None, **extras: dict):
         """
-        Create a new :class:`Basic1DeviceDesc` instance.
+            Create a new :class:`Basic1DeviceDesc` instance.
         """
 
         self._deviceType = deviceType

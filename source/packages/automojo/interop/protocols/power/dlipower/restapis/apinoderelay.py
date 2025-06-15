@@ -44,14 +44,14 @@ class ApiNodeRelay:
     
     def client(self) -> "DliPowerRestClient":
         """
-        Returns the associated :class:`DliPowerRestClient` instance.
+            Returns the associated :class:`DliPowerRestClient` instance.
         """
         return self._client_ref()
     
 
     def get_outlets(self, aspects: Optional[AspectsRest] = None) -> List[Outlet]:
         """
-        Retrieves outlet details from the power controller.
+            Retrieves outlet details from the power controller.
         """
 
         leaf = "restapi/relay/outlets"

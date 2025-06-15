@@ -91,7 +91,7 @@ class DeviceDetailMapper:
     def _create_basic1_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                                    locationURL: str, params: Dict[str, Any]) -> Basic1DeviceDesc:
         """
-        Instantiate a :class:`Basic1DeviceDesc` using parsed parameters.
+            Instantiate a :class:`Basic1DeviceDesc` using parsed parameters.
         """
 
         device = Basic1DeviceDesc(specVersion=specVersion, **params, locationURL=locationURL)
@@ -102,7 +102,7 @@ class DeviceDetailMapper:
     def _create_embedded_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                                      params: Dict[str, Any]) -> Basic1DeviceDesc:
         """
-        Instantiate an :class:`EmbeddedDeviceDesc` from parsed parameters.
+            Instantiate an :class:`EmbeddedDeviceDesc` from parsed parameters.
         """
 
         device = EmbeddedDeviceDesc(specVersion=specVersion, **params)
@@ -113,7 +113,7 @@ class DeviceDetailMapper:
     def _process_device(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
                         locationURL: Optional[str] = None, is_embedded: bool = False) -> Basic1DeviceDesc:
         """
-        Process a ``device`` element and return a device description object.
+            Process a ``device`` element and return a device description object.
         """
 
         required_elements = ['deviceType', 'friendlyName', 'manufacturer', 'modelName', 'UDN']

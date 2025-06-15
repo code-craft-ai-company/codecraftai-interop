@@ -70,7 +70,7 @@ class UpnpServiceProxy(EventedVariableSink):
 
     def __init__(self):
         """
-        Initialize the proxy for interacting with a UPnP service.
+            Initialize the proxy for interacting with a UPnP service.
         """
         self._service_lock = threading.RLock()
 
