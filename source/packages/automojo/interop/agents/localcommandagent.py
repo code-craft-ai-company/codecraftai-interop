@@ -2,8 +2,8 @@
     .. module:: localcommandagent
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the :class:`LocalCommandAgent` class used to
-        execute commands on the local host.
-
+    execute commands on the local host.
+    
     .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
@@ -78,7 +78,7 @@ class LocalCommandAgent(ISystemContext):
                                command.
             :param aspects: The run aspects to use when running the command.
 
-            :returns: The status, stderr and stdout from the command that was
+            :returns: The status, stdout and stderr from the command that was
                       run.
         """
         # Go through the overrides and if they are not passed use the agent defaults.
