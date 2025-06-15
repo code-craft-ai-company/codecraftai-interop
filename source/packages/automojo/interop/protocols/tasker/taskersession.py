@@ -170,52 +170,52 @@ class TaskerSession:
     @property
     def aspects(self):
         """Default aspects used for task execution."""
-            return self._aspects
-            
-            @property
-            def last_activity(self) -> datetime:
+        return self._aspects
+
+    @property
+    def last_activity(self) -> datetime:
         """Timestamp of the last session activity."""
         return self._last_activity
 
     @property
     def output_directory(self):
         """Directory where task outputs are written."""
-            return self._output_directory
-            
-            @property
-            def progresses(self) -> OrderedDict:
+        return self._output_directory
+
+    @property
+    def progresses(self) -> OrderedDict:
         """Dictionary mapping tasking ids to progress info."""
         return self._progress_table
 
     @property
     def results(self) -> OrderedDict:
         """Dictionary of task results."""
-            return self._results_table
-            
-            @property
-            def session_id(self) -> str:
+        return self._results_table
+
+    @property
+    def session_id(self) -> str:
         """Identifier for this session."""
         return self._session_id
 
     @property
     def start(self) -> datetime:
         """Timestamp when the session was created."""
-            return self._start
-            
-            @property
-            def statuses(self) -> OrderedDict:
+        return self._start
+
+    @property
+    def statuses(self) -> OrderedDict:
         """Dictionary mapping tasking ids to status codes."""
         return self._status_table
 
     @property
     def taskings(self) -> OrderedDict:
         """Dictionary of active tasking objects."""
-            return self._taskings_table
-            
-            @property
-            def log_level(self) -> int:
+        return self._taskings_table
+
+    @property
+    def log_level(self) -> int:
         """Logging level used for task output."""
-        return self.log_level
+        return self._log_level
 
     def dispose_tasking(self, tasking_id: str):
         """
@@ -758,32 +758,31 @@ class TaskerSession:
             
             return
             
-            def _event_server_thread(self, sgate: threading.Event):
+    def _event_server_thread(self, sgate: threading.Event):
         """
-        Thread responsible for hosting the HTTP server used to receive tasking
-        progress events.
+            Thread responsible for hosting the HTTP server used to receive tasking
+            progress events.
 
-        :param sgate: Synchronization gate used to signal when the server is ready.
+            :param sgate: Synchronization gate used to signal when the server is ready.
         """
-            
-            handler_type = partial(EventNotificationHandler, self._service_class, self)
-            
-            localhost = "127.0.0.1"
-            
-            server = HTTPServer((localhost, 0), handler_type)
-            server_port = server.server_port
-            
-            self._session_lock.acquire()
-            try:
+        handler_type = partial(EventNotificationHandler, self._service_class, self)
+
+        localhost = "127.0.0.1"
+
+        server = HTTPServer((localhost, 0), handler_type)
+        server_port = server.server_port
+
+        self._session_lock.acquire()
+        try:
             self._events_server = server
             self._events_endpoint = (localhost, server_port)
-            finally:
+        finally:
             self._session_lock.release()
-            
-            # After we setup the HTTP server and capture the server endpoint information,
-            # set the startgate to allow the thread starting the server to proceed.
-            sgate.set()
-            
-            server.serve_forever()
-            
-            return
+
+        # After we setup the HTTP server and capture the server endpoint information,
+        # set the startgate to allow the thread starting the server to proceed.
+        sgate.set()
+
+        server.serve_forever()
+
+        return

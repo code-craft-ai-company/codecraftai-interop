@@ -87,39 +87,36 @@ class TaskerServer(ThreadedServer):
 
     def get_service_endpoint(self) -> Tuple[str, int]:
         """Return the IP address and port the service is bound to."""
-            ipaddr, port = self.listener.getsockname()
-            return ipaddr, port
-            
-            
-            def start(self):
-        """
-            Starts the server request accept thread.
-        """
-            
-            start_gate = threading.Event()
-            start_gate.clear()
-            
-            self._server_running = True
-            
-            self._server_thread = threading.Thread(target=self._service_thread_entry, name='tasker', args=(start_gate,), daemon=True)
-            self._server_thread.start()
-            
-            start_gate.wait()
-            
-            return
-            
-            
-            def serve_forever(self):
-        """
-            Called when the taskerserver is run from the main thread of a service instance.
-        """
-            
-            self._service_thread_entry()
-            
-            return
-            
-            
-            def _service_thread_entry(self, start_gate: Optional[threading.Event] = None):
+        ipaddr, port = self.listener.getsockname()
+        return ipaddr, port
+
+    def start(self):
+        """Starts the server request accept thread."""
+        start_gate = threading.Event()
+        start_gate.clear()
+
+        self._server_running = True
+
+        self._server_thread = threading.Thread(
+            target=self._service_thread_entry,
+            name="tasker",
+            args=(start_gate,),
+            daemon=True,
+        )
+        self._server_thread.start()
+
+        start_gate.wait()
+
+        return
+
+    def serve_forever(self):
+        """Called when the taskerserver is run from the main thread of a service instance."""
+
+        self._service_thread_entry()
+
+        return
+
+    def _service_thread_entry(self, start_gate: Optional[threading.Event] = None):
         """Internal thread entry point used to run the service."""
         
         # If we were passed a start_gate, it means a thread is waiting for
