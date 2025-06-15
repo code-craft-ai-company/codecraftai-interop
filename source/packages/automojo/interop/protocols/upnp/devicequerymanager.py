@@ -43,7 +43,7 @@ class DeviceQueryManager:
 
     def __init__(self):
         """
-        Initialize the query manager and cache the mapper registry.
+            Initialize the query manager and cache the mapper registry.
         """
         self._mapper_registry = DeviceDetailMapperRegistrySingleton()
         return

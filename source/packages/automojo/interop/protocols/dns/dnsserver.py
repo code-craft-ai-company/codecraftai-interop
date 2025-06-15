@@ -45,16 +45,22 @@ class DnsServer:
 
     @property
     def svc_addr(self):
-        """Address this DNS server is bound to."""
+        """
+            Address this DNS server is bound to.
+        """
         return self._svc_addr
 
     @property
     def svc_port(self):
-        """Port this DNS server listens on."""
+        """
+            Port this DNS server listens on.
+        """
         return self._svc_port
 
     def start(self):
-        """Starts the responder thread for the server."""
+        """
+            Starts the responder thread for the server.
+        """
 
         sgate = threading.Event()
         sgate.clear()
@@ -68,14 +74,18 @@ class DnsServer:
         return
     
     def query_all_services(self):
-        """Queries all services by broadcasting a DNS-SD request."""
+        """
+            Queries all services by broadcasting a DNS-SD request.
+        """
 
         qpacket = DnsQuestion()
 
         return
 
     def wait(self, timeout=None):
-        """Blocks until the server stops running or until *timeout* expires."""
+        """
+            Blocks until the server stops running or until *timeout* expires.
+        """
 
         if self._running:
             self._shutdown_gate.wait(timeout)

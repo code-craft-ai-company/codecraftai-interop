@@ -147,35 +147,35 @@ class DidlObject:
     @property
     def oid(self) -> str:
         """
-        Unique object identifier.
+            Unique object identifier.
         """
         return self._oid
     
     @property
     def parent_id(self) -> str:
         """
-        Identifier of the parent object.
+            Identifier of the parent object.
         """
         return self._parent_id
     
     @property
     def restricted(self) -> bool:
         """
-        Indicates if the object is read-only.
+            Indicates if the object is read-only.
         """
         return self._restricted
 
     @property
     def res(self) -> DidlResource:
         """
-        Primary :class:`DidlResource` for this object.
+            Primary :class:`DidlResource` for this object.
         """
         return self._res
 
     @property
     def title(self) -> str:
         """
-        Title string for this object.
+            Title string for this object.
         """
         return self._title
 
@@ -478,7 +478,7 @@ class DidlItemPhoto(DidlObject):
     @property
     def date(self):
         """
-        Date string associated with the photo item.
+            Date string associated with the photo item.
         """
         return self._date
     
@@ -522,7 +522,7 @@ class DidlLitePacket:
     @property
     def objects(self):
         """
-        List of contained :class:`DidlObject` instances.
+            List of contained :class:`DidlObject` instances.
         """
         return self._objects
 

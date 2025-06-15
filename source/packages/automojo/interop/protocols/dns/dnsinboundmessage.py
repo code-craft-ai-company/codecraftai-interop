@@ -87,7 +87,9 @@ class DnsInboundMessage:
 
     @property
     def answers(self) -> List[DnsRecord]:
-        """List of answer records contained in the message."""
+        """
+            List of answer records contained in the message.
+        """
         return self._answers
 
     @property

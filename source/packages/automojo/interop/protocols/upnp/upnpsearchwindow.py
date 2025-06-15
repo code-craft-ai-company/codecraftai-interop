@@ -142,7 +142,7 @@ class UpnpSearchWindow:
 
     def start(self):
         """
-        Begin monitoring for search results in a background thread.
+            Begin monitoring for search results in a background thread.
         """
         self._lock.acquire()
         try:
