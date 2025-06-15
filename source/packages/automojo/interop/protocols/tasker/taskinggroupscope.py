@@ -199,16 +199,25 @@ class TaskingGroupScope:
             raise RuntimeError(err_msg)
 
         return
-            
-            def execute_tasking(
-            self,
-            *,
-            tasking: Union[TaskingIdentity, Type[Tasking]],
-            ncount: int = 1,
-            aspects: Optional[TaskerAspects] = None,
-            **kwargs,
-            ) -> List[TaskingResultPromise]:
-        """Execute a tasking across multiple nodes."""
+
+    def execute_tasking(
+        self,
+        *,
+        tasking: Union[TaskingIdentity, Type[Tasking]],
+        ncount: int = 1,
+        aspects: Optional[TaskerAspects] = None,
+        **kwargs,
+    ) -> List[TaskingResultPromise]:
+        """
+            Execute a tasking across multiple nodes.
+
+            :param tasking: The tasking identity or class to execute.
+            :param ncount: Number of instances to execute.
+            :param aspects: Execution aspects for the task.
+            :param kwargs: Additional keyword arguments for the task.
+
+            :returns: A list of :class:`TaskingResultPromise` objects.
+        """
 
         if aspects is None:
             aspects = self._aspects
@@ -241,31 +250,41 @@ class TaskingGroupScope:
         aspects: Optional[TaskerAspects] = None,
         **kwargs,
     ) -> List[TaskingResultPromise]:
-        """Execute a tasking on a single node."""
-            
-            if aspects is None:
+        """
+            Execute a tasking on a single node.
+
+            :param node: Node where the tasking will run.
+            :param tasking: The tasking identity or class to execute.
+            :param ncount: Number of instances to execute.
+            :param aspects: Execution aspects for the task.
+            :param kwargs: Additional keyword arguments for the task.
+
+            :returns: A :class:`TaskingResultPromise` object.
+        """
+
+        if aspects is None:
             aspects = self._aspects
-            
-            if self._state != TaskingGroupState.NotStarted:
+
+        if self._state != TaskingGroupState.NotStarted:
             errmsg = f"The tasking group '{self._name}' has already been started."
             raise SemanticError(errmsg)
-            
-            adapter = self.adapter
-            parent_id = self._tgroup.inst_id
-            
-            promise = self._controller.execute_tasking_on_node(
+
+        adapter = self.adapter
+        parent_id = self._tgroup.inst_id
+
+        promise = self._controller.execute_tasking_on_node(
             node,
             tasking=tasking,
             ncount=ncount,
             parent_id=parent_id,
             aspects=aspects,
             **kwargs,
-            )
-            self._promises.append(promise)
-            
-            return promise
-            
-            def finalize(self, sync: bool = True):
+        )
+        self._promises.append(promise)
+
+        return promise
+
+    def finalize(self, sync: bool = True):
         """Finalize the task group and optionally synchronize."""
 
         adapter = self.adapter
@@ -292,17 +311,16 @@ class TaskingGroupScope:
 
     def synchronize(self):
         """Synchronize results for all promises."""
-            
-            adapter = self.adapter
-            
-            if len(self._promises) > 0:
+        adapter = self.adapter
+
+        if len(self._promises) > 0:
             self.wait_for_tasking_results()
-            
-            return
-            
-            def wait_for_all_to_event(
-            self, event_name: str, aspects: Optional[TaskerAspects] = None
-            ) -> List[TaskingEvent]:
+
+        return
+
+    def wait_for_all_to_event(
+        self, event_name: str, aspects: Optional[TaskerAspects] = None
+    ) -> List[TaskingEvent]:
         """Wait for all taskings to fire a specific event."""
 
         if aspects is None:
@@ -318,19 +336,19 @@ class TaskingGroupScope:
         self, event_name: str, aspects: Optional[TaskerAspects] = None
     ) -> List[TaskingEvent]:
         """Wait for any tasking to fire a specific event."""
-            
-            if aspects is None:
+
+        if aspects is None:
             aspects = self._aspects
-            
-            events_found = self._controller.wait_for_any_to_event(
+
+        events_found = self._controller.wait_for_any_to_event(
             event_name, self._promises
-            )
-            
-            return events_found
-            
-            def wait_for_tasking_results(
-            self, aspects: Optional[TaskerAspects] = None
-            ) -> List[TaskingResult]:
+        )
+
+        return events_found
+
+    def wait_for_tasking_results(
+        self, aspects: Optional[TaskerAspects] = None
+    ) -> List[TaskingResult]:
         """Wait for completion and return all tasking results."""
 
         if aspects is None:
@@ -346,32 +364,32 @@ class TaskingGroupScope:
 
     def _clear_summary_progress(self):
         """Clear summary progress information."""
-            
-            task_ids = []
-            
-            # Collect the progress
-            for p in self._promises:
-            task_ids.append(p.tasking_id)
-            
-            self._recorder.clear_task_progress(task_ids)
-            self._recorder.update_summary()
-            
-            return
-            
-            def _notify_summary_progress(self, progress_list: List[ProgressInfo]):
-        """
-        Update summary progress information using the result recorder.
 
-        :param progress_list: List of :class:`ProgressInfo` objects to post.
+        task_ids = []
+
+        # Collect the progress
+        for p in self._promises:
+            task_ids.append(p.tasking_id)
+
+        self._recorder.clear_task_progress(task_ids)
+        self._recorder.update_summary()
+
+        return
+
+    def _notify_summary_progress(self, progress_list: List[ProgressInfo]):
         """
-            self._progress_reported = True
-            
-            self._recorder.post_task_progress(progress_list)
-            self._recorder.update_summary()
-            
-            return
-            
-            def _update_group(self):
+            Update summary progress information using the result recorder.
+
+            :param progress_list: List of :class:`ProgressInfo` objects to post.
+        """
+        self._progress_reported = True
+
+        self._recorder.post_task_progress(progress_list)
+        self._recorder.update_summary()
+
+        return
+
+    def _update_group(self):
         """Record results for the group once."""
 
         if not self._results_written:

@@ -274,8 +274,9 @@ class TaskingResultPromise:
         """
             Returns a boolean value indicating if the associated tasking is complete.
             
-            ..node:  This is intentionally implemented as a method and not a property in order to ensure that
-            we do not make cross process or across network calls from an object property.
+            .. note:: This is intentionally implemented as a method and not a
+                property in order to ensure that we do not make cross process
+                or across network calls from an object property.
         """
 
         rtnval = self._node.has_completed_and_result_ready(tasking_id=self._tasking_id)
