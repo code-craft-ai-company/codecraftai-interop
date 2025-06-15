@@ -1,9 +1,9 @@
 """
-.. module:: itemsresult
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: itemsresult module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. module:: itemsresult
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: itemsresult module.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -23,7 +23,7 @@ CT = TypeVar("CT")
 
 class PreCannedRequest(Generic[CT]):
     """
-    Container for REST call details used to generate an :class:`ItemsResult` later.
+        Container for REST call details used to generate an :class:`ItemsResult` later.
     """
 
     def __init__(

@@ -31,7 +31,9 @@ if TYPE_CHECKING:
 
 
 class UpnpSearchWindowState:
-    """Enumeration describing the lifecycle of a UPNP search window."""
+    """
+        Enumeration describing the lifecycle of a UPNP search window.
+    """
     INACTIVE = 0
     ACTIVE = 1
     COMPLETED = 2

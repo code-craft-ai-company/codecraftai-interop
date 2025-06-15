@@ -1,10 +1,10 @@
 """
-.. module:: taskercontroller
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: The :class:`TaskerController` package contains the controller object used to create a distributed
-network of :class:`TaskerService` objects.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. module:: taskercontroller
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: The :class:`TaskerController` package contains the controller object used to create a distributed
+    network of :class:`TaskerService` objects.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -49,8 +49,8 @@ TASKER_PORT = 8686
 
 class TaskerController:
     """
-    The :class:`TaskerController` object lets you startup and control task processing across
-    a collection of clients.
+        The :class:`TaskerController` object lets you startup and control task processing across
+        a collection of clients.
     """
 
     def __init__(

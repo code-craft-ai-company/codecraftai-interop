@@ -57,8 +57,8 @@ def process_action_list(actionListNode: Element, namespaces: Optional[dict] = No
 
 class ServiceAction:
     """
-    Represents a list of actions for a UPnP service.
-    This class is used to manage the actions that can be performed on a UPnP service.
+        Represents a list of actions for a UPnP service.
+        This class is used to manage the actions that can be performed on a UPnP service.
     """
 
     def __init__(self, actions=None):

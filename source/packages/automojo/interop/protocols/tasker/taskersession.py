@@ -1,11 +1,11 @@
 """
-.. module:: taskersession
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: Module containing the :class:`TaskerSession` class which is used to
-store the tasking data associated with a session.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    .. module:: taskersession
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: Module containing the :class:`TaskerSession` class which is used to
+    store the tasking data associated with a session.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"
@@ -57,7 +57,7 @@ if TYPE_CHECKING:
 
 class EventNotificationHandler(BaseHTTPRequestHandler):
     """
-    Handles HTTP callbacks used to deliver task progress events.
+        Handles HTTP callbacks used to deliver task progress events.
     """
 
     def __init__(self, service_class, session, *args, **kwargs):

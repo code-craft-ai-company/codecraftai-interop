@@ -40,7 +40,9 @@ UPNP_CALL_INACTIVITY_TIMEOUT = 30
 UPNP_CALL_INACTIVITY_INTERVAL = 1
 
 class AspectsUPnP(Aspects):
-    """Default aspects configuration for UPnP protocol operations."""
+    """
+        Default aspects configuration for UPnP protocol operations.
+    """
     def __init__(self, action_pattern: ActionPattern = ActionPattern.SINGLE_CONNECTED_CALL,
                        completion_timeout: float = DEFAULT_COMPLETION_TIMEOUT,
                        completion_interval: float = DEFAULT_COMPLETION_INTERVAL,

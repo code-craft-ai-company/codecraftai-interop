@@ -1,11 +1,11 @@
 """
-.. module:: tasking
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: Module containing the :class:`Tasking` class which is the base class used
-to pattern interop with tasks across processes and machines.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    .. module:: tasking
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: Module containing the :class:`Tasking` class which is the base class used
+    to pattern interop with tasks across processes and machines.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"
@@ -133,8 +133,8 @@ def instantiate_tasking(
 
 class TaskingManager(multiprocessing.managers.SyncManager):
     """
-    This is a process manager used for creating a :class:`TaskingManager`
-    in a remote process that can be communicated with via a proxy.
+        This is a process manager used for creating a :class:`TaskingManager`
+        in a remote process that can be communicated with via a proxy.
     """
 
 

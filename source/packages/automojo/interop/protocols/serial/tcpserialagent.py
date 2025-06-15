@@ -1,9 +1,9 @@
 """
-.. module:: tcpserialagent
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: Contains the TcpSerialObject object.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. module:: tcpserialagent
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: Contains the TcpSerialObject object.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -28,7 +28,7 @@ import telnetlib
 
 class TcpSerialBase(SerialAgentBase):
     """
-    Base class for TCP serial implementations.
+        Base class for TCP serial implementations.
     """
 
     SERIAL_PROMPT = b"@@@&@@@&"
