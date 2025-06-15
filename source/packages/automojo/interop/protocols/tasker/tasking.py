@@ -144,7 +144,7 @@ TaskingManager.register("instantiate_tasking", instantiate_tasking)
 @dataclass
 class StreamInfo:
     """
-    Describes a file stream used during task execution.
+        Describes a file stream used during task execution.
     """
 
     name: str
@@ -155,7 +155,7 @@ class StreamInfo:
 @dataclass
 class TaskingIdentity:
     """
-    Module and class name pair uniquely identifying a tasking class.
+        Module and class name pair uniquely identifying a tasking class.
     """
 
     module_name: str
@@ -172,9 +172,9 @@ class TaskingIdentity:
 
 class Tasking:
     """
-    Base class for task implementations executed by the tasker service.
-    Subclasses should implement the :meth:`perform` method to define the work
-    performed by the tasking.
+        Base class for task implementations executed by the tasker service.
+        Subclasses should implement the :meth:`perform` method to define the work
+        performed by the tasking.
     """
 
     PREFIX = "tasking"

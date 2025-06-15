@@ -32,7 +32,9 @@ logger = logging.getLogger()
 struct_int_to_byte = struct.Struct(">B")
 
 class DnsPacketBuilderState(IntEnum):
-    """Enumeration of states for the DNS packet building process."""
+    """
+        Enumeration of states for the DNS packet building process.
+    """
     Initial = 0
     Finished = 1
 

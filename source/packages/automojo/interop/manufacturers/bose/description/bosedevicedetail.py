@@ -65,7 +65,7 @@ from automojo.interop.manufacturers.bose.description.bosemultiroomversions impor
 
 class BoseDeviceDetail(Basic1DeviceDesc):
     """
-    Specialized device description for Bose products.
+        Specialized device description for Bose products.
     """
 
     def __init__(

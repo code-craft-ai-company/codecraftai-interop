@@ -84,7 +84,7 @@ class TcpSerialBase(SerialAgentBase):
 
 class TcpSerialSession(TcpSerialBase):
     """
-    Context manager for an interactive TCP serial session.
+        Context manager for an interactive TCP serial session.
     """
 
     def __init__(
@@ -189,16 +189,15 @@ class TcpSerialSession(TcpSerialBase):
 
 class TcpSerialAgent(TcpSerialBase):
     """
-    The :class:`TcpSerialAgent` provides access to serial port hosted on a TCP/IP network.  The
-    remote endpoint might be a host and port for a serial port hosted on a serial concentrator.
-    It could be the host and port of a serial port hosted on a linux box via USB and ser2net.
+        The :class:`TcpSerialAgent` provides access to serial port hosted on a TCP/IP network.  The
+        remote endpoint might be a host and port for a serial port hosted on a serial concentrator.
+        It could be the host and port of a serial port hosted on a linux box via USB and ser2net.
 
-    ..note:
-        An example ser2net configuration might look like the configuration below.
+        .. note::
+            An example ser2net configuration might look like the configuration below.
 
-        BANNER:banner:\r\nser2net port \p device \d [\s] (Debian GNU/Linux)\r\n\r\n
-
-        3333:telnet:0:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT banner
+            BANNER:banner:\r\nser2net port \p device \d [\s] (Debian GNU/Linux)\r\n\r\n
+            3333:telnet:0:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT banner
     """
 
     def __init__(

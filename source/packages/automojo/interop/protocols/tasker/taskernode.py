@@ -501,7 +501,7 @@ class TaskerNode:
 
 class TaskerClientNode(TaskerNode):
     """
-    Represents a tasker node created from an existing network client.
+        Represents a tasker node created from an existing network client.
     """
 
     def __init__(self, client: Any, ipaddr: str, port: int):

@@ -18,7 +18,7 @@ from automojo.interop.manufacturers.bose.description.bosefeatureversion import (
 
 class BoseMultiRoomVersions:
     """
-    Collection of multi-room protocol versions for a Bose device.
+        Collection of multi-room protocol versions for a Bose device.
     """
 
     def __init__(
