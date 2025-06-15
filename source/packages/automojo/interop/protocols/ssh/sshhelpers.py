@@ -345,7 +345,7 @@ def sftp_list_tree(sftp: paramiko.SFTPClient, treeroot: str, userlookup: Callabl
         :param treeroot: The root directory to get the directory listing for.
         :param userlookup: A dictionary to utilize in order to lookup the user associated with a directory item.
         :param grouplookup: A dictionary to utilize in order to lookup the group associated with a directory item.
-        :param remaining: The depth remaining to create the directory tree.
+        :param max_depth: The maximum depth to create the directory tree.
 
         :returns: A dictionary with the information about the root directory and its children.
     """
@@ -510,11 +510,11 @@ def ssh_execute_command(ssh_client: paramiko.SSHClient, command: str, pty_params
 
 def ssh_execute_command_in_channel(ssh_channel: paramiko.Channel, command: str, read_timeout: float=2, inactivity_timeout: float=DEFAULT_SSH_TIMEOUT, inactivity_interval: float=DEFAULT_SSH_RETRY_INTERVAL, chunk_size: int=1024, status_check=False) -> Tuple[int, str, str]:
     """
-        Runs a command on a remote server using the specified ssh_client.  We implement our own version of ssh_execute_command
+        Runs a command on a remote server using the specified ssh_channel.  We implement our own version of ssh_execute_command
         in order to have better control over the timeouts and to make sure all the checks are sequenced properly in order
         to prevent SSH lockups.
 
-        :param ssh_client: The :class:`paramiko.SSHClient` object to utilize when running the command.
+        :param ssh_channel: The :class:`paramiko.Channel` object to utilize when running the command.
         :param command: The commandline to run.
         :param inactivity_timeout: The timeout for the channel for the ssh transaction.
         :param inactivity_interval: The retry interval to wait for the channel to have data ready.

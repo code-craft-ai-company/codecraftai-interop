@@ -232,13 +232,13 @@ class UpnpDeviceBase:
 
     def lookup_service(self, service_key: str, allow_none: bool=False, factory: Optional["UpnpDeviceFactory"] = None) -> Union[UpnpServiceProxy, None]:
         """
-            Looks up a service proxy based on the service manufacturer and service type specified.
+            Looks up a service proxy using the service key specified.
 
-            :param serviceManufacturer: The manufacturer associated with the device and service manufacturer.
-            :param serviceType: The service type of the service to lookup.
-            :param allow_none: If True, this API will not thrown an exception if the service cannot be found.
+            :param service_key: The key identifying the service to lookup.
+            :param allow_none: If ``True``, no exception is raised when the service cannot be found.
+            :param factory: Optional factory used to create a service instance when one does not exist.
 
-            :returns: The service proxy associated with the manufacturer and service type provided or None.
+            :returns: The service proxy for the provided key or ``None``.
         """
         svc = None
 
@@ -285,9 +285,9 @@ class UpnpDeviceBase:
         """
             Takes in a device description and processes it for embedded devices.
 
-            :param factory: The UpnpDeviceFactory that has registered exentsion types that is used to instantiate
-                            embedded devices when the UPNP device description is processed.
-            :param description: The Basic1DeviceDesc object that contains information about the device and its embedded devices.
+            :param factory: The :class:`UpnpDeviceFactory` used to instantiate embedded devices when the
+                            UPNP device description is processed.
+            :param device_description: The :class:`EmbeddedDeviceDesc` object describing the embedded device.
         """
         devkey = device_description.get_extension_key()
         

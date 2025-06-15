@@ -25,11 +25,11 @@ def xml_format_service_desc(
     """
         Create an XML representation of a service description.
 
-        :param service_type: Type of the service.
-        :param service_id: ID of the service.
-        :param control_url: Control URL of the service.
-        :param event_sub_url: Event subscription URL of the service.
-        :param scpd_url: SCPD URL of the service.
+        :param serviceType: Type of the service.
+        :param serviceId: ID of the service.
+        :param controlURL: Control URL of the service.
+        :param eventSubURL: Event subscription URL of the service.
+        :param SCPDURL: SCPD URL of the service.
         :param indent: Indentation for the XML string.
 
         :returns: XML string representation of the service description.

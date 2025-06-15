@@ -391,10 +391,7 @@ class UpnpServiceProxy(EventedVariableSink):
 
     def invalidate_subscription(self):
         """
-            Called in order to invalidate the subscription(s) specified by scope.
-            
-            :param scope: The scope of the subscriptions to renew.  If not specified then all
-            subscriptions should be renewed.
+            Called in order to invalidate any active subscriptions.
         """
         
         for _ in self.yield_state_lock():
