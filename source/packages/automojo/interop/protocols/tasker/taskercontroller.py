@@ -475,7 +475,7 @@ class TaskerController:
 
 class ProcessTaskerController(TaskerController):
     """
-    Spawns and manages local tasker server processes.
+        Spawns and manages local tasker server processes.
     """
 
     def __init__(
@@ -556,7 +556,7 @@ class ProcessTaskerController(TaskerController):
 
 class ClientTaskerController(TaskerController):
     """
-    Uses existing network clients to communicate with remote taskers.
+        Uses existing network clients to communicate with remote taskers.
     """
 
     def __init__(

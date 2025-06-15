@@ -60,7 +60,7 @@ class TaskingRef:
 
 class TaskingResultPromise:
     """
-    Proxy object returned when a tasking is dispatched.
+        Proxy object returned when a tasking is dispatched.
     """
 
     def __init__(

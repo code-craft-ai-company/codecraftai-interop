@@ -41,11 +41,15 @@ DEFAULT_RETRY_INTERVAL = 2.0
 
 
 class MdnsServiceInfo:
-    """Container for information about a discovered mDNS service."""
+    """
+        Container for information about a discovered mDNS service.
+    """
 
 
 class MdnsBrowseSearchWindow:
-    """Represents a window of time where mDNS browse results are collected."""
+    """
+        Represents a window of time where mDNS browse results are collected.
+    """
 
     def __init__(self, browser: "MdnsBrowseSearchWindow", id: int):
         """

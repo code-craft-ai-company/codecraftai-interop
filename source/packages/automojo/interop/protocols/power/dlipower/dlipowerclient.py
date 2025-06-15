@@ -26,7 +26,9 @@ from automojo.interop.protocols.power.dlipower.restapis.apinoderelay import ApiN
 
 
 class DliPowerRestClient(RestClientBase):
-    """REST client for interacting with Digital Loggers power controllers."""
+    """
+        REST client for interacting with Digital Loggers power controllers.
+    """
 
     def __init__(self, host: str, credential: BasicCredential, port: Optional[int] = None,
                  scheme: Optional[str] = "https", aspects: AspectsRest = DEFAULT_REST_ASPECTS) -> None:

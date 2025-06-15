@@ -86,8 +86,8 @@ class PreCannedRequest(Generic[CT]):
 
 class Paging:
     """
-    The :class:`Paging` object combines a the collection of parameters that are necessary to preform paging opertions
-    on the results of a REST API call for a collection.
+        The :class:`Paging` object combines a the collection of parameters that are necessary to preform paging opertions
+        on the results of a REST API call for a collection.
     """
 
     def __init__(
@@ -200,7 +200,7 @@ class Paging:
 
 class ItemsResult(Generic[CT]):
     """
-    Holds a list of returned items and optional paging information.
+        Holds a list of returned items and optional paging information.
     """
 
     def __init__(self, items: List[CT], paging: Optional[Paging] = None):

@@ -76,7 +76,9 @@ class DidlDesc:
 
 
 class DidlResource(NamedTuple):
-    """Information about a resource associated with a DIDL item."""
+    """
+        Information about a resource associated with a DIDL item.
+    """
 
     protocol_info: str
     uri: str
@@ -125,7 +127,7 @@ class DidlResource(NamedTuple):
 
 class DidlWriteStatus(str, Enum):
     """
-    Enumeration of write status values for DIDL objects.
+        Enumeration of write status values for DIDL objects.
     """
 
     MIXED = "MIXED"
@@ -137,7 +139,7 @@ class DidlWriteStatus(str, Enum):
 
 class DidlObject:
     """
-    Base DIDL object with core properties and XML helpers.
+        Base DIDL object with core properties and XML helpers.
     """
 
     element_tag = None
@@ -267,7 +269,7 @@ class DidlObject:
 
 class DidlContainerPhotoAlbum(DidlObject):
     """
-    Container object representing a photo album.
+        Container object representing a photo album.
     """
 
     element_tag = "container"
@@ -333,7 +335,7 @@ class DidlContainerPhotoAlbum(DidlObject):
 
 class DidlContainerStorageFolder(DidlObject):
     """
-    Container object representing a generic storage folder.
+        Container object representing a generic storage folder.
     """
 
     element_tag = "container"
@@ -409,7 +411,7 @@ class DidlContainerStorageFolder(DidlObject):
 
 class DidlItemAlbumArt(DidlObject):
     """
-    Item representing vendor supplied album artwork.
+        Item representing vendor supplied album artwork.
     """
 
     element_tag = "item"
@@ -460,7 +462,7 @@ class DidlItemAlbumArt(DidlObject):
 
 class DidlItemMusicTrack(DidlObject):
     """
-    Item describing a single music track resource.
+        Item describing a single music track resource.
     """
 
     element_tag = "item"
@@ -552,7 +554,7 @@ class DidlItemMusicTrack(DidlObject):
 
 class DidlItemPhoto(DidlObject):
     """
-    Item representing a still photo image.
+        Item representing a still photo image.
     """
 
     element_tag = "item"
@@ -613,7 +615,7 @@ class DidlItemPhoto(DidlObject):
 
 class DidlLitePacket:
     """
-    Collection of :class:`DidlObject` items serialized to DIDL-Lite XML.
+        Collection of :class:`DidlObject` items serialized to DIDL-Lite XML.
     """
 
     xml_namespaces = {

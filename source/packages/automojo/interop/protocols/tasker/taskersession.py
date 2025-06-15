@@ -107,7 +107,7 @@ class EventNotificationHandler(BaseHTTPRequestHandler):
 
 class TaskerSession:
     """
-    Manages tasking operations for a specific worker session.
+        Manages tasking operations for a specific worker session.
     """
 
     def __init__(

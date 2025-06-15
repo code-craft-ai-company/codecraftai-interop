@@ -13,7 +13,7 @@ __credits__ = []
 
 class BoseFeatureVersion:
     """
-    Represents a major/minor version for a Bose feature.
+        Represents a major/minor version for a Bose feature.
     """
 
     def __init__(self, major: int, minor: int):
