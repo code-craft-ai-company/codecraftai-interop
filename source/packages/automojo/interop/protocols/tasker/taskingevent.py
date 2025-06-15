@@ -33,17 +33,29 @@ class TaskingEvent:
 
     @property
     def event_name(self) -> str:
-        """Name of the event."""
+        """
+            Name of the event.
+
+            :returns: The event name string.
+        """
         return self._event_name
 
     @property
     def payload(self) -> Union[dict, None]:
-        """Optional payload associated with the event."""
+        """
+            Optional payload associated with the event.
+
+            :returns: The payload dictionary or ``None``.
+        """
         return self._payload
 
     @property
     def tasking_id(self) -> str:
-        """Identifier of the originating tasking."""
+        """
+            Identifier of the originating tasking.
+
+            :returns: The tasking identifier string.
+        """
         return self._tasking_id
 
     @classmethod

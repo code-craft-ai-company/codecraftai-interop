@@ -169,52 +169,92 @@ class TaskerSession:
 
     @property
     def aspects(self):
-        """Default aspects used for task execution."""
+        """
+            Default aspects used for task execution.
+
+            :returns: The :class:`TaskerAspects` assigned to this session.
+        """
         return self._aspects
 
     @property
     def last_activity(self) -> datetime:
-        """Timestamp of the last session activity."""
+        """
+            Timestamp of the last session activity.
+
+            :returns: The :class:`datetime` of the most recent activity.
+        """
         return self._last_activity
 
     @property
     def output_directory(self):
-        """Directory where task outputs are written."""
+        """
+            Directory where task outputs are written.
+
+            :returns: The absolute path to the output directory.
+        """
         return self._output_directory
 
     @property
     def progresses(self) -> OrderedDict:
-        """Dictionary mapping tasking ids to progress info."""
+        """
+            Dictionary mapping tasking ids to progress info.
+
+            :returns: Ordered dictionary of :class:`ProgressInfo` objects.
+        """
         return self._progress_table
 
     @property
     def results(self) -> OrderedDict:
-        """Dictionary of task results."""
+        """
+            Dictionary of task results.
+
+            :returns: Ordered dictionary of :class:`TaskingResult` objects.
+        """
         return self._results_table
 
     @property
     def session_id(self) -> str:
-        """Identifier for this session."""
+        """
+            Identifier for this session.
+
+            :returns: Session identifier string.
+        """
         return self._session_id
 
     @property
     def start(self) -> datetime:
-        """Timestamp when the session was created."""
+        """
+            Timestamp when the session was created.
+
+            :returns: The :class:`datetime` the session was started.
+        """
         return self._start
 
     @property
     def statuses(self) -> OrderedDict:
-        """Dictionary mapping tasking ids to status codes."""
+        """
+            Dictionary mapping tasking ids to status codes.
+
+            :returns: Ordered dictionary of task status values.
+        """
         return self._status_table
 
     @property
     def taskings(self) -> OrderedDict:
-        """Dictionary of active tasking objects."""
+        """
+            Dictionary of active tasking objects.
+
+            :returns: Ordered dictionary of :class:`Tasking` objects.
+        """
         return self._taskings_table
 
     @property
     def log_level(self) -> int:
-        """Logging level used for task output."""
+        """
+            Logging level used for task output.
+
+            :returns: The numeric logging level.
+        """
         return self._log_level
 
     def dispose_tasking(self, tasking_id: str):

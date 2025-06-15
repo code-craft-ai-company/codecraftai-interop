@@ -30,7 +30,13 @@ class ServiceDesc:
     """
     
     def __init__(self, *, specVersion: SpecVersion, serviceStateTables: ServiceStateTables, actionsTable: Dict[str, ServiceAction]):
-        """Initialize a :class:`ServiceDesc` instance."""
+        """
+            Initialize a :class:`ServiceDesc` instance.
+
+            :param specVersion: The UPnP specification version.
+            :param serviceStateTables: The service state tables for the service.
+            :param actionsTable: Mapping of action names to :class:`ServiceAction` objects.
+        """
 
         self.specVersion = specVersion
         self.serviceStateTables = serviceStateTables

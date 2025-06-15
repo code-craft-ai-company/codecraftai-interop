@@ -41,12 +41,20 @@ class DnsHostInfo(DnsRecord):
 
     @property
     def cpu(self):
-        """CPU architecture string."""
+        """
+            CPU architecture string.
+
+            :returns: CPU architecture string value.
+        """
         return self._cpu
 
     @property
     def os(self):
-        """Operating system description."""
+        """
+            Operating system description.
+
+            :returns: Operating system description string.
+        """
         return self._os
 
     def write(self, out: 'DnsOutboundMessage') -> None:

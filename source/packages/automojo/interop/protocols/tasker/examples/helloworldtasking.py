@@ -48,7 +48,11 @@ class HelloWorldTasking(Tasking):
         return
 
     def mark_progress_start(self):
-        """Marks the start of progress for the tasking."""
+        """
+            Marks the start of progress for the tasking.
+
+            :returns: ``None``
+        """
         now = datetime.now()
         self._current_progress = ProgressInfo(
             self._tasking_id,
@@ -65,12 +69,22 @@ class HelloWorldTasking(Tasking):
         return
 
     def log_message(self, message) -> bool:
-        """Logs a message to the tasking logger."""
+        """
+            Logs a message to the tasking logger.
+
+            :param message: Text to log.
+
+            :returns: ``True`` if the message was logged.
+        """
         self._logger.info(message)
         return True
 
     def perform(self):
-        """Performs one iteration of work."""
+        """
+            Performs one iteration of work.
+
+            :returns: ``True`` if additional iterations remain.
+        """
         position = self._current_progress.position
 
         time.sleep(1)

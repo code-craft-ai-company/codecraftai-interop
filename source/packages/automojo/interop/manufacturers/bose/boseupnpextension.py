@@ -27,7 +27,11 @@ class BoseUpnpExtensionProtocol(UpnpExtensionProtocol):
     @classmethod
     def get_device_detail_mapper_types(self) -> List[Type[DeviceDetailMapper]]:
         """
-            Returns a list of device detail mappers that are registered with this extension protocol.
+            Returns a list of device detail mappers that are registered with this
+            extension protocol.
+
+            :returns: List of :class:`DeviceDetailMapper` types supported by the
+                      protocol.
         """
         types = [ BoseDeviceDetailMapper ]
         return types

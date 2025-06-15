@@ -18,12 +18,12 @@ class BoseFeatureVersion:
 
     def __init__(self, major: int, minor: int):
         """
-        Creates a Bose feature version object.
+            Creates a Bose feature version object.
 
-        :param major: Major version value.
-        :param minor: Minor version value.
+            :param major: Major version value.
+            :param minor: Minor version value.
 
-        :returns: None
+            :returns: None
         """
 
         self._major = major

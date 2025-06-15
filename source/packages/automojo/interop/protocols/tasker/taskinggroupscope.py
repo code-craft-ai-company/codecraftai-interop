@@ -104,28 +104,48 @@ class TaskingGroupScope:
 
     @property
     def adapter(self) -> "TaskingAdapter":
-        """Returns the adapter that owns this scope."""
+        """
+            Returns the adapter that owns this scope.
+
+            :returns: The owning :class:`TaskingAdapter` instance.
+        """
         return self._adapter_ref()
 
     @property
     def name(self) -> str:
-        """Name of the tasking group."""
+        """
+            Name of the tasking group.
+
+            :returns: The tasking group name.
+        """
         return self._name
 
     @property
     def promises(self) -> List[TaskingResultPromise]:
-        """List of promises associated with the group."""
+        """
+            List of promises associated with the group.
+
+            :returns: A list of :class:`TaskingResultPromise` objects.
+        """
         plist = [p for p in self._promises]
         return plist
 
     @property
     def sequencer(self) -> "TestSequencer":
-        """Return the associated test sequencer."""
+        """
+            Return the associated test sequencer.
+
+            :returns: The :class:`TestSequencer` instance or ``None``.
+        """
         return self._sequencer
 
     @property
     def nodes(self) -> List[TaskerNode]:
-        """List of tasker nodes used by the group."""
+        """
+            List of tasker nodes used by the group.
+
+            :returns: List of :class:`TaskerNode` objects.
+        """
         return self._tnodes
 
     def __enter__(self) -> "TaskingGroupScope":

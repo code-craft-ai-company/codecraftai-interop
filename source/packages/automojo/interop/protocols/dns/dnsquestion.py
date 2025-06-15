@@ -35,17 +35,29 @@ class DnsQuestion:
 
     @property
     def name(self):
-        """The name being queried."""
+        """
+            The name being queried.
+
+            :returns: The DNS name associated with this question.
+        """
         return self._name
 
     @property
     def rclass(self):
-        """Record class for the query."""
+        """
+            Record class for the query.
+
+            :returns: The :class:`DnsRecordClass` of the query.
+        """
         return self._rclass
 
     @property
     def rtype(self):
-        """Record type for the query."""
+        """
+            Record type for the query.
+
+            :returns: The :class:`DnsRecordType` requested.
+        """
         return self._rtype
 
     @property
