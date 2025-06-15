@@ -164,6 +164,8 @@ class DnsOutboundMessage:
     def add_question(self, record: DnsQuestion) -> None:
         """
             Adds a question
+
+            :param record: Question record to append to the message.
         """
         self._questions.append(record)
         return

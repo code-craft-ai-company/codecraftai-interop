@@ -49,6 +49,9 @@ class DnsInboundMessage:
     def __init__(self, data: bytes, source_endpoint: Union[str, bytes, Tuple[str, int], None] = None) -> None:
         """
             Constructor from string holding bytes of packet
+
+            :param data: Raw packet bytes to parse.
+            :param source_endpoint: The address the packet was received from.
         """
         self._offset: int = 0
 

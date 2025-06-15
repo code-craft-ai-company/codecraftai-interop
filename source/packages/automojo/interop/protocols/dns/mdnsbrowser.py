@@ -54,6 +54,9 @@ class MdnsBrowseSearchWindow:
     def __init__(self, browser: "MdnsBrowseSearchWindow", id: int):
         """
             Constructs a :class:`MdnsBrowseWindow` object used to collect and store search results.
+
+            :param browser: The :class:`MdnsBrowser` instance that owns this window.
+            :param id: Identifier for the new search window.
         """
         self._browser_ref = weakref.ref(browser)
         self._id = id

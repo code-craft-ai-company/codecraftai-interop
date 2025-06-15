@@ -43,6 +43,7 @@ class BoseDeviceDetailMapper(DeviceDetailMapper):
         """
             Creates a :class:`BoseDeviceDetail` from a basic device description element.
 
+            :param cls: The class type this method is bound to.
             :param root_el: Root XML element.
             :param device_el: Device element to process.
             :param namespaces: XML namespace mappings.

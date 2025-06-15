@@ -60,7 +60,11 @@ class DnsQuestionResults:
         return rlist
 
     def add_response(self, response):
-        """Adds a response object to the results list."""
+        """
+            Adds a response object to the results list.
+
+            :param response: The response record to append.
+        """
         self._responses.append(response)
         return
     
