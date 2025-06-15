@@ -111,6 +111,10 @@ class MdnsBrowseSearchWindow:
 
 
 class MdnsBrowser:
+    """
+        Provides utilities for discovering mDNS services and tracking their
+        presence on the network.
+    """
 
     def __init__(self, multicast_address: str = MDNS_GROUP_ADDR, multicast_port: int = MDNS_PORT,
                  discover_interval: int = 60, ttl: int = 32) -> None:

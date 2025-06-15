@@ -37,6 +37,13 @@ REGEX_DIRECTORY_ENTRY = re.compile(r"([\S]+)[\s]+([0-9]+)[\s]+([\S]+)[\s]+([\S]+
 
 @dataclasses.dataclass
 class SshJumpParams:
+    """
+        Parameters describing an SSH jump host used for tunneling.
+
+        :param host: Hostname or IP address of the jump server.
+        :param credential: Credential used when connecting to the jump host.
+        :param port: Port number of the SSH service.
+    """
     host: str
     credential: SshCredential
     port: int = 22

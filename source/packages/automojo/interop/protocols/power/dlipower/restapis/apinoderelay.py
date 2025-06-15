@@ -32,6 +32,7 @@ if TYPE_CHECKING:
 
 
 class ApiNodeRelay:
+    """Interface layer for REST operations on power relay nodes."""
 
     def __init__(self, client: "DliPowerRestClient") -> None:
         """

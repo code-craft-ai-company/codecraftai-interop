@@ -62,6 +62,7 @@ def xml_format_spec_version(
 
 
 class SpecVersion:
+    """Data container for the UPnP specification version."""
 
     def __init__(self, *, major: int, minor: int):
         """
