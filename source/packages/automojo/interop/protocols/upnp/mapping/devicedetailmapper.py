@@ -199,12 +199,12 @@ class DeviceDetailMapper:
     @classmethod
     def _process_icons_list(cls, icons_el: Element, namespaces: Dict[str, str]) -> List[IconDesc]:
         """
-        Parse an ``iconList`` element into a list of :class:`IconDesc`.
+            Parse an ``iconList`` element into a list of :class:`IconDesc`.
 
-        :param icons_el: The ``iconList`` element to parse.
-        :param namespaces: Namespace mapping for XML parsing.
+            :param icons_el: The ``iconList`` element to parse.
+            :param namespaces: Namespace mapping for XML parsing.
 
-        :returns: List of :class:`IconDesc` objects.
+            :returns: List of :class:`IconDesc` objects.
         """
 
         iconsList = []
@@ -240,12 +240,12 @@ class DeviceDetailMapper:
     @classmethod
     def _process_embedded_devices_list(cls, devices_el: Element, namespaces: Dict[str, str]) -> List[EmbeddedDeviceDesc]:
         """
-        Parse a list of embedded devices from a ``deviceList`` element.
+            Parse a list of embedded devices from a ``deviceList`` element.
 
-        :param devices_el: The ``deviceList`` element to parse.
-        :param namespaces: Namespace mapping for XML parsing.
+            :param devices_el: The ``deviceList`` element to parse.
+            :param namespaces: Namespace mapping for XML parsing.
 
-        :returns: List of :class:`EmbeddedDeviceDesc` objects.
+            :returns: List of :class:`EmbeddedDeviceDesc` objects.
         """
 
         devicesList = []
@@ -275,12 +275,12 @@ class DeviceDetailMapper:
     @classmethod
     def _process_services_list(cls, services_el: Element, namespaces: Dict[str, str]) -> List[ServiceEvidence]:
         """
-        Parse a ``serviceList`` element into :class:`ServiceEvidence` objects.
+            Parse a ``serviceList`` element into :class:`ServiceEvidence` objects.
 
-        :param services_el: The ``serviceList`` element to parse.
-        :param namespaces: Namespace mapping for XML parsing.
+            :param services_el: The ``serviceList`` element to parse.
+            :param namespaces: Namespace mapping for XML parsing.
 
-        :returns: List of :class:`ServiceEvidence` objects.
+            :returns: List of :class:`ServiceEvidence` objects.
         """
 
         servicesList = []
@@ -316,12 +316,12 @@ class DeviceDetailMapper:
     @classmethod
     def process_spec_version(cls, spec_ver_el: Element, namespaces: Dict[str, str]) -> SpecVersion:
         """
-        Create a :class:`SpecVersion` from the ``specVersion`` element.
+            Create a :class:`SpecVersion` from the ``specVersion`` element.
 
-        :param spec_ver_el: The ``specVersion`` element from the description.
-        :param namespaces: Namespace mapping for XML parsing.
+            :param spec_ver_el: The ``specVersion`` element from the description.
+            :param namespaces: Namespace mapping for XML parsing.
 
-        :returns: Parsed :class:`SpecVersion` instance.
+            :returns: Parsed :class:`SpecVersion` instance.
         """
 
         major = int(spec_ver_el.find("major", namespaces=namespaces).text)

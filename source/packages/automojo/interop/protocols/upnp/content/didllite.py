@@ -47,7 +47,7 @@ class DidlDesc:
 
     def to_xml_lines(self, indent=""):
         """
-        Return XML lines representing this description element.
+            Return XML lines representing this description element.
         """
 
         xlines = [
@@ -60,7 +60,7 @@ class DidlDesc:
 
     def to_xml(self):
         """
-        Return the XML string for this description element.
+            Return the XML string for this description element.
         """
 
         attrs_str = ""
@@ -88,13 +88,13 @@ class DidlResource(NamedTuple):
     @classmethod
     def from_xml(cls, res_element: Element):
         """
-        Create a :class:`DidlResource` from an XML element.
+            Create a :class:`DidlResource` from an XML element.
         """
         return
 
     def to_xml_lines(self, indent=""):
         """
-        Return XML lines for this resource.
+            Return XML lines for this resource.
         """
 
         sizeattr = ""
@@ -111,7 +111,7 @@ class DidlResource(NamedTuple):
 
     def to_xml(self):
         """
-        Return the XML string for this resource.
+            Return the XML string for this resource.
         """
 
         sizeattr = ""
@@ -217,7 +217,7 @@ class DidlObject:
 
     def create_opening_element(self):
         """
-        Return the opening XML element string for this object.
+            Return the opening XML element string for this object.
         """
 
         estr = "<{} id='{}' parentID='{}' restricted='{}' >".format(
@@ -227,7 +227,7 @@ class DidlObject:
 
     def create_closing_element(self):
         """
-        Return the closing XML element string for this object.
+            Return the closing XML element string for this object.
         """
 
         estr = "</{}>".format(self.element_tag)
@@ -235,7 +235,7 @@ class DidlObject:
 
     def to_xml_lines(self, indent=""):
         """
-        Return a list of XML lines describing this DIDL object.
+            Return a list of XML lines describing this DIDL object.
         """
 
         xlines = [self.create_opening_element()]
@@ -256,7 +256,7 @@ class DidlObject:
 
     def to_xml(self):
         """
-        Return the XML string representation of this DIDL object.
+            Return the XML string representation of this DIDL object.
         """
 
         xml_parts = [self.create_opening_element()]
@@ -318,12 +318,12 @@ class DidlContainerPhotoAlbum(DidlObject):
     @classmethod
     def from_xml(cls, obj_element: Element, namespaces: Optional[dict] = None):
         """
-        Create a :class:`DidlContainerPhotoAlbum` from an XML element.
+            Create a :class:`DidlContainerPhotoAlbum` from an XML element.
 
-        :param obj_element: XML element describing the DIDL container.
-        :param namespaces: Optional namespace map for element lookup.
+            :param obj_element: XML element describing the DIDL container.
+            :param namespaces: Optional namespace map for element lookup.
 
-        :returns: Instance of :class:`DidlContainerPhotoAlbum`.
+            :returns: Instance of :class:`DidlContainerPhotoAlbum`.
         """
 
         oid = obj_element.attrib["id"]
@@ -384,12 +384,12 @@ class DidlContainerStorageFolder(DidlObject):
     @classmethod
     def from_xml(cls, obj_element: Element, namespaces: Optional[dict] = None):
         """
-        Create a :class:`DidlContainerStorageFolder` from an XML element.
+            Create a :class:`DidlContainerStorageFolder` from an XML element.
 
-        :param obj_element: XML element describing the folder.
-        :param namespaces: Optional namespace map for element lookup.
+            :param obj_element: XML element describing the folder.
+            :param namespaces: Optional namespace map for element lookup.
 
-        :returns: Instance of :class:`DidlContainerStorageFolder`.
+            :returns: Instance of :class:`DidlContainerStorageFolder`.
         """
 
         oid = obj_element.attrib["id"]
@@ -437,13 +437,13 @@ class DidlItemAlbumArt(DidlObject):
         res: DidlResource
     ):
         """
-        Initialize a vendor album art item.
+            Initialize a vendor album art item.
 
-        :param oid: Object identifier for the item.
-        :param parent_id: Identifier of the parent container.
-        :param restricted: Indicates if the item is read-only.
-        :param title: Title string for the item.
-        :param res: Resource for the album art image.
+            :param oid: Object identifier for the item.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the item is read-only.
+            :param title: Title string for the item.
+            :param res: Resource for the album art image.
         """
         super().__init__(
             oid=oid, parent_id=parent_id, restricted=restricted, title=title, res=res
@@ -453,12 +453,12 @@ class DidlItemAlbumArt(DidlObject):
     @classmethod
     def from_xml(cls, obj_element: Element, namespaces: Optional[dict] = None):
         """
-        Create a :class:`DidlItemAlbumArt` from an XML element.
+            Create a :class:`DidlItemAlbumArt` from an XML element.
 
-        :param obj_element: XML element describing the item.
-        :param namespaces: Optional namespace map for element lookup.
+            :param obj_element: XML element describing the item.
+            :param namespaces: Optional namespace map for element lookup.
 
-        :returns: Instance of :class:`DidlItemAlbumArt`.
+            :returns: Instance of :class:`DidlItemAlbumArt`.
         """
 
         # Read the Required attributes
@@ -491,16 +491,16 @@ class DidlItemMusicTrack(DidlObject):
         genre: Optional[str] = None
     ):
         """
-        Initialize a music track item.
+            Initialize a music track item.
 
-        :param oid: Object identifier for the item.
-        :param parent_id: Identifier of the parent container.
-        :param restricted: Indicates if the item is read-only.
-        :param title: Title string for the item.
-        :param res: Primary resource for the music track.
-        :param creator: Creator of the track.
-        :param album_art: Album art URI if available.
-        :param genre: Genre of the track.
+            :param oid: Object identifier for the item.
+            :param parent_id: Identifier of the parent container.
+            :param restricted: Indicates if the item is read-only.
+            :param title: Title string for the item.
+            :param res: Primary resource for the music track.
+            :param creator: Creator of the track.
+            :param album_art: Album art URI if available.
+            :param genre: Genre of the track.
         """
         super().__init__(
             oid=oid, parent_id=parent_id, restricted=restricted, title=title, res=res
@@ -513,12 +513,12 @@ class DidlItemMusicTrack(DidlObject):
     @classmethod
     def from_xml(self, obj_element: Element, namespaces: Optional[dict] = None):
         """
-        Create a :class:`DidlItemMusicTrack` from an XML element.
+            Create a :class:`DidlItemMusicTrack` from an XML element.
 
-        :param obj_element: XML element describing the item.
-        :param namespaces: Optional namespace map for element lookup.
+            :param obj_element: XML element describing the item.
+            :param namespaces: Optional namespace map for element lookup.
 
-        :returns: Instance of :class:`DidlItemMusicTrack`.
+            :returns: Instance of :class:`DidlItemMusicTrack`.
         """
 
         # Read the Required attributes
@@ -608,12 +608,12 @@ class DidlItemPhoto(DidlObject):
     @classmethod
     def from_xml(self, obj_element: Element, namespaces: Optional[dict] = None):
         """
-        Create a :class:`DidlItemPhoto` from an XML element.
+            Create a :class:`DidlItemPhoto` from an XML element.
 
-        :param obj_element: XML element describing the item.
-        :param namespaces: Optional namespace map for element lookup.
+            :param obj_element: XML element describing the item.
+            :param namespaces: Optional namespace map for element lookup.
 
-        :returns: Instance of :class:`DidlItemPhoto`.
+            :returns: Instance of :class:`DidlItemPhoto`.
         """
 
         # Read the Required attributes
@@ -656,11 +656,11 @@ class DidlLitePacket:
 
     def to_xml_lines(self, indent=""):
         """
-        Return a list of XML lines representing this DIDL packet.
+            Return a list of XML lines representing this DIDL packet.
 
-        :param indent: Optional indentation prefix for each line.
+            :param indent: Optional indentation prefix for each line.
 
-        :returns: List of XML strings.
+            :returns: List of XML strings.
         """
 
         attrs_str = ""
@@ -679,9 +679,9 @@ class DidlLitePacket:
 
     def to_xml(self):
         """
-        Return the XML string representation of this DIDL packet.
+            Return the XML string representation of this DIDL packet.
 
-        :returns: XML string for the packet.
+            :returns: XML string for the packet.
         """
 
         attrs_str = ""
@@ -703,7 +703,7 @@ class DidlLitePacket:
 
 def parse_didl_lite_packet(content, namespaces=DIDL_NAMESPACES):
     """
-    Parse a DIDL-Lite XML packet into DIDL object instances.
+        Parse a DIDL-Lite XML packet into DIDL object instances.
     """
 
     root_element: Element = from_xml_string(content)
