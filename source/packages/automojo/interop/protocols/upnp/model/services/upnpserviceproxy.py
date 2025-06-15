@@ -164,12 +164,12 @@ class UpnpServiceProxy(EventedVariableSink):
     def call_action(self, action_name: str, arguments: dict = {}, auth: dict = None, headers: dict = {}, aspects: AspectsUPnP=DEFAULT_UPNP_CALL_ASPECTS):
         """
             Method utilize to make direct calls on a service for action APIs that are not published in a service description.
-
+            
             :param action_name: The action name to make a call on.
             :param arguments: The arguments to pass to the action.
             :param auth: The authentication parameter to use when making a request on the remote action.
             :param headers: The headers to use when making the request on the remote action.
-
+            
             :returns: Returns a dictionary which contains the returned response data.
         """
         rtnval = None
@@ -392,9 +392,9 @@ class UpnpServiceProxy(EventedVariableSink):
     def invalidate_subscription(self):
         """
             Called in order to invalidate the subscription(s) specified by scope.
-
+            
             :param scope: The scope of the subscriptions to renew.  If not specified then all
-                          subscriptions should be renewed.
+            subscriptions should be renewed.
         """
         
         for _ in self.yield_state_lock():
@@ -410,7 +410,7 @@ class UpnpServiceProxy(EventedVariableSink):
     def lookup_default_variable(self, varname: str) -> Union[UpnpDefaultVar, None]:
         """
             Looks up the specified default variable.
-
+            
             :param varname: The event name to find the :class:`UpnpDefaultVar` for.
         """
         varobj = None
@@ -425,7 +425,7 @@ class UpnpServiceProxy(EventedVariableSink):
 
     def renew_subscription(self):
         """
-            Called in order to renew the subscription to the 
+            Called in order to renew the subscription to the
         """
         self.device.unsubscribe_to_events(self)
         sub_id, sub_expires = self.device.subscribe_to_events(self, renew=True)
@@ -438,8 +438,8 @@ class UpnpServiceProxy(EventedVariableSink):
 
     def trigger_auto_subscribe_from_variable(self, varkey: str):
         """
-            Called in order to renew the subscription to the 
-
+            Called in order to renew the subscription to the
+            
             :param varkey: The key for the variable that is triggering the auto-subscription process.
         """
         logger.debug("UpnpServiceProxy subscription renewal for {} triggered from variable {}".format(
@@ -450,7 +450,7 @@ class UpnpServiceProxy(EventedVariableSink):
 
     def _clear_subscription(self):
         """
-        Reset subscription tracking information.
+            Reset subscription tracking information.
         """
 
         for _ in self.yield_state_lock():
@@ -462,7 +462,7 @@ class UpnpServiceProxy(EventedVariableSink):
     def _create_default_variable(self, event_name: str, data_type: Optional[str] = None, default: Optional[str] = None, allowed_list: Optional[list] = None, evented: bool=True):
         """
             Creates a default variable and stores a reference to it in the variables table.
-
+            
             :param event_name: The name of the event variable to create.
             :param data_type: The type of the event variable to create.
             :param default: The default value to set the new event variable to.
@@ -479,7 +479,7 @@ class UpnpServiceProxy(EventedVariableSink):
     def _create_default_variables_from_list(self):
         """
             Called by the constructor to create the defalut variables listed in the SERVICE_DEFAULT_VARIABLES list on creation
-            of the service proxy instance.  We pre-create the event variables because they can have default values and 
+            of the service proxy instance.  We pre-create the event variables because they can have default values and
             we want to maintain consistent reference for the variables for the the life of the service instance.
         """
         for event_name in self.SERVICE_DEFAULT_VARIABLES:
@@ -493,7 +493,7 @@ class UpnpServiceProxy(EventedVariableSink):
             device allows device users to find the service instance and to link the service proxy with the host it interacts
             with.  It is also utilized by the service proxy to setup event subscription callback routing in order to be
             able to route updates to the :class:`EventedVariable` variables managed by this service proxy.
-
+            
             :param device_ref: A weak reference to the parent device that owns this device.
             :param service_description: The service description for this service.
         """
@@ -517,7 +517,7 @@ class UpnpServiceProxy(EventedVariableSink):
     def _proxy_set_call_parameters(self, host: str, baseURL: str, controlURL: str, eventSubURL: str, serviceId: Optional[str] = None, serviceType: Optional[str] = None):
         """
             Sets the call parameters that are used by the service for making calls on a remote service.
-
+            
             :param host: The host of the remote service.
             :param baseURL: The base URL of the host and remote service.
             :param controlURL: The URL use to make calls on service actions.
@@ -544,12 +544,12 @@ class UpnpServiceProxy(EventedVariableSink):
     def _proxy_call_action(self, action_name: str, arguments: dict = {}, auth: Optional[dict] = None, headers: dict = {}, aspects: AspectsUPnP=DEFAULT_UPNP_ASPECTS) -> dict:
         """
             Helper method utilize by derived service proxies to make calls on remote service actions.
-
+            
             :param action_name: The action name to make a call on.
             :param arguments: The arguments to pass to the action.
             :param auth: The authentication parameter to use when making a request on the remote action.
             :param headers: The headers to use when making the request on the remote action.
-
+            
             :returns: Returns a dictionary which contains the returned response data.
         """
         # pylint: disable=dangerous-default-value
@@ -606,9 +606,9 @@ class UpnpServiceProxy(EventedVariableSink):
         """
             Helper method called during the processing of a subscription callback in order
             to update all of the event variables for this service instance.
-
+            
             :param propertyNodeList: An XML :class:`Element` object that contains a list
-                                     of child elements for each event variable.
+            of child elements for each event variable.
         """
 
         for _ in self.yield_state_lock():

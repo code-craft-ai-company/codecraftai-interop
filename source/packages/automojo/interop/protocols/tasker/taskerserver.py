@@ -41,7 +41,7 @@ TASKER_PROTOCOL_CONFIG = {
 class TaskerServer(ThreadedServer):
     """
         The :class:`TaskerServer` starts an RPyC server in an internal thread that is capable of handling
-        requests for tasking. 
+        requests for tasking.
     """
     
     TASKER_SERVICE_PORT = 8686
@@ -53,7 +53,7 @@ class TaskerServer(ThreadedServer):
                  listener_timeout=0.5, socket_path=None):
         """
             Initializes the tasker service server.
-
+            
             :param hostname: Host name to bind.
             :param ipv6: True to use IPv6.
             :param port: Port to bind.
@@ -87,39 +87,39 @@ class TaskerServer(ThreadedServer):
 
     def get_service_endpoint(self) -> Tuple[str, int]:
         """Return the IP address and port the service is bound to."""
-        ipaddr, port = self.listener.getsockname()
-        return ipaddr, port
-
-
-    def start(self):
+            ipaddr, port = self.listener.getsockname()
+            return ipaddr, port
+            
+            
+            def start(self):
         """
             Starts the server request accept thread.
         """
-        
-        start_gate = threading.Event()
-        start_gate.clear()
-
-        self._server_running = True
-        
-        self._server_thread = threading.Thread(target=self._service_thread_entry, name='tasker', args=(start_gate,), daemon=True)
-        self._server_thread.start()
-
-        start_gate.wait()
-
-        return
-
-
-    def serve_forever(self):
+            
+            start_gate = threading.Event()
+            start_gate.clear()
+            
+            self._server_running = True
+            
+            self._server_thread = threading.Thread(target=self._service_thread_entry, name='tasker', args=(start_gate,), daemon=True)
+            self._server_thread.start()
+            
+            start_gate.wait()
+            
+            return
+            
+            
+            def serve_forever(self):
         """
             Called when the taskerserver is run from the main thread of a service instance.
         """
-        
-        self._service_thread_entry()
-
-        return
-
-
-    def _service_thread_entry(self, start_gate: Optional[threading.Event] = None):
+            
+            self._service_thread_entry()
+            
+            return
+            
+            
+            def _service_thread_entry(self, start_gate: Optional[threading.Event] = None):
         """Internal thread entry point used to run the service."""
         
         # If we were passed a start_gate, it means a thread is waiting for

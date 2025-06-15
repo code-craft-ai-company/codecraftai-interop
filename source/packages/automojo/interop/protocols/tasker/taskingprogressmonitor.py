@@ -37,10 +37,10 @@ class TaskingProgressMonitor:
         monitored_promises: List["TaskingResultPromise"],
     ):
         """
-        Creates a monitor object that polls promises for progress updates.
-
-        :param summary_progress: The progress delivery information.
-        :param monitored_promises: A list of promises to monitor.
+            Creates a monitor object that polls promises for progress updates.
+            
+            :param summary_progress: The progress delivery information.
+            :param monitored_promises: A list of promises to monitor.
         """
 
         self._progress_callback = summary_progress.progress_callback
@@ -55,9 +55,9 @@ class TaskingProgressMonitor:
 
     def release(self, tasking_id: str):
         """
-        Stops monitoring progress for the specified tasking.
-
-        :param tasking_id: The identifier of the tasking to release.
+            Stops monitoring progress for the specified tasking.
+            
+            :param tasking_id: The identifier of the tasking to release.
         """
 
         self._lock.acquire()
@@ -70,7 +70,7 @@ class TaskingProgressMonitor:
 
     def start(self):
         """
-        Starts the monitoring thread that polls promises for progress.
+            Starts the monitoring thread that polls promises for progress.
         """
 
         sgate = threading.Event()
@@ -90,9 +90,9 @@ class TaskingProgressMonitor:
 
     def _pull_progress_entry(self, sgate: threading.Event):
         """
-        Internal thread entry used to periodically poll task promises for progress.
-
-        :param sgate: A startup gate used to signal that the thread has begun execution.
+            Internal thread entry used to periodically poll task promises for progress.
+            
+            :param sgate: A startup gate used to signal that the thread has begun execution.
         """
 
         self._pulling_progress = True

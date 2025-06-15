@@ -72,25 +72,25 @@ def instantiate_tasking(
     aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS,
 ) -> "Tasking":
     """
-    Factory function used by :class:`TaskerService` to instantiate a tasking class in a
-    separate process.
-
-    :param worker: Name of the worker running the tasking.
-    :param wref: Worker reference identifier.
-    :param module_name: Module containing the tasking class.
-    :param tasking_name: Name of the tasking class to instantiate.
-    :param tasking_id: Instance identifier for the tasking.
-    :param parent_id: Parent identifier for result chaining.
-    :param output_dir: Directory for task outputs.
-    :param logdir: Directory to place log files.
-    :param logfile: Log file name for the tasking.
-    :param log_level: Logging level to configure.
-    :param events_endpoint: Tuple host/port for event notifications.
-    :param notify_url: Optional notification URL.
-    :param notify_headers: Optional HTTP headers for notification.
-    :param aspects: Default tasker aspects.
-
-    :returns: Instantiated :class:`Tasking` or ``None`` if not found.
+        Factory function used by :class:`TaskerService` to instantiate a tasking class in a
+        separate process.
+        
+        :param worker: Name of the worker running the tasking.
+        :param wref: Worker reference identifier.
+        :param module_name: Module containing the tasking class.
+        :param tasking_name: Name of the tasking class to instantiate.
+        :param tasking_id: Instance identifier for the tasking.
+        :param parent_id: Parent identifier for result chaining.
+        :param output_dir: Directory for task outputs.
+        :param logdir: Directory to place log files.
+        :param logfile: Log file name for the tasking.
+        :param log_level: Logging level to configure.
+        :param events_endpoint: Tuple host/port for event notifications.
+        :param notify_url: Optional notification URL.
+        :param notify_headers: Optional HTTP headers for notification.
+        :param aspects: Default tasker aspects.
+        
+        :returns: Instantiated :class:`Tasking` or ``None`` if not found.
     """
     logger = None
     tasking = None
@@ -163,9 +163,9 @@ class TaskingIdentity:
 
     def as_tuple(self) -> Tuple[str, str]:
         """
-        Return the module and class name for this identity.
-
-        :returns: Tuple ``(module_name, tasking_name)``.
+            Return the module and class name for this identity.
+            
+            :returns: Tuple ``(module_name, tasking_name)``.
         """
         return self.module_name, self.tasking_name
 
@@ -195,20 +195,20 @@ class Tasking:
         aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS,
     ):
         """
-        Initialize a new tasking instance.
-
-        :param worker: Name of the worker executing the tasking.
-        :param wref: Worker reference value.
-        :param tasking_id: Identifier for this tasking instance.
-        :param parent_id: Parent tasking identifier.
-        :param output_dir: Directory to write output files.
-        :param logdir: Directory to write logs.
-        :param logfile: Log file path.
-        :param logger: Logger to use for output.
-        :param events_endpoint: Host/port tuple for event notifications.
-        :param notify_url: Optional URL for completion notification.
-        :param notify_headers: Optional headers for notification.
-        :param aspects: Default aspects controlling execution.
+            Initialize a new tasking instance.
+            
+            :param worker: Name of the worker executing the tasking.
+            :param wref: Worker reference value.
+            :param tasking_id: Identifier for this tasking instance.
+            :param parent_id: Parent tasking identifier.
+            :param output_dir: Directory to write output files.
+            :param logdir: Directory to write logs.
+            :param logfile: Log file path.
+            :param logger: Logger to use for output.
+            :param events_endpoint: Host/port tuple for event notifications.
+            :param notify_url: Optional URL for completion notification.
+            :param notify_headers: Optional headers for notification.
+            :param aspects: Default aspects controlling execution.
         """
 
         self._worker = worker
@@ -264,7 +264,7 @@ class Tasking:
     @classmethod
     def get_identity(cls) -> TaskingIdentity:
         """
-        Return the :class:`TaskingIdentity` for this tasking class.
+            Return the :class:`TaskingIdentity` for this tasking class.
         """
 
         module_name = cls.__module__
@@ -275,7 +275,7 @@ class Tasking:
     @property
     def full_name(self) -> str:
         """
-        Return the fully qualified class name for this tasking.
+            Return the fully qualified class name for this tasking.
         """
         this_type = type(self)
         fname = f"{this_type.__module__}@{this_type.__name__}"
@@ -284,20 +284,20 @@ class Tasking:
     @property
     def result(self) -> TaskingResult:
         """
-        Current :class:`TaskingResult` for this tasking.
+            Current :class:`TaskingResult` for this tasking.
         """
         return self._result
 
     @property
     def task_status(self) -> ProgressCode:
         """
-        Status code for the running task.
+            Status code for the running task.
         """
         return self._task_status
 
     def add_metrics_stream(self, stream_name: str, stream_type: str):
         """
-        Adds a new metrics stream
+            Adds a new metrics stream
         """
 
         stream_filename = os.path.join(self._logdir, f"{stream_name}.jsos")
@@ -309,8 +309,8 @@ class Tasking:
 
     def begin(self, kwparams: dict):
         """
-        The `begin` method is called in order to stash the `kwparams` on the tasking instance
-        and to create the result container.
+            The `begin` method is called in order to stash the `kwparams` on the tasking instance
+            and to create the result container.
         """
         self._kwparams = kwparams
 
@@ -321,7 +321,7 @@ class Tasking:
 
     def cleanup(self):
         """
-        Called to allow the tasking to cleanup any created resources.
+            Called to allow the tasking to cleanup any created resources.
         """
         return
 
@@ -329,8 +329,8 @@ class Tasking:
         self, tasking_id: str, tasking_name: str, parent_id: str, prefix: str
     ) -> TaskingResult:
         """
-        Called to create the 'TaskingResult' object and can be overloaded by Tasking(s) to create a custom derived
-        'TaskingResult' type.
+            Called to create the 'TaskingResult' object and can be overloaded by Tasking(s) to create a custom derived
+            'TaskingResult' type.
         """
         tresult = TaskingResult(
             tasking_id, tasking_name, parent_id, self._worker, prefix=prefix
@@ -339,8 +339,8 @@ class Tasking:
 
     def execute(self, progress_queue: multiprocessing.JoinableQueue, kwparams: dict):
         """
-        The `execute` method is called by the tasking service in order to trigger the execution
-        of the task.
+            The `execute` method is called by the tasking service in order to trigger the execution
+            of the task.
         """
 
         sgate = threading.Event()
@@ -362,17 +362,17 @@ class Tasking:
 
     def evaluate_results(self):
         """
-        The `evaluate_results` method is called in order to process information to
-        create a final status code for the given tasking.
-
-        :returns: Returns the 'result_code' that is written into the tasking result.
+            The `evaluate_results` method is called in order to process information to
+            create a final status code for the given tasking.
+            
+            :returns: Returns the 'result_code' that is written into the tasking result.
         """
         return
 
     def finalize(self):
         """
-        The `finalize` method is called in order to provide an opportunity for a tasking
-        to finalize execution and cleanup resources as required.
+            The `finalize` method is called in order to provide an opportunity for a tasking
+            to finalize execution and cleanup resources as required.
         """
         self.result.finalize()
 
@@ -382,13 +382,13 @@ class Tasking:
 
     def fire_perform(self):
         """
-        The `fire_peform` allows for modification of the calling of the perform method.
+            The `fire_peform` allows for modification of the calling of the perform method.
         """
         return self.perform()
 
     def format_begin_message(self, kwparams: dict):
         """
-        Formats the tasking 'BEGIN' log message.
+            Formats the tasking 'BEGIN' log message.
         """
 
         start_fmt = format_datetime_with_fractional(self._result.start)
@@ -414,7 +414,7 @@ class Tasking:
 
     def format_finalize_message(self):
         """
-        Formats the tasking 'FINALIZE' log message.
+            Formats the tasking 'FINALIZE' log message.
         """
 
         start_fmt = format_datetime_with_fractional(self._result.start)
@@ -451,7 +451,7 @@ class Tasking:
 
     def format_progress_message(self, progress: dict):
         """
-        Formats a tasking 'PROGRESS' log message.
+            Formats a tasking 'PROGRESS' log message.
         """
         prog_msg_lines = ["PROGRESS"]
 
@@ -466,15 +466,15 @@ class Tasking:
 
     def initialize_metrics(self):
         """
-        Called in order to initialize any metrics data contains needed by the tasking and also
-        to initialize the full path to the summary file.
+            Called in order to initialize any metrics data contains needed by the tasking and also
+            to initialize the full path to the summary file.
         """
         return
 
     def initialize_summary(self):
         """
-        Called in order to initialize the Summary info dictionary that is used to write summary
-        information to the summary file and also to initialize the full path to the summary file.
+            Called in order to initialize the Summary info dictionary that is used to write summary
+            information to the summary file and also to initialize the full path to the summary file.
         """
 
         this_type = type(self)
@@ -500,8 +500,8 @@ class Tasking:
 
     def mark_errored(self, err: BaseException):
         """
-        Marks the tasking as having errored.  This indicates to the TaskingServer that shutdown of the
-        tasking has begun.
+            Marks the tasking as having errored.  This indicates to the TaskingServer that shutdown of the
+            tasking has begun.
         """
         backup_detail = traceback.format_exc()
 
@@ -527,7 +527,7 @@ class Tasking:
 
     def mark_failed(self, err: BaseException):
         """
-        Record a failure for this tasking and log the error.
+            Record a failure for this tasking and log the error.
         """
 
         tbdetail = create_traceback_detail(err)
@@ -543,7 +543,7 @@ class Tasking:
 
     def mark_progress_complete(self):
         """
-        The `mark_progress_complete` method is called to generate a :class:`ProgressInfo` completed.
+            The `mark_progress_complete` method is called to generate a :class:`ProgressInfo` completed.
         """
         self._task_status = ProgressCode.Completed
         self._current_progress.when = datetime.now()
@@ -552,7 +552,7 @@ class Tasking:
 
     def mark_progress_errored(self):
         """
-        The `mark_progress_errored` method is called to generate a :class:`ProgressInfo` errored.
+            The `mark_progress_errored` method is called to generate a :class:`ProgressInfo` errored.
         """
         self._task_status = ProgressCode.Errored
         self._current_progress.when = datetime.now()
@@ -561,7 +561,7 @@ class Tasking:
 
     def mark_progress_failed(self):
         """
-        The `mark_progress_failed` method is called to generate a :class:`ProgressInfo` failed.
+            The `mark_progress_failed` method is called to generate a :class:`ProgressInfo` failed.
         """
         self._task_status = ProgressCode.Failed
         self._current_progress.when = datetime.now()
@@ -570,7 +570,7 @@ class Tasking:
 
     def mark_progress_paused(self):
         """
-        The `mark_progress_paused` method is called to generate a :class:`ProgressInfo` paused.
+            The `mark_progress_paused` method is called to generate a :class:`ProgressInfo` paused.
         """
         self._task_status = ProgressCode.Paused
         self._current_progress.when = datetime.now()
@@ -579,7 +579,7 @@ class Tasking:
 
     def mark_progress_running(self):
         """
-        The `mark_progress_running` method is called to generate a :class:`ProgressInfo` running.
+            The `mark_progress_running` method is called to generate a :class:`ProgressInfo` running.
         """
         self._task_status = ProgressCode.Running
         self._current_progress.when = datetime.now()
@@ -588,7 +588,7 @@ class Tasking:
 
     def mark_progress_start(self):
         """
-        The `mark_progress_start` method that is called to generate a :class:`ProgressInfo` running.
+            The `mark_progress_start` method that is called to generate a :class:`ProgressInfo` running.
         """
         self._task_status = ProgressCode.Running
         self._current_progress = ProgressInfo(
@@ -607,10 +607,10 @@ class Tasking:
 
     def notify_progress(self, progress: ProgressInfo):
         """
-        The `notify_progress` method is called in order to send a progress notification to a
-        progress notification concentrator.
-
-        :param progress: The progress information to transmit.
+            The `notify_progress` method is called in order to send a progress notification to a
+            progress notification concentrator.
+            
+            :param progress: The progress information to transmit.
         """
 
         if self._notify_url is not None:
@@ -633,7 +633,7 @@ class Tasking:
 
     def pause(self):
         """
-        Sends a Pause command to the remote tasking
+            Sends a Pause command to the remote tasking
         """
 
         self._task_status = ProgressCode.Paused
@@ -643,20 +643,20 @@ class Tasking:
 
     def perform(self) -> bool:
         """
-        The `perform` method is overloaded by derived tasking types in order to implement
-        the performance of a unit of work.
-
-        :returns: Returns a bool indicating if 'perform' should be called again in order
-                  to complete more work.
+            The `perform` method is overloaded by derived tasking types in order to implement
+            the performance of a unit of work.
+            
+            :returns: Returns a bool indicating if 'perform' should be called again in order
+            to complete more work.
         """
         errmsg = "Tasking.perform method must be overloaded in derived types."
         raise AbstractMethodError(errmsg)
 
     def post_event(self, event: TaskingEvent):
         """
-        Post an event to the configured event endpoint.
-
-        :param event: Event object describing the occurrence.
+            Post an event to the configured event endpoint.
+            
+            :param event: Event object describing the occurrence.
         """
 
         if self._events_endpoint is not None:
@@ -675,7 +675,7 @@ class Tasking:
 
     def resume(self):
         """
-        Resumes the tasking loop
+            Resumes the tasking loop
         """
 
         self._task_status = ProgressCode.Running
@@ -685,7 +685,7 @@ class Tasking:
 
     def shutdown(self):
         """
-        Sends a Shutdown command to the remote tasking
+            Sends a Shutdown command to the remote tasking
         """
 
         self._running = False
@@ -695,8 +695,8 @@ class Tasking:
 
     def submit_progress(self):
         """
-        Submits that the tasking as having made progress on some activity so the TaskingServer 'hang' detection
-        does not trigger an inactivity timeout shutdown of the tasking.
+            Submits that the tasking as having made progress on some activity so the TaskingServer 'hang' detection
+            does not trigger an inactivity timeout shutdown of the tasking.
         """
 
         self._current_progress.when = datetime.now()
@@ -716,7 +716,7 @@ class Tasking:
 
     def write_summary(self):
         """
-        Writes an update of the tasking summary to the summary file.
+            Writes an update of the tasking summary to the summary file.
         """
 
         with open(self._summary_file, "w+") as sf:
@@ -726,7 +726,7 @@ class Tasking:
 
     def write_metrics(self, stream_name: str, metrics: dict):
         """
-        Called in order to write a metrics payload to the taskings associated metrics stream file.
+            Called in order to write a metrics payload to the taskings associated metrics stream file.
         """
 
         if stream_name in self._metrics_streams:
@@ -750,11 +750,11 @@ class Tasking:
         kwparams: dict,
     ):
         """
-        Entry point for the thread that performs the tasking work.
-
-        :param sgate: Event used to signal when the thread has initialized.
-        :param progress_queue: Queue used to report progress back to the service.
-        :param kwparams: Keyword parameters provided for the tasking.
+            Entry point for the thread that performs the tasking work.
+            
+            :param sgate: Event used to signal when the thread has initialized.
+            :param progress_queue: Queue used to report progress back to the service.
+            :param kwparams: Keyword parameters provided for the tasking.
         """
 
         # Update our local in process copy of these queues, because we have forked

@@ -62,10 +62,10 @@ class EventNotificationHandler(BaseHTTPRequestHandler):
 
     def __init__(self, service_class, session, *args, **kwargs):
         """
-        Initialize the notification handler used for event callbacks.
-
-        :param service_class: Service class controlling this session.
-        :param session: Owning :class:`TaskerSession` instance.
+            Initialize the notification handler used for event callbacks.
+            
+            :param service_class: Service class controlling this session.
+            :param session: Owning :class:`TaskerSession` instance.
         """
 
         self._service_class = service_class
@@ -77,10 +77,10 @@ class EventNotificationHandler(BaseHTTPRequestHandler):
     @property
     def tasker_session(self) -> "TaskerSession":
         """Return the owning :class:`TaskerSession` instance."""
-
-        return self._tasker_session_ref()
-
-    def do_POST(self):
+            
+            return self._tasker_session_ref()
+            
+            def do_POST(self):
         """Handle HTTP POST callbacks containing progress events."""
 
         if "Content-Type" in self.headers:
@@ -122,16 +122,16 @@ class TaskerSession:
         aspects: TaskerAspects = DEFAULT_TASKER_ASPECTS,
     ):
         """
-        Creates a session for managing taskings on a tasker service.
-
-        :param service_class: The service class controlling this session.
-        :param worker: Worker name for logging and identification.
-        :param wref: Worker reference value.
-        :param output_directory: Directory for output files.
-        :param log_level: Logging level for taskings.
-        :param notify_url: Optional notification callback URL.
-        :param notify_headers: Optional HTTP headers for notifications.
-        :param aspects: Default aspects for task execution.
+            Creates a session for managing taskings on a tasker service.
+            
+            :param service_class: The service class controlling this session.
+            :param worker: Worker name for logging and identification.
+            :param wref: Worker reference value.
+            :param output_directory: Directory for output files.
+            :param log_level: Logging level for taskings.
+            :param notify_url: Optional notification callback URL.
+            :param notify_headers: Optional HTTP headers for notifications.
+            :param aspects: Default aspects for task execution.
         """
 
         self._service_class = service_class
@@ -170,58 +170,58 @@ class TaskerSession:
     @property
     def aspects(self):
         """Default aspects used for task execution."""
-        return self._aspects
-
-    @property
-    def last_activity(self) -> datetime:
+            return self._aspects
+            
+            @property
+            def last_activity(self) -> datetime:
         """Timestamp of the last session activity."""
         return self._last_activity
 
     @property
     def output_directory(self):
         """Directory where task outputs are written."""
-        return self._output_directory
-
-    @property
-    def progresses(self) -> OrderedDict:
+            return self._output_directory
+            
+            @property
+            def progresses(self) -> OrderedDict:
         """Dictionary mapping tasking ids to progress info."""
         return self._progress_table
 
     @property
     def results(self) -> OrderedDict:
         """Dictionary of task results."""
-        return self._results_table
-
-    @property
-    def session_id(self) -> str:
+            return self._results_table
+            
+            @property
+            def session_id(self) -> str:
         """Identifier for this session."""
         return self._session_id
 
     @property
     def start(self) -> datetime:
         """Timestamp when the session was created."""
-        return self._start
-
-    @property
-    def statuses(self) -> OrderedDict:
+            return self._start
+            
+            @property
+            def statuses(self) -> OrderedDict:
         """Dictionary mapping tasking ids to status codes."""
         return self._status_table
 
     @property
     def taskings(self) -> OrderedDict:
         """Dictionary of active tasking objects."""
-        return self._taskings_table
-
-    @property
-    def log_level(self) -> int:
+            return self._taskings_table
+            
+            @property
+            def log_level(self) -> int:
         """Logging level used for task output."""
         return self.log_level
 
     def dispose_tasking(self, tasking_id: str):
         """
-        Dispose of a tasking and release its resources.
-
-        :param tasking_id: Identifier of the tasking to dispose.
+            Dispose of a tasking and release its resources.
+            
+            :param tasking_id: Identifier of the tasking to dispose.
         """
 
         self._session_lock.acquire()
@@ -244,9 +244,9 @@ class TaskerSession:
 
     def cancel_tasking(self, tasking_id: str):
         """
-        Cancel a running tasking if it is in a cancellable state.
-
-        :param tasking_id: Identifier of the tasking to cancel.
+            Cancel a running tasking if it is in a cancellable state.
+            
+            :param tasking_id: Identifier of the tasking to cancel.
         """
 
         self._session_lock.acquire()
@@ -280,11 +280,11 @@ class TaskerSession:
 
     def get_tasking(self, tasking_id: str) -> Tasking:
         """
-        Retrieve the tasking instance for a given tasking identifier.
-
-        :param tasking_id: Identifier of the tasking to retrieve.
-
-        :returns: The :class:`Tasking` object for the id.
+            Retrieve the tasking instance for a given tasking identifier.
+            
+            :param tasking_id: Identifier of the tasking to retrieve.
+            
+            :returns: The :class:`Tasking` object for the id.
         """
 
         tasking = None
@@ -314,15 +314,15 @@ class TaskerSession:
         **kwargs,
     ) -> TaskingRef:
         """
-        Instantiate and execute a tasking in a separate process.
-
-        :param module_name: Module containing the tasking class.
-        :param tasking_name: Name of the tasking class to instantiate.
-        :param parent_id: Optional parent tasking identifier.
-        :param aspects: Tasker aspects controlling execution parameters.
-        :param kwargs: Additional keyword arguments for the tasking.
-
-        :returns: A :class:`TaskingRef` referencing the running task.
+            Instantiate and execute a tasking in a separate process.
+            
+            :param module_name: Module containing the tasking class.
+            :param tasking_name: Name of the tasking class to instantiate.
+            :param parent_id: Optional parent tasking identifier.
+            :param aspects: Tasker aspects controlling execution parameters.
+            :param kwargs: Additional keyword arguments for the tasking.
+            
+            :returns: A :class:`TaskingRef` referencing the running task.
         """
 
         if aspects is None:
@@ -441,11 +441,11 @@ class TaskerSession:
 
     def get_tasking_events(self, tasking_id: str) -> str:
         """
-        Retrieve all events posted for a tasking.
-
-        :param tasking_id: Identifier of the tasking to query.
-
-        :returns: Pickled list of event dictionaries.
+            Retrieve all events posted for a tasking.
+            
+            :param tasking_id: Identifier of the tasking to query.
+            
+            :returns: Pickled list of event dictionaries.
         """
 
         events = []
@@ -463,11 +463,11 @@ class TaskerSession:
 
     def get_tasking_progress(self, tasking_id: str) -> str:
         """
-        Obtain the progress information for a running tasking.
-
-        :param tasking_id: Identifier of the tasking to query.
-
-        :returns: Pickled :class:`ProgressInfo` or ``None``.
+            Obtain the progress information for a running tasking.
+            
+            :param tasking_id: Identifier of the tasking to query.
+            
+            :returns: Pickled :class:`ProgressInfo` or ``None``.
         """
 
         progress = None
@@ -487,11 +487,11 @@ class TaskerSession:
 
     def get_tasking_result(self, tasking_id: str) -> str:
         """
-        Retrieve the final :class:`TaskingResult` for a tasking.
-
-        :param tasking_id: Identifier of the tasking whose result is requested.
-
-        :returns: Pickled :class:`TaskingResult` data.
+            Retrieve the final :class:`TaskingResult` for a tasking.
+            
+            :param tasking_id: Identifier of the tasking whose result is requested.
+            
+            :returns: Pickled :class:`TaskingResult` data.
         """
 
         self._session_lock.acquire()
@@ -521,11 +521,11 @@ class TaskerSession:
 
     def get_tasking_status(self, tasking_id: str) -> str:
         """
-        Return the current status code for a running tasking.
-
-        :param tasking_id: Identifier of the tasking.
-
-        :returns: Status string from the progress table.
+            Return the current status code for a running tasking.
+            
+            :param tasking_id: Identifier of the tasking.
+            
+            :returns: Status string from the progress table.
         """
 
         self._session_lock.acquire()
@@ -539,11 +539,11 @@ class TaskerSession:
 
     def has_completed_and_result_ready(self, tasking_id) -> bool:
         """
-        Check if a tasking has completed and its result is available.
-
-        :param tasking_id: Identifier of the tasking.
-
-        :returns: ``True`` if the tasking finished and a result exists.
+            Check if a tasking has completed and its result is available.
+            
+            :param tasking_id: Identifier of the tasking.
+            
+            :returns: ``True`` if the tasking finished and a result exists.
         """
 
         complete_and_ready = False
@@ -568,9 +568,9 @@ class TaskerSession:
 
     def post_event(self, event: Dict[str, Any]):
         """
-        Record an event generated by a running tasking.
-
-        :param event: Dictionary describing the event.
+            Record an event generated by a running tasking.
+            
+            :param event: Dictionary describing the event.
         """
 
         self._session_lock.acquire()
@@ -591,74 +591,74 @@ class TaskerSession:
 
     def shutdown(self):
         """Shutdown running taskings and stop the event server."""
-
-        # Go through all of the tasks and if they have not completed, cancel them
-        tasking_id: str
-        tasking: Tasking
-        tstatus: ProgressCode
-
-        tasking_table = None
-        status_table = None
-        events_server = None
-
-        self._session_lock.acquire()
-        try:
+            
+            # Go through all of the tasks and if they have not completed, cancel them
+            tasking_id: str
+            tasking: Tasking
+            tstatus: ProgressCode
+            
+            tasking_table = None
+            status_table = None
+            events_server = None
+            
+            self._session_lock.acquire()
+            try:
             tasking_table = self._taskings_table
             status_table = self._status_table
             events_server = self._events_server
-        finally:
+            finally:
             self._session_lock.release()
-
-        try:
+            
+            try:
             for tasking_id, tasking in tasking_table.items():
-                tstatus = status_table[tasking_id]
-
-                if tstatus in [
-                    ProgressCode.NotStarted,
-                    ProgressCode.Paused,
-                    ProgressCode.Running,
-                ]:
-                    tasking.shutdown()
-        finally:
+            tstatus = status_table[tasking_id]
+            
+            if tstatus in [
+            ProgressCode.NotStarted,
+            ProgressCode.Paused,
+            ProgressCode.Running,
+            ]:
+            tasking.shutdown()
+            finally:
             events_server.shutdown()
-
-        return
-
-    def start_event_server(self) -> Tuple[str, int]:
+            
+            return
+            
+            def start_event_server(self) -> Tuple[str, int]:
         """
         Start the HTTP server used to receive progress events from the tasking
         processes.
 
         :returns: Tuple of host and port where the server is listening.
         """
-
-        sgate = threading.Event()
-        sgate.clear()
-
-        self._event_thread = threading.Thread(
+            
+            sgate = threading.Event()
+            sgate.clear()
+            
+            self._event_thread = threading.Thread(
             target=self._event_server_thread,
             name="tasker-session-event-svr",
             args=(sgate,),
             daemon=True,
-        )
-        self._event_thread.start()
-        sgate.wait()
-
-        return
-
-    def _dispatch_task(
-        self,
-        sgate: threading.Event,
-        tasking_manager: TaskingManager,
-        tasking: Tasking,
-        tasking_name: str,
-        tasking_id: str,
-        prefix: str,
-        parent_id: str,
-        log_file: str,
-        kwparams: dict,
-        aspects: TaskerAspects,
-    ):
+            )
+            self._event_thread.start()
+            sgate.wait()
+            
+            return
+            
+            def _dispatch_task(
+            self,
+            sgate: threading.Event,
+            tasking_manager: TaskingManager,
+            tasking: Tasking,
+            tasking_name: str,
+            tasking_id: str,
+            prefix: str,
+            parent_id: str,
+            log_file: str,
+            kwparams: dict,
+            aspects: TaskerAspects,
+            ):
         """
         Thread entry point used to execute a tasking in a remote process.
 
@@ -673,117 +673,117 @@ class TaskerSession:
         :param kwparams: Keyword parameters for the task execution.
         :param aspects: Task execution aspects.
         """
-
-        # Notify the thread starting us that we have started.
-        sgate.set()
-
-        self._session_lock.acquire()
-        try:
+            
+            # Notify the thread starting us that we have started.
+            sgate.set()
+            
+            self._session_lock.acquire()
+            try:
             self._status_table[tasking_id] = str(ProgressCode.NotStarted.value)
-        finally:
+            finally:
             self._session_lock.release()
-        del sgate
-
-        self._service_class.log_info(
+            del sgate
+            
+            self._service_class.log_info(
             f"Dispatching task_type={tasking_name} id={tasking_id}"
-        )
-
-        progress = None
-
-        try:
+            )
+            
+            progress = None
+            
+            try:
             inactivity_timeout = None
             if aspects is not None:
-                inactivity_timeout = aspects.inactivity_timeout
-
+            inactivity_timeout = aspects.inactivity_timeout
+            
             progress_queue = tasking_manager.Queue()
-
+            
             tasking.execute(progress_queue, kwparams)
-
+            
             while True:
-
-                progress: ProgressInfo = progress_queue.get(
-                    block=True, timeout=inactivity_timeout
-                )
-
-                self._session_lock.acquire()
-                try:
-                    self._progress_table[tasking_id] = progress
-
-                    if isinstance(progress, TaskingResult):
-                        result: TaskingResult = progress
-
-                        if len(result.errors) > 0:
-                            self._status_table[tasking_id] = str(
-                                ProgressCode.Errored.value
-                            )
-                        elif len(result.failures) > 0:
-                            self._status_table[tasking_id] = str(
-                                ProgressCode.Failed.value
-                            )
-                        else:
-                            self._status_table[tasking_id] = str(
-                                ProgressCode.Completed.value
-                            )
-
-                        self._results_table[tasking_id] = result
-                        break
-
-                    prog_status = str(progress.status.value)
-                    self._status_table[tasking_id] = prog_status
-
-                finally:
-                    self._session_lock.release()
-
-        except BaseException as err:
+            
+            progress: ProgressInfo = progress_queue.get(
+            block=True, timeout=inactivity_timeout
+            )
+            
+            self._session_lock.acquire()
+            try:
+            self._progress_table[tasking_id] = progress
+            
+            if isinstance(progress, TaskingResult):
+            result: TaskingResult = progress
+            
+            if len(result.errors) > 0:
+            self._status_table[tasking_id] = str(
+            ProgressCode.Errored.value
+            )
+            elif len(result.failures) > 0:
+            self._status_table[tasking_id] = str(
+            ProgressCode.Failed.value
+            )
+            else:
+            self._status_table[tasking_id] = str(
+            ProgressCode.Completed.value
+            )
+            
+            self._results_table[tasking_id] = result
+            break
+            
+            prog_status = str(progress.status.value)
+            self._status_table[tasking_id] = prog_status
+            
+            finally:
+            self._session_lock.release()
+            
+            except BaseException as err:
             tbdetail = create_traceback_detail(err)
-
+            
             errmsg_lines = format_traceback_detail(tbdetail)
             errmsg = os.linesep.join(errmsg_lines)
-
+            
             self._service_class.log_error(errmsg)
             with open(log_file, "+a") as tlogf:
-                tlogf.write(errmsg)
-
+            tlogf.write(errmsg)
+            
             tresult = TaskingResult(
-                tasking_id, tasking_name, parent_id, ResultCode.ERRORED, prefix=prefix
+            tasking_id, tasking_name, parent_id, ResultCode.ERRORED, prefix=prefix
             )
             self._status_table[tasking_id] = str(ProgressCode.Errored.value)
             tresult.add_error(tbdetail)
             self._results_table[tasking_id] = tresult
-
+            
             raise
-
-        finally:
+            
+            finally:
             tasking_manager.shutdown()
-
-        return
-
-    def _event_server_thread(self, sgate: threading.Event):
+            
+            return
+            
+            def _event_server_thread(self, sgate: threading.Event):
         """
         Thread responsible for hosting the HTTP server used to receive tasking
         progress events.
 
         :param sgate: Synchronization gate used to signal when the server is ready.
         """
-
-        handler_type = partial(EventNotificationHandler, self._service_class, self)
-
-        localhost = "127.0.0.1"
-
-        server = HTTPServer((localhost, 0), handler_type)
-        server_port = server.server_port
-
-        self._session_lock.acquire()
-        try:
+            
+            handler_type = partial(EventNotificationHandler, self._service_class, self)
+            
+            localhost = "127.0.0.1"
+            
+            server = HTTPServer((localhost, 0), handler_type)
+            server_port = server.server_port
+            
+            self._session_lock.acquire()
+            try:
             self._events_server = server
             self._events_endpoint = (localhost, server_port)
-        finally:
+            finally:
             self._session_lock.release()
-
-        # After we setup the HTTP server and capture the server endpoint information,
-        # set the startgate to allow the thread starting the server to proceed.
-        sgate.set()
-
-        server.serve_forever()
-
-        return
+            
+            # After we setup the HTTP server and capture the server endpoint information,
+            # set the startgate to allow the thread starting the server to proceed.
+            sgate.set()
+            
+            server.serve_forever()
+            
+            return
