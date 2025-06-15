@@ -72,16 +72,16 @@ class TaskingGroupScope:
         sequencer: Optional["TestSequencer"] = None,
     ):
         """
-        Creates a :class:`TaskingGroupScope` used to manage a set of tasks.
-
-        :param name: The name of the tasking group.
-        :param adapter: Adapter providing access to tasker nodes.
-        :param controller: Controller used to dispatch taskings.
-        :param recorder: Result recorder for this group.
-        :param tgroup: The :class:`TaskingGroup` result container.
-        :param tnodes: Nodes the tasking will execute on.
-        :param aspects: Default aspects for task execution.
-        :param sequencer: Optional test sequencer instance.
+            Creates a :class:`TaskingGroupScope` used to manage a set of tasks.
+            
+            :param name: The name of the tasking group.
+            :param adapter: Adapter providing access to tasker nodes.
+            :param controller: Controller used to dispatch taskings.
+            :param recorder: Result recorder for this group.
+            :param tgroup: The :class:`TaskingGroup` result container.
+            :param tnodes: Nodes the tasking will execute on.
+            :param aspects: Default aspects for task execution.
+            :param sequencer: Optional test sequencer instance.
         """
 
         self._name = name
@@ -105,92 +105,92 @@ class TaskingGroupScope:
     @property
     def adapter(self) -> "TaskingAdapter":
         """Returns the adapter that owns this scope."""
-        return self._adapter_ref()
-
-    @property
-    def name(self) -> str:
+            return self._adapter_ref()
+            
+            @property
+            def name(self) -> str:
         """Name of the tasking group."""
         return self._name
 
     @property
     def promises(self) -> List[TaskingResultPromise]:
         """List of promises associated with the group."""
-        plist = [p for p in self._promises]
-        return plist
-
-    @property
-    def sequencer(self) -> "TestSequencer":
+            plist = [p for p in self._promises]
+            return plist
+            
+            @property
+            def sequencer(self) -> "TestSequencer":
         """Return the associated test sequencer."""
         return self._sequencer
 
     @property
     def nodes(self) -> List[TaskerNode]:
         """List of tasker nodes used by the group."""
-        return self._tnodes
-
-    def __enter__(self) -> "TaskingGroupScope":
+            return self._tnodes
+            
+            def __enter__(self) -> "TaskingGroupScope":
         """Initializes and returns this context manager."""
         self.initialize()
         return self
 
     def __exit__(self, ex_type, ex_inst, ex_tb) -> bool:
         """Context manager exit handler."""
-
-        if ex_inst is not None:
+            
+            if ex_inst is not None:
             err_msg = format_exception(ex_inst)
             logger.error(err_msg)
-
+            
             self.cancel_tasks()
-
-        # We don't want to handle exceptions here,  If any AssertionError types come through, they
-        # are likely due to a consolidated check, and they should be allowed to propagate.
-
-        if self._progress_reported:
+            
+            # We don't want to handle exceptions here,  If any AssertionError types come through, they
+            # are likely due to a consolidated check, and they should be allowed to propagate.
+            
+            if self._progress_reported:
             self._clear_summary_progress()
-
-        self.finalize()
-        return False
-
-    def initialize(self):
+            
+            self.finalize()
+            return False
+            
+            def initialize(self):
         """Records the initial task group state."""
         self._recorder.record(self._tgroup)
         return
 
     def cancel_tasks(self):
         """Cancel all running taskings in the group."""
-
-        errors = []
-
-        for promise in self._promises:
+            
+            errors = []
+            
+            for promise in self._promises:
             try:
-                promise.cancel()
+            promise.cancel()
             except Exception as xcpt:
-                errors.append((promise.tasking_id, xcpt))
-
-        if len(errors) > 0:
+            errors.append((promise.tasking_id, xcpt))
+            
+            if len(errors) > 0:
             errmsg_lines = [
-                "Errors encountered while attempting to cancel tasks.",
-                "ERRORS:",
+            "Errors encountered while attempting to cancel tasks.",
+            "ERRORS:",
             ]
-
+            
             xcpt: Exception
             for tasking_id, xcpt in errors:
-                message = str(xcpt)
-                errmsg_lines.append(f"    {tasking_id}: {message}")
-
+            message = str(xcpt)
+            errmsg_lines.append(f"    {tasking_id}: {message}")
+            
             err_msg = os.linesep.join(errmsg_lines)
             raise RuntimeError(err_msg)
-
-        return
-
-    def execute_tasking(
-        self,
-        *,
-        tasking: Union[TaskingIdentity, Type[Tasking]],
-        ncount: int = 1,
-        aspects: Optional[TaskerAspects] = None,
-        **kwargs,
-    ) -> List[TaskingResultPromise]:
+            
+            return
+            
+            def execute_tasking(
+            self,
+            *,
+            tasking: Union[TaskingIdentity, Type[Tasking]],
+            ncount: int = 1,
+            aspects: Optional[TaskerAspects] = None,
+            **kwargs,
+            ) -> List[TaskingResultPromise]:
         """Execute a tasking across multiple nodes."""
 
         if aspects is None:
@@ -225,30 +225,30 @@ class TaskingGroupScope:
         **kwargs,
     ) -> List[TaskingResultPromise]:
         """Execute a tasking on a single node."""
-
-        if aspects is None:
+            
+            if aspects is None:
             aspects = self._aspects
-
-        if self._state != TaskingGroupState.NotStarted:
+            
+            if self._state != TaskingGroupState.NotStarted:
             errmsg = f"The tasking group '{self._name}' has already been started."
             raise SemanticError(errmsg)
-
-        adapter = self.adapter
-        parent_id = self._tgroup.inst_id
-
-        promise = self._controller.execute_tasking_on_node(
+            
+            adapter = self.adapter
+            parent_id = self._tgroup.inst_id
+            
+            promise = self._controller.execute_tasking_on_node(
             node,
             tasking=tasking,
             ncount=ncount,
             parent_id=parent_id,
             aspects=aspects,
             **kwargs,
-        )
-        self._promises.append(promise)
-
-        return promise
-
-    def finalize(self, sync: bool = True):
+            )
+            self._promises.append(promise)
+            
+            return promise
+            
+            def finalize(self, sync: bool = True):
         """Finalize the task group and optionally synchronize."""
 
         adapter = self.adapter
@@ -267,7 +267,7 @@ class TaskingGroupScope:
         self, activity_name: str, target: str = "NA", detail: Optional[dict] = None
     ):
         """
-        A convenience method for marking activity in the current test scope.
+            A convenience method for marking activity in the current test scope.
         """
         if self._sequencer is not None:
             self._sequencer.mark_activity(activity_name, target=target, detail=detail)
@@ -275,17 +275,17 @@ class TaskingGroupScope:
 
     def synchronize(self):
         """Synchronize results for all promises."""
-
-        adapter = self.adapter
-
-        if len(self._promises) > 0:
+            
+            adapter = self.adapter
+            
+            if len(self._promises) > 0:
             self.wait_for_tasking_results()
-
-        return
-
-    def wait_for_all_to_event(
-        self, event_name: str, aspects: Optional[TaskerAspects] = None
-    ) -> List[TaskingEvent]:
+            
+            return
+            
+            def wait_for_all_to_event(
+            self, event_name: str, aspects: Optional[TaskerAspects] = None
+            ) -> List[TaskingEvent]:
         """Wait for all taskings to fire a specific event."""
 
         if aspects is None:
@@ -301,19 +301,19 @@ class TaskingGroupScope:
         self, event_name: str, aspects: Optional[TaskerAspects] = None
     ) -> List[TaskingEvent]:
         """Wait for any tasking to fire a specific event."""
-
-        if aspects is None:
+            
+            if aspects is None:
             aspects = self._aspects
-
-        events_found = self._controller.wait_for_any_to_event(
+            
+            events_found = self._controller.wait_for_any_to_event(
             event_name, self._promises
-        )
-
-        return events_found
-
-    def wait_for_tasking_results(
-        self, aspects: Optional[TaskerAspects] = None
-    ) -> List[TaskingResult]:
+            )
+            
+            return events_found
+            
+            def wait_for_tasking_results(
+            self, aspects: Optional[TaskerAspects] = None
+            ) -> List[TaskingResult]:
         """Wait for completion and return all tasking results."""
 
         if aspects is None:
@@ -329,32 +329,32 @@ class TaskingGroupScope:
 
     def _clear_summary_progress(self):
         """Clear summary progress information."""
-
-        task_ids = []
-
-        # Collect the progress
-        for p in self._promises:
+            
+            task_ids = []
+            
+            # Collect the progress
+            for p in self._promises:
             task_ids.append(p.tasking_id)
-
-        self._recorder.clear_task_progress(task_ids)
-        self._recorder.update_summary()
-
-        return
-
-    def _notify_summary_progress(self, progress_list: List[ProgressInfo]):
+            
+            self._recorder.clear_task_progress(task_ids)
+            self._recorder.update_summary()
+            
+            return
+            
+            def _notify_summary_progress(self, progress_list: List[ProgressInfo]):
         """
         Update summary progress information using the result recorder.
 
         :param progress_list: List of :class:`ProgressInfo` objects to post.
         """
-        self._progress_reported = True
-
-        self._recorder.post_task_progress(progress_list)
-        self._recorder.update_summary()
-
-        return
-
-    def _update_group(self):
+            self._progress_reported = True
+            
+            self._recorder.post_task_progress(progress_list)
+            self._recorder.update_summary()
+            
+            return
+            
+            def _update_group(self):
         """Record results for the group once."""
 
         if not self._results_written:

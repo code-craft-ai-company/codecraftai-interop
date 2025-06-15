@@ -38,11 +38,11 @@ class TcpSerialBase(SerialAgentBase):
         self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
     ) -> None:
         """
-        Constructs a :class:`TcpSerialBase` instance.
-
-        :param host: Hostname or IP address of the telnet server.
-        :param port: Telnet port of the remote server.
-        :param aspects: Default command aspects used when executing commands.
+            Constructs a :class:`TcpSerialBase` instance.
+            
+            :param host: Hostname or IP address of the telnet server.
+            :param port: Telnet port of the remote server.
+            :param aspects: Default command aspects used when executing commands.
         """
         self._host = host
         self._port = port
@@ -51,9 +51,9 @@ class TcpSerialBase(SerialAgentBase):
 
     def _create_connection(self) -> telnetlib.Telnet:
         """
-        Creates a telnet connection and configures the shell prompt.
-
-        :returns: A connected :class:`telnetlib.Telnet` object.
+            Creates a telnet connection and configures the shell prompt.
+            
+            :returns: A connected :class:`telnetlib.Telnet` object.
         """
 
         tnconn = telnetlib.Telnet(host=self._host, port=self._port)
@@ -75,7 +75,7 @@ class TcpSerialBase(SerialAgentBase):
 
     def _restore_prompt(self, tnconn: telnetlib.Telnet) -> None:
         """
-        Restores the shell prompt after a telnet session.
+            Restores the shell prompt after a telnet session.
         """
         tnconn.write(b"echo $PS1\n")
         ps1_out = tnconn.read_until(self.NORMAL_PROMPT)
@@ -95,14 +95,14 @@ class TcpSerialSession(TcpSerialBase):
         aspects: AspectsCmd = DEFAULT_CMD_ASPECTS,
     ):
         """
-        Initialize a TCP serial session.
-
-        :param host: Hostname of the serial concentrator.
-        :param port: TCP port number.
-        :param session_basis: Optional existing session to base new session on.
-        :param aspects: Default command aspects for operations.
-
-        :returns: None
+            Initialize a TCP serial session.
+            
+            :param host: Hostname of the serial concentrator.
+            :param port: TCP port number.
+            :param session_basis: Optional existing session to base new session on.
+            :param aspects: Default command aspects for operations.
+            
+            :returns: None
         """
 
         super().__init__(host, port=port, aspects=aspects)
@@ -112,7 +112,7 @@ class TcpSerialSession(TcpSerialBase):
 
     def __enter__(self):
         """
-        Method that implements the __enter__ symantics used for 'with' statements.
+            Method that implements the __enter__ symantics used for 'with' statements.
         """
         self._telnet_conn = self._create_connection()
 
@@ -120,9 +120,9 @@ class TcpSerialSession(TcpSerialBase):
 
     def __exit__(self, ex_type: type, ex_val: Exception, ex_tb: TracebackType) -> bool:
         """
-        Method that implements the __exit__ symantics used for 'with' statements.
-
-        :returns: Returns false indicating that exceptions are not handled.
+            Method that implements the __exit__ symantics used for 'with' statements.
+            
+            :returns: Returns false indicating that exceptions are not handled.
         """
         self.close()
         handled = False
@@ -130,7 +130,7 @@ class TcpSerialSession(TcpSerialBase):
 
     def close(self):
         """
-        Closes the SSH session and the assocatied SSH connection.
+            Closes the SSH session and the assocatied SSH connection.
         """
         # Only close the client if this session owns the client
         if self._session_basis is None:
@@ -144,12 +144,12 @@ class TcpSerialSession(TcpSerialBase):
         **kwargs
     ) -> ISystemContext:  # pylint: disable=arguments-differ
         """
-        Provies a mechanism to create a :class:`TcpSerialSession` object with derived settings.  This method allows various
-        parameters for the session to be overridden.  This allows for the performing of a series of TCP Serial operations under
-        a particular set of shared settings or command behaviors.
-
-        :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
-        :param aspects: The default run aspects to use for the operations performed by the session.
+            Provies a mechanism to create a :class:`TcpSerialSession` object with derived settings.  This method allows various
+            parameters for the session to be overridden.  This allows for the performing of a series of TCP Serial operations under
+            a particular set of shared settings or command behaviors.
+            
+            :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
+            :param aspects: The default run aspects to use for the operations performed by the session.
         """
 
         session_aspects = None
@@ -173,9 +173,9 @@ class TcpSerialSession(TcpSerialBase):
 
     def _create_connection(self) -> telnetlib.Telnet:
         """
-        Create an Telnet connection if one is not already open and available.
-
-        :returns: An :class:`telnetlib.Telnet` object connected to the remote Tcp Serial concentrator.
+            Create an Telnet connection if one is not already open and available.
+            
+            :returns: An :class:`telnetlib.Telnet` object connected to the remote Tcp Serial concentrator.
         """
         tnconn = None
 
@@ -192,23 +192,23 @@ class TcpSerialAgent(TcpSerialBase):
         The :class:`TcpSerialAgent` provides access to serial port hosted on a TCP/IP network.  The
         remote endpoint might be a host and port for a serial port hosted on a serial concentrator.
         It could be the host and port of a serial port hosted on a linux box via USB and ser2net.
-
+        
         .. note::
-            An example ser2net configuration might look like the configuration below.
-
-            BANNER:banner:\r\nser2net port \p device \d [\s] (Debian GNU/Linux)\r\n\r\n
-            3333:telnet:0:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT banner
+        An example ser2net configuration might look like the configuration below.
+        
+        BANNER:banner:\r\nser2net port \p device \d [\s] (Debian GNU/Linux)\r\n\r\n
+        3333:telnet:0:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT banner
     """
 
     def __init__(
         self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
     ) -> None:
         """
-        Creates a :class:`TcpSerialAgent` instance.
-
-        :param host: Hostname or IP address of the TCP serial concentrator.
-        :param port: Port on the concentrator to connect to.
-        :param aspects: Default command aspects for command execution.
+            Creates a :class:`TcpSerialAgent` instance.
+            
+            :param host: Hostname or IP address of the TCP serial concentrator.
+            :param port: Port on the concentrator to connect to.
+            :param aspects: Default command aspects for command execution.
         """
         super().__init__(host, port=port, aspects=aspects)
         return
@@ -219,12 +219,12 @@ class TcpSerialAgent(TcpSerialBase):
         aspects: Optional[AspectsCmd] = None,
     ) -> ISystemContext:  # pylint: disable=arguments-differ
         """
-        Provies a mechanism to create a :class:`TcpSerialSession` object with derived settings.  This method allows various
-        parameters for the session to be overridden.  This allows for the performing of a series of TCP Serial operations under
-        a particular set of shared settings or command behaviors.
-
-        :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
-        :param aspects: The default run aspects to use for the operations performed by the session.
+            Provies a mechanism to create a :class:`TcpSerialSession` object with derived settings.  This method allows various
+            parameters for the session to be overridden.  This allows for the performing of a series of TCP Serial operations under
+            a particular set of shared settings or command behaviors.
+            
+            :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
+            :param aspects: The default run aspects to use for the operations performed by the session.
         """
 
         session_aspects = None
@@ -250,12 +250,12 @@ class TcpSerialAgent(TcpSerialBase):
         self, command: str, aspects: Optional[AspectsCmd] = None
     ) -> Tuple[int, str, str]:
         """
-        Runs a command on the designated host using the specified parameters.
-
-        :param command: The command to run.
-        :param aspects: The run aspects to use when running the command.
-
-        :returns: The status, stderr and stdout from the command that was run.
+            Runs a command on the designated host using the specified parameters.
+            
+            :param command: The command to run.
+            :param aspects: The run aspects to use when running the command.
+            
+            :returns: The status, stderr and stdout from the command that was run.
         """
         status = None
         stdout = None

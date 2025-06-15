@@ -54,13 +54,13 @@ class TaskerNode:
         aspect: TaskerAspects = DEFAULT_TASKER_ASPECTS,
     ):
         """
-        Initializes a :class:`TaskerNode` that communicates with a tasker service.
-
-        :param ipaddr: IP address of the tasker service.
-        :param port: Port number of the service.
-        :param summary_progress: Optional summary progress delivery settings.
-        :param protocol_config: Optional RPyC protocol configuration.
-        :param aspect: Default tasker aspects for operations.
+            Initializes a :class:`TaskerNode` that communicates with a tasker service.
+            
+            :param ipaddr: IP address of the tasker service.
+            :param port: Port number of the service.
+            :param summary_progress: Optional summary progress delivery settings.
+            :param protocol_config: Optional RPyC protocol configuration.
+            :param aspect: Default tasker aspects for operations.
         """
         self._ipaddr = ipaddr
         self._port = port
@@ -73,21 +73,21 @@ class TaskerNode:
     @property
     def ipaddr(self):
         """
-        IP address of the tasker service.
+            IP address of the tasker service.
         """
         return self._ipaddr
 
     @property
     def port(self):
         """
-        Port number of the tasker service.
+            Port number of the tasker service.
         """
         return self._port
 
     @property
     def session_id(self):
         """
-        Current session identifier.
+            Current session identifier.
         """
         return self._session_id
 
@@ -100,14 +100,14 @@ class TaskerNode:
         compression_level: int = 7
     ) -> str:
         """
-        Creates a compressed archive of a folder on the remote node.
-
-        :param folder_to_archive: Folder path to archive.
-        :param dest_folder: Destination folder for the archive.
-        :param archive_name: Name of the created archive file.
-        :param compression_level: Compression level for the archive.
-
-        :returns: The full path to the remote archive file.
+            Creates a compressed archive of a folder on the remote node.
+            
+            :param folder_to_archive: Folder path to archive.
+            :param dest_folder: Destination folder for the archive.
+            :param archive_name: Name of the created archive file.
+            :param compression_level: Compression level for the archive.
+            
+            :returns: The full path to the remote archive file.
         """
 
         client = self._create_connection()
@@ -133,14 +133,14 @@ class TaskerNode:
         kwargs: Dict[str, Any]
     ) -> Any:
         """
-        Calls  the specified method on the remote tasking.
-
-        :param tasking_id: The id of the tasking whose method you want to call.
-        :param method_name: The name of the method to call on the tasking.
-        :param args: A list of positiional arguements to pass to the remote method.
-        :param kwargs: A dictionary of keyword arguements to pass to the remote method.
-
-        :returns: Returns the response from the remote method.
+            Calls  the specified method on the remote tasking.
+            
+            :param tasking_id: The id of the tasking whose method you want to call.
+            :param method_name: The name of the method to call on the tasking.
+            :param args: A list of positiional arguements to pass to the remote method.
+            :param kwargs: A dictionary of keyword arguements to pass to the remote method.
+            
+            :returns: Returns the response from the remote method.
         """
         client = self._create_connection()
 
@@ -164,9 +164,9 @@ class TaskerNode:
 
     def cancel_tasking(self, *, tasking_id: str):
         """
-        Cancel the specified tasking.
-
-        :param tasking_id: The id of the tasking to cancel.
+            Cancel the specified tasking.
+            
+            :param tasking_id: The id of the tasking to cancel.
         """
         client = self._create_connection()
 
@@ -181,11 +181,11 @@ class TaskerNode:
 
     def file_exists(self, *, filename: str) -> bool:
         """
-        Determine if a file exists on the remote node.
-
-        :param filename: Path to the remote file.
-
-        :returns: ``True`` if the file exists.
+            Determine if a file exists on the remote node.
+            
+            :param filename: Path to the remote file.
+            
+            :returns: ``True`` if the file exists.
         """
 
         client = self._create_connection()
@@ -199,11 +199,11 @@ class TaskerNode:
 
     def folder_exists(self, *, folder: str) -> bool:
         """
-        Determine if a folder exists on the remote node.
-
-        :param folder: Path to the remote directory.
-
-        :returns: ``True`` if the folder exists.
+            Determine if a folder exists on the remote node.
+            
+            :param folder: Path to the remote directory.
+            
+            :returns: ``True`` if the folder exists.
         """
 
         client = self._create_connection()
@@ -217,11 +217,11 @@ class TaskerNode:
 
     def get_tasking_events(self, *, tasking_id: str) -> List[dict]:
         """
-        Retrieve any events that have been posted for the specified tasking.
-
-        :param tasking_id: Identifier of the tasking whose events are requested.
-
-        :returns: A list of event dictionaries.
+            Retrieve any events that have been posted for the specified tasking.
+            
+            :param tasking_id: Identifier of the tasking whose events are requested.
+            
+            :returns: A list of event dictionaries.
         """
 
         client = self._create_connection()
@@ -242,11 +242,11 @@ class TaskerNode:
 
     def get_tasking_progress(self, *, tasking_id: str) -> ProgressInfo:
         """
-        Obtain progress information for a running tasking.
-
-        :param tasking_id: Identifier of the tasking to query.
-
-        :returns: A :class:`ProgressInfo` instance or ``None`` if not available.
+            Obtain progress information for a running tasking.
+            
+            :param tasking_id: Identifier of the tasking to query.
+            
+            :returns: A :class:`ProgressInfo` instance or ``None`` if not available.
         """
 
         client = self._create_connection()
@@ -265,11 +265,11 @@ class TaskerNode:
 
     def get_tasking_status(self, *, tasking_id: str) -> str:
         """
-        Retrieve the current status string for the given tasking.
-
-        :param tasking_id: Identifier of the tasking to query.
-
-        :returns: Status string reported by the tasker service.
+            Retrieve the current status string for the given tasking.
+            
+            :param tasking_id: Identifier of the tasking to query.
+            
+            :returns: Status string reported by the tasker service.
         """
 
         client = self._create_connection()
@@ -286,11 +286,11 @@ class TaskerNode:
 
     def get_tasking_result(self, *, tasking_id: str) -> TaskingResult:
         """
-        Fetch the final :class:`TaskingResult` for a completed tasking.
-
-        :param tasking_id: Identifier of the tasking whose result is requested.
-
-        :returns: The deserialized :class:`TaskingResult` instance.
+            Fetch the final :class:`TaskingResult` for a completed tasking.
+            
+            :param tasking_id: Identifier of the tasking whose result is requested.
+            
+            :returns: The deserialized :class:`TaskingResult` instance.
         """
 
         client = self._create_connection()
@@ -308,11 +308,11 @@ class TaskerNode:
 
     def has_completed_and_result_ready(self, *, tasking_id: str) -> bool:
         """
-        Check if a tasking has completed and the result is available.
-
-        :param tasking_id: Identifier of the tasking to check.
-
-        :returns: ``True`` if the task finished and the result can be fetched.
+            Check if a tasking has completed and the result is available.
+            
+            :param tasking_id: Identifier of the tasking to check.
+            
+            :returns: ``True`` if the task finished and the result can be fetched.
         """
 
         client = self._create_connection()
@@ -336,15 +336,15 @@ class TaskerNode:
         **kwargs
     ) -> TaskingResultPromise:
         """
-        Execute a tasking on the remote node.
-
-        :param module_name: Name of the module containing the tasking.
-        :param tasking_name: Name of the tasking class to execute.
-        :param summary_progress: Optional summary progress delivery instance.
-        :param aspects: Optional tasker aspects controlling execution.
-        :param kwargs: Additional parameters passed to the tasking.
-
-        :returns: A :class:`TaskingResultPromise` tracking the tasking.
+            Execute a tasking on the remote node.
+            
+            :param module_name: Name of the module containing the tasking.
+            :param tasking_name: Name of the tasking class to execute.
+            :param summary_progress: Optional summary progress delivery instance.
+            :param aspects: Optional tasker aspects controlling execution.
+            :param kwargs: Additional parameters passed to the tasking.
+            
+            :returns: A :class:`TaskingResultPromise` tracking the tasking.
         """
 
         # We are not going to automatically close this as there may be
@@ -384,7 +384,7 @@ class TaskerNode:
 
     def session_close(self):
         """
-        Close the currently open tasking session on the node.
+            Close the currently open tasking session on the node.
         """
 
         client = self._create_connection()
@@ -407,15 +407,15 @@ class TaskerNode:
         aspects: Optional[TaskerAspects] = None
     ) -> str:
         """
-        Open a new tasking session on the node.
-
-        :param worker: Worker name for identification.
-        :param wref: Worker reference value.
-        :param output_directory: Directory for task outputs.
-        :param log_level: Logging level for the remote tasker.
-        :param aspects: Tasker aspects controlling session defaults.
-
-        :returns: The session identifier string.
+            Open a new tasking session on the node.
+            
+            :param worker: Worker name for identification.
+            :param wref: Worker reference value.
+            :param output_directory: Directory for task outputs.
+            :param log_level: Logging level for the remote tasker.
+            :param aspects: Tasker aspects controlling session defaults.
+            
+            :returns: The session identifier string.
         """
 
         if aspects is None:
@@ -447,10 +447,10 @@ class TaskerNode:
         logging_level: Optional[int] = None
     ):
         """
-        Request the remote tasker service reinitialize its logging.
-
-        :param logging_directory: Directory to place logs.
-        :param logging_level: Logging level to set.
+            Request the remote tasker service reinitialize its logging.
+            
+            :param logging_directory: Directory to place logs.
+            :param logging_level: Logging level to set.
         """
 
         client = self._create_connection()
@@ -466,11 +466,11 @@ class TaskerNode:
 
     def resolve_path(self, *, path) -> str:
         """
-        Resolve a path on the remote node returning the absolute path.
-
-        :param path: Path to resolve.
-
-        :returns: The resolved absolute path string.
+            Resolve a path on the remote node returning the absolute path.
+            
+            :param path: Path to resolve.
+            
+            :returns: The resolved absolute path string.
         """
 
         client = self._create_connection()
@@ -484,7 +484,7 @@ class TaskerNode:
 
     def _create_connection(self):
         """
-        Create and return an RPyC connection using the configured aspects.
+            Create and return an RPyC connection using the configured aspects.
         """
 
         if self._aspects is not None:
@@ -506,7 +506,7 @@ class TaskerClientNode(TaskerNode):
 
     def __init__(self, client: Any, ipaddr: str, port: int):
         """
-        Create a tasker node backed by an existing client connection.
+            Create a tasker node backed by an existing client connection.
         """
         self._client_ref = weakref.ref(client)
         super().__init__(ipaddr, port)
@@ -515,6 +515,6 @@ class TaskerClientNode(TaskerNode):
     @property
     def client(self) -> Any:
         """
-        Return the client object backing this node.
+            Return the client object backing this node.
         """
         return self._client_ref()

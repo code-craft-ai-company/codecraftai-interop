@@ -35,12 +35,12 @@ SERVICE_LOGGER = "TASKER"
 
 def write_trace(logfile: str, message: str):
     """
-    Append a message to a trace file.
-
-    :param logfile: Target log file path.
-    :param message: Message text to append.
-
-    :returns: None
+        Append a message to a trace file.
+        
+        :param logfile: Target log file path.
+        :param message: Message text to append.
+        
+        :returns: None
     """
 
     with open(logfile, "a+") as tf:
@@ -76,15 +76,15 @@ class TaskerServerDaemon(object):
 
     def __init__(self):
         """
-        This is a generic daemon class intended to make it easy to create a daemon.  A daemon has the following configurable
-        behaviors:
-
+            This is a generic daemon class intended to make it easy to create a daemon.  A daemon has the following configurable
+            behaviors:
+            
             1. Resets the current working directory to '/'
             2. Resets the current file creation mode mask to 0
             3. Closes all open files (1024)
             4. Detaches from the starting terminal and redirects standard I/O streams to '/dev/null'
-
-        References:
+            
+            References:
             1. Advanced Programming in the Unix Environment: W. Richard Stevens
         """
         self._pid_file = self.SERVER_PID_FILE
@@ -107,8 +107,8 @@ class TaskerServerDaemon(object):
 
     def daemonize(self):
         """
-        This method detaches the current process from the controlling terminal and forks
-        it to a process that is a background daemon process.
+            This method detaches the current process from the controlling terminal and forks
+            it to a process that is a background daemon process.
         """
 
         write_trace(self._daemon_logfile, "Daemonizing tasker service ...")
@@ -212,7 +212,7 @@ class TaskerServerDaemon(object):
 
     def process_exists(self, process_id):
         """
-        Checks to see if a process exists
+            Checks to see if a process exists
         """
         result = None
         try:
@@ -224,7 +224,7 @@ class TaskerServerDaemon(object):
 
     def restart(self):
         """
-        Restart the Tasker Service
+            Restart the Tasker Service
         """
         self.stop()
         self.start()
@@ -232,8 +232,8 @@ class TaskerServerDaemon(object):
 
     def run(self):
         """
-        This is the main 'Tasker Service' entry method that will setup the DBUS interfaces
-        to handle the Bluetooth integration for the service.
+            This is the main 'Tasker Service' entry method that will setup the DBUS interfaces
+            to handle the Bluetooth integration for the service.
         """
 
         start_debugger = False
@@ -279,9 +279,9 @@ class TaskerServerDaemon(object):
 
     def run_debug_assistant(self):
         """
-        Starts the debug assistant used to attach a debugger remotely.
-
-        :returns: None
+            Starts the debug assistant used to attach a debugger remotely.
+            
+            :returns: None
         """
 
         from automojo.foundation.xdebugger import (
@@ -301,7 +301,7 @@ class TaskerServerDaemon(object):
 
     def start(self):
         """
-        Start the Tasker Service
+            Start the Tasker Service
         """
 
         global DAEMON_DEBUG_MODE
@@ -361,7 +361,7 @@ class TaskerServerDaemon(object):
 
     def stop(self):
         """
-        Stop the Tasker Service
+            Stop the Tasker Service
         """
 
         write_trace(self._pre_daemon_logfile, "Tasker daemon 'stop' called ...")
@@ -400,9 +400,9 @@ class TaskerServerDaemon(object):
 
     def _remove_pidfile(self):
         """
-        Removes the daemon PID file if it exists.
-
-        :returns: None
+            Removes the daemon PID file if it exists.
+            
+            :returns: None
         """
         if os.path.exists(self._pid_file):
             os.remove(self._pid_file)
@@ -411,10 +411,10 @@ class TaskerServerDaemon(object):
 
 def tasker_daemon_main():
     """
-    Entry point for starting, stopping or restarting the tasker daemon.
-
-    The command line accepts ``start``, ``stop`` or ``restart`` actions and
-    an optional ``--debug`` flag that runs without daemonizing.
+        Entry point for starting, stopping or restarting the tasker daemon.
+        
+        The command line accepts ``start``, ``stop`` or ``restart`` actions and
+        an optional ``--debug`` flag that runs without daemonizing.
     """
 
     global DAEMON_DEBUG_MODE

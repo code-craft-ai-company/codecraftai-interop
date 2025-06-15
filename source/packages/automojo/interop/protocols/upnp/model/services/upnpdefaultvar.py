@@ -30,13 +30,13 @@ class UpnpDefaultVar:
                  allowed_list=None, timestamp: datetime = None, evented: bool = False):
         """
             Constructor for the :class:`UpnpEventVar` object.
-
+            
             :param key: The key {service type}/{event name} for this event
             :param name: The name of the event this variable is storing information on.
             :param value: Optional initially reported value for the variable.  This is used when we have reports for
-                          variables that we are not subscribed to.
+            variables that we are not subscribed to.
             :param timestamp: The timestamp of the creation of this variable.  If a timestamp is passed then a value
-                              needs to also be passed.
+            needs to also be passed.
             :param evented: Indicates that this variable is evented to subscribers.
         """
         self._key = key
@@ -167,7 +167,7 @@ class UpnpDefaultVar:
 
     def __str__(self) -> str:
         """
-        Return a friendly string representation of the variable.
+            Return a friendly string representation of the variable.
         """
         value, updated, changed, state = self.sync_read()
         rtnstr = "name={} value={} updated={} changed={} state={}".format(self._name, value, updated, changed, state.name)

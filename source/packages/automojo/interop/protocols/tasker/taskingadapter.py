@@ -30,7 +30,7 @@ class TaskingAdapter:
         The 'TaskingAdapter' object marries the connectivity of a 'TaskerController' with the Test Framework result creation
         and integraton of an object that implements the 'ITaskingSequencer' protocol that allows for the integration Tasking
         results into a test frameworks result stream.
-
+        
         The 'TaskingAdapter' also provides APIs for creating execution and synchronization scope objects that can be used
         by tests to efficiently coordinate and manage the creating, execution and synchronization of taskings.
     """
@@ -38,11 +38,11 @@ class TaskingAdapter:
     def __init__(self, controller: TaskerController, sequencer: ITaskingSequencer, aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS):
         """
             Creates a :class:`TaskingAdapter` instance.
-
+            
             :param controller: Controller used to dispatch taskings.
             :param sequencer: Sequencer used to create task result containers.
             :param aspects: Default tasker aspects.
-
+            
             :returns: None
         """
 
@@ -58,11 +58,11 @@ class TaskingAdapter:
     @property
     def available_node_count(self) -> int:
         """Returns the number of nodes currently available."""
-        return len(self._available_nodes)
-
-
-    @property
-    def available_nodes(self) -> List[TaskerNode]:
+            return len(self._available_nodes)
+            
+            
+            @property
+            def available_nodes(self) -> List[TaskerNode]:
         """Returns a list of available :class:`TaskerNode` objects."""
         node_list = [n for n in self._available_nodes]
         return node_list
@@ -71,9 +71,9 @@ class TaskingAdapter:
     def checkin_tasker_nodes(self, node_list: List[TaskerNode]):
         """
             Returns nodes to the available pool.
-
+            
             :param node_list: List of nodes to check in.
-
+            
             :returns: None
         """
 
@@ -87,9 +87,9 @@ class TaskingAdapter:
     def checkout_tasker_nodes(self, node_count: Optional[int] = None) -> List[TaskerNode]:
         """
             Removes a number of nodes from the available pool.
-
+            
             :param node_count: Number of nodes to checkout or ``None`` for all.
-
+            
             :returns: List of checked out nodes.
         """
 
@@ -116,11 +116,11 @@ class TaskingAdapter:
     def create_tasking_group_scope(self, group_name: str, node_count: Optional[int] = None, aspects: Optional[TaskerAspects] = None) -> TaskingGroupScope:
         """
             Creates a :class:`TaskingGroupScope` for coordinated task execution.
-
+            
             :param group_name: Name of the task group.
             :param node_count: Number of nodes to reserve for the group.
             :param aspects: Optional aspects to override defaults.
-
+            
             :returns: A new :class:`TaskingGroupScope` instance.
         """
 

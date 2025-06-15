@@ -31,50 +31,50 @@ class ServiceDesc:
     
     def __init__(self, *, specVersion: SpecVersion, serviceStateTables: ServiceStateTables, actionsTable: Dict[str, ServiceAction]):
         """Initialize a :class:`ServiceDesc` instance."""
-
-        self.specVersion = specVersion
-        self.serviceStateTables = serviceStateTables
-        self.actionsTable = actionsTable
-        return
-
-    @classmethod
-    def query_service_description(cls, serv_desc_url: str) -> "ServiceDesc":
+            
+            self.specVersion = specVersion
+            self.serviceStateTables = serviceStateTables
+            self.actionsTable = actionsTable
+            return
+            
+            @classmethod
+            def query_service_description(cls, serv_desc_url: str) -> "ServiceDesc":
         """
             Downloads and processes the service description document.
 
             :param serv_desc_url: The url of the service description document to process.
         """
-        svcdesc = None
-
-        resp: requests.Response = requests.get(serv_desc_url)
-        if resp.status_code == 200:
+            svcdesc = None
+            
+            resp: requests.Response = requests.get(serv_desc_url)
+            if resp.status_code == 200:
             svcdesc = {}
-
+            
             namespaces = {"": UPNP_SERVICE1_NAMESPACE}
-
+            
             try:
-                xml_content = resp.text
-                descDoc = xml_fromstring(xml_content)
-
-                specVersionNode = descDoc.find("specVersion", namespaces=namespaces)
-                specVersion = process_spec_version(specVersionNode, namespaces=namespaces)
-
-                serviceStateTableNode = descDoc.find("serviceStateTable", namespaces=namespaces)
-                variablesTable, typesTable, eventsTable = process_state_table(serviceStateTableNode, namespaces=namespaces)
-    
-                serviceStateTables = ServiceStateTables(variablesTable=variablesTable, typesTable=typesTable, eventsTable=eventsTable)
-
-                actionListNode = descDoc.find("actionList", namespaces=namespaces)
-                actionsTable = process_action_list(actionListNode, namespaces=namespaces)
-
-                svcdesc = ServiceDesc(
-                    specVersion=specVersion,
-                    serviceStateTables=serviceStateTables,
-                    actionsTable=actionsTable
-                )
-
+            xml_content = resp.text
+            descDoc = xml_fromstring(xml_content)
+            
+            specVersionNode = descDoc.find("specVersion", namespaces=namespaces)
+            specVersion = process_spec_version(specVersionNode, namespaces=namespaces)
+            
+            serviceStateTableNode = descDoc.find("serviceStateTable", namespaces=namespaces)
+            variablesTable, typesTable, eventsTable = process_state_table(serviceStateTableNode, namespaces=namespaces)
+            
+            serviceStateTables = ServiceStateTables(variablesTable=variablesTable, typesTable=typesTable, eventsTable=eventsTable)
+            
+            actionListNode = descDoc.find("actionList", namespaces=namespaces)
+            actionsTable = process_action_list(actionListNode, namespaces=namespaces)
+            
+            svcdesc = ServiceDesc(
+            specVersion=specVersion,
+            serviceStateTables=serviceStateTables,
+            actionsTable=actionsTable
+            )
+            
             except:
-                print("Service Description Failure: %s" % serv_desc_url)
-                raise
-
-        return svcdesc
+            print("Service Description Failure: %s" % serv_desc_url)
+            raise
+            
+            return svcdesc

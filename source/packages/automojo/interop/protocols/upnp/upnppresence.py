@@ -73,9 +73,9 @@ def notify_parse_request(content: str) -> dict:
     """
         Takes in the content of the NOTIFY request and parses it into a
         python dictionary object.
-
+        
         :param content: Notify request content as a string.
-
+        
         :return: A python dictionary with key and values from the Notify request
     """
     content = content.decode('utf-8')
@@ -118,9 +118,9 @@ def parse_ssdp_message(content: bytes) -> Dict[str, str]:
     """
         Takes in the content of the response of an MSEARCH request and parses it into a
         python dictionary object.
-
+        
         :param content: MSearch response content as a bytes.
-
+        
         :return: A python dictionary with key and values from the MSearch response
     """
     content = content.decode('utf-8')
@@ -149,7 +149,7 @@ class UpnpPresenceId:
 
     def __init__(self, device_id: str, device_class: str):
         """
-        Construct an identifier for a device and its class.
+            Construct an identifier for a device and its class.
         """
         self._device_id = device_id
         self._device_class = device_class
@@ -157,7 +157,7 @@ class UpnpPresenceId:
 
     def to_usn(self) -> str:
         """
-        Return the USN string for this presence identifier.
+            Return the USN string for this presence identifier.
         """
         usn = f"uuid:{self._device_id}::{self._device_class}"
         return usn
@@ -168,16 +168,16 @@ class UpnpPresence:
         The UpnpPresence class is used to manage the presence of a device on the network using SSDP. The UpnpPresence object
         maintains a multi-cast listening socket and thread that listens for incoming multi-cast SSDP messages allowing the
         UpnpPresence to establish a UPNP device presence on the network.
-
+        
         The UpnpPresence class also maintains a multip-cast send and receive socket that is associated M-SEARCH activites on
         the network.  The purpose of the seperate M-SEARCH socket is because devices receiving M-SEARCH messages are going to send back
         responses in the form of a reply to the M-SEARCH request and not in the form of a broadcast.  This means we need to listend for
         M-SEARCH responses on the socket that the M-SEARCH messages were sent from.
-
+        
         The M-SEARCH socket thread containuously calls the socket.recvfrom() method to listen for incoming M-SEARCH messages.  Because the
         socket is thread safe, when a 'discovery' call is made, then the calling thread simply sends the M-SEARCH message on the send side
-        of the socket.  
-
+        of the socket.
+        
     """
 
 
@@ -186,14 +186,14 @@ class UpnpPresence:
                  discover_interval: int = 60, ttl: int=32):
         """
             :param agent_id: The id that is used to provide a presence for this node.  If not provided, the agent will
-                             not respond to M-SEARCH events.
+            not respond to M-SEARCH events.
             :param ttl: The time to live for the multicast packet
-                    0 = same host
-                    1 = same subnet
-                    32 = same site
-                    64 = same region
-                    128 = same continent
-                    255 = unrestricted scope
+            0 = same host
+            1 = same subnet
+            32 = same site
+            64 = same region
+            128 = same continent
+            255 = unrestricted scope
         """
         self._agent_id = agent_id
 
@@ -273,12 +273,12 @@ class UpnpPresence:
                          monitor_interval: float = UPNP_DEFAULT_SEARCH_MONITOR_INTERVAL) -> UpnpSearchWindow:
         """
             Begin discovery of UPnP devices on the network.
-
+            
             :param limit_to: Optional device hints to limit the search.
             :param custom_headers: Optional additional search headers.
             :param window_length: How long the search window remains active.
             :param monitor_interval: Polling interval for search window updates.
-
+            
             :returns: The created :class:`UpnpSearchWindow` instance.
         """
 
@@ -343,7 +343,7 @@ class UpnpPresence:
     def get_presence_endpoint(self) -> Tuple[str, int]:
         """
             Returns the endpoint that this presence is listening on.
-
+            
             :return: A tuple containing the IP address and port of the presence socket.
         """
         return self._multicast_address, self._multicast_port
@@ -352,7 +352,7 @@ class UpnpPresence:
     def dispatch_embedded_device_notification(self, ifname: str, from_ip: str, usn: str, nt: str, nts: str, msg_info: Dict[str, str]):
         """
             Dispatch a notification to the registered callback functions for an embedded device.
-
+            
             :param usn: The USN of the root device.
             :param msg_info: The message detail of the notification.
         """
@@ -380,7 +380,7 @@ class UpnpPresence:
     def dispatch_root_device_notification(self, ifname: str, from_ip: str, usn: str, nt: str, nts: str, msg_info: Dict[str, str]):
         """
             Dispatch a notification to the registered callback functions for the root device.
-
+            
             :param usn: The USN of the root device.
             :param msg_info: The message detail of the notification.
         """
@@ -407,7 +407,7 @@ class UpnpPresence:
     def dispatch_service_notification(self, ifname: str, from_ip: str, usn: str, nt: str, nts: str, msg_info: Dict[str, str]):
         """
             Dispatch a notification to the registered callback functions for a device service.
-
+            
             :param ifname: The interface name that the notification was received on.
             :param from_ip: The IP address that the notification was received from.
             :param usn: The USN of the root device.
@@ -438,7 +438,7 @@ class UpnpPresence:
 
     def process_msearch(self, ifname: str, from_endpoint: Tuple[str, int], response: bytes):
         """
-        Handle an incoming M-SEARCH message.
+            Handle an incoming M-SEARCH message.
         """
 
         # We only process and respond to M-SEARCH messages if we have been given an identity
@@ -490,7 +490,7 @@ class UpnpPresence:
 
     def process_notify(self, ifname: str, from_endpoint: Tuple[str, int], message: bytes):
         """
-        Process a NOTIFY message from a UPnP device.
+            Process a NOTIFY message from a UPnP device.
         """
 
         from_ip = from_endpoint[0]
@@ -548,7 +548,7 @@ class UpnpPresence:
 
     def process_msearch_reply(self, from_endpoint: Tuple[str, int], response: bytes):
         """
-        Handle a reply to one of our M-SEARCH queries.
+            Handle a reply to one of our M-SEARCH queries.
         """
 
         from_ip = from_endpoint[0]
@@ -608,7 +608,7 @@ class UpnpPresence:
     def register_embedded_device_notification_handler(self, usn: str, notify_callback: Callable):
         """
             Register a callback function to be called when an embedded device is found.
-
+            
             :param usn: The USN of the device to register the callback for.
             :param notify_callback: The callback function to call when the device is found.
         """
@@ -626,7 +626,7 @@ class UpnpPresence:
     def register_service_notification_handler(self, usn: str, notify_callback: Callable):
         """
             Register a callback function to be called when a service is found.
-
+            
             :param usn: The USN of the service to register the callback for.
             :param notify_callback: The callback function to call when the service is found.
         """
@@ -644,7 +644,7 @@ class UpnpPresence:
     def register_root_device_notification_handler(self, usn: str, notify_callback: Callable):
         """
             Register a callback function to be called when a root device is found.
-
+            
             :param usn: The USN of the device to register the callback for.
             :param notify_callback: The callback function to call when the device is found.
         """
@@ -663,7 +663,7 @@ class UpnpPresence:
         """
             Called when a search window is closed.  This method is used to remove the search window from the list of
             active search windows.
-
+            
             :param window_id: The ID of the search window that was closed.
         """
         self._lock.acquire()
@@ -677,7 +677,7 @@ class UpnpPresence:
 
     def start(self):
         """
-        Start background threads for presence monitoring and discovery.
+            Start background threads for presence monitoring and discovery.
         """
         if self._running:
             raise RuntimeError("SSDP Scanner is already running.")
@@ -707,7 +707,7 @@ class UpnpPresence:
 
     def _update_device(self, context: str, from_ip: str, usn: str, nts: str, msg_info: Dict[str, str]):
         """
-        Update the device tables based on an SSDP notification.
+            Update the device tables based on an SSDP notification.
         """
 
         location = msg_info.get("LOCATION")
@@ -755,7 +755,7 @@ class UpnpPresence:
 
     def _get_presence_socket(self, ifname: str) -> socket.socket:
         """
-        Return or create the multicast socket for a given interface.
+            Return or create the multicast socket for a given interface.
         """
 
         sock = None
@@ -779,7 +779,7 @@ class UpnpPresence:
 
     def _get_search_socket(self) -> socket.socket:
         """
-        Return or create the socket used for M-SEARCH operations.
+            Return or create the socket used for M-SEARCH operations.
         """
 
         sock = None
@@ -798,7 +798,7 @@ class UpnpPresence:
 
     def _msearch_thread_entry(self, sgate: threading.Event):
         """
-        Thread loop used to send and receive M-SEARCH discovery messages.
+            Thread loop used to send and receive M-SEARCH discovery messages.
         """
 
         self._running = True
@@ -837,10 +837,10 @@ class UpnpPresence:
 
     def _presence_thread_entry(self, sgate: threading.Event, ifname: str):
         """
-        Thread loop used to listen for SSDP presence messages.
-
-        The presence thread entry point is called when the presence thread is
-        started. It listens for incoming SSDP messages and dispatches them.
+            Thread loop used to listen for SSDP presence messages.
+            
+            The presence thread entry point is called when the presence thread is
+            started. It listens for incoming SSDP messages and dispatches them.
         """
 
         self._running = True
