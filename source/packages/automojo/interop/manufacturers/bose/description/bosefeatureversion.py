@@ -1,10 +1,9 @@
-
 """
-    .. module:: bosefeatureversion
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Module containing the BoseFeatureVersion class.
-    
-    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+.. module:: bosefeatureversion
+:platform: Darwin, Linux, Unix, Windows
+:synopsis: Module containing the BoseFeatureVersion class.
+
+.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -13,15 +12,18 @@ __credits__ = []
 
 
 class BoseFeatureVersion:
+    """
+    Represents a major/minor version for a Bose feature.
+    """
 
     def __init__(self, major: int, minor: int):
         """
-            Creates a Bose feature version object.
+        Creates a Bose feature version object.
 
-            :param major: Major version value.
-            :param minor: Minor version value.
+        :param major: Major version value.
+        :param minor: Minor version value.
 
-            :returns: None
+        :returns: None
         """
 
         self._major = major

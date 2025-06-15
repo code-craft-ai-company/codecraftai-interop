@@ -1,35 +1,46 @@
-
 """
-    .. module:: bosefeatureversion
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Module containing the BoseMultiRoomVersions class which describes the various feature versions
-    associated with a bose player.
-    
-    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+.. module:: bosefeatureversion
+:platform: Darwin, Linux, Unix, Windows
+:synopsis: Module containing the BoseMultiRoomVersions class which describes the various feature versions
+associated with a bose player.
+
+.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
 __copyright__ = "Copyright 2024, Myron W Walker"
 __credits__ = []
 
-from automojo.interop.manufacturers.bose.description.bosefeatureversion import BoseFeatureVersion
+from automojo.interop.manufacturers.bose.description.bosefeatureversion import (
+    BoseFeatureVersion,
+)
 
 
 class BoseMultiRoomVersions:
+    """
+    Collection of multi-room protocol versions for a Bose device.
+    """
 
-    def __init__(self, audio_control: BoseFeatureVersion, audio_payload: BoseFeatureVersion, clock_sync: BoseFeatureVersion,
-                 now_playing: BoseFeatureVersion, playback_request: BoseFeatureVersion, zone_control: BoseFeatureVersion):
+    def __init__(
+        self,
+        audio_control: BoseFeatureVersion,
+        audio_payload: BoseFeatureVersion,
+        clock_sync: BoseFeatureVersion,
+        now_playing: BoseFeatureVersion,
+        playback_request: BoseFeatureVersion,
+        zone_control: BoseFeatureVersion,
+    ):
         """
-            Stores a collection of Bose feature versions for multi-room support.
+        Stores a collection of Bose feature versions for multi-room support.
 
-            :param audio_control: Audio control protocol version.
-            :param audio_payload: Audio payload protocol version.
-            :param clock_sync: Clock synchronization protocol version.
-            :param now_playing: Now playing protocol version.
-            :param playback_request: Playback request protocol version.
-            :param zone_control: Zone control protocol version.
+        :param audio_control: Audio control protocol version.
+        :param audio_payload: Audio payload protocol version.
+        :param clock_sync: Clock synchronization protocol version.
+        :param now_playing: Now playing protocol version.
+        :param playback_request: Playback request protocol version.
+        :param zone_control: Zone control protocol version.
 
-            :returns: None
+        :returns: None
         """
 
         self._audio_control = audio_control
@@ -46,39 +57,38 @@ class BoseMultiRoomVersions:
         Returns the audio control protocol version.
         """
         return self._audio_control
-    
+
     @property
     def audio_payload(self) -> BoseFeatureVersion:
         """
         Returns the audio payload protocol version.
         """
         return self._audio_payload
-    
+
     @property
     def clock_sync(self) -> BoseFeatureVersion:
         """
         Returns the clock synchronization protocol version.
         """
         return self._clock_sync
-    
+
     @property
     def now_playing(self) -> BoseFeatureVersion:
         """
         Returns the now playing protocol version.
         """
         return self._now_playing
-    
+
     @property
     def playback_request(self) -> BoseFeatureVersion:
         """
         Returns the playback request protocol version.
         """
         return self._playback_request
-    
+
     @property
     def zone_control(self) -> BoseFeatureVersion:
         """
         Returns the zone control protocol version.
         """
         return self._zone_control
-
