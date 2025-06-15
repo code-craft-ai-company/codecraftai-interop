@@ -182,9 +182,9 @@ class SshSession(SshBase):
 
     def directory_exists(self, remotedir: str) -> bool:
         """
-            Method used to pull a remote directory to check for existance.
+            Method used to pull a remote directory to check for existence.
 
-            :param remotedir: The remote directory path to check for existance.
+            :param remotedir: The remote directory path to check for existence.
 
             :returns: A boolean value indicating if the remote file exists.
         """
@@ -197,7 +197,7 @@ class SshSession(SshBase):
             Method that creates a directory tree for the folder.
 
             :param root_dir: The root directory to scan when creating the tree.
-            :param depth: The dept to scan to
+            :param depth: The depth to scan to
 
             :returns: A dictionary with a tree of information about the directory tree found on the remote system.
         """
@@ -207,9 +207,9 @@ class SshSession(SshBase):
 
     def file_exists(self, remotepath: str) -> bool:
         """
-            Method used to pull a remote file to check for existance.
+            Method used to pull a remote file to check for existence.
 
-            :param remotepath: The remote file path to check for existance.
+            :param remotepath: The remote file path to check for existence.
 
             :returns: A boolean value indicating if the remote file exists.
         """

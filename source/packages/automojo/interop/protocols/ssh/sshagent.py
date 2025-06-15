@@ -147,7 +147,7 @@ class SshAgent(SshBase):
             Method that creates a directory tree for the folder.
 
             :param root_dir: The root directory to scan when creating the tree.
-            :param depth: The dept to scan to
+            :param depth: The depth to scan to
             :param ssh_client: An optional connected SSHClient that should be for the operation.
 
             :returns: A dictionary with a tree of information about the directory tree found on the remote system.
@@ -199,8 +199,10 @@ class SshAgent(SshBase):
         """
             Method used to check if a remote directory exists.
 
-            :param remotedir: The remote remotedir path to check for existance.
+            :param remotedir: The remote remotedir path to check for existence.
             :param ssh_client: An optional connected SSHClient that should be for the operation.
+
+            :returns: ``True`` if the directory exists, otherwise ``False``.
         """
         exists = False
 
@@ -222,8 +224,10 @@ class SshAgent(SshBase):
         """
             Method used to check if a remote file exists.
 
-            :param remotepath: The remote file path to check for existance.
+            :param remotepath: The remote file path to check for existence.
             :param ssh_client: An optional connected SSHClient that should be for the operation.
+
+            :returns: ``True`` if the file exists, otherwise ``False``.
         """
         exists = False
 

@@ -130,10 +130,10 @@ def primitive_list_tree_recurse(ssh_client: paramiko.SSHClient, targetdir: str, 
         shell commands in order to get directory information and is used when the SSH server on a
         device does not support FTP based access or file queries
 
-        :params ssh_client: A paramiko.SSHClient to use for running commands to discover the information
-                            about a directory.
-        :params targetdir: The target directory of the local tree to scan.
-        :params remaining: The remaining levels to descend
+        :param ssh_client: A paramiko.SSHClient to use for running commands to discover the information
+            about a directory.
+        :param targetdir: The target directory of the local tree to scan.
+        :param remaining: The remaining levels to descend
 
         :returns: A dictionary with the information about the target directory and its children.
     """
@@ -161,10 +161,10 @@ def primitive_parse_directory_listing(listing_dir:str, content: str) -> dict:
     """
         Method which is called parse the information associated with a directory listing.
 
-        :params listing_dir: The directory path associated with the directory listing content being parsed.
-        :params content: The directory listing content to be parsed.
+        :param listing_dir: The directory path associated with the directory listing content being parsed.
+        :param content: The directory listing content to be parsed.
 
-        :returns: A dictionary with the directory entry items from a directoy based on the directory listing content being parsed.
+        :returns: A dictionary with the directory entry items from a directory based on the directory listing content being parsed.
     """
     entries = {}
 
@@ -217,7 +217,7 @@ def primitive_directory_exists(ssh_client: paramiko.SSHClient, remotedir: str) -
         Checks to see if the specified file exists.
 
         :param ssh_client: A paramiko.SSHClient to run commands over.
-        :param remotedir: The path of the remote directory to check for existance.
+        :param remotedir: The path of the remote directory to check for existence.
 
         :returns: A boolean indicating if the file exists.
     """
@@ -236,7 +236,7 @@ def primitive_file_exists(ssh_client: paramiko.SSHClient, remotepath: str) -> bo
         Checks to see if the specified file exists.
 
         :param ssh_client: A paramiko.SSHClient to run commands over.
-        :param remotepath: The path of the remote file to check for existance.
+        :param remotepath: The path of the remote file to check for existence.
 
         :returns: A boolean indicating if the file exists.
     """
@@ -345,7 +345,7 @@ def sftp_list_tree(sftp: paramiko.SFTPClient, treeroot: str, userlookup: Callabl
         :param treeroot: The root directory to get the directory listing for.
         :param userlookup: A dictionary to utilize in order to lookup the user associated with a directory item.
         :param grouplookup: A dictionary to utilize in order to lookup the group associated with a directory item.
-        :param max_depth: The depth to which to create a directory tree.
+        :param remaining: The depth remaining to create the directory tree.
 
         :returns: A dictionary with the information about the root directory and its children.
     """
@@ -377,7 +377,7 @@ def sftp_list_tree_recurse(sftp: paramiko.SFTPClient, targetdir: str, userlookup
         :param targetdir: The target directory to get the directory tree listing for.
         :param userlookup: A dictionary to utilize in order to lookup the user associated with a directory item.
         :param grouplookup: A dictionary to utilize in order to lookup the group associated with a directory item.
-        :param max_depth: The depth to which to create a directory tree.
+        :param remaining: The depth remaining to create the directory tree.
 
         :returns: A dictionary with the information about the target directory and its children.
     """
