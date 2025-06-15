@@ -63,7 +63,7 @@ class DnsAddress(DnsRecord):
 
     def __eq__(self, other: DnsRecord) -> bool:
         """
-            Tests equality on priority, weight, port and server.
+            Tests equality by comparing address bytes.
 
             :param other: Record to compare against this one.
 

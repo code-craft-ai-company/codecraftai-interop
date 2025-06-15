@@ -1,5 +1,5 @@
 """
-    .. module:: dnsincoming
+    .. module:: dnsinboundmessage
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Contains the DnsIncoming object which is used to represent an incoming DNS packet and to provide
     methods for processing the packet.

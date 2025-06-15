@@ -1,5 +1,5 @@
 """
-    .. module:: bosefeatureversion
+    .. module:: bosemultiroomversions
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module containing the BoseMultiRoomVersions class which describes the various feature versions
         associated with a bose player.

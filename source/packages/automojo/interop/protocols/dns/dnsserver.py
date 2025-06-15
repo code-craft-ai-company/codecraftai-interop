@@ -1,7 +1,7 @@
 """
-    .. module:: dnspointer
+    .. module:: dnsserver
     :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Contains the DnsService object which represents a DNS service record.
+    :synopsis: Contains the :class:`DnsServer` class which implements a DNS server.
     
     .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
