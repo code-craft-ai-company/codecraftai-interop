@@ -77,11 +77,11 @@ class TaskerController:
     @property
     def tasker_clients(self) -> List[INetworkClient]:
         """List of network clients associated with tasker nodes."""
-            clients = [tn.client for tn in self._tasker_nodes]
-            return clients
-            
-            @property
-            def tasker_nodes(self):
+        clients = [tn.client for tn in self._tasker_nodes]
+        return clients
+
+    @property
+    def tasker_nodes(self):
         """List of tasker nodes under management."""
         return self._tasker_nodes
 
@@ -245,9 +245,9 @@ class TaskerController:
 
     def start_tasker_network(self):
         """Starts the tasker network.  Must be implemented by subclasses."""
-            raise AbstractMethodError("The 'start_task_network' method must be overloaded.")
-            
-            def stop_tasker_network(self):
+        raise AbstractMethodError("The 'start_task_network' method must be overloaded.")
+
+    def stop_tasker_network(self):
         """Stop the tasker network. Must be implemented by subclasses."""
 
         raise AbstractMethodError(
@@ -547,73 +547,67 @@ class ProcessTaskerController(TaskerController):
 
     def stop_tasker_network(self):
         """Stop all running tasker server processes."""
-            
-            for node in self._tasker_nodes:
+        for node in self._tasker_nodes:
             node.session_close()
+
+        return
             
-            return
             
-            
-            class ClientTaskerController(TaskerController):
-    """
-        Uses existing network clients to communicate with remote taskers.
-    """
-        
-        def __init__(
+class ClientTaskerController(TaskerController):
+    """Uses existing network clients to communicate with remote taskers."""
+
+    def __init__(
         self,
         logging_directory: Optional[str] = None,
         aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS,
-        ):
+    ):
         """
-        Initialize a :class:`ClientTaskerController`.
+            Initialize a :class:`ClientTaskerController`.
 
-        :param logging_directory: Directory where client logs are written.
-        :param aspects: Default tasker aspects used when executing tasks.
+            :param logging_directory: Directory where client logs are written.
+            :param aspects: Default tasker aspects used when executing tasks.
         """
-            
-            super().__init__(logging_directory=logging_directory, aspects=aspects)
-            return
-            
-            def start_tasker_network(
-            self,
-            clients: List[INetworkClient],
-            output_directory: Optional[str] = None,
-            log_level: Optional[int] = logging.DEBUG,
-            ):
-        """
-        Starts a tasker network using existing client connections.
+        super().__init__(logging_directory=logging_directory, aspects=aspects)
+        return
 
-        :param clients: List of network clients to use.
-        :param output_directory: Optional directory for task outputs.
-        :param log_level: Logging level for the servers.
+    def start_tasker_network(
+        self,
+        clients: List[INetworkClient],
+        output_directory: Optional[str] = None,
+        log_level: Optional[int] = logging.DEBUG,
+    ):
         """
-            
-            if self._network_started:
+            Starts a tasker network using existing client connections.
+
+            :param clients: List of network clients to use.
+            :param output_directory: Optional directory for task outputs.
+            :param log_level: Logging level for the servers.
+        """
+        if self._network_started:
             errmsg = "A task network has already been started."
             raise SemanticError(errmsg)
-            
-            self._network_started = True
-            
-            for cidx, cl in enumerate(clients):
-            
+
+        self._network_started = True
+
+        for cidx, cl in enumerate(clients):
             node = TaskerClientNode(client=cl, ipaddr=cl.ipaddr, port=TASKER_PORT)
-            
+
             worker = cl.ipaddr
             wref = str(cidx)
-            
+
             node.session_open(
-            worker=worker,
-            wref=wref,
-            output_directory=output_directory,
-            log_level=log_level,
-            aspects=self._aspects,
+                worker=worker,
+                wref=wref,
+                output_directory=output_directory,
+                log_level=log_level,
+                aspects=self._aspects,
             )
-            
+
             self._tasker_nodes.append(node)
-            
-            return
-            
-            def stop_tasker_network(self):
+
+        return
+
+    def stop_tasker_network(self):
         """Close all tasker client sessions."""
 
         for node in self._tasker_nodes:

@@ -58,11 +58,10 @@ class TaskingAdapter:
     @property
     def available_node_count(self) -> int:
         """Returns the number of nodes currently available."""
-            return len(self._available_nodes)
-            
-            
-            @property
-            def available_nodes(self) -> List[TaskerNode]:
+        return len(self._available_nodes)
+
+    @property
+    def available_nodes(self) -> List[TaskerNode]:
         """Returns a list of available :class:`TaskerNode` objects."""
         node_list = [n for n in self._available_nodes]
         return node_list

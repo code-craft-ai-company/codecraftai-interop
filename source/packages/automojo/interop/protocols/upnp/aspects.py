@@ -56,6 +56,18 @@ class AspectsUPnP(Aspects):
                        logger: Optional[logging.Logger]=None):
         """
             Construct an :class:`AspectsUPnP` instance with sensible defaults.
+
+            :param action_pattern: The :class:`ActionPattern` used for operations.
+            :param completion_timeout: Timeout for operation completion.
+            :param completion_interval: Interval between completion checks.
+            :param inactivity_timeout: Timeout for inactivity.
+            :param inactivity_interval: Interval between inactivity checks.
+            :param monitor_delay: Delay before monitoring begins.
+            :param logging_pattern: Pattern controlling logging behavior.
+            :param retry_logging_interval: Interval between retry log messages.
+            :param allowed_error_codes: Error codes that should not abort retries.
+            :param must_connect: ``True`` if connection failures should raise.
+            :param logger: Optional logger for diagnostics.
         """
         Aspects.__init__(self, action_pattern=action_pattern, completion_timeout=completion_timeout,
                             completion_interval=completion_interval, inactivity_timeout=inactivity_timeout,

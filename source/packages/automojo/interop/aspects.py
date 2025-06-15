@@ -20,7 +20,7 @@ import logging
 
 class ActionPattern(IntEnum):
     """
-        A action pattern to use when using apspects to change the behavior of an API.
+        An action pattern to use when using aspects to change the behavior of an API.
     """
     SINGLE_CALL = 0
     SINGLE_CONNECTED_CALL = 1
@@ -94,9 +94,13 @@ class Aspects:
             :param inactivity_timeout: The time in seconds as a float that is the max time before timeout
                                        that is waited before a :class:`TimeoutError` is raised due to inactivity.
             :param inactivity_interval: The time in seconds as a float that is waited before reattempting an activity.
+            :param monitor_delay: Delay in seconds before monitoring activity after startup.
+            :param logging_pattern: Pattern controlling how command results are logged.
             :param retry_logging_interval: The logging interval for retry loops.
             :param allowed_error_codes: A list of error codes that allow retry
+            :param allowed_connection_exceptions: List of exceptions that do not count as connection failures.
             :param must_connect: Used to indicate that connection failures should be raised.
+            :param logger: Optional logger for output.
         """
         self.action_pattern = action_pattern
         self.completion_timeout = completion_timeout

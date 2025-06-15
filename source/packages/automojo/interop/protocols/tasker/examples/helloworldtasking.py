@@ -49,26 +49,35 @@ class HelloWorldTasking(Tasking):
 
     def mark_progress_start(self):
         """Marks the start of progress for the tasking."""
-            now = datetime.now()
-            self._current_progress = ProgressInfo(self._tasking_id, "hello", self.full_name, ProgressType.NumericRange,
-            0, self._iterations, 0, ProgressCode.Running, now, self._data)
-            return
-            
-            def log_message(self, message) -> bool:
+        now = datetime.now()
+        self._current_progress = ProgressInfo(
+            self._tasking_id,
+            "hello",
+            self.full_name,
+            ProgressType.NumericRange,
+            0,
+            self._iterations,
+            0,
+            ProgressCode.Running,
+            now,
+            self._data,
+        )
+        return
+
+    def log_message(self, message) -> bool:
         """Logs a message to the tasking logger."""
         self._logger.info(message)
         return True
 
     def perform(self):
         """Performs one iteration of work."""
-            
-            position = self._current_progress.position
-            
-            time.sleep(1)
-            
-            morework = False
-            if position < self._current_progress.range_max:
+        position = self._current_progress.position
+
+        time.sleep(1)
+
+        morework = False
+        if position < self._current_progress.range_max:
             morework = True
             self._current_progress.position = position + 1
-            
-            return morework
+
+        return morework
