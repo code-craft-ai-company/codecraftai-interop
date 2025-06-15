@@ -32,6 +32,7 @@ DIDL_NAMESPACES = {
 }
 
 class DidlDesc:
+    """Represents a generic DIDL-Lite ``desc`` element."""
 
     def __init__(self, *, desc: str, **attrs):
         """
@@ -72,6 +73,7 @@ class DidlDesc:
         return xstr
 
 class DidlResource(NamedTuple):
+    """Information about a resource associated with a DIDL item."""
     protocol_info: str
     uri: str
     duration: Optional[str] = None

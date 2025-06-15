@@ -138,12 +138,14 @@ class DnsRecordType(enum.IntEnum):
 
 @enum.unique
 class DnsQr(enum.IntEnum):
+    """DNS query/response indicator."""
     Query = 0
     Response = 1
 
 
 @enum.unique
 class DnsOpCode(enum.IntEnum):
+    """Operation codes used in DNS queries."""
     Query = 0    # RFC1035
     IQuery = 1   # RFC3425
     Status = 2   # RFC1035
@@ -154,6 +156,7 @@ class DnsOpCode(enum.IntEnum):
 
 @enum.unique
 class DnsRespCode(enum.IntEnum):
+    """Response codes returned in DNS replies."""
     NoError = 0
     FormatError = 1
     ServerError = 2
@@ -182,6 +185,7 @@ DNS_COMP_MASK = 0xC0
 DNS_OFFSET_MASK = 0x3F
 
 class DnsKnownServiceTypes:
+    """Common service type strings used when browsing for services."""
     AIRTUNES = "AirTunes Remote Audio"
     AIRPLAY = "_airplay._tcp"
     MICROSOFT_WINDOWS_NETWORK = "Microsoft Windows Network"

@@ -16,6 +16,7 @@ import os
 import socket
 
 class MdnsServiceInfo:
+    """Container object describing a discovered mDNS service instance."""
 
     def __init__(self) -> None:
         """

@@ -24,6 +24,9 @@ if TYPE_CHECKING:
     from automojo.landscaping.coordinators.coordinatorbase import CoordinatorBase
 
 class SshDevice(LandscapeDevice):
+    """
+        Represents a device that can be accessed using the SSH protocol.
+    """
 
     def __init__(self, lscape: "Landscape", coordinator: "CoordinatorBase",
                  friendly_id:FriendlyIdentifier, device_type: str, device_config: dict):

@@ -27,6 +27,7 @@ UPNP_DEFAULT_SEARCH_MONITOR_INTERVAL = float(2)
 TIMEDELTA_RENEWAL_WINDOW = 120
 
 class UPNP_HEADERS:
+    """Default HTTP headers used by the UPNP implementation."""
     USER_AGENT = "AutomationMojo/1.0 UPNP Test Package"
     SERVER = "{},{},AutomationKit/1.0".format(platform.system(), platform.release())
 

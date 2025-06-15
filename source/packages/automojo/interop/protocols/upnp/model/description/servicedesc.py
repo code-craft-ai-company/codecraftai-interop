@@ -66,8 +66,12 @@ class ServiceDesc:
 
                 actionListNode = descDoc.find("actionList", namespaces=namespaces)
                 actionsTable = process_action_list(actionListNode, namespaces=namespaces)
-                
-                svcdesc = ServiceDesc(specVersion=)
+
+                svcdesc = ServiceDesc(
+                    specVersion=specVersion,
+                    serviceStateTables=serviceStateTables,
+                    actionsTable=actionsTable
+                )
 
             except:
                 print("Service Description Failure: %s" % serv_desc_url)

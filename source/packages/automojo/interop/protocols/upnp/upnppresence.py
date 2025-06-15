@@ -143,6 +143,7 @@ def parse_ssdp_message(content: bytes) -> Dict[str, str]:
 
 
 class UpnpPresenceId:
+    """Identifier representing a device and its UPnP device class."""
 
     def __init__(self, device_id: str, device_class: str):
         """

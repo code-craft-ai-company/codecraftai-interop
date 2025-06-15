@@ -14,6 +14,7 @@ __credits__ = []
 
 
 class DliPowerAgent:
+    """Simple wrapper for controlling a Digital Loggers power relay outlet."""
 
     def __init__(self, interface, attachment) -> None:
         """
