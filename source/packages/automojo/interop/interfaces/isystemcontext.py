@@ -43,9 +43,9 @@ class ISystemContext(Protocol):
 
     def directory_exists(self, remotedir: str) -> bool:
         """
-            Method used to pull a remote directory to check for existance.
+            Method used to pull a remote directory to check for existence.
 
-            :param remotedir: The remote directory path to check for existance.
+            :param remotedir: The remote directory path to check for existence.
 
             :returns: A boolean value indicating if the remote file exists.
         """
@@ -56,7 +56,7 @@ class ISystemContext(Protocol):
             Method that creates a directory tree for the folder.
 
             :param rootdir: The root directory to scan when creating the tree.
-            :param depth: The dept to scan to
+            :param depth: The depth to scan to
 
             :returns: A dictionary with a tree of information about the directory tree found on the remote system.
         """
@@ -66,7 +66,7 @@ class ISystemContext(Protocol):
         """
             Method used to check for the existence of a remote file.
 
-            :param filepath: The remote file path to check for existance.
+            :param filepath: The remote file path to check for existence.
 
             :returns: A boolean value indicating if the remote file exists.
         """

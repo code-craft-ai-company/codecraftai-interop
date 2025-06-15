@@ -412,7 +412,7 @@ class SshBase(ISystemContext):
 
             :param ssh_client: The SSHClient to use to for geting a list tree.
             :param root_dir: The root directory to scan when creating the tree.
-            :param depth: The dept to scan to
+            :param depth: The depth to scan to
 
             :returns: A dictionary with a tree of information about the directory tree found on the remote system.
         """
