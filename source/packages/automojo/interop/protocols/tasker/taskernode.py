@@ -68,21 +68,21 @@ class TaskerNode:
     @property
     def ipaddr(self):
         """
-        IP address of the tasker service.
+            IP address of the tasker service.
         """
         return self._ipaddr
     
     @property
     def port(self):
         """
-        Port number of the tasker service.
+            Port number of the tasker service.
         """
         return self._port
 
     @property
     def session_id(self):
         """
-        Current session identifier.
+            Current session identifier.
         """
         return self._session_id
 
@@ -404,7 +404,7 @@ class TaskerNode:
 
     def _create_connection(self):
         """
-        Create and return an RPyC connection using the configured aspects.
+            Create and return an RPyC connection using the configured aspects.
         """
         
         if self._aspects is not None:
@@ -419,7 +419,7 @@ class TaskerClientNode(TaskerNode):
 
     def __init__(self, client: Any, ipaddr: str, port: int):
         """
-        Create a tasker node backed by an existing client connection.
+            Create a tasker node backed by an existing client connection.
         """
         self._client_ref = weakref.ref(client)
         super().__init__(ipaddr, port)
@@ -428,6 +428,6 @@ class TaskerClientNode(TaskerNode):
     @property
     def client(self) -> Any:
         """
-        Return the client object backing this node.
+            Return the client object backing this node.
         """
         return self._client_ref()
