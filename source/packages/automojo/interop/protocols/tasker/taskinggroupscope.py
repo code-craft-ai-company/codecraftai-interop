@@ -1,9 +1,9 @@
 """
-.. module:: taskinggroupscope
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: taskinggroupscope module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. module:: taskinggroupscope
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: taskinggroupscope module.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -47,7 +47,7 @@ logger = logging.getLogger()
 
 class TaskingGroupState:
     """
-    Enumeration values describing the state of a tasking group.
+        Enumeration values describing the state of a tasking group.
     """
 
     NotStarted = 0
@@ -57,7 +57,7 @@ class TaskingGroupState:
 
 class TaskingGroupScope:
     """
-    Context manager used to coordinate the execution of a group of taskings.
+        Context manager used to coordinate the execution of a group of taskings.
     """
 
     def __init__(

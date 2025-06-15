@@ -1,9 +1,9 @@
 """
-.. module:: taskingprogressmonitor
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: taskingprogressmonitor module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. module:: taskingprogressmonitor
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: taskingprogressmonitor module.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 class TaskingProgressMonitor:
     """
-    Monitors remote taskings and collects progress updates.
+        Monitors remote taskings and collects progress updates.
     """
 
     def __init__(

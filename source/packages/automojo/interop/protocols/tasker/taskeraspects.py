@@ -1,11 +1,11 @@
 """
-.. module:: taskeraspects
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: Module containing the :class:`TaskerAspects` class which is used to instruct behavior
-around tasking.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    .. module:: taskeraspects
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: Module containing the :class:`TaskerAspects` class which is used to instruct behavior
+    around tasking.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"
@@ -29,7 +29,7 @@ from automojo.testbase.results.model.progressdelivery import ProgressDeliveryMet
 
 class TaskerAspects:
     """
-    Parameterization object describing task execution behavior.
+        Parameterization object describing task execution behavior.
     """
 
     def __init__(

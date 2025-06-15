@@ -1,9 +1,9 @@
 """
-.. module:: itaskingsequencer
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: itaskingsequencer module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. module:: itaskingsequencer
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: itaskingsequencer module.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -20,7 +20,7 @@ from automojo.testbase.results.model.taskingresult import TaskingResult
 
 class ITaskingSequencer(Protocol):
     """
-    Protocol defining the interface for task sequencing helpers.
+        Protocol defining the interface for task sequencing helpers.
     """
 
     def create_tasking_result(

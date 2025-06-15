@@ -1,9 +1,9 @@
 """
-.. module:: taskingresultpromise
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: Module containing the :class:`TaskingResultPromise` class which is used to report tasking completion.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. module:: taskingresultpromise
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: Module containing the :class:`TaskingResultPromise` class which is used to report tasking completion.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -42,7 +42,7 @@ logger = logging.getLogger()
 @dataclass
 class TaskingRef:
     """
-    Lightweight reference describing a remote tasking instance.
+        Lightweight reference describing a remote tasking instance.
     """
 
     module_name: str

@@ -1,9 +1,9 @@
 """
-.. module:: taskernode
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: The :class:`TaskerNode` object that is used to.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. module:: taskernode
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: The :class:`TaskerNode` object that is used to.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -42,7 +42,7 @@ TASKER_PROTOCOL_CONFIG = {
 
 class TaskerNode:
     """
-    The :class:`TaskerNode` object represents a remote tasker service endpoint.
+        The :class:`TaskerNode` object represents a remote tasker service endpoint.
     """
 
     def __init__(

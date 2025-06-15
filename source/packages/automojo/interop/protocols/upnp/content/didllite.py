@@ -1,9 +1,9 @@
 """
-.. module:: didllite
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: didllite module.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. module:: didllite
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: didllite module.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -32,7 +32,9 @@ DIDL_NAMESPACES = {
 
 
 class DidlDesc:
-    """Represents a generic DIDL-Lite ``desc`` element."""
+    """
+        Represents a generic DIDL-Lite ``desc`` element.
+    """
 
     def __init__(self, *, desc: str, **attrs):
         """

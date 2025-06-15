@@ -1,11 +1,11 @@
 """
-.. module:: taskerdaemon
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: Module containing the :class:`TaskerServerDaemon` class which is a used to create a
-daemonized instance of the TaskerServer.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-
+    .. module:: taskerdaemon
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: Module containing the :class:`TaskerServerDaemon` class which is a used to create a
+    daemonized instance of the TaskerServer.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    
 """
 
 __author__ = "Myron Walker"
@@ -55,7 +55,7 @@ DAEMON_DEBUG_MODE = False
 
 class TaskerServerDaemon(object):
     """
-    Utility for running the tasker service as a background daemon.
+        Utility for running the tasker service as a background daemon.
     """
 
     # Default maximum for the number of available file descriptors
