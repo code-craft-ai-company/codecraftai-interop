@@ -505,7 +505,11 @@ class DnsOutboundMessage:
 
     def _write_utf(self, s: str) -> None:
         """
-            Writes a UTF-8 string of a given length to the packet
+            Writes a UTF-8 string of a given length to the packet.
+
+            :param s: String content to encode and write.
+
+            :returns: ``None``
         """
         bytes = s.encode('utf-8')
         length = len(bytes)

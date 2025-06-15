@@ -56,7 +56,11 @@ class DnsText(DnsRecord):
 
     def __eq__(self, other: DnsRecord) -> bool:
         """
-            Tests equality on text
+            Tests equality on text.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if records are equal.
         """
         # Call DnsRecord equality operator first because it can eliminate alot of equality checks early
         iseq = False
@@ -66,14 +70,20 @@ class DnsText(DnsRecord):
 
     def __ne__(self, other: DnsRecord) -> bool:
         """
-            Non-equality test
+            Non-equality test.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if the records are not equal.
         """
         isne = not self.__eq__(other)
         return isne
 
     def __str__(self) -> str:
         """
-            String representation
+            String representation.
+
+            :returns: Formatted string representing this text record.
         """
         strval = None
         if len(self._text) > 10:

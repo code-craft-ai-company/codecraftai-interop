@@ -45,6 +45,8 @@ def dns_query_services(service_types: List[str], rtype: DnsRecordType=DnsRecordT
         :param service_types: List of service types to query.
         :param rtype: DNS record type used for the query.
         :param rclass: DNS record class used for the query.
+
+        :returns: ``None``
     """
 
     service = DnsServer()

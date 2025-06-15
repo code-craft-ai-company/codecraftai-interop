@@ -247,7 +247,11 @@ class DnsRecord:
 
     def __eq__(self, other: 'DnsRecord') -> bool:
         """
-            Equality test on name, record type, and record class
+            Equality test on name, record type, and record class.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if records are equal.
         """
         iseq = False
         if isinstance(other, type(self)):
@@ -257,14 +261,20 @@ class DnsRecord:
 
     def __ne__(self, other: 'DnsRecord') -> bool:
         """
-            Non-equality test
+            Non-equality test.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if the records are not equal.
         """
         isne = not self.__eq__(other)
         return isne
 
     def __str__(self) -> str:
         """
-            String representation
+            String representation.
+
+            :returns: DNS formatted string describing this record.
         """
         dnsstr = self.as_dns_string()
         return dnsstr

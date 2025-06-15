@@ -101,7 +101,11 @@ class DnsService(DnsRecord):
 
     def __eq__(self, other: DnsRecord) -> bool:
         """
-            Tests equality on priority, weight, port and server
+            Tests equality on priority, weight, port and server.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if records are equal.
         """
         # Call DnsRecord equality operator first because it can eliminate alot of equality checks early
         iseq = False
@@ -111,13 +115,19 @@ class DnsService(DnsRecord):
 
     def __ne__(self, other: DnsRecord) -> bool:
         """
-            Non-equality test
+            Non-equality test.
+
+            :param other: Record to compare against this one.
+
+            :returns: ``True`` if the records are not equal.
         """
         return not self.__eq__(other)
 
     def __str__(self) -> str:
         """
-            String representation
+            String representation.
+
+            :returns: String describing the service record.
         """
         other = self._server + " " + self._port+ " " + self._priority + " " + self._weight
         strval = self.as_dns_string(other=other)

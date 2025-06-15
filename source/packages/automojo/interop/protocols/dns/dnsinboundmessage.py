@@ -410,7 +410,12 @@ class DnsInboundMessage:
 
     def _read_utf(self, offset: int, length: int) -> str:
         """
-            Reads a UTF-8 string of a given length from the packet
+            Reads a UTF-8 string of a given length from the packet.
+
+            :param offset: Byte offset within the packet buffer.
+            :param length: Number of bytes to read.
+
+            :returns: Decoded UTF-8 string.
         """
         utfval = str(self._data[offset : offset + length], 'utf-8', 'replace')
         return utfval

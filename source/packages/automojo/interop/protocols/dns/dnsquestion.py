@@ -74,6 +74,8 @@ class DnsQuestion:
             Returns true if the question is answered by the record.
 
             :param rec: Record to test against this question.
+
+            :returns: ``True`` if the record answers the question.
         """
         bval = False
         if self._rclass == rec._rclass:
@@ -84,6 +86,8 @@ class DnsQuestion:
     def as_query_bytes(self) -> str:
         """
             Formats the DNS question as a byte stream for transmission.
+
+            :returns: Encoded question bytes.
         """
 
         brtype = self._rtype.name.encode("utf-8")

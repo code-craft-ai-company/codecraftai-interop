@@ -48,6 +48,8 @@ class ApiNodeRelay:
     def client(self) -> "DliPowerRestClient":
         """
             Returns the associated :class:`DliPowerRestClient` instance.
+
+            :returns: Connected client instance.
         """
         return self._client_ref()
     
@@ -55,6 +57,10 @@ class ApiNodeRelay:
     def get_outlets(self, aspects: Optional[AspectsRest] = None) -> List[Outlet]:
         """
             Retrieves outlet details from the power controller.
+
+            :param aspects: Optional REST call aspects configuration.
+
+            :returns: List of :class:`Outlet` objects.
         """
 
         leaf = "restapi/relay/outlets"
