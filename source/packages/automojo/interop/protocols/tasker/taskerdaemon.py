@@ -1,18 +1,16 @@
 """
-    .. module:: taskerdaemon
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Module containing the :class:`TaskerServerDaemon` class which is a used to create a
-    daemonized instance of the TaskerServer.
-    
-    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-    
-"""
+.. module:: taskerdaemon
+:platform: Darwin, Linux, Unix, Windows
+:synopsis: Module containing the :class:`TaskerServerDaemon` class which is a used to create a
+daemonized instance of the TaskerServer.
 
+.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+
+"""
 
 __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
-
 
 
 import argparse
@@ -37,72 +35,80 @@ SERVICE_LOGGER = "TASKER"
 
 def write_trace(logfile: str, message: str):
     """
-        Append a message to a trace file.
+    Append a message to a trace file.
 
-        :param logfile: Target log file path.
-        :param message: Message text to append.
+    :param logfile: Target log file path.
+    :param message: Message text to append.
 
-        :returns: None
+    :returns: None
     """
 
-    with open(logfile, 'a+') as tf:
+    with open(logfile, "a+") as tf:
         tf.write(message)
         tf.write("\n")
 
     return
 
+
 DAEMON_DEBUG_MODE = False
 
 
 class TaskerServerDaemon(object):
+    """
+    Utility for running the tasker service as a background daemon.
+    """
 
-    #Default maximum for the number of available file descriptors
+    # Default maximum for the number of available file descriptors
     DEFAULT_MAXFD = 1024
 
-    #Default file mode creation mask for the daemon
+    # Default file mode creation mask for the daemon
     DEFAULT_UMASK = 0
 
-    #Default working directory for the daemon
+    # Default working directory for the daemon
     DEFAULT_ROOTDIR = "/"
 
-    #Default device null
+    # Default device null
     DEFAULT_DEVNULL = "/dev/null"
 
     SERVER_CONFIG_PATH = "/opt/tasker/tasker.conf"
     SERVER_LOGDIR = "/opt/tasker/logs"
     SERVER_PID_FILE = "/var/run/tasker/tasker.pid"
 
-
     def __init__(self):
         """
-            This is a generic daemon class intended to make it easy to create a daemon.  A daemon has the following configurable
-            behaviors:
+        This is a generic daemon class intended to make it easy to create a daemon.  A daemon has the following configurable
+        behaviors:
 
-                1. Resets the current working directory to '/'
-                2. Resets the current file creation mode mask to 0
-                3. Closes all open files (1024)
-                4. Detaches from the starting terminal and redirects standard I/O streams to '/dev/null'
+            1. Resets the current working directory to '/'
+            2. Resets the current file creation mode mask to 0
+            3. Closes all open files (1024)
+            4. Detaches from the starting terminal and redirects standard I/O streams to '/dev/null'
 
-            References:
-                1. Advanced Programming in the Unix Environment: W. Richard Stevens
-            """
+        References:
+            1. Advanced Programming in the Unix Environment: W. Richard Stevens
+        """
         self._pid_file = self.SERVER_PID_FILE
 
         if not os.path.exists(self.SERVER_LOGDIR):
             os.makedirs(self.SERVER_LOGDIR)
 
-        self._pre_daemon_logfile = os.path.join(self.SERVER_LOGDIR, "tasker-service-pre-daemon.log")
-        self._daemon_logfile = os.path.join(self.SERVER_LOGDIR, "tasker-service-daemon.log")
-        self._daemon_error_logfile = os.path.join(self.SERVER_LOGDIR, "tasker-error-daemon.log")
+        self._pre_daemon_logfile = os.path.join(
+            self.SERVER_LOGDIR, "tasker-service-pre-daemon.log"
+        )
+        self._daemon_logfile = os.path.join(
+            self.SERVER_LOGDIR, "tasker-service-daemon.log"
+        )
+        self._daemon_error_logfile = os.path.join(
+            self.SERVER_LOGDIR, "tasker-error-daemon.log"
+        )
 
         self._debug_assistant = None
         return
 
-
     def daemonize(self):
         """
-            This method detaches the current process from the controlling terminal and forks
-            it to a process that is a background daemon process.
+        This method detaches the current process from the controlling terminal and forks
+        it to a process that is a background daemon process.
         """
 
         write_trace(self._daemon_logfile, "Daemonizing tasker service ...")
@@ -115,7 +121,7 @@ class TaskerServerDaemon(object):
         except OSError as os_err:
             err_msg = "%s\n    errno=%d\n" % (os_err.strerror, os_err.errno)
             write_trace(self._daemon_logfile, err_msg)
-            raise Exception (err_msg)
+            raise Exception(err_msg)
 
         # Fork returns 0 in the child and a process id in the parent.  If we are running in the parent
         # process then exit cleanly with no error.
@@ -140,7 +146,7 @@ class TaskerServerDaemon(object):
         except OSError as os_err:
             err_msg = "%s\n    errno=%d\n" % (os_err.strerror, os_err.errno)
             write_trace(self._daemon_logfile, err_msg)
-            raise Exception (err_msg)
+            raise Exception(err_msg)
 
         # Fork returns 0 in the child and a process id in the parent.  If we are running in the parent
         # process then exit cleanly with no error.
@@ -180,13 +186,13 @@ class TaskerServerDaemon(object):
 
         # Create the standard file descriptors and redirect them to the standard file descriptor
         # numbers 0 stdin, 1 stdout, 2 stderr
-        stdin_f = open(self.DEFAULT_DEVNULL , 'r')
+        stdin_f = open(self.DEFAULT_DEVNULL, "r")
         os.dup2(stdin_f.fileno(), stdin_fileno)
 
-        stdout_f = open(self.DEFAULT_DEVNULL, 'a+')
+        stdout_f = open(self.DEFAULT_DEVNULL, "a+")
         os.dup2(stdout_f.fileno(), stdout_fileno)
 
-        stderr_f = open(self.DEFAULT_DEVNULL, 'a+')
+        stderr_f = open(self.DEFAULT_DEVNULL, "a+")
         os.dup2(stderr_f.fileno(), stderr_fileno)
 
         write_trace(self._daemon_logfile, "Registering remove_pidfile ...")
@@ -195,17 +201,18 @@ class TaskerServerDaemon(object):
 
         # Create the pid file to prevent multiple launches of the daemon
         pid_str = str(os.getpid())
-        with open(self._pid_file, 'w') as pid_f:
+        with open(self._pid_file, "w") as pid_f:
             pid_f.write("%s\n" % pid_str)
 
-        write_trace(self._daemon_logfile, f"Tasker service running as pid={pid_str} ...")
+        write_trace(
+            self._daemon_logfile, f"Tasker service running as pid={pid_str} ..."
+        )
 
         return
 
-
     def process_exists(self, process_id):
         """
-            Checks to see if a process exists
+        Checks to see if a process exists
         """
         result = None
         try:
@@ -215,34 +222,38 @@ class TaskerServerDaemon(object):
             result = False
         return result
 
-
     def restart(self):
         """
-            Restart the Tasker Service
+        Restart the Tasker Service
         """
         self.stop()
         self.start()
         return
 
-
     def run(self):
         """
-            This is the main 'Tasker Service' entry method that will setup the DBUS interfaces
-            to handle the Bluetooth integration for the service.
+        This is the main 'Tasker Service' entry method that will setup the DBUS interfaces
+        to handle the Bluetooth integration for the service.
         """
-        
+
         start_debugger = False
 
         if os.path.exists(self.SERVER_CONFIG_PATH):
-            write_trace(self._daemon_logfile, f"Found tasker daemon configuration file ...")
-            
+            write_trace(
+                self._daemon_logfile, f"Found tasker daemon configuration file ..."
+            )
+
             config = configparser.ConfigParser()
             config.read(self.SERVER_CONFIG_PATH)
 
-            write_trace(self._daemon_logfile, f"Processing tasker daemon configuration file ...")
+            write_trace(
+                self._daemon_logfile, f"Processing tasker daemon configuration file ..."
+            )
 
             if "DEFAULT" in config:
-                write_trace(self._daemon_logfile, f"Found configuration 'DEFAULT' section ...")
+                write_trace(
+                    self._daemon_logfile, f"Found configuration 'DEFAULT' section ..."
+                )
                 defsect = config["DEFAULT"]
                 if "Debugger" in defsect:
                     dbgval = defsect["Debugger"].strip()
@@ -259,41 +270,48 @@ class TaskerServerDaemon(object):
 
         server = TaskerServer(hostname="0.0.0.0", logging_directory=logging_directory)
 
-        write_trace(self._daemon_logfile, f"Tasker calling tasker server serve_forever ...")
+        write_trace(
+            self._daemon_logfile, f"Tasker calling tasker server serve_forever ..."
+        )
         server.serve_forever()
 
         return
 
     def run_debug_assistant(self):
         """
-            Starts the debug assistant used to attach a debugger remotely.
+        Starts the debug assistant used to attach a debugger remotely.
 
-            :returns: None
+        :returns: None
         """
 
-        from automojo.foundation.xdebugger import DebugPyAssistant, PORT_DEBUGPY_ASSISTANT
+        from automojo.foundation.xdebugger import (
+            DebugPyAssistant,
+            PORT_DEBUGPY_ASSISTANT,
+        )
 
         endpoint = ("0.0.0.0", PORT_DEBUGPY_ASSISTANT)
 
         self._debug_assistant = DebugPyAssistant("TaskerRmtDebugger", endpoint=endpoint)
 
-        write_trace(self._daemon_logfile, f"Tasker debug assistant start on {endpoint} ...")
+        write_trace(
+            self._daemon_logfile, f"Tasker debug assistant start on {endpoint} ..."
+        )
 
         return
 
     def start(self):
         """
-            Start the Tasker Service
+        Start the Tasker Service
         """
 
         global DAEMON_DEBUG_MODE
 
         write_trace(self._pre_daemon_logfile, "Tasker daemon 'start' called ...")
 
-        #Check to see if the pid file exists to see if the daemon is already running
+        # Check to see if the pid file exists to see if the daemon is already running
         proc_id = None
         try:
-            with open(self._pid_file, 'r') as pid_f:
+            with open(self._pid_file, "r") as pid_f:
                 proc_id_str = pid_f.read().strip()
                 proc_id = int(proc_id_str)
 
@@ -308,14 +326,20 @@ class TaskerServerDaemon(object):
             proc_id = None
 
         if proc_id != None:
-            write_trace(self._pre_daemon_logfile, "Tasker daemon 'start' called when the service was already running.")
+            write_trace(
+                self._pre_daemon_logfile,
+                "Tasker daemon 'start' called when the service was already running.",
+            )
             sys.exit(1)
 
         write_trace(self._pre_daemon_logfile, "Starting the 'Tasker Service'.")
 
         if not DAEMON_DEBUG_MODE:
             # Start the daemon
-            write_trace(self._pre_daemon_logfile, "The 'Tasker Service' is about to become a daemon.")
+            write_trace(
+                self._pre_daemon_logfile,
+                "The 'Tasker Service' is about to become a daemon.",
+            )
 
             try:
 
@@ -324,36 +348,44 @@ class TaskerServerDaemon(object):
                 self.run()
 
             except SystemExit as err:
-                write_trace(self._pre_daemon_logfile, "The 'Tasker Service' daemon was kicked off.")
+                write_trace(
+                    self._pre_daemon_logfile,
+                    "The 'Tasker Service' daemon was kicked off.",
+                )
         else:
-            write_trace(self._pre_daemon_logfile, "The 'Tasker Service' skipping daemonization.")
+            write_trace(
+                self._pre_daemon_logfile, "The 'Tasker Service' skipping daemonization."
+            )
 
         return
 
-
     def stop(self):
         """
-            Stop the Tasker Service
+        Stop the Tasker Service
         """
 
         write_trace(self._pre_daemon_logfile, "Tasker daemon 'stop' called ...")
 
-        #Check to see if the PID file exists to see if the daemon is already running
+        # Check to see if the PID file exists to see if the daemon is already running
         proc_id = None
         try:
-            with open(self._pid_file, 'r') as pid_f:
+            with open(self._pid_file, "r") as pid_f:
                 proc_id_str = pid_f.read().strip()
                 proc_id = int(proc_id_str)
         except IOError:
             proc_id = None
 
         if not proc_id:
-            write_trace(self._pre_daemon_logfile, "The 'Tasker Service' was not running.")
-            return # This is not an error in a restart so don't exit with a error code
+            write_trace(
+                self._pre_daemon_logfile, "The 'Tasker Service' was not running."
+            )
+            return  # This is not an error in a restart so don't exit with a error code
 
         # The process was running so we need to shut it down
         try:
-            write_trace(self._pre_daemon_logfile, "Attempting to stop the tasker daemon ...")
+            write_trace(
+                self._pre_daemon_logfile, "Attempting to stop the tasker daemon ..."
+            )
             os.kill(proc_id, signal.SIGTERM)
         except OSError as os_err:
             err_str = str(os_err)
@@ -368,9 +400,9 @@ class TaskerServerDaemon(object):
 
     def _remove_pidfile(self):
         """
-            Removes the daemon PID file if it exists.
+        Removes the daemon PID file if it exists.
 
-            :returns: None
+        :returns: None
         """
         if os.path.exists(self._pid_file):
             os.remove(self._pid_file)
@@ -379,31 +411,40 @@ class TaskerServerDaemon(object):
 
 def tasker_daemon_main():
     """
-        Entry point for starting, stopping or restarting the tasker daemon.
+    Entry point for starting, stopping or restarting the tasker daemon.
 
-        The command line accepts ``start``, ``stop`` or ``restart`` actions and
-        an optional ``--debug`` flag that runs without daemonizing.
+    The command line accepts ``start``, ``stop`` or ``restart`` actions and
+    an optional ``--debug`` flag that runs without daemonizing.
     """
 
     global DAEMON_DEBUG_MODE
 
     parser = argparse.ArgumentParser("Tasker automation service.")
-    parser.add_argument("action", choices=['start', 'stop', 'restart'], help="The action to perform with the service.")
-    parser.add_argument("--debug", default=False, action='store_true', help="Launches the service as a non-daemon process in debug mode.")
+    parser.add_argument(
+        "action",
+        choices=["start", "stop", "restart"],
+        help="The action to perform with the service.",
+    )
+    parser.add_argument(
+        "--debug",
+        default=False,
+        action="store_true",
+        help="Launches the service as a non-daemon process in debug mode.",
+    )
     try:
         args = parser.parse_args()
         action = args.action
         DAEMON_DEBUG_MODE = args.debug
 
         if DAEMON_DEBUG_MODE:
-            action = 'start'
+            action = "start"
 
         service = TaskerServerDaemon()
-        if action == 'restart':
+        if action == "restart":
             service.restart()
-        elif action == 'start':
+        elif action == "start":
             service.start()
-        elif action == 'stop':
+        elif action == "stop":
             service.stop()
         else:
             sys.stderr.write("Unknown command '%s'.\n" % action)
@@ -418,7 +459,6 @@ def tasker_daemon_main():
     return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     tasker_daemon_main()
-

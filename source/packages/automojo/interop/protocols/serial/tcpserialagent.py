@@ -1,9 +1,9 @@
 """
-    .. module:: tcpserialagent
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Contains the TcpSerialObject object.
-    
-    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+.. module:: tcpserialagent
+:platform: Darwin, Linux, Unix, Windows
+:synopsis: Contains the TcpSerialObject object.
+
+.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -19,38 +19,41 @@ import telnetlib
 from automojo.interop.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS
 from automojo.interop.interfaces.isystemcontext import ISystemContext
 
-from automojo.foundation.xconvert import (
-    safe_as_bytes,
-    safe_as_str
-)
+from automojo.foundation.xconvert import safe_as_bytes, safe_as_str
 
 from automojo.interop.agents.serialagentbase import SerialAgentBase
 
 import telnetlib
 
+
 class TcpSerialBase(SerialAgentBase):
+    """
+    Base class for TCP serial implementations.
+    """
 
-    SERIAL_PROMPT=b"@@@&@@@&"
-    NORMAL_PROMPT=b"#"
+    SERIAL_PROMPT = b"@@@&@@@&"
+    NORMAL_PROMPT = b"#"
 
-    def __init__(self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS) -> None:
+    def __init__(
+        self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
+    ) -> None:
         """
-            Constructs a :class:`TcpSerialBase` instance.
+        Constructs a :class:`TcpSerialBase` instance.
 
-            :param host: Hostname or IP address of the telnet server.
-            :param port: Telnet port of the remote server.
-            :param aspects: Default command aspects used when executing commands.
+        :param host: Hostname or IP address of the telnet server.
+        :param port: Telnet port of the remote server.
+        :param aspects: Default command aspects used when executing commands.
         """
         self._host = host
         self._port = port
         self._aspects = aspects
         return
-    
+
     def _create_connection(self) -> telnetlib.Telnet:
         """
-            Creates a telnet connection and configures the shell prompt.
+        Creates a telnet connection and configures the shell prompt.
 
-            :returns: A connected :class:`telnetlib.Telnet` object.
+        :returns: A connected :class:`telnetlib.Telnet` object.
         """
 
         tnconn = telnetlib.Telnet(host=self._host, port=self._port)
@@ -64,7 +67,7 @@ class TcpSerialBase(SerialAgentBase):
         ps1_out = tnconn.read_until(self.NORMAL_PROMPT)
         self.NORMAL_PROMPT = ps1_out.splitlines(False)[1]
 
-        tnconn.write(b"export PS1=\"%s\"\n" % self.SERIAL_PROMPT)
+        tnconn.write(b'export PS1="%s"\n' % self.SERIAL_PROMPT)
 
         cmd_out = tnconn.read_until(self.SERIAL_PROMPT)
         cmd_out = tnconn.read_until(self.SERIAL_PROMPT)
@@ -72,24 +75,34 @@ class TcpSerialBase(SerialAgentBase):
 
     def _restore_prompt(self, tnconn: telnetlib.Telnet) -> None:
         """
-            Restores the shell prompt after a telnet session.
+        Restores the shell prompt after a telnet session.
         """
         tnconn.write(b"echo $PS1\n")
         ps1_out = tnconn.read_until(self.NORMAL_PROMPT)
         return
 
+
 class TcpSerialSession(TcpSerialBase):
+    """
+    Context manager for an interactive TCP serial session.
+    """
 
-    def __init__(self, host: str, port:int=22, session_basis: Optional["TcpSerialSession"]=None, aspects: AspectsCmd=DEFAULT_CMD_ASPECTS):
+    def __init__(
+        self,
+        host: str,
+        port: int = 22,
+        session_basis: Optional["TcpSerialSession"] = None,
+        aspects: AspectsCmd = DEFAULT_CMD_ASPECTS,
+    ):
         """
-            Initialize a TCP serial session.
+        Initialize a TCP serial session.
 
-            :param host: Hostname of the serial concentrator.
-            :param port: TCP port number.
-            :param session_basis: Optional existing session to base new session on.
-            :param aspects: Default command aspects for operations.
+        :param host: Hostname of the serial concentrator.
+        :param port: TCP port number.
+        :param session_basis: Optional existing session to base new session on.
+        :param aspects: Default command aspects for operations.
 
-            :returns: None
+        :returns: None
         """
 
         super().__init__(host, port=port, aspects=aspects)
@@ -99,7 +112,7 @@ class TcpSerialSession(TcpSerialBase):
 
     def __enter__(self):
         """
-            Method that implements the __enter__ symantics used for 'with' statements.
+        Method that implements the __enter__ symantics used for 'with' statements.
         """
         self._telnet_conn = self._create_connection()
 
@@ -107,9 +120,9 @@ class TcpSerialSession(TcpSerialBase):
 
     def __exit__(self, ex_type: type, ex_val: Exception, ex_tb: TracebackType) -> bool:
         """
-            Method that implements the __exit__ symantics used for 'with' statements.
+        Method that implements the __exit__ symantics used for 'with' statements.
 
-            :returns: Returns false indicating that exceptions are not handled.
+        :returns: Returns false indicating that exceptions are not handled.
         """
         self.close()
         handled = False
@@ -117,22 +130,26 @@ class TcpSerialSession(TcpSerialBase):
 
     def close(self):
         """
-            Closes the SSH session and the assocatied SSH connection.
+        Closes the SSH session and the assocatied SSH connection.
         """
         # Only close the client if this session owns the client
         if self._session_basis is None:
             self._telnet_conn.close()
         return
 
-    def open_session(self, session_basis: Optional[ISystemContext] = None,
-                     aspects: Optional[AspectsCmd] = None, **kwargs) -> ISystemContext: # pylint: disable=arguments-differ
+    def open_session(
+        self,
+        session_basis: Optional[ISystemContext] = None,
+        aspects: Optional[AspectsCmd] = None,
+        **kwargs
+    ) -> ISystemContext:  # pylint: disable=arguments-differ
         """
-            Provies a mechanism to create a :class:`TcpSerialSession` object with derived settings.  This method allows various
-            parameters for the session to be overridden.  This allows for the performing of a series of TCP Serial operations under
-            a particular set of shared settings or command behaviors.
+        Provies a mechanism to create a :class:`TcpSerialSession` object with derived settings.  This method allows various
+        parameters for the session to be overridden.  This allows for the performing of a series of TCP Serial operations under
+        a particular set of shared settings or command behaviors.
 
-            :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
-            :param aspects: The default run aspects to use for the operations performed by the session.
+        :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
+        :param aspects: The default run aspects to use for the operations performed by the session.
         """
 
         session_aspects = None
@@ -141,18 +158,24 @@ class TcpSerialSession(TcpSerialBase):
 
         session = None
         if session_basis is not None:
-            session = TcpSerialSession(session_basis._host, port=session_basis._port, session_basis=session_basis, aspects=session_aspects)
+            session = TcpSerialSession(
+                session_basis._host,
+                port=session_basis._port,
+                session_basis=session_basis,
+                aspects=session_aspects,
+            )
         else:
-            session = TcpSerialSession(self._host, port=self._port, aspects=session_aspects)
+            session = TcpSerialSession(
+                self._host, port=self._port, aspects=session_aspects
+            )
 
         return session
 
-    
     def _create_connection(self) -> telnetlib.Telnet:
         """
-            Create an Telnet connection if one is not already open and available.
+        Create an Telnet connection if one is not already open and available.
 
-            :returns: An :class:`telnetlib.Telnet` object connected to the remote Tcp Serial concentrator.
+        :returns: An :class:`telnetlib.Telnet` object connected to the remote Tcp Serial concentrator.
         """
         tnconn = None
 
@@ -163,40 +186,46 @@ class TcpSerialSession(TcpSerialBase):
 
         return tnconn
 
+
 class TcpSerialAgent(TcpSerialBase):
     """
-        The :class:`TcpSerialAgent` provides access to serial port hosted on a TCP/IP network.  The
-        remote endpoint might be a host and port for a serial port hosted on a serial concentrator.
-        It could be the host and port of a serial port hosted on a linux box via USB and ser2net.
+    The :class:`TcpSerialAgent` provides access to serial port hosted on a TCP/IP network.  The
+    remote endpoint might be a host and port for a serial port hosted on a serial concentrator.
+    It could be the host and port of a serial port hosted on a linux box via USB and ser2net.
 
-        ..note:
-            An example ser2net configuration might look like the configuration below.
+    ..note:
+        An example ser2net configuration might look like the configuration below.
 
-            BANNER:banner:\r\nser2net port \p device \d [\s] (Debian GNU/Linux)\r\n\r\n
+        BANNER:banner:\r\nser2net port \p device \d [\s] (Debian GNU/Linux)\r\n\r\n
 
-            3333:telnet:0:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT banner
+        3333:telnet:0:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT banner
     """
 
-    def __init__(self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS) -> None:
+    def __init__(
+        self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
+    ) -> None:
         """
-            Creates a :class:`TcpSerialAgent` instance.
+        Creates a :class:`TcpSerialAgent` instance.
 
-            :param host: Hostname or IP address of the TCP serial concentrator.
-            :param port: Port on the concentrator to connect to.
-            :param aspects: Default command aspects for command execution.
+        :param host: Hostname or IP address of the TCP serial concentrator.
+        :param port: Port on the concentrator to connect to.
+        :param aspects: Default command aspects for command execution.
         """
         super().__init__(host, port=port, aspects=aspects)
         return
 
-    def open_session(self, session_basis: Optional[ISystemContext] = None,
-                     aspects: Optional[AspectsCmd] = None) -> ISystemContext: # pylint: disable=arguments-differ
+    def open_session(
+        self,
+        session_basis: Optional[ISystemContext] = None,
+        aspects: Optional[AspectsCmd] = None,
+    ) -> ISystemContext:  # pylint: disable=arguments-differ
         """
-            Provies a mechanism to create a :class:`TcpSerialSession` object with derived settings.  This method allows various
-            parameters for the session to be overridden.  This allows for the performing of a series of TCP Serial operations under
-            a particular set of shared settings or command behaviors.
+        Provies a mechanism to create a :class:`TcpSerialSession` object with derived settings.  This method allows various
+        parameters for the session to be overridden.  This allows for the performing of a series of TCP Serial operations under
+        a particular set of shared settings or command behaviors.
 
-            :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
-            :param aspects: The default run aspects to use for the operations performed by the session.
+        :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
+        :param aspects: The default run aspects to use for the operations performed by the session.
         """
 
         session_aspects = None
@@ -205,20 +234,29 @@ class TcpSerialAgent(TcpSerialBase):
 
         session = None
         if session_basis is not None:
-            session = TcpSerialSession(session_basis._host, port=session_basis._port, session_basis=session_basis, aspects=session_aspects)
+            session = TcpSerialSession(
+                session_basis._host,
+                port=session_basis._port,
+                session_basis=session_basis,
+                aspects=session_aspects,
+            )
         else:
-            session = TcpSerialSession(self._host, port=self._port, aspects=session_aspects)
+            session = TcpSerialSession(
+                self._host, port=self._port, aspects=session_aspects
+            )
 
         return session
 
-    def run_cmd(self, command: str, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
+    def run_cmd(
+        self, command: str, aspects: Optional[AspectsCmd] = None
+    ) -> Tuple[int, str, str]:
         """
-            Runs a command on the designated host using the specified parameters.
+        Runs a command on the designated host using the specified parameters.
 
-            :param command: The command to run.
-            :param aspects: The run aspects to use when running the command.
+        :param command: The command to run.
+        :param aspects: The run aspects to use when running the command.
 
-            :returns: The status, stderr and stdout from the command that was run.
+        :returns: The status, stderr and stdout from the command that was run.
         """
         status = None
         stdout = None

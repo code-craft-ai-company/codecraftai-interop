@@ -1,16 +1,15 @@
 """
-    .. module:: taskercontroller
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: The :class:`TaskerController` package contains the controller object used to create a distributed
-    network of :class:`TaskerService` objects.
-    
-    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+.. module:: taskercontroller
+:platform: Darwin, Linux, Unix, Windows
+:synopsis: The :class:`TaskerController` package contains the controller object used to create a distributed
+network of :class:`TaskerService` objects.
+
+.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
-
 
 
 from typing import List, Optional, Type, Union
@@ -29,12 +28,18 @@ from automojo.testbase.results.model.taskingresult import TaskingResult
 from automojo.testbase.results.model.progressdelivery import SummaryProgressDelivery
 
 from automojo.interop.interfaces.inetworkclient import INetworkClient
-from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
+from automojo.interop.protocols.tasker.taskeraspects import (
+    TaskerAspects,
+    DEFAULT_TASKER_ASPECTS,
+)
 from automojo.interop.protocols.tasker.tasking import Tasking, TaskingIdentity
 from automojo.interop.protocols.tasker.taskernode import TaskerNode, TaskerClientNode
 from automojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
 from automojo.interop.protocols.tasker.taskerservice import TaskerService
-from automojo.interop.protocols.tasker.taskerservermanager import TaskerServerManager, spawn_tasking_server_process
+from automojo.interop.protocols.tasker.taskerservermanager import (
+    TaskerServerManager,
+    spawn_tasking_server_process,
+)
 from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 
 from automojo.foundation.xformatting import indent_lines_list
@@ -44,19 +49,22 @@ TASKER_PORT = 8686
 
 class TaskerController:
     """
-        The :class:`TaskerController` object lets you startup and control task processing across
-        a collection of clients.
+    The :class:`TaskerController` object lets you startup and control task processing across
+    a collection of clients.
     """
 
-    def __init__(self, logging_directory: Optional[str] = None,
-                 summary_progress: Optional[SummaryProgressDelivery] = None,
-                 aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS):
+    def __init__(
+        self,
+        logging_directory: Optional[str] = None,
+        summary_progress: Optional[SummaryProgressDelivery] = None,
+        aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS,
+    ):
         """
-            Initialize the :class:`TaskerController`.
+        Initialize the :class:`TaskerController`.
 
-            :param logging_directory: Directory where task logs are stored.
-            :param summary_progress: Optional summary progress delivery settings.
-            :param aspects: Default tasker aspects for operations.
+        :param logging_directory: Directory where task logs are stored.
+        :param summary_progress: Optional summary progress delivery settings.
+        :param aspects: Default tasker aspects for operations.
         """
         self._logging_directory = logging_directory
         self._summary_progress = summary_progress
@@ -66,32 +74,36 @@ class TaskerController:
         self._network_started = False
         return
 
-
     @property
     def tasker_clients(self) -> List[INetworkClient]:
         """List of network clients associated with tasker nodes."""
         clients = [tn.client for tn in self._tasker_nodes]
         return clients
 
-
     @property
     def tasker_nodes(self):
         """List of tasker nodes under management."""
         return self._tasker_nodes
 
-
-    def execute_tasking_on_all_nodes(self, *, tasking: Union[TaskingIdentity, Type[Tasking]], parent_id: str = None,
-                                     summary_progress: Optional[SummaryProgressDelivery] = None, aspects: Optional[TaskerAspects] = None, **kwargs) -> List[TaskingResultPromise]:
+    def execute_tasking_on_all_nodes(
+        self,
+        *,
+        tasking: Union[TaskingIdentity, Type[Tasking]],
+        parent_id: str = None,
+        summary_progress: Optional[SummaryProgressDelivery] = None,
+        aspects: Optional[TaskerAspects] = None,
+        **kwargs,
+    ) -> List[TaskingResultPromise]:
         """
-            Execute a tasking on every node managed by this controller.
+        Execute a tasking on every node managed by this controller.
 
-            :param tasking: Tasking identity or type to execute.
-            :param parent_id: Optional parent task identifier.
-            :param summary_progress: Optional summary progress handler.
-            :param aspects: Aspects controlling tasking behavior.
-            :param kwargs: Additional keyword arguments passed to the tasking.
+        :param tasking: Tasking identity or type to execute.
+        :param parent_id: Optional parent task identifier.
+        :param summary_progress: Optional summary progress handler.
+        :param aspects: Aspects controlling tasking behavior.
+        :param kwargs: Additional keyword arguments passed to the tasking.
 
-            :returns: List of promises for each dispatched tasking.
+        :returns: List of promises for each dispatched tasking.
         """
 
         if aspects is None:
@@ -104,25 +116,39 @@ class TaskerController:
         module_name, tasking_name = tasking.as_tuple()
 
         for node in self._tasker_nodes:
-            promise = node.execute_tasking(module_name=module_name, tasking_name=tasking_name, parent_id=parent_id, summary_progress=summary_progress, aspects=aspects, **kwargs)
+            promise = node.execute_tasking(
+                module_name=module_name,
+                tasking_name=tasking_name,
+                parent_id=parent_id,
+                summary_progress=summary_progress,
+                aspects=aspects,
+                **kwargs,
+            )
             promise_list.append(promise)
 
         return promise_list
 
-
-    def execute_tasking_on_node(self, node: TaskerNode, *, tasking: Union[TaskingIdentity, Type[Tasking]], parent_id: str = None,
-                                summary_progress: Optional[SummaryProgressDelivery] = None, aspects: Optional[TaskerAspects] = None, **kwargs) -> TaskingResultPromise:
+    def execute_tasking_on_node(
+        self,
+        node: TaskerNode,
+        *,
+        tasking: Union[TaskingIdentity, Type[Tasking]],
+        parent_id: str = None,
+        summary_progress: Optional[SummaryProgressDelivery] = None,
+        aspects: Optional[TaskerAspects] = None,
+        **kwargs,
+    ) -> TaskingResultPromise:
         """
-            Execute a tasking on a specific node.
+        Execute a tasking on a specific node.
 
-            :param node: Node on which to run the tasking.
-            :param tasking: Tasking identity or type to execute.
-            :param parent_id: Optional parent task identifier.
-            :param summary_progress: Optional summary progress handler.
-            :param aspects: Aspects controlling tasking behavior.
-            :param kwargs: Additional keyword arguments passed to the tasking.
+        :param node: Node on which to run the tasking.
+        :param tasking: Tasking identity or type to execute.
+        :param parent_id: Optional parent task identifier.
+        :param summary_progress: Optional summary progress handler.
+        :param aspects: Aspects controlling tasking behavior.
+        :param kwargs: Additional keyword arguments passed to the tasking.
 
-            :returns: Promise for the dispatched tasking.
+        :returns: Promise for the dispatched tasking.
         """
 
         if aspects is None:
@@ -133,25 +159,39 @@ class TaskerController:
         if not isinstance(tasking, TaskingIdentity):
             tasking = tasking.get_identity()
         module_name, tasking_name = tasking.as_tuple()
-        
-        promise = node.execute_tasking(module_name=module_name, tasking_name=tasking_name, parent_id=parent_id, summary_progress=summary_progress, aspects=aspects, **kwargs)
+
+        promise = node.execute_tasking(
+            module_name=module_name,
+            tasking_name=tasking_name,
+            parent_id=parent_id,
+            summary_progress=summary_progress,
+            aspects=aspects,
+            **kwargs,
+        )
 
         return promise
 
-
-    def execute_tasking_on_node_list(self, node_list: List[TaskerNode], *, tasking: Union[TaskingIdentity, Type[Tasking]], parent_id: str = None,
-                                     summary_progress: Optional[SummaryProgressDelivery] = None, aspects: Optional[TaskerAspects] = None, **kwargs) -> List[TaskingResultPromise]:
+    def execute_tasking_on_node_list(
+        self,
+        node_list: List[TaskerNode],
+        *,
+        tasking: Union[TaskingIdentity, Type[Tasking]],
+        parent_id: str = None,
+        summary_progress: Optional[SummaryProgressDelivery] = None,
+        aspects: Optional[TaskerAspects] = None,
+        **kwargs,
+    ) -> List[TaskingResultPromise]:
         """
-            Execute a tasking on a list of nodes.
+        Execute a tasking on a list of nodes.
 
-            :param node_list: List of nodes where the tasking will run.
-            :param tasking: Tasking identity or type to execute.
-            :param parent_id: Optional parent task identifier.
-            :param summary_progress: Optional summary progress handler.
-            :param aspects: Aspects controlling tasking behavior.
-            :param kwargs: Additional keyword arguments passed to the tasking.
+        :param node_list: List of nodes where the tasking will run.
+        :param tasking: Tasking identity or type to execute.
+        :param parent_id: Optional parent task identifier.
+        :param summary_progress: Optional summary progress handler.
+        :param aspects: Aspects controlling tasking behavior.
+        :param kwargs: Additional keyword arguments passed to the tasking.
 
-            :returns: List of promises for the dispatched taskings.
+        :returns: List of promises for the dispatched taskings.
         """
 
         if aspects is None:
@@ -164,49 +204,66 @@ class TaskerController:
         module_name, tasking_name = tasking.as_tuple()
 
         for node in node_list:
-            promise = node.execute_tasking(module_name=module_name, tasking_name=tasking_name, parent_id=parent_id, summary_progress=summary_progress, aspects=aspects, **kwargs)
+            promise = node.execute_tasking(
+                module_name=module_name,
+                tasking_name=tasking_name,
+                parent_id=parent_id,
+                summary_progress=summary_progress,
+                aspects=aspects,
+                **kwargs,
+            )
             promise_list.append(promise)
 
         return promise_list
 
-
-    def reinitialize_logging_on_nodes(self, *, logging_directory: Optional[str] = None,
-                                      logging_level: Optional[int] = None,
-                                      taskings_log_directory: Optional[str] = None,
-                                      taskings_log_level: Optional[int] = None):
+    def reinitialize_logging_on_nodes(
+        self,
+        *,
+        logging_directory: Optional[str] = None,
+        logging_level: Optional[int] = None,
+        taskings_log_directory: Optional[str] = None,
+        taskings_log_level: Optional[int] = None,
+    ):
         """
-            Reconfigure logging for all tasker nodes.
+        Reconfigure logging for all tasker nodes.
 
-            :param logging_directory: Directory for controller logs.
-            :param logging_level: Logging level for controller logs.
-            :param taskings_log_directory: Directory for task logs.
-            :param taskings_log_level: Logging level for task logs.
+        :param logging_directory: Directory for controller logs.
+        :param logging_level: Logging level for controller logs.
+        :param taskings_log_directory: Directory for task logs.
+        :param taskings_log_level: Logging level for task logs.
         """
 
         for node in self._tasker_nodes:
-            node.reinitialize_logging(logging_directory=logging_directory, logging_level=logging_level,
-                                      taskings_log_directory=taskings_log_directory, taskings_log_level=taskings_log_level)
+            node.reinitialize_logging(
+                logging_directory=logging_directory,
+                logging_level=logging_level,
+                taskings_log_directory=taskings_log_directory,
+                taskings_log_level=taskings_log_level,
+            )
 
         return
-
 
     def start_tasker_network(self):
         """Starts the tasker network.  Must be implemented by subclasses."""
         raise AbstractMethodError("The 'start_task_network' method must be overloaded.")
 
-
     def stop_tasker_network(self):
         """Stop the tasker network. Must be implemented by subclasses."""
 
-        raise AbstractMethodError("The 'stop_tasker_network' method must be overloaded.")
+        raise AbstractMethodError(
+            "The 'stop_tasker_network' method must be overloaded."
+        )
 
-
-    def wait_for_all_to_event(self, event_name: str, promises: List[TaskingResultPromise],
-                            aspects: Optional[TaskerAspects] = None) -> List[TaskingEvent]:
+    def wait_for_all_to_event(
+        self,
+        event_name: str,
+        promises: List[TaskingResultPromise],
+        aspects: Optional[TaskerAspects] = None,
+    ) -> List[TaskingEvent]:
         """
-            This is a special wait function that checks all tasks in a list of promises to see if they 
-            are complete, without blocking on a single task.  It also can poll for progress and report
-            progress of the tasks if a summary_progress parameter is provided.
+        This is a special wait function that checks all tasks in a list of promises to see if they
+        are complete, without blocking on a single task.  It also can poll for progress and report
+        progress of the tasks if a summary_progress parameter is provided.
         """
 
         if aspects is None:
@@ -221,9 +278,9 @@ class TaskerController:
         start_time = now_time
         end_time = start_time + timedelta(seconds=timeout)
 
-        wait_on = [ np for np in promises ]
+        wait_on = [np for np in promises]
         not_ready = []
-        
+
         while True:
             events_found = []
 
@@ -239,7 +296,7 @@ class TaskerController:
                         events_found.append(ev)
                         has_fired = True
                         break
-                
+
                 if not has_fired:
                     not_ready.append(np)
 
@@ -268,13 +325,16 @@ class TaskerController:
 
         return events_found
 
-
-    def wait_for_any_to_event(self, event_name: str, promises: List[TaskingResultPromise],
-                            aspects: Optional[TaskerAspects] = None) -> List[TaskingEvent]:
+    def wait_for_any_to_event(
+        self,
+        event_name: str,
+        promises: List[TaskingResultPromise],
+        aspects: Optional[TaskerAspects] = None,
+    ) -> List[TaskingEvent]:
         """
-            This is a special wait function that checks all tasks in a list of promises to see if they 
-            are complete, without blocking on a single task.  It also can poll for progress and report
-            progress of the tasks if a summary_progress parameter is provided.
+        This is a special wait function that checks all tasks in a list of promises to see if they
+        are complete, without blocking on a single task.  It also can poll for progress and report
+        progress of the tasks if a summary_progress parameter is provided.
         """
 
         if aspects is None:
@@ -289,9 +349,9 @@ class TaskerController:
         start_time = now_time
         end_time = start_time + timedelta(seconds=timeout)
 
-        wait_on = [ np for np in promises ]
+        wait_on = [np for np in promises]
         ready = []
-        
+
         while True:
             events_found = []
 
@@ -310,7 +370,7 @@ class TaskerController:
                     result = np.get_result()
                     result_fmt_lines = result.format_result()
                     result_fmt_lines = indent_lines_list(result_fmt_lines, 1)
-                    
+
                     err_msg_lines.extend(result_fmt_lines)
 
                     err_msg = os.linesep.join(err_msg_lines)
@@ -347,13 +407,15 @@ class TaskerController:
 
         return events_found
 
-
-    def wait_for_tasking_results(self, promises: List[TaskingResultPromise],
-                                 aspects: Optional[TaskerAspects] = None) -> List[TaskingResult]:
+    def wait_for_tasking_results(
+        self,
+        promises: List[TaskingResultPromise],
+        aspects: Optional[TaskerAspects] = None,
+    ) -> List[TaskingResult]:
         """
-            This is a special wait function that checks all tasks in a list of promises to see if they 
-            are complete, without blocking on a single task.  It also can poll for progress and report
-            progress of the tasks if a summary_progress parameter is provided.
+        This is a special wait function that checks all tasks in a list of promises to see if they
+        are complete, without blocking on a single task.  It also can poll for progress and report
+        progress of the tasks if a summary_progress parameter is provided.
         """
 
         if aspects is None:
@@ -367,8 +429,8 @@ class TaskerController:
         now_time = datetime.now()
         start_time = now_time
         end_time = start_time + timedelta(seconds=timeout)
-        
-        wait_on = [ np for np in promises ]
+
+        wait_on = [np for np in promises]
         not_ready = []
 
         while True:
@@ -395,14 +457,11 @@ class TaskerController:
 
             now_time = datetime.now()
             if now_time > end_time:
-                err_msg_lines = [
-                    "Timeout: Waiting for taskings to complete."
-                ]
+                err_msg_lines = ["Timeout: Waiting for taskings to complete."]
                 errmsg = os.linesep.join(err_msg_lines)
                 raise TimeoutError(errmsg)
 
             time.sleep(interval)
-
 
         # If we made it here, we didn't timeout, that means we should
         # have a result from each tasking in our promise objects
@@ -415,13 +474,20 @@ class TaskerController:
 
 
 class ProcessTaskerController(TaskerController):
+    """
+    Spawns and manages local tasker server processes.
+    """
 
-    def __init__(self, logging_directory: Optional[str] = None, aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS):
+    def __init__(
+        self,
+        logging_directory: Optional[str] = None,
+        aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS,
+    ):
         """
-            Initialize a :class:`ProcessTaskerController`.
+        Initialize a :class:`ProcessTaskerController`.
 
-            :param logging_directory: Directory where server logs are written.
-            :param aspects: Default tasker aspects for spawned processes.
+        :param logging_directory: Directory where server logs are written.
+        :param aspects: Default tasker aspects for spawned processes.
         """
 
         super().__init__(logging_directory=logging_directory, aspects=aspects)
@@ -430,13 +496,18 @@ class ProcessTaskerController(TaskerController):
         self._svr_proxies: List[TaskerService] = []
         return
 
-    def start_tasker_network(self, node_count=5, output_directory: Optional[str] = None, log_level: Optional[int] = logging.DEBUG):
+    def start_tasker_network(
+        self,
+        node_count=5,
+        output_directory: Optional[str] = None,
+        log_level: Optional[int] = logging.DEBUG,
+    ):
         """
-            Starts a number of local tasker server processes.
+        Starts a number of local tasker server processes.
 
-            :param node_count: Number of tasker nodes to start.
-            :param output_directory: Optional directory for task output.
-            :param log_level: Logging level for the servers.
+        :param node_count: Number of tasker nodes to start.
+        :param output_directory: Optional directory for task output.
+        :param log_level: Logging level for the servers.
         """
 
         if self._network_started:
@@ -446,7 +517,9 @@ class ProcessTaskerController(TaskerController):
         self._network_started = True
 
         for nindex in range(node_count):
-            svr_mgr, tasking_svr_proxy = spawn_tasking_server_process(('0.0.0.0', 0), logging_directory=self._logging_directory)
+            svr_mgr, tasking_svr_proxy = spawn_tasking_server_process(
+                ("0.0.0.0", 0), logging_directory=self._logging_directory
+            )
 
             tasking_svr_proxy.start()
 
@@ -457,15 +530,21 @@ class ProcessTaskerController(TaskerController):
             worker = f"{ipaddr}: {port}"
 
             node = TaskerNode(ipaddr=ipaddr, port=port)
-            
+
             wref = str(nindex)
 
-            node.session_open(worker=worker, wref=wref, output_directory=output_directory, log_level=log_level, aspects=self._aspects)
+            node.session_open(
+                worker=worker,
+                wref=wref,
+                output_directory=output_directory,
+                log_level=log_level,
+                aspects=self._aspects,
+            )
 
             self._tasker_nodes.append(node)
 
         return
-    
+
     def stop_tasker_network(self):
         """Stop all running tasker server processes."""
 
@@ -476,26 +555,37 @@ class ProcessTaskerController(TaskerController):
 
 
 class ClientTaskerController(TaskerController):
+    """
+    Uses existing network clients to communicate with remote taskers.
+    """
 
-    def __init__(self, logging_directory: Optional[str] = None, aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS):
+    def __init__(
+        self,
+        logging_directory: Optional[str] = None,
+        aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS,
+    ):
         """
-            Initialize a :class:`ClientTaskerController`.
+        Initialize a :class:`ClientTaskerController`.
 
-            :param logging_directory: Directory where client logs are written.
-            :param aspects: Default tasker aspects used when executing tasks.
+        :param logging_directory: Directory where client logs are written.
+        :param aspects: Default tasker aspects used when executing tasks.
         """
 
         super().__init__(logging_directory=logging_directory, aspects=aspects)
         return
 
-    def start_tasker_network(self, clients: List[INetworkClient], output_directory: Optional[str] = None,
-                             log_level: Optional[int] = logging.DEBUG):
+    def start_tasker_network(
+        self,
+        clients: List[INetworkClient],
+        output_directory: Optional[str] = None,
+        log_level: Optional[int] = logging.DEBUG,
+    ):
         """
-            Starts a tasker network using existing client connections.
+        Starts a tasker network using existing client connections.
 
-            :param clients: List of network clients to use.
-            :param output_directory: Optional directory for task outputs.
-            :param log_level: Logging level for the servers.
+        :param clients: List of network clients to use.
+        :param output_directory: Optional directory for task outputs.
+        :param log_level: Logging level for the servers.
         """
 
         if self._network_started:
@@ -507,16 +597,22 @@ class ClientTaskerController(TaskerController):
         for cidx, cl in enumerate(clients):
 
             node = TaskerClientNode(client=cl, ipaddr=cl.ipaddr, port=TASKER_PORT)
-            
+
             worker = cl.ipaddr
             wref = str(cidx)
 
-            node.session_open(worker=worker, wref=wref, output_directory=output_directory, log_level=log_level, aspects=self._aspects)
-            
+            node.session_open(
+                worker=worker,
+                wref=wref,
+                output_directory=output_directory,
+                log_level=log_level,
+                aspects=self._aspects,
+            )
+
             self._tasker_nodes.append(node)
 
         return
-    
+
     def stop_tasker_network(self):
         """Close all tasker client sessions."""
 
@@ -524,4 +620,3 @@ class ClientTaskerController(TaskerController):
             node.session_close()
 
         return
-

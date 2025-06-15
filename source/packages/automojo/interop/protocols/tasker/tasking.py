@@ -1,17 +1,16 @@
 """
-    .. module:: tasking
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Module containing the :class:`Tasking` class which is the base class used
-    to pattern interop with tasks across processes and machines.
-    
-    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
-    
+.. module:: tasking
+:platform: Darwin, Linux, Unix, Windows
+:synopsis: Module containing the :class:`Tasking` class which is the base class used
+to pattern interop with tasks across processes and machines.
+
+.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+
 """
 
 __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
-
 
 
 from typing import Dict, Optional, Tuple, Type
@@ -49,33 +48,49 @@ from automojo.foundation.xformatting import indent_lines_list
 from automojo.foundation.ximport import import_by_name
 from automojo.foundation.jsos import CHAR_RECORD_SEPERATOR
 
-from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
+from automojo.interop.protocols.tasker.taskeraspects import (
+    TaskerAspects,
+    DEFAULT_TASKER_ASPECTS,
+)
 from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 
 
-def instantiate_tasking(worker: str, wref: str, module_name: str, tasking_name: str, tasking_id: str, parent_id: str, output_dir: str,
-                        logdir: str, logfile: str, log_level: int, events_endpoint: Tuple[str, int], notify_url: Optional[str], notify_headers: Optional[Dict[str, str]],
-                        aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS) -> "Tasking":
+def instantiate_tasking(
+    worker: str,
+    wref: str,
+    module_name: str,
+    tasking_name: str,
+    tasking_id: str,
+    parent_id: str,
+    output_dir: str,
+    logdir: str,
+    logfile: str,
+    log_level: int,
+    events_endpoint: Tuple[str, int],
+    notify_url: Optional[str],
+    notify_headers: Optional[Dict[str, str]],
+    aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS,
+) -> "Tasking":
     """
-        Factory function used by :class:`TaskerService` to instantiate a tasking class in a
-        separate process.
+    Factory function used by :class:`TaskerService` to instantiate a tasking class in a
+    separate process.
 
-        :param worker: Name of the worker running the tasking.
-        :param wref: Worker reference identifier.
-        :param module_name: Module containing the tasking class.
-        :param tasking_name: Name of the tasking class to instantiate.
-        :param tasking_id: Instance identifier for the tasking.
-        :param parent_id: Parent identifier for result chaining.
-        :param output_dir: Directory for task outputs.
-        :param logdir: Directory to place log files.
-        :param logfile: Log file name for the tasking.
-        :param log_level: Logging level to configure.
-        :param events_endpoint: Tuple host/port for event notifications.
-        :param notify_url: Optional notification URL.
-        :param notify_headers: Optional HTTP headers for notification.
-        :param aspects: Default tasker aspects.
+    :param worker: Name of the worker running the tasking.
+    :param wref: Worker reference identifier.
+    :param module_name: Module containing the tasking class.
+    :param tasking_name: Name of the tasking class to instantiate.
+    :param tasking_id: Instance identifier for the tasking.
+    :param parent_id: Parent identifier for result chaining.
+    :param output_dir: Directory for task outputs.
+    :param logdir: Directory to place log files.
+    :param logfile: Log file name for the tasking.
+    :param log_level: Logging level to configure.
+    :param events_endpoint: Tuple host/port for event notifications.
+    :param notify_url: Optional notification URL.
+    :param notify_headers: Optional HTTP headers for notification.
+    :param aspects: Default tasker aspects.
 
-        :returns: Instantiated :class:`Tasking` or ``None`` if not found.
+    :returns: Instantiated :class:`Tasking` or ``None`` if not found.
     """
     logger = None
     tasking = None
@@ -88,32 +103,50 @@ def instantiate_tasking(worker: str, wref: str, module_name: str, tasking_name: 
 
         log_handler = FileHandler(logfile)
         log_handler.setLevel(log_level)
-        
+
         logger = logging.getLogger("TASKING")
         logger.addHandler(log_handler)
 
         tasking_type: Type[Tasking] = getattr(module, tasking_name)
 
-        logger.info(f"Creating tasking module_name={module_name} tasking_name={tasking_name}")
+        logger.info(
+            f"Creating tasking module_name={module_name} tasking_name={tasking_name}"
+        )
 
-        tasking = tasking_type(worker=worker, wref=wref, tasking_id=tasking_id, parent_id=parent_id, output_dir=output_dir, 
-                               logdir=logdir, logfile=logfile, logger=logger, events_endpoint=events_endpoint,
-                               notify_url=notify_url, notify_headers=notify_headers, aspects=aspects)
+        tasking = tasking_type(
+            worker=worker,
+            wref=wref,
+            tasking_id=tasking_id,
+            parent_id=parent_id,
+            output_dir=output_dir,
+            logdir=logdir,
+            logfile=logfile,
+            logger=logger,
+            events_endpoint=events_endpoint,
+            notify_url=notify_url,
+            notify_headers=notify_headers,
+            aspects=aspects,
+        )
 
     return tasking
 
 
 class TaskingManager(multiprocessing.managers.SyncManager):
     """
-        This is a process manager used for creating a :class:`TaskingManager`
-        in a remote process that can be communicated with via a proxy.
+    This is a process manager used for creating a :class:`TaskingManager`
+    in a remote process that can be communicated with via a proxy.
     """
+
 
 TaskingManager.register("instantiate_tasking", instantiate_tasking)
 
 
 @dataclass
 class StreamInfo:
+    """
+    Describes a file stream used during task execution.
+    """
+
     name: str
     type: str
     filename: str
@@ -121,46 +154,61 @@ class StreamInfo:
 
 @dataclass
 class TaskingIdentity:
+    """
+    Module and class name pair uniquely identifying a tasking class.
+    """
+
     module_name: str
     tasking_name: str
 
     def as_tuple(self) -> Tuple[str, str]:
         """
-            Return the module and class name for this identity.
+        Return the module and class name for this identity.
 
-            :returns: Tuple ``(module_name, tasking_name)``.
+        :returns: Tuple ``(module_name, tasking_name)``.
         """
         return self.module_name, self.tasking_name
 
 
 class Tasking:
     """
-        Base class for task implementations executed by the tasker service.
-        Subclasses should implement the :meth:`perform` method to define the work
-        performed by the tasking.
+    Base class for task implementations executed by the tasker service.
+    Subclasses should implement the :meth:`perform` method to define the work
+    performed by the tasking.
     """
 
     PREFIX = "tasking"
 
-    def __init__(self, worker: str, wref: str,  tasking_id: str, parent_id: str, output_dir: str, logdir: str,
-                 logfile: str, logger: logging.Logger, events_endpoint: Optional[Tuple[str, int]],
-                 notify_url: Optional[str] = None, notify_headers: Optional[dict] = None,
-                 aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS):
+    def __init__(
+        self,
+        worker: str,
+        wref: str,
+        tasking_id: str,
+        parent_id: str,
+        output_dir: str,
+        logdir: str,
+        logfile: str,
+        logger: logging.Logger,
+        events_endpoint: Optional[Tuple[str, int]],
+        notify_url: Optional[str] = None,
+        notify_headers: Optional[dict] = None,
+        aspects: Optional[TaskerAspects] = DEFAULT_TASKER_ASPECTS,
+    ):
         """
-            Initialize a new tasking instance.
+        Initialize a new tasking instance.
 
-            :param worker: Name of the worker executing the tasking.
-            :param wref: Worker reference value.
-            :param tasking_id: Identifier for this tasking instance.
-            :param parent_id: Parent tasking identifier.
-            :param output_dir: Directory to write output files.
-            :param logdir: Directory to write logs.
-            :param logfile: Log file path.
-            :param logger: Logger to use for output.
-            :param events_endpoint: Host/port tuple for event notifications.
-            :param notify_url: Optional URL for completion notification.
-            :param notify_headers: Optional headers for notification.
-            :param aspects: Default aspects controlling execution.
+        :param worker: Name of the worker executing the tasking.
+        :param wref: Worker reference value.
+        :param tasking_id: Identifier for this tasking instance.
+        :param parent_id: Parent tasking identifier.
+        :param output_dir: Directory to write output files.
+        :param logdir: Directory to write logs.
+        :param logfile: Log file path.
+        :param logger: Logger to use for output.
+        :param events_endpoint: Host/port tuple for event notifications.
+        :param notify_url: Optional URL for completion notification.
+        :param notify_headers: Optional headers for notification.
+        :param aspects: Default aspects controlling execution.
         """
 
         self._worker = worker
@@ -174,7 +222,7 @@ class Tasking:
         self._logdir = logdir
         self._logfile = logfile
         self._logger = logger
-    
+
         self._events_host = None
         self._events_port = None
 
@@ -202,7 +250,7 @@ class Tasking:
         self._metrics_indent = None
 
         self._pause_gate = threading.Event()
-        
+
         # The following variables are shared between process but must be updated in the parent process
         # when progress or state comes back from the child process
         self._result = None
@@ -249,7 +297,7 @@ class Tasking:
 
     def add_metrics_stream(self, stream_name: str, stream_type: str):
         """
-            Adds a new metrics stream
+        Adds a new metrics stream
         """
 
         stream_filename = os.path.join(self._logdir, f"{stream_name}.jsos")
@@ -261,8 +309,8 @@ class Tasking:
 
     def begin(self, kwparams: dict):
         """
-            The `begin` method is called in order to stash the `kwparams` on the tasking instance
-            and to create the result container.
+        The `begin` method is called in order to stash the `kwparams` on the tasking instance
+        and to create the result container.
         """
         self._kwparams = kwparams
 
@@ -273,22 +321,26 @@ class Tasking:
 
     def cleanup(self):
         """
-            Called to allow the tasking to cleanup any created resources.
+        Called to allow the tasking to cleanup any created resources.
         """
         return
 
-    def create_tasking_result(self, tasking_id: str, tasking_name: str, parent_id: str, prefix: str) -> TaskingResult:
+    def create_tasking_result(
+        self, tasking_id: str, tasking_name: str, parent_id: str, prefix: str
+    ) -> TaskingResult:
         """
-            Called to create the 'TaskingResult' object and can be overloaded by Tasking(s) to create a custom derived
-            'TaskingResult' type.
+        Called to create the 'TaskingResult' object and can be overloaded by Tasking(s) to create a custom derived
+        'TaskingResult' type.
         """
-        tresult = TaskingResult(tasking_id, tasking_name, parent_id, self._worker, prefix=prefix)
+        tresult = TaskingResult(
+            tasking_id, tasking_name, parent_id, self._worker, prefix=prefix
+        )
         return tresult
 
     def execute(self, progress_queue: multiprocessing.JoinableQueue, kwparams: dict):
         """
-            The `execute` method is called by the tasking service in order to trigger the execution
-            of the task.
+        The `execute` method is called by the tasking service in order to trigger the execution
+        of the task.
         """
 
         sgate = threading.Event()
@@ -296,7 +348,12 @@ class Tasking:
 
         ttargs = (sgate, progress_queue, kwparams)
 
-        self._task_thread = threading.Thread(target=self._task_thread_entry, name="effect-dispatcher", args=ttargs, daemon=True)
+        self._task_thread = threading.Thread(
+            target=self._task_thread_entry,
+            name="effect-dispatcher",
+            args=ttargs,
+            daemon=True,
+        )
         self._task_thread.start()
 
         sgate.wait()
@@ -305,35 +362,35 @@ class Tasking:
 
     def evaluate_results(self):
         """
-            The `evaluate_results` method is called in order to process information to
-            create a final status code for the given tasking.
+        The `evaluate_results` method is called in order to process information to
+        create a final status code for the given tasking.
 
-            :returns: Returns the 'result_code' that is written into the tasking result.
+        :returns: Returns the 'result_code' that is written into the tasking result.
         """
         return
 
     def finalize(self):
         """
-            The `finalize` method is called in order to provide an opportunity for a tasking
-            to finalize execution and cleanup resources as required.
+        The `finalize` method is called in order to provide an opportunity for a tasking
+        to finalize execution and cleanup resources as required.
         """
         self.result.finalize()
 
         finalize_msg = self.format_finalize_message()
         self._logger.info(finalize_msg)
         return
-    
+
     def fire_perform(self):
         """
-            The `fire_peform` allows for modification of the calling of the perform method.
+        The `fire_peform` allows for modification of the calling of the perform method.
         """
         return self.perform()
 
     def format_begin_message(self, kwparams: dict):
         """
-            Formats the tasking 'BEGIN' log message.
+        Formats the tasking 'BEGIN' log message.
         """
-        
+
         start_fmt = format_datetime_with_fractional(self._result.start)
 
         begin_msg_lines = [
@@ -342,7 +399,7 @@ class Tasking:
             f"    TASK_ID: {self._result.inst_id}",
             f"  PARENT_ID: {self._result.parent_inst}",
             f"     LOGDIR: {self._logdir}",
-            f"      START: {start_fmt}"
+            f"      START: {start_fmt}",
         ]
 
         kwparams_lines = pformat(kwparams, indent=4, width=200).splitlines(False)
@@ -357,7 +414,7 @@ class Tasking:
 
     def format_finalize_message(self):
         """
-            Formats the tasking 'FINALIZE' log message.
+        Formats the tasking 'FINALIZE' log message.
         """
 
         start_fmt = format_datetime_with_fractional(self._result.start)
@@ -376,21 +433,25 @@ class Tasking:
 
         finalize_msg_lines.append("ERRORS:")
         for err in self._result.errors:
-            finalize_msg_lines.extend(indent_lines_list(format_traceback_detail(err), 1))
+            finalize_msg_lines.extend(
+                indent_lines_list(format_traceback_detail(err), 1)
+            )
             finalize_msg_lines.append("")
 
         finalize_msg_lines.append("FAILURES:")
         for fail in self._result.failures:
-            finalize_msg_lines.extend(indent_lines_list(format_traceback_detail(fail), 1))
+            finalize_msg_lines.extend(
+                indent_lines_list(format_traceback_detail(fail), 1)
+            )
             finalize_msg_lines.append("")
 
         finalize_msg = os.linesep.join(finalize_msg_lines)
 
         return finalize_msg
-    
+
     def format_progress_message(self, progress: dict):
         """
-            Formats a tasking 'PROGRESS' log message.
+        Formats a tasking 'PROGRESS' log message.
         """
         prog_msg_lines = ["PROGRESS"]
 
@@ -405,17 +466,17 @@ class Tasking:
 
     def initialize_metrics(self):
         """
-            Called in order to initialize any metrics data contains needed by the tasking and also
-            to initialize the full path to the summary file.
+        Called in order to initialize any metrics data contains needed by the tasking and also
+        to initialize the full path to the summary file.
         """
         return
 
     def initialize_summary(self):
         """
-            Called in order to initialize the Summary info dictionary that is used to write summary
-            information to the summary file and also to initialize the full path to the summary file.
+        Called in order to initialize the Summary info dictionary that is used to write summary
+        information to the summary file and also to initialize the full path to the summary file.
         """
-        
+
         this_type = type(self)
 
         self._summary_file = os.path.join(self._logdir, "task-summary.json")
@@ -426,21 +487,21 @@ class Tasking:
             "id": self._result.inst_id,
             "parent": self._result.parent_inst,
             "worker": self._worker,
-            "wref": self._wref, 
+            "wref": self._wref,
             "start": self._result.start,
             "stop": None,
             "status": str(ProgressCode.Running.value),
             "metrics": self._metrics_streams,
             "result_code": None,
-            "exception" : None
+            "exception": None,
         }
 
         return
 
     def mark_errored(self, err: BaseException):
         """
-            Marks the tasking as having errored.  This indicates to the TaskingServer that shutdown of the
-            tasking has begun.
+        Marks the tasking as having errored.  This indicates to the TaskingServer that shutdown of the
+        tasking has begun.
         """
         backup_detail = traceback.format_exc()
 
@@ -455,12 +516,11 @@ class Tasking:
             self._logger.error(fmterr_msg)
 
             errmsg = backup_detail
-        
 
         self._logger.error(errmsg)
 
         self._result.add_error(tbdetail)
-    
+
         self.mark_progress_errored()
         self._progress_queue.put_nowait(self._current_progress)
         return
@@ -483,7 +543,7 @@ class Tasking:
 
     def mark_progress_complete(self):
         """
-            The `mark_progress_complete` method is called to generate a :class:`ProgressInfo` completed.
+        The `mark_progress_complete` method is called to generate a :class:`ProgressInfo` completed.
         """
         self._task_status = ProgressCode.Completed
         self._current_progress.when = datetime.now()
@@ -492,16 +552,16 @@ class Tasking:
 
     def mark_progress_errored(self):
         """
-            The `mark_progress_errored` method is called to generate a :class:`ProgressInfo` errored.
+        The `mark_progress_errored` method is called to generate a :class:`ProgressInfo` errored.
         """
         self._task_status = ProgressCode.Errored
         self._current_progress.when = datetime.now()
         self._current_progress.status = ProgressCode.Errored
         return
-    
+
     def mark_progress_failed(self):
         """
-            The `mark_progress_failed` method is called to generate a :class:`ProgressInfo` failed.
+        The `mark_progress_failed` method is called to generate a :class:`ProgressInfo` failed.
         """
         self._task_status = ProgressCode.Failed
         self._current_progress.when = datetime.now()
@@ -510,16 +570,16 @@ class Tasking:
 
     def mark_progress_paused(self):
         """
-            The `mark_progress_paused` method is called to generate a :class:`ProgressInfo` paused.
+        The `mark_progress_paused` method is called to generate a :class:`ProgressInfo` paused.
         """
         self._task_status = ProgressCode.Paused
         self._current_progress.when = datetime.now()
         self._current_progress.status = ProgressCode.Paused
         return
-    
+
     def mark_progress_running(self):
         """
-            The `mark_progress_running` method is called to generate a :class:`ProgressInfo` running.
+        The `mark_progress_running` method is called to generate a :class:`ProgressInfo` running.
         """
         self._task_status = ProgressCode.Running
         self._current_progress.when = datetime.now()
@@ -528,26 +588,34 @@ class Tasking:
 
     def mark_progress_start(self):
         """
-            The `mark_progress_start` method that is called to generate a :class:`ProgressInfo` running.
+        The `mark_progress_start` method that is called to generate a :class:`ProgressInfo` running.
         """
         self._task_status = ProgressCode.Running
-        self._current_progress = ProgressInfo(self._tasking_id, ProgressType.NumericRange, self.full_name, ProgressType.NumericRange,
-                                              0, 0, 0, ProgressCode.Running, datetime.now(), {})
+        self._current_progress = ProgressInfo(
+            self._tasking_id,
+            ProgressType.NumericRange,
+            self.full_name,
+            ProgressType.NumericRange,
+            0,
+            0,
+            0,
+            ProgressCode.Running,
+            datetime.now(),
+            {},
+        )
         return
 
     def notify_progress(self, progress: ProgressInfo):
         """
-            The `notify_progress` method is called in order to send a progress notification to a
-            progress notification concentrator.
+        The `notify_progress` method is called in order to send a progress notification to a
+        progress notification concentrator.
 
-            :param progress: The progress information to transmit.
+        :param progress: The progress information to transmit.
         """
 
         if self._notify_url is not None:
 
-            headers = {
-                "Content-Type": "application/json"
-            }
+            headers = {"Content-Type": "application/json"}
             if self._notify_headers is not None:
                 headers.update(self._notify_headers)
 
@@ -557,40 +625,42 @@ class Tasking:
                 requests.post(self._notify_url, json=body, headers=headers)
             except Exception as xcpt:
                 print(xcpt)
-                self._logger.error(f"Failure during notification to url='{self._notify_url}'")
+                self._logger.error(
+                    f"Failure during notification to url='{self._notify_url}'"
+                )
 
         return
-    
+
     def pause(self):
         """
-            Sends a Pause command to the remote tasking
+        Sends a Pause command to the remote tasking
         """
 
         self._task_status = ProgressCode.Paused
         self._pause_gate.clear()
-        
+
         return
-    
+
     def perform(self) -> bool:
         """
-            The `perform` method is overloaded by derived tasking types in order to implement
-            the performance of a unit of work.
+        The `perform` method is overloaded by derived tasking types in order to implement
+        the performance of a unit of work.
 
-            :returns: Returns a bool indicating if 'perform' should be called again in order
-                      to complete more work.
+        :returns: Returns a bool indicating if 'perform' should be called again in order
+                  to complete more work.
         """
         errmsg = "Tasking.perform method must be overloaded in derived types."
         raise AbstractMethodError(errmsg)
-    
+
     def post_event(self, event: TaskingEvent):
         """
-            Post an event to the configured event endpoint.
+        Post an event to the configured event endpoint.
 
-            :param event: Event object describing the occurrence.
+        :param event: Event object describing the occurrence.
         """
 
         if self._events_endpoint is not None:
-            headers = { "Content-Type": "application/json"}
+            headers = {"Content-Type": "application/json"}
             url = f"http://{self._events_host}:{self._events_port}/"
             data = event.as_dict()
 
@@ -605,28 +675,28 @@ class Tasking:
 
     def resume(self):
         """
-            Resumes the tasking loop
+        Resumes the tasking loop
         """
 
         self._task_status = ProgressCode.Running
         self._pause_gate.set()
-        
+
         return
-    
+
     def shutdown(self):
         """
-            Sends a Shutdown command to the remote tasking
+        Sends a Shutdown command to the remote tasking
         """
 
         self._running = False
         self._shutdown = True
-        
+
         return
 
     def submit_progress(self):
         """
-            Submits that the tasking as having made progress on some activity so the TaskingServer 'hang' detection
-            does not trigger an inactivity timeout shutdown of the tasking.
+        Submits that the tasking as having made progress on some activity so the TaskingServer 'hang' detection
+        does not trigger an inactivity timeout shutdown of the tasking.
         """
 
         self._current_progress.when = datetime.now()
@@ -639,31 +709,31 @@ class Tasking:
         self.write_summary()
 
         self._progress_queue.put_nowait(self._current_progress)
-        
+
         self.notify_progress(self._current_progress)
 
         return
 
     def write_summary(self):
         """
-            Writes an update of the tasking summary to the summary file.
+        Writes an update of the tasking summary to the summary file.
         """
-        
-        with open(self._summary_file, 'w+') as sf:
+
+        with open(self._summary_file, "w+") as sf:
             json.dump(self._summary, sf, indent=self._summary_indent, default=str)
 
         return
-    
-    def write_metrics(self, stream_name:str, metrics: dict):
+
+    def write_metrics(self, stream_name: str, metrics: dict):
         """
-            Called in order to write a metrics payload to the taskings associated metrics stream file.
+        Called in order to write a metrics payload to the taskings associated metrics stream file.
         """
 
         if stream_name in self._metrics_streams:
 
             stream_info: StreamInfo = self._metrics_streams[stream_name]
 
-            with open(stream_info.filename, 'a+') as mf:
+            with open(stream_info.filename, "a+") as mf:
                 json.dump(metrics, mf, indent=self._metrics_indent, default=str)
                 mf.write(CHAR_RECORD_SEPERATOR)
 
@@ -673,13 +743,18 @@ class Tasking:
 
         return
 
-    def _task_thread_entry(self, sgate: threading.Event, progress_queue: multiprocessing.JoinableQueue, kwparams: dict):
+    def _task_thread_entry(
+        self,
+        sgate: threading.Event,
+        progress_queue: multiprocessing.JoinableQueue,
+        kwparams: dict,
+    ):
         """
-            Entry point for the thread that performs the tasking work.
+        Entry point for the thread that performs the tasking work.
 
-            :param sgate: Event used to signal when the thread has initialized.
-            :param progress_queue: Queue used to report progress back to the service.
-            :param kwparams: Keyword parameters provided for the tasking.
+        :param sgate: Event used to signal when the thread has initialized.
+        :param progress_queue: Queue used to report progress back to the service.
+        :param kwparams: Keyword parameters provided for the tasking.
         """
 
         # Update our local in process copy of these queues, because we have forked
@@ -690,14 +765,16 @@ class Tasking:
         info_msg_lines = [
             f"Starting thread for:",
             f"    tasking name={self.full_name}",
-            f"    tasking_id={self._tasking_id}"
+            f"    tasking_id={self._tasking_id}",
         ]
 
         info_msg = os.linesep.join(info_msg_lines)
 
         self._logger.info(info_msg)
 
-        self._result = self.create_tasking_result(self._tasking_id, self.full_name, self._parent_id, prefix)
+        self._result = self.create_tasking_result(
+            self._tasking_id, self.full_name, self._parent_id, prefix
+        )
         self._running = True
 
         try:
@@ -730,12 +807,12 @@ class Tasking:
                             self.submit_progress()
 
                         cont = self.fire_perform()
-                        
+
                         self.submit_progress()
 
                         if not cont:
                             break
-                    
+
                     if self._shutdown:
                         self.submit_progress()
                     else:

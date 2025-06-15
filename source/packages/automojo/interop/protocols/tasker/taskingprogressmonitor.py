@@ -1,10 +1,9 @@
-
 """
-    .. module:: taskingprogressmonitor
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: taskingprogressmonitor module.
-    
-    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+.. module:: taskingprogressmonitor
+:platform: Darwin, Linux, Unix, Windows
+:synopsis: taskingprogressmonitor module.
+
+.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
@@ -22,31 +21,43 @@ from automojo.testbase.results.model.progresscode import ProgressCode
 
 
 if TYPE_CHECKING:
-    from automojo.interop.protocols.tasker.taskingresultpromise import TaskingResultPromise
-    
+    from automojo.interop.protocols.tasker.taskingresultpromise import (
+        TaskingResultPromise,
+    )
+
 
 class TaskingProgressMonitor:
-    def __init__(self, summary_progress: SummaryProgressDelivery, monitored_promises: List["TaskingResultPromise"]):
-        """
-            Creates a monitor object that polls promises for progress updates.
+    """
+    Monitors remote taskings and collects progress updates.
+    """
 
-            :param summary_progress: The progress delivery information.
-            :param monitored_promises: A list of promises to monitor.
+    def __init__(
+        self,
+        summary_progress: SummaryProgressDelivery,
+        monitored_promises: List["TaskingResultPromise"],
+    ):
+        """
+        Creates a monitor object that polls promises for progress updates.
+
+        :param summary_progress: The progress delivery information.
+        :param monitored_promises: A list of promises to monitor.
         """
 
         self._progress_callback = summary_progress.progress_callback
         self._progress_interval = summary_progress.progress_interval
 
         self._lock = threading.Lock()
-        self._monitored_promise_refs = { pr.tasking_id: weakref.ref(pr) for pr in monitored_promises }
-        self._clear_progress_for = [ pr.tasking_id for pr in monitored_promises]
+        self._monitored_promise_refs = {
+            pr.tasking_id: weakref.ref(pr) for pr in monitored_promises
+        }
+        self._clear_progress_for = [pr.tasking_id for pr in monitored_promises]
         return
-    
+
     def release(self, tasking_id: str):
         """
-            Stops monitoring progress for the specified tasking.
+        Stops monitoring progress for the specified tasking.
 
-            :param tasking_id: The identifier of the tasking to release.
+        :param tasking_id: The identifier of the tasking to release.
         """
 
         self._lock.acquire()
@@ -59,13 +70,18 @@ class TaskingProgressMonitor:
 
     def start(self):
         """
-            Starts the monitoring thread that polls promises for progress.
+        Starts the monitoring thread that polls promises for progress.
         """
 
         sgate = threading.Event()
         sgate.clear()
 
-        self._progress_thread = threading.Thread(target=self._pull_progress_entry, name="progress-pullback", args=(sgate,), daemon=True)
+        self._progress_thread = threading.Thread(
+            target=self._pull_progress_entry,
+            name="progress-pullback",
+            args=(sgate,),
+            daemon=True,
+        )
         self._progress_thread.start()
 
         sgate.wait()
@@ -74,9 +90,9 @@ class TaskingProgressMonitor:
 
     def _pull_progress_entry(self, sgate: threading.Event):
         """
-            Internal thread entry used to periodically poll task promises for progress.
+        Internal thread entry used to periodically poll task promises for progress.
 
-            :param sgate: A startup gate used to signal that the thread has begun execution.
+        :param sgate: A startup gate used to signal that the thread has begun execution.
         """
 
         self._pulling_progress = True
@@ -105,9 +121,12 @@ class TaskingProgressMonitor:
             for prom_item in promises:
                 try:
                     progress = prom_item.get_progress()
-                    
-                    if progress.status != ProgressCode.NotStarted and progress.status != ProgressCode.Paused and \
-                    progress.status != ProgressCode.Running:
+
+                    if (
+                        progress.status != ProgressCode.NotStarted
+                        and progress.status != ProgressCode.Paused
+                        and progress.status != ProgressCode.Running
+                    ):
                         completed_list.append(progress)
 
                     progress_list.append(progress)
@@ -121,7 +140,7 @@ class TaskingProgressMonitor:
                     del self._monitored_promise_refs[tasking_id]
             finally:
                 self._lock.release()
-            
+
             self._progress_callback(progress_list)
 
         return
