@@ -516,5 +516,7 @@ class TaskerClientNode(TaskerNode):
     def client(self) -> Any:
         """
             Return the client object backing this node.
+
+            :returns: The client object used for communication.
         """
         return self._client_ref()

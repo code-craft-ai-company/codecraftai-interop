@@ -51,6 +51,8 @@ class DliPowerRestClient(RestClientBase):
     def relay(self) -> ApiNodeRelay:
         """
             Provides access to the node relay REST interface.
+
+            :returns: An :class:`ApiNodeRelay` instance for this client.
         """
         return self._node_relay
 

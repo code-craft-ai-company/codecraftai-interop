@@ -150,6 +150,8 @@ class TcpSerialSession(TcpSerialBase):
             
             :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
             :param aspects: The default run aspects to use for the operations performed by the session.
+
+            :returns: A newly created :class:`TcpSerialSession` instance.
         """
 
         session_aspects = None
@@ -225,6 +227,8 @@ class TcpSerialAgent(TcpSerialBase):
             
             :param session_basis: An optional existing TcpSerialSession instance to use as a basis for the new session.
             :param aspects: The default run aspects to use for the operations performed by the session.
+
+            :returns: A newly created :class:`TcpSerialSession` instance.
         """
 
         session_aspects = None

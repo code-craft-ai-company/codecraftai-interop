@@ -98,6 +98,8 @@ class ISystemContext(Protocol):
             :param basis_session: An optional ISystemContext instance to use for creating a session.  This allows arbitrary re-use of sessions.
             :param aspects: The default run aspects to use for the operations performed by the session.
             :param kwargs: Other keyword args to allow flexible tuning of session constraints.
+
+            :returns: A new :class:`ISystemContext` instance representing the opened session.
         """
         raise AbstractMethodError("ISystemContext.open_session must be overloaded by derived types")
 

@@ -83,6 +83,8 @@ class UpnpSearchWindow:
         """
             The dictionary of devices found during the search window.  The keys are the USN identifiers of the devices and the values
             are the :class:`UpnpDeviceDetail` objects that represent the devices.
+
+            :returns: Copy of the devices found mapping.
         """
         rtnval = self._devices_found.copy()
         return rtnval
@@ -91,6 +93,8 @@ class UpnpSearchWindow:
     def id(self) -> str:
         """
             The ID of the search window.  This is a unique identifier for the search window.
+
+            :returns: Identifier string for this search window.
         """
         return self._id
     
@@ -99,6 +103,8 @@ class UpnpSearchWindow:
         """
             The dictionary of devices that matched the search window.  The keys are the USN identifiers of the devices and the values
             are the :class:`UpnpDeviceDetail` objects that represent the devices.
+
+            :returns: Mapping of device hints to matching device details.
         """
         rtnval = self._matching_devices.copy()
         return rtnval
@@ -107,8 +113,10 @@ class UpnpSearchWindow:
     def presence(self) -> "UpnpPresence":
         """
             The :class:`UpnpPresence` object that is associated with this search window.
+
+            :returns: The owning :class:`UpnpPresence` instance.
         """
-        return self._presence_ref() 
+        return self._presence_ref()
 
 
     def add_device(self, identifier: str, device_detail: UpnpDeviceDetail):
@@ -169,6 +177,8 @@ class UpnpSearchWindow:
             This method will block until the search window has closed or the timeout has been reached.
 
             :param timeout: The time in seconds to wait for the search window to close.  If None, then wait indefinitely.
+
+            :returns: ``True`` if the window closed before timeout, otherwise ``False``.
         """
 
         try:

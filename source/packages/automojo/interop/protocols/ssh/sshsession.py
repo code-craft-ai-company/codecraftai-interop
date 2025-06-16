@@ -257,6 +257,8 @@ class SshSession(SshBase):
             :param interactive: Creates an interactive session which holds open an interactive shell so commands can interact in the shell.
             :param basis_session: An optional SshSession instance to use as a session basis.  This allows re-use of sessions.
             :param aspects: The default run aspects to use for the operations performed by the session.
+
+            :returns: A new :class:`SshSession` instance with the requested parameters.
         """
 
         if aspects is None:

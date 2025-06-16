@@ -76,11 +76,13 @@ class EventNotificationHandler(BaseHTTPRequestHandler):
 
     @property
     def tasker_session(self) -> "TaskerSession":
-        """Return the owning :class:`TaskerSession` instance."""
-            
-            return self._tasker_session_ref()
-            
-            def do_POST(self):
+        """Return the owning :class:`TaskerSession` instance.
+
+        :returns: The associated :class:`TaskerSession` object.
+        """
+        return self._tasker_session_ref()
+
+    def do_POST(self):
         """Handle HTTP POST callbacks containing progress events."""
 
         if "Content-Type" in self.headers:

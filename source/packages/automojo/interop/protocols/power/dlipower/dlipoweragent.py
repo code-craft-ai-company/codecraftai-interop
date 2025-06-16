@@ -32,6 +32,8 @@ class DliPowerAgent:
     def on(self) -> bool:
         """
             Turns the attached outlet on.
+
+            :returns: ``True`` if the outlet was successfully turned on.
         """
         success = self._interface.on(outlet=self._attachment)
         return success
@@ -39,6 +41,8 @@ class DliPowerAgent:
     def off(self) -> bool:
         """
             Turns the attached outlet off.
+
+            :returns: ``True`` if the outlet was successfully turned off.
         """
         success = self._interface.off(outlet=self._attachment)
         return success

@@ -271,6 +271,8 @@ class TaskerService(rpyc.Service):
     def exposed_file_exists(self, *, filename) -> bool:
         """
             Check if a file exists on the server.
+
+            :returns: ``True`` if the specified file exists.
         """
 
         this_type = type(self)
@@ -296,6 +298,8 @@ class TaskerService(rpyc.Service):
     def exposed_folder_exists(self, *, folder) -> bool:
         """
             Check if a folder exists on the server.
+
+            :returns: ``True`` if the folder exists.
         """
 
         this_type = type(self)

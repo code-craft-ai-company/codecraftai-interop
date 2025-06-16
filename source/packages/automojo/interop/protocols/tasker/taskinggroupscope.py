@@ -149,12 +149,18 @@ class TaskingGroupScope:
         return self._tnodes
 
     def __enter__(self) -> "TaskingGroupScope":
-        """Initializes and returns this context manager."""
+        """Initializes and returns this context manager.
+
+        :returns: This :class:`TaskingGroupScope` instance.
+        """
         self.initialize()
         return self
 
     def __exit__(self, ex_type, ex_inst, ex_tb) -> bool:
-        """Context manager exit handler."""
+        """Context manager exit handler.
+
+        :returns: ``False`` to allow exceptions to propagate.
+        """
         if ex_inst is not None:
             err_msg = format_exception(ex_inst)
             logger.error(err_msg)

@@ -41,6 +41,8 @@ class ApiNodeRelay:
             Initializes an :class:`ApiNodeRelay` instance.
 
             :param client: Client used to issue REST requests.
+
+            :returns: ``None``
         """
         self._client_ref = weakref.ref(client)
         return

@@ -31,5 +31,7 @@ class UpnpExtensionProtocol(ExtensionProtocolBase):
     def get_device_detail_mapper_types(self) -> List[Type[DeviceDetailMapper]]:
         """
             Returns a list of device detail mappers that are registered with this extension protocol.
+
+            :returns: A list of :class:`DeviceDetailMapper` types.
         """
         raise AbstractMethodError("The 'get_device_detail_mapper_type' class method must be implemented for this protocol.")
