@@ -85,57 +85,79 @@ class DnsOutboundMessage:
 
     @property
     def additionals(self) -> List[DnsRecord]:
-        """List of additional records to include in the packet."""
+        """
+            List of additional records to include in the packet.
+        """
         return self._additionals
 
     @property
     def answers(self) -> List[Tuple[DnsRecord, float]]:
-        """Answers that will be written into the packet."""
+        """
+            Answers that will be written into the packet.
+        """
         return self._answers
 
     @property
     def authorities(self) -> List[DnsPointer] :
-        """Authoritative DNS pointers for the message."""
+        """
+            Authoritative DNS pointers for the message.
+        """
         return self._authorities
 
     @property
     def data(self) -> List[bytes]:
-        """Mutable list of packet byte segments."""
+        """
+            Mutable list of packet byte segments.
+        """
         return self._data
 
     @property
     def finished(self) -> bool:
-        """Indicates if packet construction has completed."""
+        """
+            Indicates if packet construction has completed.
+        """
         return self._finished
 
     @property
     def flags(self) -> DnsFlags:
-        """DNS flags describing the outbound message."""
+        """
+            DNS flags describing the outbound message.
+        """
         return self._flags
 
     @property
     def id(self) -> int:
-        """Message identifier for the outbound packet."""
+        """
+            Message identifier for the outbound packet.
+        """
         return self._id
 
     @property
     def multicast(self) -> bool:
-        """Indicates if the packet will be multicast."""
+        """
+            Indicates if the packet will be multicast.
+        """
         return self._multicast
 
     @property
     def packets_data(self) -> List[bytes]:
-        """List of bytestreams containing the generated packets."""
+        """
+            List of bytestreams containing the generated packets.
+        """
         return self._packets_data
 
     @property
     def questions(self) -> List[DnsQuestion]:
-        """Questions contained within the outbound message."""
+        """
+            Questions contained within the outbound message.
+        """
         return self._questions
 
     @property
     def size(self) -> int:
-        """Current size in bytes of the packet being built."""
+        """
+            Current size in bytes of the packet being built.
+        """
         return self._packet_offset
 
     @property

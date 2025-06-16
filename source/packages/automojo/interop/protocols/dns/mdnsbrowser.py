@@ -67,17 +67,23 @@ class MdnsBrowseSearchWindow:
 
     @property
     def browser(self) -> "MdnsBrowser":
-        """The :class:`MdnsBrowser` instance that created this window."""
+        """
+            The :class:`MdnsBrowser` instance that created this window.
+        """
         return self._browser_ref()
     
     @property
     def id(self) -> int:
-        """Identifier for the search window."""
+        """
+            Identifier for the search window.
+        """
         return self._id
 
     @property
     def span(self) -> float:
-        """Time span in seconds that the search will run."""
+        """
+            Time span in seconds that the search will run.
+        """
         return self._span
 
     def begin(self, span: float):
@@ -163,7 +169,9 @@ class MdnsBrowser:
     
     @property
     def active_devices(self) -> Dict[str, Dict[str, str]]:
-        """Dictionary of devices that have recently advertised services."""
+        """
+            Dictionary of devices that have recently advertised services.
+        """
         rtnval = None
 
         self._lock.acquire()
@@ -176,7 +184,9 @@ class MdnsBrowser:
     
     @property
     def inactive_devices(self) -> Dict[str, Dict[str, str]]:
-        """Dictionary of devices no longer advertising services."""
+        """
+            Dictionary of devices no longer advertising services.
+        """
 
         self._lock.acquire()
         try:
@@ -532,7 +542,9 @@ class MdnsBrowser:
         return
 
     def _next_search_id(self) -> int:
-        """Generate and return the next search identifier."""
+        """
+            Generate and return the next search identifier.
+        """
 
         search_id = self._search_id
         self._search_id += 1

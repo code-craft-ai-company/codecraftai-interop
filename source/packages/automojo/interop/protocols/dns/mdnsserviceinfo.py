@@ -43,12 +43,16 @@ class MdnsServiceInfo:
 
     @property
     def addresses(self):
-        """List of raw addresses associated with the service."""
+        """
+            List of raw addresses associated with the service.
+        """
         return self._addresses
 
     @property
     def first_ipv4_address(self):
-        """First IPv4 address for the service if one exists."""
+        """
+            First IPv4 address for the service if one exists.
+        """
         fipv4_addr = None
 
         for addr in self._addresses:
@@ -60,72 +64,100 @@ class MdnsServiceInfo:
 
     @property
     def host_ttl(self):
-        """Time-to-live value for the host record."""
+        """
+            Time-to-live value for the host record.
+        """
         return self._host_ttl
 
     @property
     def interface_index(self):
-        """Interface index the service was discovered on."""
+        """
+            Interface index the service was discovered on.
+        """
         return self._interface_index
 
     @property
     def key(self):
-        """Unique key identifying the service."""
+        """
+            Unique key identifying the service.
+        """
         return self._key
     
     @property
     def other_ttl(self):
-        """Time-to-live value for non-host records."""
+        """
+            Time-to-live value for non-host records.
+        """
         return self._other_ttl
     
     @property
     def port(self):
-        """Network port for the service."""
+        """
+            Network port for the service.
+        """
         return self._port
 
     @property
     def priority(self):
-        """Service priority value."""
+        """
+            Service priority value.
+        """
         return self._priority
     
     @property
     def properties(self):
-        """Dictionary of TXT record properties."""
+        """
+            Dictionary of TXT record properties.
+        """
         return self._properties
     
     @property
     def server(self):
-        """Hostname of the server providing the service."""
+        """
+            Hostname of the server providing the service.
+        """
         return self._server
     
     @property
     def server_key(self):
-        """Key for locating the server record."""
+        """
+            Key for locating the server record.
+        """
         return self._server_key
 
     @property
     def svc_name(self):
-        """Service instance name."""
+        """
+            Service instance name.
+        """
         return self._name
     
     @property
     def svc_type(self):
-        """Service type string."""
+        """
+            Service type string.
+        """
         return self._type
 
     @property
     def text(self):
-        """Raw TXT record payload."""
+        """
+            Raw TXT record payload.
+        """
         return self._text
     
     @property
     def weight(self):
-        """Service weight value."""
+        """
+            Service weight value.
+        """
         return self._weight
 
 
     def detail_lines(self):
-        """Builds a list of strings describing the service."""
+        """
+            Builds a list of strings describing the service.
+        """
 
         str_lines = [
             "svc_name: {}".format(self._svc_name),
@@ -149,7 +181,9 @@ class MdnsServiceInfo:
         return str_lines
 
     def __str__(self):
-        """String representation of the service."""
+        """
+            String representation of the service.
+        """
         
         str_lines = self.detail_lines()
         strval = os.linesep.join(str_lines)
