@@ -272,6 +272,8 @@ class TaskerController:
             This is a special wait function that checks all tasks in a list of promises to see if they
             are complete, without blocking on a single task.  It also can poll for progress and report
             progress of the tasks if a summary_progress parameter is provided.
+
+            :returns: A list of :class:`TaskingEvent` objects that fired the specified event.
         """
 
         if aspects is None:
@@ -343,6 +345,8 @@ class TaskerController:
             This is a special wait function that checks all tasks in a list of promises to see if they
             are complete, without blocking on a single task.  It also can poll for progress and report
             progress of the tasks if a summary_progress parameter is provided.
+
+            :returns: A list of :class:`TaskingEvent` objects from tasks that fired the specified event.
         """
 
         if aspects is None:
@@ -424,6 +428,8 @@ class TaskerController:
             This is a special wait function that checks all tasks in a list of promises to see if they
             are complete, without blocking on a single task.  It also can poll for progress and report
             progress of the tasks if a summary_progress parameter is provided.
+
+            :returns: A list of :class:`TaskingResult` objects for the completed taskings.
         """
 
         if aspects is None:

@@ -265,6 +265,8 @@ class Tasking:
     def get_identity(cls) -> TaskingIdentity:
         """
             Return the :class:`TaskingIdentity` for this tasking class.
+
+            :returns: The identity object for the tasking class.
         """
 
         module_name = cls.__module__
@@ -331,6 +333,8 @@ class Tasking:
         """
             Called to create the 'TaskingResult' object and can be overloaded by Tasking(s) to create a custom derived
             'TaskingResult' type.
+
+            :returns: A newly created :class:`TaskingResult` instance.
         """
         tresult = TaskingResult(
             tasking_id, tasking_name, parent_id, self._worker, prefix=prefix

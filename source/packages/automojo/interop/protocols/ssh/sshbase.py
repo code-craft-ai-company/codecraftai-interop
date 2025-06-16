@@ -192,6 +192,8 @@ class SshBase(ISystemContext):
 
             :param uid: The uid of a user.
             :param update: A boolean indicating that the table should be updated if the uid is not found.
+
+            :returns: The username associated with ``uid`` or ``None`` if not found.
         """
         username = None
 

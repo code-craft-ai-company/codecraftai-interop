@@ -23,6 +23,8 @@ DEVICE_DETAIL_MAPPER_REGISTRY_SINGLETON = None
 def DeviceDetailMapperRegistrySingleton() -> DeviceDetailMapperRegistry:
     """
         Singleton for the device detail mapper registry.
+
+        :returns: The global :class:`DeviceDetailMapperRegistry` instance.
     """
     global DEVICE_DETAIL_MAPPER_REGISTRY_SINGLETON
 

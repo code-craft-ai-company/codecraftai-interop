@@ -213,6 +213,8 @@ class ItemsResult(Generic[CT]):
     def is_paged(self):
         """
             Returns a value indicating if this items result is paged.
+
+            :returns: ``True`` if paging information is present.
         """
         rtnval = True if self._paging is not None else False
         return rtnval
@@ -222,6 +224,8 @@ class ItemsResult(Generic[CT]):
         """
             Returns a list of items.  This could be a complete list of items or the items from a page depending
             on the results of the API call.
+
+            :returns: The list of items for this result.
         """
         return self._items
 
@@ -229,6 +233,8 @@ class ItemsResult(Generic[CT]):
     def paging(self) -> Union[Paging, None]:
         """
             Returns the paging details for this result.
+
+            :returns: A :class:`Paging` object or ``None`` if the result is unpaged.
         """
         return self._paging
 

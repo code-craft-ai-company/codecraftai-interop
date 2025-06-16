@@ -124,6 +124,8 @@ class TaskingResultPromise:
     def log_dir(self) -> str:
         """
             Directory containing logs for the tasking.
+
+            :returns: Path to the directory where logs are stored.
         """
         return self._log_dir
 
@@ -131,6 +133,8 @@ class TaskingResultPromise:
     def module_name(self) -> str:
         """
             Module name of the tasking class.
+
+            :returns: The module name string.
         """
         return self._module_name
 
@@ -138,6 +142,8 @@ class TaskingResultPromise:
     def session_id(self) -> str:
         """
             Owning session identifier.
+
+            :returns: Identifier of the owning session.
         """
         return self._session_id
 
@@ -145,6 +151,8 @@ class TaskingResultPromise:
     def tasking_id(self) -> str:
         """
             Identifier of the associated tasking instance.
+
+            :returns: The tasking identifier string.
         """
         return self._tasking_id
 
@@ -152,6 +160,8 @@ class TaskingResultPromise:
     def task_name(self) -> str:
         """
             Name of the tasking class.
+
+            :returns: The name of the tasking class.
         """
         return self._task_name
 
@@ -185,6 +195,8 @@ class TaskingResultPromise:
     def get_events(self) -> List[TaskingEvent]:
         """
             Get the events that have been posted by the associated tasking.
+
+            :returns: A list of :class:`TaskingEvent` objects.
         """
         rtnval = self._node.get_tasking_events(tasking_id=self._tasking_id)
 
@@ -193,6 +205,8 @@ class TaskingResultPromise:
     def get_result(self) -> TaskingResult:
         """
             Get the result of the associated tasking.
+
+            :returns: The :class:`TaskingResult` from the tasking.
         """
         rtnval = self._node.get_tasking_result(tasking_id=self._tasking_id)
         return rtnval
@@ -200,6 +214,8 @@ class TaskingResultPromise:
     def get_progress(self) -> ProgressInfo:
         """
             Used by TaskingGroupScope and other group wait methods to probe for progress.
+
+            :returns: The current :class:`ProgressInfo` for the tasking.
         """
 
         progress = self._node.get_tasking_progress(tasking_id=self._tasking_id)
@@ -277,6 +293,7 @@ class TaskingResultPromise:
             .. note:: This is intentionally implemented as a method and not a
                 property in order to ensure that we do not make cross process
                 or across network calls from an object property.
+            :returns: ``True`` if the tasking has completed.
         """
 
         rtnval = self._node.has_completed_and_result_ready(tasking_id=self._tasking_id)
