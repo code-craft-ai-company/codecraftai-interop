@@ -69,5 +69,7 @@ class DnsQuestionResults:
         return
     
     def cleanup(self):
-        """Placeholder for future cleanup logic."""
+        """
+            Placeholder for future cleanup logic.
+        """
         return

@@ -177,12 +177,16 @@ class TaskingGroupScope:
         return False
 
     def initialize(self):
-        """Records the initial task group state."""
+        """
+            Records the initial task group state.
+        """
         self._recorder.record(self._tgroup)
         return
 
     def cancel_tasks(self):
-        """Cancel all running taskings in the group."""
+        """
+            Cancel all running taskings in the group.
+        """
         errors = []
 
         for promise in self._promises:
@@ -291,7 +295,9 @@ class TaskingGroupScope:
         return promise
 
     def finalize(self, sync: bool = True):
-        """Finalize the task group and optionally synchronize."""
+        """
+            Finalize the task group and optionally synchronize.
+        """
 
         adapter = self.adapter
 
@@ -316,7 +322,9 @@ class TaskingGroupScope:
         return
 
     def synchronize(self):
-        """Synchronize results for all promises."""
+        """
+            Synchronize results for all promises.
+        """
         adapter = self.adapter
 
         if len(self._promises) > 0:
@@ -327,7 +335,9 @@ class TaskingGroupScope:
     def wait_for_all_to_event(
         self, event_name: str, aspects: Optional[TaskerAspects] = None
     ) -> List[TaskingEvent]:
-        """Wait for all taskings to fire a specific event."""
+        """
+            Wait for all taskings to fire a specific event.
+        """
 
         if aspects is None:
             aspects = self._aspects
@@ -341,7 +351,9 @@ class TaskingGroupScope:
     def wait_for_any_to_event(
         self, event_name: str, aspects: Optional[TaskerAspects] = None
     ) -> List[TaskingEvent]:
-        """Wait for any tasking to fire a specific event."""
+        """
+            Wait for any tasking to fire a specific event.
+        """
 
         if aspects is None:
             aspects = self._aspects
@@ -355,7 +367,9 @@ class TaskingGroupScope:
     def wait_for_tasking_results(
         self, aspects: Optional[TaskerAspects] = None
     ) -> List[TaskingResult]:
-        """Wait for completion and return all tasking results."""
+        """
+            Wait for completion and return all tasking results.
+        """
 
         if aspects is None:
             aspects = self._aspects
@@ -369,7 +383,9 @@ class TaskingGroupScope:
         return self._results
 
     def _clear_summary_progress(self):
-        """Clear summary progress information."""
+        """
+            Clear summary progress information.
+        """
 
         task_ids = []
 
@@ -396,7 +412,9 @@ class TaskingGroupScope:
         return
 
     def _update_group(self):
-        """Record results for the group once."""
+        """
+            Record results for the group once.
+        """
 
         if not self._results_written:
             self._results_written = True

@@ -252,11 +252,15 @@ class TaskerController:
         return
 
     def start_tasker_network(self):
-        """Starts the tasker network.  Must be implemented by subclasses."""
+        """
+            Starts the tasker network.  Must be implemented by subclasses.
+        """
         raise AbstractMethodError("The 'start_task_network' method must be overloaded.")
 
     def stop_tasker_network(self):
-        """Stop the tasker network. Must be implemented by subclasses."""
+        """
+            Stop the tasker network. Must be implemented by subclasses.
+        """
 
         raise AbstractMethodError(
             "The 'stop_tasker_network' method must be overloaded."
@@ -560,7 +564,9 @@ class ProcessTaskerController(TaskerController):
         return
 
     def stop_tasker_network(self):
-        """Stop all running tasker server processes."""
+        """
+            Stop all running tasker server processes.
+        """
         for node in self._tasker_nodes:
             node.session_close()
 
@@ -568,7 +574,9 @@ class ProcessTaskerController(TaskerController):
             
             
 class ClientTaskerController(TaskerController):
-    """Uses existing network clients to communicate with remote taskers."""
+    """
+        Uses existing network clients to communicate with remote taskers.
+    """
 
     def __init__(
         self,
@@ -622,7 +630,9 @@ class ClientTaskerController(TaskerController):
         return
 
     def stop_tasker_network(self):
-        """Close all tasker client sessions."""
+        """
+            Close all tasker client sessions.
+        """
 
         for node in self._tasker_nodes:
             node.session_close()

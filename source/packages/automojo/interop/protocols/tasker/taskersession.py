@@ -83,7 +83,9 @@ class EventNotificationHandler(BaseHTTPRequestHandler):
         return self._tasker_session_ref()
 
     def do_POST(self):
-        """Handle HTTP POST callbacks containing progress events."""
+        """
+            Handle HTTP POST callbacks containing progress events.
+        """
 
         if "Content-Type" in self.headers:
             content_type = self.headers["Content-Type"].lower()
@@ -632,7 +634,9 @@ class TaskerSession:
         return
 
     def shutdown(self):
-        """Shutdown running taskings and stop the event server."""
+        """
+            Shutdown running taskings and stop the event server.
+        """
             
             # Go through all of the tasks and if they have not completed, cancel them
             tasking_id: str

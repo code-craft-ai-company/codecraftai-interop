@@ -204,7 +204,9 @@ class ItemsResult(Generic[CT]):
     """
 
     def __init__(self, items: List[CT], paging: Optional[Paging] = None):
-        """Container object for paged or unpaged collections."""
+        """
+            Container object for paged or unpaged collections.
+        """
         self._items = items
         self._paging = paging
         return
