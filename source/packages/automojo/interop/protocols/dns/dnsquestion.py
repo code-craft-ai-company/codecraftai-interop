@@ -83,25 +83,22 @@ class DnsQuestion:
                bval = self._name == rec._name
         return bval
 
-    def as_query_bytes(self) -> str:
+    def as_query_bytes(self) -> bytes:
         """
             Formats the DNS question as a byte stream for transmission.
 
             :returns: Encoded question bytes.
         """
 
-        brtype = self._rtype.name.encode("utf-8")
-        brclass = self._rclass.name.encode("utf-8")
-
-        dnsstr = b"%s/x00%s,%s" % ('question', brtype, brclass)
+        qstr = "question\x00%s,%s" % (self._rtype.name, self._rclass.name)
 
         if self._unique:
-            dnsstr += "-unique,"
+            qstr += "-unique,"
         else:
-            dnsstr += ","
+            qstr += ","
 
-        dnsstr += self._name
+        qstr += self._name
 
-        dnsbytes = dnsstr.encode("utf-8")
+        dnsbytes = qstr.encode("utf-8")
 
         return dnsbytes
