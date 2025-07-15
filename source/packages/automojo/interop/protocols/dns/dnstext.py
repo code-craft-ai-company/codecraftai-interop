@@ -86,8 +86,11 @@ class DnsText(DnsRecord):
             :returns: Formatted string representing this text record.
         """
         strval = None
-        if len(self._text) > 10:
-            strval = self.as_dns_string(self._text[:7] + "...")
-        else:
-            strval = self.as_dns_string(self._text)
+
+        txt_str = str(self._text, "utf-8", "replace")
+        if len(txt_str) > 10:
+            txt_str = txt_str[:7] + "..."
+
+        strval = self.as_dns_string(txt_str)
+
         return strval
