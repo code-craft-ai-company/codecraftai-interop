@@ -471,7 +471,7 @@ class DnsOutboundMessage:
             Writes a record (answer, authoritative answer, additional) to the packet.  Returns True on success, or False if
             we did not (either because the packet was already finished or because the record does not fit.)
         """
-        if self._state == self._state.finished:
+        if self._state == DnsPacketBuilderState.Finished:
             return False
 
         start_data_length, start_size = len(self._data), self._packet_offset
