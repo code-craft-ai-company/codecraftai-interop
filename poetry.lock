@@ -89,7 +89,7 @@ requests = "^2.32.3"
 type = "git"
 url = "https://github.com/automationmojo/automojo-networking.git"
 reference = "main"
-resolved_reference = "906444e7c1dadceaef625d32d7cc1aa7e8b1f066"
+resolved_reference = "32c28fc7e48bc764d30425e56b0d84dba6e1b1f1"
 
 [[package]]
 name = "automojo-presence"
@@ -157,7 +157,7 @@ click = "^8.1.8"
 type = "git"
 url = "https://github.com/automationmojo/automojo-testbase.git"
 reference = "main"
-resolved_reference = "1920b7158c984e25c78f3b5917cedd60ea58078c"
+resolved_reference = "e90b4587f44323ceb3fc27d51567c7e7e9418ab8"
 
 [[package]]
 name = "automojo-waiting"
