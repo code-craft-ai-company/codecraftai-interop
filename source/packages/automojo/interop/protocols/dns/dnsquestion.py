@@ -102,3 +102,23 @@ class DnsQuestion:
         dnsbytes = qstr.encode("utf-8")
 
         return dnsbytes
+
+    def as_dns_string(self) -> str:
+        """
+            Formats the DNS question as a string suitable for debugging and
+            testing.
+
+            :returns: A DNS formatted string representation of this question.
+        """
+
+        qstr = "question[%s,%s" % (self._rtype.name, self._rclass.name)
+
+        if self._unique:
+            qstr += "-unique,"
+        else:
+            qstr += ","
+
+        qstr += self._name
+        qstr += "]"
+
+        return qstr
