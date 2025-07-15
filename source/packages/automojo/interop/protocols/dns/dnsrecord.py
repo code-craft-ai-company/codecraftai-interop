@@ -257,7 +257,7 @@ class DnsRecord:
         """
         iseq = False
         if isinstance(other, type(self)):
-            if self._rtype == other._rtype and self._rclass and other._rclass:
+            if self._rtype == other._rtype and self._rclass == other._rclass:
                 iseq = self._name == other._name
         return iseq
 
