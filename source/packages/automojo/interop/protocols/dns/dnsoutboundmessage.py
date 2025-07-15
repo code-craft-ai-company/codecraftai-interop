@@ -540,6 +540,37 @@ class DnsOutboundMessage:
         self._write_single_byte(length)
         self._write_bytes(bytes)
         return
+
+    # ------------------------------------------------------------------
+    # Public writing helpers
+    # ------------------------------------------------------------------
+
+    def write(self, buffer: bytes) -> None:
+        """Append raw bytes to the packet."""
+
+        self._write_bytes(buffer)
+        return
+
+    def write_character_string(self, buffer: bytes) -> None:
+        """Write a DNS ``character-string`` to the packet."""
+
+        if len(buffer) > 255:
+            raise ValueError("DNS character-string length cannot exceed 255 bytes")
+        self._write_single_byte(len(buffer))
+        self._write_bytes(buffer)
+        return
+
+    def write_name(self, name: str) -> None:
+        """Write a domain name using compression when enabled."""
+
+        self._write_name(name)
+        return
+
+    def write_short(self, value: int) -> None:
+        """Write an unsigned short to the packet."""
+
+        self._write_short(value)
+        return
     
     def __str__(self) -> str:
         """
