@@ -307,7 +307,7 @@ class MdnsBrowser:
             sock = self._get_search_socket()
 
             try:
-                msg_packets = mdns_msg.packets
+                msg_packets = mdns_msg.packets()
                 for packet in msg_packets:
                     sock.sendto(packet, (self._multicast_address, self._multicast_port))
             except OSError as serr:
