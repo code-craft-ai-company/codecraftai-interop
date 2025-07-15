@@ -61,7 +61,8 @@ def service_type_name(service_type: str, *, allow_underscores: bool = False) -> 
         :returns: fully qualified service name (eg: _http._tcp.local.)
     """
     service_type = service_type.rstrip(".")
-    service_type_parts = service_type.split(".").reverse()
+    service_type_parts = service_type.split(".")
+    service_type_parts.reverse()
 
     if len(service_type_parts) < 3:
         err_msg = "Type '%s' is not a valid service type name. mDNS names have minimum of (sn).(protocol).local'" % service_type
