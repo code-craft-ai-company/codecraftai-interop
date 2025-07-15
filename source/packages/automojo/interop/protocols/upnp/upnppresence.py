@@ -28,7 +28,7 @@ from automojo.networking.constants import HTTP1_1_LINESEP
 from automojo.networking.multicast import create_multicast_listener_socket, create_multicast_listener_socket_for_iface
 from automojo.networking.interfaces import get_correspondance_ip_address
 
-from automojo.interop.protocols.upnp.constants import MSearchTargets, MSearchKeys, MSearchRouteKeys
+from automojo.interop.protocols.upnp.constants import MSearchTargets, MSearchKeys
 
 from automojo.interop.protocols.upnp.upnpsearchwindow import UpnpSearchWindow
 from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
