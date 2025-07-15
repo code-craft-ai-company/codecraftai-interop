@@ -49,6 +49,10 @@ def repeat(what: str, count: int) -> List[str]:
 # Code Structure
 The code structure of this repository follows the [Automation Mojo Python Code Structure Standards](https://github.com/automationmojo/automojo-docs/blob/main/userguide/10-01-code-organization.rst)
 
+Remember to make the test hierarchy match the source hierarchy when adding test files.  For example:
+
+File to test: 'source/packages/automojo/interop/protocols/dns/dnsquestion.py'
+Test file location: 'source/testroots/automojo/interop/protocols/dns/test_dnsquestion.py'
 
 # Coding Standards
 The code in this repository is meant to be utilized by testing tools and test frameworks.  Therefore, the code must prioritize:
@@ -101,6 +105,7 @@ def test_use_landscape(lscape: Landscape):
     return
 
 ```
+
 
 # Environment Setup
 When checking out the code for this repository in order to test changes, agents must:
