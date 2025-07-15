@@ -372,7 +372,7 @@ class DnsInboundMessage:
             Reads an integer ttl from the packet
         """
         # Unpack 4 bytes as unsigned int using network byte order !I
-        val = int(self._unpack(b'!i')[0])
+        val = int(self._unpack(b'!I')[0])
 
         return val
 
