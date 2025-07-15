@@ -130,14 +130,14 @@ class MdnsServiceInfo:
         """
             Service instance name.
         """
-        return self._name
+        return self._svc_name
     
     @property
     def svc_type(self):
         """
             Service type string.
         """
-        return self._type
+        return self._svc_type
 
     @property
     def text(self):
