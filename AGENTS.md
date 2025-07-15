@@ -5,7 +5,19 @@ AI Agents working in this repository should refer to themselves as an agent name
 
 
 # Testing Conventions
-The 'automojo-interop' package repository utilizes the 'testbase' framework in order to test the functionality of the code.
+The 'automojo-interop' package repository utilizes the 'testbase' framework in order to run tests.  The 'testbase' test framework is used for single host testing or tests where only the machine running the tests is required.
+
+Test are organized at the lowest level by resource configuration.  For example, all the single host tests are in the folder 'source/testroots/automojo/tests/singlehost'.
+
+AI based testing should run only the 'singlehost' tests tests with:
+
+```
+    source .venv/bin/activate
+    
+    testbase --root source/testroots/automojo --includes=automojo.tests.singlehost --output=<desired output folder>
+```
+
+When running tests you should create an output folder in order to be able to capture all the test run artifacts in an isolated folder.
 
 # Code Naming Conventions
 The code naming conventions of this repository follows the [Automation Mojo Python Naming Conventions](https://github.com/automationmojo/automojo-docs/blob/main/userguide/10-01-naming-conventions.rst)
@@ -21,6 +33,50 @@ The code in this repository is meant to be utilized by testing tools and test fr
 *  readability over conciseness
 
 For all the code in this repository, follow the coding standards specified at [Coding Standards](https://github.com/automationmojo/automojo-docs/blob/main/userguide/10-00-coding-standards.rst)
+
+# Writing Tests
+
+A test base test takes the form of a function with a 'test_' prefix like so:
+
+```
+def test_something():
+    return
+```
+
+If a test raises an AssertionError, then it checked something and the check failed.  That is a Failure.  If the test raises any other exception, then the test framework treats that as an Error much like the 'unittest' framework does.
+
+You can create resource factories.
+
+```
+@testbase.register.resource_factory()
+def create_landscape(constraints={}) -> Generator[Landscape, None, None]:
+    """
+        Creates the global :class:`Landscape` instance.
+
+        :param constraints: Optional dictionary of constraints used while constructing the Landscape.
+
+        :returns: A generator yielding the Landscape object.
+    """
+    lscape = LandscapeSingleton()
+    yield lscape
+```
+
+You can create resources using the factories in a scope in the test tree.  Resources have scope for every test below where they are declared.
+
+```
+testbase.originate.parameter(create_landscape, identifier='lscape')
+```
+
+To use a test in a descendant test scope, just reference it by name in the test function signature like:
+
+```
+def test_use_landscape(lscape: Landscape):
+
+    blah = lscape.get_something()
+    testbase.assert_equal(blah is not None, True)
+    return
+
+```
 
 # Environment Setup
 When checking out the code for this repository in order to test changes, agents must:
