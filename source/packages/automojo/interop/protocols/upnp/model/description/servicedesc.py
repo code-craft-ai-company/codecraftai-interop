@@ -14,7 +14,6 @@ __credits__ = []
 from typing import Dict, Optional
 
 from xml.etree.ElementTree import fromstring as xml_fromstring
-from xml.etree.ElementTree import Element
 
 import requests
 

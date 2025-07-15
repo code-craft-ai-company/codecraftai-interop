@@ -16,15 +16,8 @@ from typing import Dict, List, Optional, Union, TYPE_CHECKING
 
 import logging
 import threading
-import weakref
-
-from xml.etree.ElementTree import fromstring as xml_fromstring
-from xml.etree.ElementTree import Element
 
 import requests
-
-from automojo.foundation.fspath import normalize_name_for_path
-
 
 from automojo.interop.protocols.upnp.constants import UPNP_HEADERS
 from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail

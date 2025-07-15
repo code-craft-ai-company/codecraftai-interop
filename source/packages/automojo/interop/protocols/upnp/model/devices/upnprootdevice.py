@@ -35,23 +35,17 @@ from automojo.errors.exceptions import  ProtocolError
 
 from automojo.foundation.fspath import normalize_name_for_path
 
-from automojo.interop.protocols.upnp.constants import MSearchKeys, MSearchRouteKeys, UPNP_DEVICE1_NAMESPACE
+from automojo.interop.protocols.upnp.constants import MSearchRouteKeys, UPNP_DEVICE1_NAMESPACE
 from automojo.interop.protocols.upnp.upnperrors import UpnpError
-from automojo.interop.protocols.upnp.aliases import StrSvcId, StrSvcType, StrSubId
+from automojo.interop.protocols.upnp.aliases import StrSvcId, StrSvcType
 from automojo.interop.protocols.upnp.constants import TIMEDELTA_RENEWAL_WINDOW, UPNP_HEADERS
-from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
 from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
-from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 from automojo.interop.protocols.upnp.model.devices.upnpdevicebase import UpnpDeviceBase
 from automojo.interop.protocols.upnp.model.devices.upnpembeddeddevice import UpnpEmbeddedDevice
 from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
 
 
 from automojo.interop.protocols.upnp.soap import NS_UPNP_EVENT
-
-from automojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_EMBEDDEDDEVICES
-from automojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_ROOTDEVICES
-from automojo.interop.protocols.upnp.paths import DIR_UPNP_SCAN_INTEGRATION_SERVICES
 
 from automojo.interop.protocols.upnp.model.services.upnpserviceproxy import UpnpServiceProxy
 

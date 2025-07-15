@@ -13,7 +13,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import List, Optional, Union
+from typing import List, Optional
 
 import logging
 

@@ -19,10 +19,6 @@ from automojo.interop.protocols.upnp.model.description.basic1devicedesc import B
 from automojo.interop.protocols.upnp.model.description.deviceevidence import DeviceEvidence
 
 
-
-
-
-
 class UpnpDeviceDetail:
     """
         Class to represent UPnP device details.

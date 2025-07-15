@@ -24,7 +24,7 @@ import weakref
 
 from xml.etree.ElementTree import Element as XmlElement
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import requests
 
@@ -32,7 +32,7 @@ from automojo.errors.xtraceback import format_exc_lines
 from automojo.waiting.waitmodel import TimeoutContext
 
 from automojo.foundation.collections.context import Context
-from automojo.foundation.collections.contextpaths import ContextPaths
+from automojo.presence.contextpaths import ContextPaths
 
 from automojo.interop.aspects import ActionPattern
 from automojo.foundation.eventing.eventedvariablesink import EventedVariableSink

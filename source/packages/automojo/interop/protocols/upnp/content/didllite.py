@@ -18,7 +18,7 @@ from enum import Enum
 from xml.etree.ElementTree import fromstring as from_xml_string
 from xml.etree.ElementTree import Element
 
-from automojo.networking.exceptions import ProtocolError
+from automojo.errors.exceptions import ProtocolError
 
 
 DIDL_LINESEP = "\n"
