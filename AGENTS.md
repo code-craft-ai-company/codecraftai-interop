@@ -64,7 +64,7 @@ For all the code in this repository, follow the coding standards specified at [C
 
 # Writing Tests
 
-A test base test takes the form of a function with a 'test_' prefix like so:
+A 'testbase' test takes the form of a function with a 'test_' prefix like so:
 
 ```
 def test_something():
