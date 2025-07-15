@@ -106,6 +106,7 @@ def test_use_landscape(lscape: Landscape):
 
 ```
 
+The test tree should only contain resource origination declarations and tests.  It should not contain factories unless the usage of the factory is very isolated.  It is preferable to place factories in a folder such as a factory that creates the AutomationPodSimple object might be located at 'source/testroots/automojo/testshared/factories/automationpods/automationpodsimple.py'
 
 # Environment Setup
 When checking out the code for this repository in order to test changes, agents must:
