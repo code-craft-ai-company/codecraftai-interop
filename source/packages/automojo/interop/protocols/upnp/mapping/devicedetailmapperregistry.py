@@ -17,7 +17,7 @@ from typing import Dict, Type
 from automojo.foundation.extension.wellknown import ConfiguredSuperFactorySingleton
 
 from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
-from automojo.interop.protocols.upnp.upnpextensionprotocol import UpnpExtensionProtocol
+from automojo.interop.protocols.upnp.upnpextensionprotocol import UpnpFactoryProtocol
 
 
 class DeviceDetailMapperRegistry:
@@ -45,7 +45,7 @@ class DeviceDetailMapperRegistry:
 
         mapper_type: Type[DeviceDetailMapper]
 
-        for mapper_type in super_factory.iterate_override_types_for_each(UpnpExtensionProtocol.get_device_detail_mapper_types):
+        for mapper_type in super_factory.iterate_override_types_for_each(UpnpFactoryProtocol.get_device_detail_mapper_types):
             manufacturer_name = mapper_type.MANUFACTURER_NAME
             if len(manufacturer_name) > 0 and manufacturer_name not in self._mappers:
                 self._mappers[manufacturer_name] = mapper_type

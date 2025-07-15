@@ -14,12 +14,12 @@ __credits__ = []
 from typing import List, Type
 
 
-from automojo.interop.protocols.upnp.upnpextensionprotocol import UpnpExtensionProtocol
+from automojo.interop.protocols.upnp.upnpextensionprotocol import UpnpFactoryProtocol
 from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
 
 from automojo.interop.manufacturers.bose.mapping.bosedevicedetailmapper import BoseDeviceDetailMapper
 
-class BoseUpnpExtensionProtocol(UpnpExtensionProtocol):
+class BoseUpnpExtensionProtocol(UpnpFactoryProtocol):
     """
         Extension protocol for Bose devices.
     """

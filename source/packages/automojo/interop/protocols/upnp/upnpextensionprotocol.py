@@ -17,15 +17,15 @@ from typing import List, Type, TYPE_CHECKING
 
 from automojo.errors.exceptions import AbstractMethodError
 
-from automojo.foundation.extension.extensionprotocolbase import ExtensionProtocolBase
+from automojo.extension.factory.factoryprotocolbase import FactoryProtocolBase
 from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
 
-class UpnpExtensionProtocol(ExtensionProtocolBase):
+class UpnpFactoryProtocol(FactoryProtocolBase):
     """
         Extension protocol for device detail mapper.
     """
 
-    ext_protocol_name = "automojo-interop-upnp-extension-types"
+    factory_protocol_name = "automojo-interop-upnp-extension-types"
 
     @classmethod
     def get_device_detail_mapper_types(self) -> List[Type[DeviceDetailMapper]]:

@@ -132,7 +132,7 @@ debugpy = "^1.8.12"
 type = "git"
 url = "https://github.com/automationmojo/automojo-runtime.git"
 reference = "main"
-resolved_reference = "1677b5130a21a6a42153317abf76b52b4a54de03"
+resolved_reference = "1da5644d0a9dc60b55728a0718eab6aca0788f0d"
 
 [[package]]
 name = "automojo-testbase"
@@ -157,7 +157,7 @@ click = "^8.1.8"
 type = "git"
 url = "https://github.com/automationmojo/automojo-testbase.git"
 reference = "main"
-resolved_reference = "bb12bc958e4c4f18d8bbbac71035ab1d506e2d7e"
+resolved_reference = "b503014c4daad57ea2a8e34adabc0d4f2e860272"
 
 [[package]]
 name = "automojo-waiting"
