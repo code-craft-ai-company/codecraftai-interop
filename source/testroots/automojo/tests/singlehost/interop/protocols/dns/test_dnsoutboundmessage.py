@@ -22,6 +22,10 @@ def test_write_record_stops_after_finished() -> None:
     testbase.assert_equal(res, False)
     return
 
+def test_write_string_accepts_str() -> None:
+    msg = DnsOutboundMessage(DEFAULT_DNS_FLAGS_QUERY)
+    msg.write_string("foo")
+    testbase.assert_equal(msg.data[-2:], [b"\x03", b"foo"])
 
 class _BigRecord(DnsRecord):
     """Record that writes a large payload."""
