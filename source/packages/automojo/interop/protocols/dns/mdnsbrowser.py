@@ -12,7 +12,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import Dict, List, Optional, Tuple, Type
+from typing import Dict, List, Optional, Tuple
 
 import copy
 import socket
@@ -21,12 +21,11 @@ import time
 import weakref
 
 from datetime import datetime, timedelta
-from types import TracebackType
 
 from automojo.errors.exceptions import SemanticError
 
 from automojo.networking.multicast import create_multicast_listener_socket
-from automojo.networking.constants import MDNS_GROUP_ADDR, MDNS_GROUP_ADDR6, MDNS_PORT
+from automojo.networking.constants import MDNS_GROUP_ADDR, MDNS_PORT
 
 from automojo.interop.protocols.dns.dnsconst import DNS_RECEIVE_BUFFER
 from automojo.interop.protocols.dns.dnsflags import DEFAULT_DNS_FLAGS_QUERY

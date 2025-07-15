@@ -12,8 +12,6 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Optional
-
 import enum
 import re
 

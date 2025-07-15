@@ -17,6 +17,9 @@ packages = [{include="automojo", from="source/packages"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
+paramiko = "^3.5.1"
+rpyc = "^6.0.1"
+psutil = "^7.0.0"
 requests = "^2.32.3"
 automojo-credentials = { git = "https://github.com/automationmojo/automojo-credentials.git", branch = "main" }
 automojo-errors = { git = "https://github.com/automationmojo/automojo-errors.git", branch = "main" }
@@ -24,8 +27,7 @@ automojo-foundation = { git = "https://github.com/automationmojo/automojo-founda
 automojo-networking = { git = "https://github.com/automationmojo/automojo-networking.git", branch = "main" }
 automojo-testbase = { git = "https://github.com/automationmojo/automojo-testbase.git", branch = "main" }
 automojo-waiting = { git = "https://github.com/automationmojo/automojo-waiting.git", branch = "main" }
-paramiko = "^3.5.1"
-rpyc = "^6.0.1"
+
 
 [tool.poetry.group.dev.dependencies]
 

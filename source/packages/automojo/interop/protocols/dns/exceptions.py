@@ -12,7 +12,7 @@ __credits__ = []
 
 
 
-from automojo.networking.exceptions import ProtocolError
+from automojo.errors.exceptions import ProtocolError
 
 class DnsProtocolError(ProtocolError):
     """

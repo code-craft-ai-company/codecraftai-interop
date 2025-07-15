@@ -15,7 +15,6 @@ __credits__ = []
 
 from automojo.interop.protocols.dns.dnsconst import HAS_A_TO_Z
 from automojo.interop.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN
-from automojo.interop.protocols.dns.dnsconst import HAS_ASCII_CONTROL_CHARS
 from automojo.interop.protocols.dns.dnsconst import HAS_ONLY_A_TO_Z_NUM_HYPHEN_UNDERSCORE
 
 from automojo.interop.protocols.dns.exceptions import DnsBadTypeInNameError

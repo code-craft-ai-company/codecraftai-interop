@@ -18,7 +18,7 @@ import threading
 
 from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
 from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
-from automojo.networking.constants import MDNS_GROUP_ADDR, MDNS_GROUP_ADDR6, MDNS_PORT
+from automojo.networking.constants import MDNS_GROUP_ADDR, MDNS_PORT
 
 if TYPE_CHECKING:
     from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage

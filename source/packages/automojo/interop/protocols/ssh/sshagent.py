@@ -15,13 +15,11 @@ __credits__ = []
 from typing import Optional, Sequence, Union, Tuple
 
 import logging
-import weakref
 
 import paramiko
 
 from automojo.interop.aspects import  AspectsCmd, DEFAULT_CMD_ASPECTS
 from automojo.credentials.sshcredential import SshCredential
-from automojo.interop.interfaces.isystemcontext import ISystemContext
 
 from automojo.interop.protocols.ssh.sshbase import SshBase
 from automojo.interop.protocols.ssh.sshconst import (

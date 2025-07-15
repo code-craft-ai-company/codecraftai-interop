@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 import json
 import multiprocessing
-import multiprocessing.context
+
 import os
 import pickle
 import threading
@@ -638,39 +638,35 @@ class TaskerSession:
             Shutdown running taskings and stop the event server.
         """
             
-            # Go through all of the tasks and if they have not completed, cancel them
-            tasking_id: str
-            tasking: Tasking
-            tstatus: ProgressCode
-            
-            tasking_table = None
-            status_table = None
-            events_server = None
-            
-            self._session_lock.acquire()
-            try:
+        # Go through all of the tasks and if they have not completed, cancel them
+        tasking_id: str
+        tasking: Tasking
+        tstatus: ProgressCode
+        
+        tasking_table = None
+        status_table = None
+        events_server = None
+        
+        self._session_lock.acquire()
+        try:
             tasking_table = self._taskings_table
             status_table = self._status_table
             events_server = self._events_server
-            finally:
+        finally:
             self._session_lock.release()
-            
-            try:
+        
+        try:
             for tasking_id, tasking in tasking_table.items():
-            tstatus = status_table[tasking_id]
+                tstatus = status_table[tasking_id]
             
-            if tstatus in [
-            ProgressCode.NotStarted,
-            ProgressCode.Paused,
-            ProgressCode.Running,
-            ]:
-            tasking.shutdown()
-            finally:
+            if tstatus in [ProgressCode.NotStarted, ProgressCode.Paused, ProgressCode.Running]:
+                tasking.shutdown()
+        finally:
             events_server.shutdown()
-            
-            return
-            
-            def start_event_server(self) -> Tuple[str, int]:
+        
+        return
+        
+    def start_event_server(self) -> Tuple[str, int]:
         """
         Start the HTTP server used to receive progress events from the tasking
         processes.
@@ -678,21 +674,16 @@ class TaskerSession:
         :returns: Tuple of host and port where the server is listening.
         """
             
-            sgate = threading.Event()
-            sgate.clear()
+        sgate = threading.Event()
+        sgate.clear()
+        
+        self._event_thread = threading.Thread(target=self._event_server_thread, name="tasker-session-event-svr", args=(sgate,), daemon=True)
+        self._event_thread.start()
+        sgate.wait()
+        
+        return
             
-            self._event_thread = threading.Thread(
-            target=self._event_server_thread,
-            name="tasker-session-event-svr",
-            args=(sgate,),
-            daemon=True,
-            )
-            self._event_thread.start()
-            sgate.wait()
-            
-            return
-            
-            def _dispatch_task(
+    def _dispatch_task(
             self,
             sgate: threading.Event,
             tasking_manager: TaskingManager,
@@ -706,89 +697,83 @@ class TaskerSession:
             aspects: TaskerAspects,
             ):
         """
-        Thread entry point used to execute a tasking in a remote process.
+            Thread entry point used to execute a tasking in a remote process.
 
-        :param sgate: Synchronization gate to signal start.
-        :param tasking_manager: Manager controlling the tasking process.
-        :param tasking: Tasking instance to run.
-        :param tasking_name: Name of the tasking class.
-        :param tasking_id: Identifier for the tasking instance.
-        :param prefix: Prefix for log files.
-        :param parent_id: Parent task identifier.
-        :param log_file: Path to the task log file.
-        :param kwparams: Keyword parameters for the task execution.
-        :param aspects: Task execution aspects.
+            :param sgate: Synchronization gate to signal start.
+            :param tasking_manager: Manager controlling the tasking process.
+            :param tasking: Tasking instance to run.
+            :param tasking_name: Name of the tasking class.
+            :param tasking_id: Identifier for the tasking instance.
+            :param prefix: Prefix for log files.
+            :param parent_id: Parent task identifier.
+            :param log_file: Path to the task log file.
+            :param kwparams: Keyword parameters for the task execution.
+            :param aspects: Task execution aspects.
         """
             
-            # Notify the thread starting us that we have started.
-            sgate.set()
-            
-            self._session_lock.acquire()
-            try:
+        # Notify the thread starting us that we have started.
+        sgate.set()
+        
+        self._session_lock.acquire()
+        try:
             self._status_table[tasking_id] = str(ProgressCode.NotStarted.value)
-            finally:
+        finally:
             self._session_lock.release()
-            del sgate
-            
-            self._service_class.log_info(
+        del sgate
+        
+        self._service_class.log_info(
             f"Dispatching task_type={tasking_name} id={tasking_id}"
-            )
-            
-            progress = None
-            
-            try:
+        )
+        
+        progress = None
+        
+        try:
             inactivity_timeout = None
             if aspects is not None:
-            inactivity_timeout = aspects.inactivity_timeout
-            
-            progress_queue = tasking_manager.Queue()
-            
-            tasking.execute(progress_queue, kwparams)
-            
-            while True:
-            
-            progress: ProgressInfo = progress_queue.get(
-            block=True, timeout=inactivity_timeout
-            )
-            
-            self._session_lock.acquire()
-            try:
-            self._progress_table[tasking_id] = progress
-            
-            if isinstance(progress, TaskingResult):
-            result: TaskingResult = progress
-            
-            if len(result.errors) > 0:
-            self._status_table[tasking_id] = str(
-            ProgressCode.Errored.value
-            )
-            elif len(result.failures) > 0:
-            self._status_table[tasking_id] = str(
-            ProgressCode.Failed.value
-            )
-            else:
-            self._status_table[tasking_id] = str(
-            ProgressCode.Completed.value
-            )
-            
-            self._results_table[tasking_id] = result
-            break
-            
-            prog_status = str(progress.status.value)
-            self._status_table[tasking_id] = prog_status
-            
-            finally:
-            self._session_lock.release()
-            
-            except BaseException as err:
+                inactivity_timeout = aspects.inactivity_timeout
+                
+                progress_queue = tasking_manager.Queue()
+                
+                tasking.execute(progress_queue, kwparams)
+                
+                while True:
+                
+                    progress: ProgressInfo = progress_queue.get(
+                    block=True, timeout=inactivity_timeout
+                    )
+                    
+                    self._session_lock.acquire()
+                    try:
+                        self._progress_table[tasking_id] = progress
+                    
+                        if isinstance(progress, TaskingResult):
+                            result: TaskingResult = progress
+                        
+                        if len(result.errors) > 0:
+                            self._status_table[tasking_id] = str(ProgressCode.Errored.value)
+                        elif len(result.failures) > 0:
+                            self._status_table[tasking_id] = str(ProgressCode.Failed.value)
+                        else:
+                            self._status_table[tasking_id] = str(ProgressCode.Completed.value) 
+                            self._results_table[tasking_id] = result
+                            break
+                    
+                        prog_status = str(progress.status.value)
+                        self._status_table[tasking_id] = prog_status
+                
+                    finally:
+                        self._session_lock.release()
+                
+        except BaseException as err:
             tbdetail = create_traceback_detail(err)
             
             errmsg_lines = format_traceback_detail(tbdetail)
             errmsg = os.linesep.join(errmsg_lines)
             
             self._service_class.log_error(errmsg)
+                    
             with open(log_file, "+a") as tlogf:
-            tlogf.write(errmsg)
+                tlogf.write(errmsg)
             
             tresult = TaskingResult(
             tasking_id, tasking_name, parent_id, ResultCode.ERRORED, prefix=prefix
@@ -798,11 +783,11 @@ class TaskerSession:
             self._results_table[tasking_id] = tresult
             
             raise
-            
-            finally:
+        
+        finally:
             tasking_manager.shutdown()
-            
-            return
+        
+        return
             
     def _event_server_thread(self, sgate: threading.Event):
         """
