@@ -95,7 +95,7 @@ You can create resources using the factories in a scope in the test tree.  Resou
 testbase.originate.parameter(create_landscape, identifier='lscape')
 ```
 
-To use a test in a descendant test scope, just reference it by name in the test function signature like:
+To use a resource in a descendant test scope, just reference it by name in the test function signature like:
 
 ```
 def test_use_landscape(lscape: Landscape):
