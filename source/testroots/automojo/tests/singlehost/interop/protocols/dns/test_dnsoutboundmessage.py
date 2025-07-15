@@ -21,3 +21,10 @@ def test_write_record_stops_after_finished() -> None:
     res = msg._write_record(rec, 0)
     testbase.assert_equal(res, False)
     return
+
+
+def test_write_string_accepts_str() -> None:
+    msg = DnsOutboundMessage(DEFAULT_DNS_FLAGS_QUERY)
+    msg.write_string("foo")
+    testbase.assert_equal(msg.data[-2:], [b"\x03", b"foo"])
+    return

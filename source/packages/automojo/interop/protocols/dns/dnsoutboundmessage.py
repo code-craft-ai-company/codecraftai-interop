@@ -560,6 +560,15 @@ class DnsOutboundMessage:
         self._write_bytes(buffer)
         return
 
+    def write_string(self, buffer: Union[bytes, str]) -> None:
+        """Alias for :meth:`write_character_string` that also accepts ``str``."""
+
+        if isinstance(buffer, str):
+            buffer = buffer.encode("utf-8")
+
+        self.write_character_string(buffer)
+        return
+
     def write_name(self, name: str) -> None:
         """Write a domain name using compression when enabled."""
 
