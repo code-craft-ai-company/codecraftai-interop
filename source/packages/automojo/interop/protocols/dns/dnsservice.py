@@ -129,6 +129,6 @@ class DnsService(DnsRecord):
 
             :returns: String describing the service record.
         """
-        other = self._server + " " + self._port+ " " + self._priority + " " + self._weight
+        other = f"{self._server} {self._port} {self._priority} {self._weight}"
         strval = self.as_dns_string(other=other)
         return strval
