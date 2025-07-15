@@ -10,7 +10,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import Dict, List, Optional, Type, Union, TYPE_CHECKING
+from typing import List, Optional, Type, Union, TYPE_CHECKING
 
 import logging
 import os
@@ -22,10 +22,6 @@ from automojo.errors.xtraceback import format_exception
 from automojo.testbase.results.model.taskinggroup import TaskingGroup
 from automojo.testbase.results.model.taskingresult import TaskingResult
 from automojo.testbase.results.model.progressinfo import ProgressInfo
-from automojo.testbase.results.model.progressdelivery import (
-    ProgressDeliveryMethod,
-    SummaryProgressDelivery,
-)
 
 from automojo.testbase.results.recorders.resultrecorder import ResultRecorder
 
