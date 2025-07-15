@@ -52,7 +52,7 @@ class DnsText(DnsRecord):
 
             :param out: The outbound DNS message to write the record to.
         """
-        out.write_string(self._text)
+        out.write_character_string(self._text)
 
     def __eq__(self, other: DnsRecord) -> bool:
         """
