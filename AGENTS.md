@@ -108,6 +108,13 @@ def test_use_landscape(lscape: Landscape):
 
 The test tree should only contain resource origination declarations and tests.  It should not contain factories unless the usage of the factory is very isolated.  It is preferable to place factories in a folder such as a factory that creates the AutomationPodSimple object might be located at 'source/testroots/automojo/testshared/factories/automationpods/automationpodsimple.py'
 
+# Evaluating Test Results
+There is a machine processable JSOS stream file in the output folder.
+
+"*outputfolder*/testrun_results_stream.jsos"
+
+JSOS (JSON Object Stream) consists of a stream of JSON objects seperated by the the ASCII record seperator character.
+
 # Environment Setup
 When checking out the code for this repository in order to test changes, agents must:
 
