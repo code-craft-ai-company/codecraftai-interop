@@ -303,7 +303,7 @@ def builder_for_DNS_IPV4_RESPONSE_DS_EXAMPLE() -> bytes:
     flags = DnsFlags.parse(0x8180)
     msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com", DnsRecordType.DS, DnsRecordClass.IN))
-    rdata = bytes.fromhex("00010801000000000000000000000000000000000000000000")
+    rdata = bytes.fromhex("000108010000000000000000000000000000000000000000")
     msg.add_answer(_RawRecord("example.com", DnsRecordType.DS, DnsRecordClass.IN, 60, rdata))
 
     packets = msg.packets()
