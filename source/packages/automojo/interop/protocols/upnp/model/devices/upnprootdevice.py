@@ -33,7 +33,7 @@ from requests.compat import urljoin
 
 from automojo.errors.exceptions import  ProtocolError
 
-from automojo.foundation.fspath import normalize_name_for_path
+from automojo.xmodules.fspath import normalize_name_for_path
 
 from automojo.interop.protocols.upnp.constants import MSearchRouteKeys, UPNP_DEVICE1_NAMESPACE
 from automojo.interop.protocols.upnp.upnperrors import UpnpError

@@ -32,8 +32,8 @@ from automojo.errors.exceptions import SemanticError
 
 from automojo.testbase.results.model.taskingresult import TaskingResult
 
-from automojo.foundation.compression import create_archive_of_folder
-from automojo.foundation.fspath import expand_path
+from automojo.xmodules.compression import create_archive_of_folder
+from automojo.xmodules.fspath import expand_path
 
 from automojo.interop.protocols.tasker.taskeraspects import TaskerAspects, DEFAULT_TASKER_ASPECTS
 from automojo.interop.protocols.tasker.taskersession import TaskerSession

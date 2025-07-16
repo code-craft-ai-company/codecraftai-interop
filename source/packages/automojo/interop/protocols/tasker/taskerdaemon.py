@@ -284,7 +284,7 @@ class TaskerServerDaemon(object):
             :returns: None
         """
 
-        from automojo.foundation.xdebugger import (
+        from automojo.xmodules.xdebugger import (
             DebugPyAssistant,
             PORT_DEBUGPY_ASSISTANT,
         )

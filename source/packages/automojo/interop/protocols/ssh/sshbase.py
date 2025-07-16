@@ -33,8 +33,8 @@ from automojo.errors.exceptions import ConfigurationError, AbstractMethodError, 
 from automojo.interop.aspects import ActionPattern, AspectsCmd, LoggingPattern, DEFAULT_CMD_ASPECTS
 from automojo.credentials.sshcredential import SshCredential
 from automojo.interop.interfaces.isystemcontext import ISystemContext
-from automojo.foundation.xformatting import indent_lines
-from automojo.foundation.xlogging.scopemonitoring import MonitoredScope
+from automojo.xmodules.xformatting import indent_lines
+from automojo.xmodules.xlogging.monitoredscope import MonitoredScope
 
 from automojo.interop.protocols.ssh.sshconst import (
     SshJumpParams,

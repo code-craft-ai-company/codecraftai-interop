@@ -42,7 +42,7 @@ from automojo.interop.protocols.tasker.taskerservermanager import (
 )
 from automojo.interop.protocols.tasker.taskingevent import TaskingEvent
 
-from automojo.foundation.xformatting import indent_lines_list
+from automojo.xmodules.xformatting import indent_lines_list
 
 TASKER_PORT = 8686
 

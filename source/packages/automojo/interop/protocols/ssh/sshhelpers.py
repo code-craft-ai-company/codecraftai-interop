@@ -22,7 +22,7 @@ import paramiko
 
 from automojo.errors.exceptions import CommandError
 
-from automojo.foundation.xformatting import indent_lines, format_command_result
+from automojo.xmodules.xformatting import indent_lines, format_command_result
 
 from automojo.interop.protocols.ssh.sshconst import (
     DEFAULT_SSH_TIMEOUT,

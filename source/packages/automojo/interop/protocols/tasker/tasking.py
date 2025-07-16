@@ -43,10 +43,10 @@ from automojo.testbase.results.model.progressinfo import ProgressInfo, ProgressT
 from automojo.testbase.results.model.progresscode import ProgressCode
 from automojo.testbase.results.model.taskingresult import TaskingResult
 
-from automojo.foundation.xdatetime import format_datetime_with_fractional
-from automojo.foundation.xformatting import indent_lines_list
-from automojo.foundation.ximport import import_by_name
-from automojo.foundation.jsos import CHAR_RECORD_SEPERATOR
+from automojo.xmodules.xdatetime import format_datetime_with_fractional
+from automojo.xmodules.xformatting import indent_lines_list
+from automojo.xmodules.ximport import import_by_name
+from automojo.xmodules.jsos import CHAR_RECORD_SEPERATOR
 
 from automojo.interop.protocols.tasker.taskeraspects import (
     TaskerAspects,

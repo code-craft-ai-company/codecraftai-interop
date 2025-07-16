@@ -16,13 +16,13 @@ from typing import Union
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.foundation.extension.dynamicextension import (
+from automojo.xmodules.extension.dynamicextension import (
     collect_extensions_under_code_container,
     collect_extensions_under_folder
 )
 
-from automojo.foundation.ximport import import_by_name
-from automojo.foundation.collections.context import Context
+from automojo.xmodules.ximport import import_by_name
+from automojo.xmodules.xcollections.context import Context
 
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
 from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc

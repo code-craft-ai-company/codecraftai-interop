@@ -42,7 +42,7 @@ from automojo.testbase.results.model.progressinfo import ProgressInfo
 from automojo.testbase.results.model.resultcode import ResultCode
 from automojo.testbase.results.model.taskingresult import TaskingResult
 
-from automojo.foundation.ximport import import_by_name
+from automojo.xmodules.ximport import import_by_name
 
 from automojo.interop.protocols.tasker.taskingresultpromise import TaskingRef
 from automojo.interop.protocols.tasker.taskeraspects import (

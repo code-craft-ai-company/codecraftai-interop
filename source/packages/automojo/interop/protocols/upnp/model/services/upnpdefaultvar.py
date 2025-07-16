@@ -18,7 +18,7 @@ import weakref
 
 from datetime import datetime
 
-from automojo.foundation.eventing.enumerations import EventedVariableState
+from automojo.xmodules.eventing.enumerations import EventedVariableState
 
 class UpnpDefaultVar:
     """

@@ -27,8 +27,8 @@ from automojo.errors.exceptions import SemanticError
 from automojo.interop.interfaces.isystemcontext import ISystemContext
 from automojo.interop.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS, ActionPattern, LoggingPattern
 
-from automojo.foundation.xformatting import indent_lines, format_command_result
-from automojo.foundation.xlogging.scopemonitoring import MonitoredScope
+from automojo.xmodules.xformatting import indent_lines, format_command_result
+from automojo.xmodules.xlogging.scopemonitoring import MonitoredScope
 
 logger = getLogger()
 
