@@ -22,6 +22,7 @@ from automojo.interop.protocols.dns.dnsservice import DnsService
 from automojo.interop.protocols.dns.dnstext import DnsText
 from automojo.interop.protocols.dns.dnsaddress import DnsAddress
 from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
+from automojo.interop.protocols.dns.dnsrecord import DnsRecord
 import automojo.testbase as testbase
 
 
@@ -35,6 +36,19 @@ class _RawDnsAddress(DnsAddress):
             Write raw address bytes to the outbound message.
         """
         out.write(self._address)
+        return
+
+
+class _RawRecord(DnsRecord):
+    """Utility record used to build messages from raw RDATA bytes."""
+
+    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, data: bytes) -> None:
+        super().__init__(name, rtype, rclass, ttl)
+        self._data = data
+        return
+
+    def write(self, out: DnsOutboundMessage) -> None:
+        out.write(self._data)
         return
 
 
@@ -147,6 +161,9 @@ def builder_for_DNS_IPV6_RESPONSE_MX_EXAMPLE() -> bytes:
     flags = DnsFlags.parse(0x8180)
     msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.MX, DnsRecordClass.IN))
+    rdata = bytes.fromhex("000a046d61696c076578616d706c6503636f6d00")
+    msg.add_answer(_RawRecord("example.com.", DnsRecordType.MX, DnsRecordClass.IN, 60, rdata))
+
     packets = msg.packets()
     pkt = packets[0]
 
@@ -192,6 +209,9 @@ def builder_for_DNS_IPV6_RESPONSE_NS_EXAMPLE() -> bytes:
     flags = DnsFlags.parse(0x8180)
     msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.NS, DnsRecordClass.IN))
+    rdata = bytes.fromhex("036e7331076578616d706c6503636f6d00")
+    msg.add_answer(_RawRecord("example.com.", DnsRecordType.NS, DnsRecordClass.IN, 60, rdata))
+
     packets = msg.packets()
     pkt = packets[0]
 
@@ -214,6 +234,11 @@ def builder_for_DNS_IPV6_RESPONSE_SOA_EXAMPLE() -> bytes:
     flags = DnsFlags.parse(0x8180)
     msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.SOA, DnsRecordClass.IN))
+    rdata = bytes.fromhex(
+        "036e7331076578616d706c6503636f6d000a686f73746d6173746572076578616d706c6503636f6d000000000100001c2000000e100012750000000e10"
+    )
+    msg.add_answer(_RawRecord("example.com.", DnsRecordType.SOA, DnsRecordClass.IN, 60, rdata))
+
     packets = msg.packets()
     pkt = packets[0]
 
@@ -313,6 +338,11 @@ def builder_for_DNS_IPV6_RESPONSE_NAPTR_EXAMPLE() -> bytes:
     flags = DnsFlags.parse(0x8180)
     msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.NAPTR, DnsRecordClass.IN))
+    rdata = bytes.fromhex(
+        "0064000a0155074532552b7369701f215e2e2a24217369703a696e666f406578616d706c652e636f6d2100"
+    )
+    msg.add_answer(_RawRecord("example.com.", DnsRecordType.NAPTR, DnsRecordClass.IN, 60, rdata))
+
     packets = msg.packets()
     pkt = packets[0]
 
@@ -335,6 +365,9 @@ def builder_for_DNS_IPV6_RESPONSE_DS_EXAMPLE() -> bytes:
     flags = DnsFlags.parse(0x8180)
     msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.DS, DnsRecordClass.IN))
+    rdata = bytes.fromhex("000108010000000000000000000000000000000000000000")
+    msg.add_answer(_RawRecord("example.com.", DnsRecordType.DS, DnsRecordClass.IN, 60, rdata))
+
     packets = msg.packets()
     pkt = packets[0]
 
@@ -357,6 +390,9 @@ def builder_for_DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE() -> bytes:
     flags = DnsFlags.parse(0x8180)
     msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.DNSKEY, DnsRecordClass.IN))
+    rdata = bytes.fromhex("010003080102")
+    msg.add_answer(_RawRecord("example.com.", DnsRecordType.DNSKEY, DnsRecordClass.IN, 60, rdata))
+
     packets = msg.packets()
     pkt = packets[0]
 
