@@ -404,7 +404,7 @@ class SshBase(ISystemContext):
                 sftp.close()
 
         else:
-            primitive_directory_exists(ssh_client, remotedir)
+            exists = primitive_directory_exists(ssh_client, remotedir)
 
         return exists
 
@@ -708,7 +708,7 @@ class SshBase(ISystemContext):
             errmsg = f"ERROR: Unable to load private from raw content."
             raise ConfigurationError(errmsg)
 
-        return
+        return pkey
 
     def _load_key_file(self, keyfile: str, keypasswd: str):
         """
