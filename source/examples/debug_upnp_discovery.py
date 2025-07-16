@@ -2,7 +2,7 @@
 import time
 
 
-from automojo.foundation.extension.wellknown import ConfiguredSuperFactorySingleton
+from automojo.presence.wellknown import ConfiguredSuperFactorySingleton
 
 from automojo.interop.protocols.upnp.upnppresence import UpnpPresence
 
