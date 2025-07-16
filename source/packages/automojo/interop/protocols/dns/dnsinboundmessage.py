@@ -36,6 +36,7 @@ from automojo.interop.protocols.dns.dnspointer import DnsPointer
 from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
 from automojo.interop.protocols.dns.dnsrecord import DnsRecord
 from automojo.interop.protocols.dns.dnsservice import DnsService
+from automojo.interop.protocols.dns.dnsmailexchange import DnsMailExchange
 from automojo.interop.protocols.dns.dnstext import DnsText
 
 logger = logging.getLogger()
@@ -228,6 +229,11 @@ class DnsInboundMessage:
                 elif rtype == DnsRecordType.CNAME or rtype == DnsRecordType.PTR:
                     alias = self._read_name()
                     rec = DnsPointer(domain, rtype, rclass, ttl, alias)
+
+                elif rtype == DnsRecordType.MX:
+                    preference = self._read_unsigned_short()
+                    exchange = self._read_name()
+                    rec = DnsMailExchange(domain, rtype, rclass, ttl, preference, exchange)
 
                 elif rtype == DnsRecordType.TXT:
                     text = self._read_string_characters(length)
