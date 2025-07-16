@@ -205,13 +205,14 @@ class SshAgent(SshBase):
             :returns: ``True`` if the directory exists, otherwise ``False``.
         """
         exists = False
+        cleanup_client = False
 
         try:
             if ssh_client is None:
                 ssh_client = self._create_client()
                 cleanup_client = True
 
-            self._directory_exists(ssh_client, remotedir)
+            exists = self._directory_exists(ssh_client, remotedir)
 
         finally:
             if cleanup_client:
@@ -230,6 +231,7 @@ class SshAgent(SshBase):
             :returns: ``True`` if the file exists, otherwise ``False``.
         """
         exists = False
+        cleanup_client = False
 
         try:
             if ssh_client is None:
