@@ -99,19 +99,21 @@ class RestClientBase:
         username = credential.username
         password = credential.password
 
-        passwd_encoded =  b64encode(password).decode("utf-8")
+        authbytes = f"{username}:{password}".encode("utf-8")
+        passwd_encoded = b64encode(authbytes).decode("utf-8")
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Basic {username}:{passwd_encoded}"
+            "Authorization": f"Basic {passwd_encoded}"
         }
 
         auth_leaf = self.AUTH_LEAF.rstrip("/")
         auth_url = f"{self._host_url}/{auth_leaf}"
 
         session = Session()
+        session.verify = self.VERIFY_CERTIFICATE
 
-        resp: Response = session.post(auth_url, headers=headers, verify=self.VERIFY_CERTIFICATE)
+        resp: Response = session.post(auth_url, headers=headers)
         if resp.status_code != HTTPStatus.OK:
             errmsg_lines = [
                 f"Error attempting to authenticate on url={auth_url}.",
@@ -211,7 +213,7 @@ class RestClientBase:
         """
             Performs a REST call using a newly authenticated session. Only a single attempt to make the call and provide
             the calling code with the result is made.  If the call does not succeed due to authentication failure this could
-            be due to a credential timeout.  May a single attempt to reauthentical and then remake the call.   
+            be due to a credential timeout.  Make a single attempt to reauthenticate and then remake the call.
 
             :param leaf: API leaf path for the request.
             :param method: HTTP method to invoke.
