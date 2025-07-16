@@ -276,7 +276,7 @@ class TaskingResultPromise:
                 task_label = f"{self.module_name}.{self._task_name}"
                 errmsg_lines = [
                     f"Timeout waiting for task={task_label} id={self._tasking_id} start={start_time} end={end_time} now={now} diff={diff}",
-                    f"    LOGDIR: {self._logdir}",
+                    f"    LOGDIR: {self._log_dir}",
                 ]
                 errmsg = os.linesep.join(errmsg_lines)
                 raise TimeoutError(errmsg)
