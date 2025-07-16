@@ -1,45 +1,281 @@
 import automojo.testbase as testbase
 
-from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
-from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
-from automojo.interop.protocols.dns.dnsflags import DnsFlags
-from automojo.interop.protocols.dns.dnspointer import DnsPointer
-from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
-from automojo.interop.protocols.dns.testmessages import DNS_QUERY_MESSAGE_IPV4_01, DNS_QUERY_MESSAGE_IPV6_01
+from automojo.interop.protocols.dns import testmessagesipv4
+from automojo.interop.protocols.dns import testmessagesipv6
 
-
-def _ipv4_dns_payload():
-    return DNS_QUERY_MESSAGE_IPV4_01.encode("latin1")[42:]
-
-
-def _ipv6_dns_payload():
-    return DNS_QUERY_MESSAGE_IPV6_01.encode("latin1")[62:]
-
-
-def _build_test_packet():
-    flags = DnsFlags.parse(0)
-    msg = DnsOutboundMessage(flags)
-    msg.add_question(DnsQuestion("_scanner._tcp.local.", DnsRecordType.PTR, DnsRecordClass.IN))
-    msg.add_answer(
-        DnsPointer(
-            "_scanner._tcp.local.",
-            DnsRecordType.PTR,
-            DnsRecordClass.IN,
-            ttl=4500,
-            alias="HP Color LaserJet Pro M478f-9f [834BAB]._scanner._tcp.local.",
-        )
-    )
-    packets = msg.packets()
-    return packets[0]
-
-
-def test_outbound_ipv4_serializes_to_test_message() -> None:
-    pkt = _build_test_packet()
-    testbase.assert_equal(pkt, _ipv4_dns_payload())
+def test_outbound_message_DNS_IPV4_QUERY_A_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_A_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_A_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
     return
 
-
-def test_outbound_ipv6_serializes_to_test_message() -> None:
-    pkt = _build_test_packet()
-    testbase.assert_equal(pkt, _ipv6_dns_payload())
+def test_outbound_message_DNS_RESPONSE_A_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_A_EXAMPLE()
+    expected = testmessagesipv4.DNS_RESPONSE_A_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
     return
+
+def test_outbound_message_DNS_IPV4_QUERY_CNAME_WWW() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_CNAME_WWW()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_CNAME_WWW.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_CNAME_WWW() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_CNAME_WWW()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_CNAME_WWW.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_QUERY_MX_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_MX_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_MX_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_MX_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_MX_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_MX_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_QUERY_TXT_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_TXT_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_TXT_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_TXT_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_TXT_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_TXT_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_QUERY_NS_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_NS_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_NS_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_NS_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_NS_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_NS_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_QUERY_SOA_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_SOA_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_SOA_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_SOA_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_SOA_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_SOA_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_QUERY_PTR_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_PTR_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_PTR_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_PTR_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_PTR_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_PTR_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_QUERY_SRV_SIP() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_SRV_SIP()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_SRV_SIP.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_SRV_SIP() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_SRV_SIP()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_SRV_SIP.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_QUERY_NAPTR_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_NAPTR_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_NAPTR_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_NAPTR_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_NAPTR_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_NAPTR_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_QUERY_DS_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_DS_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_DS_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_DS_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_DS_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_DS_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_QUERY_DNSKEY_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_QUERY_DNSKEY_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_QUERY_DNSKEY_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_RESPONSE_DNSKEY_EXAMPLE() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_RESPONSE_DNSKEY_EXAMPLE()
+    expected = testmessagesipv4.DNS_IPV4_RESPONSE_DNSKEY_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV4_MULTI_QUERY_A_AAAA() -> None:
+    pkt = testmessagesipv4.builder_for_DNS_IPV4_MULTI_QUERY_A_AAAA()
+    expected = testmessagesipv4.DNS_IPV4_MULTI_QUERY_A_AAAA.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_AAAA_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_AAAA_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_AAAA_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_AAAA_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_AAAA_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_AAAA_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_CNAME_WWW() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_CNAME_WWW()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_CNAME_WWW.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_CNAME_WWW() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_CNAME_WWW()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_CNAME_WWW.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_MX_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_MX_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_MX_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_MX_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_MX_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_MX_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_TXT_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_TXT_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_TXT_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_TXT_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_TXT_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_TXT_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_NS_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_NS_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_NS_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_NS_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_NS_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_NS_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_SOA_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_SOA_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_SOA_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_SOA_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_SOA_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_SOA_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_PTR_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_PTR_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_PTR_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_PTR_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_PTR_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_PTR_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_SRV_SIP() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_SRV_SIP()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_SRV_SIP.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_SRV_SIP() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_SRV_SIP()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_SRV_SIP.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_NAPTR_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_NAPTR_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_NAPTR_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_NAPTR_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_NAPTR_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_NAPTR_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_DS_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_DS_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_DS_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_DS_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_DS_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_DS_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_QUERY_DNSKEY_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_QUERY_DNSKEY_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_QUERY_DNSKEY_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE()
+    expected = testmessagesipv6.DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
+def test_outbound_message_DNS_IPV6_MULTI_QUERY_A_AAAA() -> None:
+    pkt = testmessagesipv6.builder_for_DNS_IPV6_MULTI_QUERY_A_AAAA()
+    expected = testmessagesipv6.DNS_IPV6_MULTI_QUERY_A_AAAA.encode('latin1')
+    testbase.assert_equal(pkt, expected)
+    return
+
