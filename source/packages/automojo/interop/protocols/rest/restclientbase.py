@@ -239,12 +239,14 @@ class RestClientBase:
             try:
                 session: Session = self._get_session(aspects)
 
-                req = Request(method=method, url=call_url, params=params, data=body)
+                req = Request(method=method, url=call_url, headers=headers, params=params, data=body)
+                prepared_req = req.prepare()
                 
-                resp :Response = session.send(req, timeout=connection_timeout)
+                resp :Response = session.send(prepared_req, timeout=connection_timeout)
 
             except self.AUTHENTICATION_FAILURES as autherr:
                 if not auth_retry:
+                    auth_retry = True
                     self._session = None
                 else:
                     raise # we only make a single attempt to authenticate, bubble any additional failures
