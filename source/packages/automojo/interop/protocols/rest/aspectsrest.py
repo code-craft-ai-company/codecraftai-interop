@@ -45,9 +45,7 @@ class AspectsRest(Aspects):
                 completion_timeout: float = DEFAULT_COMPLETION_TIMEOUT,
                 completion_interval: float = DEFAULT_COMPLETION_INTERVAL,
                 connection_timeout: float = DEFAULT_CONNECTION_TIMEOUT,
-                connection_interval: float = DEFAULT_CONNECTION_INTERVAL,
                 inactivity_timeout: float = DEFAULT_INACTIVITY_TIMEOUT,
-                inactivity_interval: float = DEFAULT_INACTIVITY_INTERVAL,
                 monitor_delay: float = DEFAULT_MONITOR_DELAY,
                 logging_pattern: LoggingPattern = DEFAULT_LOGGING_PATTERN,
                 retry_logging_interval: int = DEFAULT_RETRY_LOGGING_INTERVAL,
@@ -63,9 +61,7 @@ class AspectsRest(Aspects):
             :param completion_timeout: Time in seconds to wait for completion.
             :param completion_interval: Polling interval when waiting.
             :param connection_timeout: Timeout for establishing connections.
-            :param connection_interval: Retry interval for connection attempts.
             :param inactivity_timeout: Timeout for inactivity in seconds.
-            :param inactivity_interval: Interval between inactivity checks.
             :param monitor_delay: Delay before monitoring begins.
             :param logging_pattern: Pattern used for call logging.
             :param retry_logging_interval: Interval for retry log messages.

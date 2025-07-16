@@ -275,7 +275,9 @@ class RestClientBase:
                                        exp_status: Union[int, List[int]], headers: Union[Dict[str, str], None],
                                        context_msg: Union[str, None], aspects: AspectsRest) -> Response:
         """
-            Perform a single call using an existing connection.
+            Perform a single call using an existing connection.  This call will utilize aspect parameter such as connection timeout in its attempt
+            to connect and only gives up if a constraint is exceeded.  Once it make a connection it makes a single attempt to perform the call on
+            the API and if the call fails, it does not retry.
 
             :param leaf: API leaf path to call.
             :param method: HTTP method to use.
@@ -306,6 +308,8 @@ class RestClientBase:
         allowed_connection_exceptions: List[BaseException] = aspects.allowed_connection_exceptions
         must_connect: bool = aspects.must_connect
 
+        #TODO: Implement the single connected call action pattern
+
         return
     
 
@@ -313,7 +317,8 @@ class RestClientBase:
                                                exp_status: Union[int, List[int]], headers: Union[Dict[str, str], None],
                                                context_msg: Union[str, None], aspects: AspectsRest) -> Response:
         """
-            Perform repeated calls until the connection fails.
+            Perform repeated calls until the connection fails by exceeding a constraint or until a completion timeout is reached.  If there is no connection
+            failure prior to the completion timeout.  It will raise a TimeoutError
 
             :returns: The last response obtained before failure.
         """
@@ -335,6 +340,8 @@ class RestClientBase:
         allowed_connection_exceptions: List[BaseException] = aspects.allowed_connection_exceptions
         must_connect: bool = aspects.must_connect
         
+        #TODO: Implement the call until connection failure action pattern
+
         return
     
 
@@ -364,6 +371,8 @@ class RestClientBase:
         allowed_connection_exceptions: List[BaseException] = aspects.allowed_connection_exceptions
         must_connect: bool = aspects.must_connect
 
+        #TODO: Implement the call until success action pattern
+
         return
     
 
@@ -392,6 +401,8 @@ class RestClientBase:
         allowed_error_codes: List[int] = aspects.allowed_error_codes
         allowed_connection_exceptions: List[BaseException] = aspects.allowed_connection_exceptions
         must_connect: bool = aspects.must_connect
+
+        #TODO: Implement the call while success action pattern
 
         return
     

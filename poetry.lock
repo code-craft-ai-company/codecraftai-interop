@@ -57,7 +57,7 @@ develop = false
 type = "git"
 url = "https://github.com/automationmojo/automojo-errors.git"
 reference = "main"
-resolved_reference = "c15162ca9532e43297208ef34a227003d2f6f2e1"
+resolved_reference = "bc3fe30b3d7a86c5849c216859c648cf36ed6131"
 
 [[package]]
 name = "automojo-extension"
