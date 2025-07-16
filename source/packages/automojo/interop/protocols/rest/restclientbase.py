@@ -209,7 +209,9 @@ class RestClientBase:
                              exp_status: Union[int, List[int]], headers: Union[Dict[str, str], None],
                              context_msg: Union[str, None], aspects: AspectsRest) -> Response:
         """
-            Perform a REST call using a newly authenticated session.
+            Performs a REST call using a newly authenticated session. Only a single attempt to make the call and provide
+            the calling code with the result is made.  If the call does not succeed due to authentication failure this could
+            be due to a credential timeout.  May a single attempt to reauthentical and then remake the call.   
 
             :param leaf: API leaf path for the request.
             :param method: HTTP method to invoke.
@@ -245,7 +247,7 @@ class RestClientBase:
                 if not auth_retry:
                     self._session = None
                 else:
-                    break # Only allow one authentication retry
+                    raise # we only make a single attempt to authenticate, bubble any additional failures
 
             else:
                 break
