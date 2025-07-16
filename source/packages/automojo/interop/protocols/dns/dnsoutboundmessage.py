@@ -452,7 +452,14 @@ class DnsOutboundMessage:
                 self._write_compressed_name(name, parts)
 
         else:
-            self._write_utf(name)
+            name = name.rstrip(".")
+
+            if name:
+                parts = name.split('.')
+
+                for label in parts:
+                    self._write_utf(label)
+
             self._write_single_byte(0)
 
         return
