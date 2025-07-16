@@ -12,8 +12,8 @@ class DummyOut:
     def write_short(self, value):
         self.calls.append(("write_short", value))
 
-    def write_name(self, name):
-        self.calls.append(("write_name", name))
+    def write_name(self, name, force_no_compression):
+        self.calls.append(("write_name", name, force_no_compression))
 
 
 def test_write_calls_outbound_methods():
@@ -35,7 +35,7 @@ def test_write_calls_outbound_methods():
             ("write_short", 5),
             ("write_short", 2),
             ("write_short", 80),
-            ("write_name", "server.local"),
+            ("write_name", "server.local", True),
         ],
     )
     return
