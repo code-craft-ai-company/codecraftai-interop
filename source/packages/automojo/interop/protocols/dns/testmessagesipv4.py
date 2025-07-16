@@ -10,6 +10,25 @@ __author__ = "AutomationX"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
+from automojo.interop.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType
+from automojo.interop.protocols.dns.dnsflags import DnsFlags
+from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
+from automojo.interop.protocols.dns.dnsrecord import DnsRecord
+
+
+class _RawRecord(DnsRecord):
+    """Utility record used to build messages from raw RDATA bytes."""
+
+    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, data: bytes) -> None:
+        super().__init__(name, rtype, rclass, ttl)
+        self._data = data
+        return
+
+    def write(self, out: "DnsOutboundMessage") -> None:
+        out.write(self._data)
+        return
+
 DNS_IPV4_QUERY_A_EXAMPLE = "\x12\x34\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x07\x65\x78\x61\x6d\x70\x6c\x65\x03\x63\x6f\x6d\x00\x00\x01\x00\x01"
 DNS_RESPONSE_A_EXAMPLE = "\x12\x34\x81\x80\x00\x01\x00\x01\x00\x00\x00\x00\x07\x65\x78\x61\x6d\x70\x6c\x65\x03\x63\x6f\x6d\x00\x00\x01\x00\x01\xc0\x0c\x00\x01\x00\x01\x00\x00\x00\x3c\x00\x04\x5d\xb8\xd8\x22"
 
@@ -48,20 +67,211 @@ DNS_IPV4_MULTI_QUERY_A_AAAA = "\x56\x78\x01\x00\x00\x02\x00\x00\x00\x00\x00\x00\
 
 def builder_for_DNS_IPV4_QUERY_A_EXAMPLE() -> bytes:
 
-    rtnbytes = None
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.A, DnsRecordClass.IN))
 
-    #TODO: Build the message using dns elements in 'source/automojo/interop/protocols/dns
-
-    #TODO: Serialze the message into bytes and return the bytes
-
-    return rtnbytes
+    return msg.packets()[0]
 
 def builder_for_DNS_IPV4_RESPONSE_A_EXAMPLE() -> bytes:
 
-    rtnbytes = None
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.A, DnsRecordClass.IN))
+    rdata = bytes.fromhex("5db8d822")
+    msg.add_answer(_RawRecord("example.com", DnsRecordType.A, DnsRecordClass.IN, 60, rdata))
 
-    #TODO: Build the message using dns elements in 'source/automojo/interop/protocols/dns
+    return msg.packets()[0]
 
-    #TODO: Serialze the message into bytes and return the bytes
+def builder_for_DNS_IPV4_QUERY_CNAME_WWW() -> bytes:
 
-    return rtnbytes
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("www.example.com", DnsRecordType.CNAME, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_CNAME_WWW() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("www.example.com", DnsRecordType.CNAME, DnsRecordClass.IN))
+    rdata = bytes.fromhex("076578616d706c6503636f6d00")
+    msg.add_answer(_RawRecord("www.example.com", DnsRecordType.CNAME, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_QUERY_MX_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.MX, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_MX_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.MX, DnsRecordClass.IN))
+    rdata = bytes.fromhex("000a046d61696c076578616d706c6503636f6d00")
+    msg.add_answer(_RawRecord("example.com", DnsRecordType.MX, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_QUERY_TXT_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.TXT, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_TXT_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.TXT, DnsRecordClass.IN))
+    rdata = bytes.fromhex("0568656c6c6f")
+    msg.add_answer(_RawRecord("example.com", DnsRecordType.TXT, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_QUERY_NS_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.NS, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_NS_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.NS, DnsRecordClass.IN))
+    rdata = bytes.fromhex("036e7331076578616d706c6503636f6d00")
+    msg.add_answer(_RawRecord("example.com", DnsRecordType.NS, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_QUERY_SOA_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.SOA, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_SOA_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.SOA, DnsRecordClass.IN))
+    rdata = bytes.fromhex(
+        "036e7331076578616d706c6503636f6d000a686f73746d6173746572076578616d706c6503636f6d000000000100001c2000000e100012750000000e10"
+    )
+    msg.add_answer(_RawRecord("example.com", DnsRecordType.SOA, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_QUERY_PTR_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("4.3.2.1.in-addr.arpa", DnsRecordType.PTR, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_PTR_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("4.3.2.1.in-addr.arpa", DnsRecordType.PTR, DnsRecordClass.IN))
+    rdata = bytes.fromhex("076578616d706c6503636f6d00")
+    msg.add_answer(_RawRecord("4.3.2.1.in-addr.arpa", DnsRecordType.PTR, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_QUERY_SRV_SIP() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("_sip._tcp.example.com", DnsRecordType.SRV, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_SRV_SIP() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("_sip._tcp.example.com", DnsRecordType.SRV, DnsRecordClass.IN))
+    rdata = bytes.fromhex("0000000513c409736970736572766572076578616d706c6503636f6d00")
+    msg.add_answer(_RawRecord("_sip._tcp.example.com", DnsRecordType.SRV, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_QUERY_NAPTR_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.NAPTR, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_NAPTR_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.NAPTR, DnsRecordClass.IN))
+    rdata = bytes.fromhex(
+        "0064000a0155074532552b7369701f215e2e2a24217369703a696e666f406578616d706c652e636f6d2100"
+    )
+    msg.add_answer(_RawRecord("example.com", DnsRecordType.NAPTR, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_QUERY_DS_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.DS, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_DS_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.DS, DnsRecordClass.IN))
+    rdata = bytes.fromhex("00010801000000000000000000000000000000000000000000")
+    msg.add_answer(_RawRecord("example.com", DnsRecordType.DS, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_QUERY_DNSKEY_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.DNSKEY, DnsRecordClass.IN))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_RESPONSE_DNSKEY_EXAMPLE() -> bytes:
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("example.com", DnsRecordType.DNSKEY, DnsRecordClass.IN))
+    rdata = bytes.fromhex("010003080102")
+    msg.add_answer(_RawRecord("example.com", DnsRecordType.DNSKEY, DnsRecordClass.IN, 60, rdata))
+
+    return msg.packets()[0]
+
+def builder_for_DNS_IPV4_MULTI_QUERY_A_AAAA() -> bytes:
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x5678, multicast=False, use_compression=True)
+    msg.add_question(DnsQuestion("www.example.com", DnsRecordType.A, DnsRecordClass.IN))
+    msg.add_question(DnsQuestion("www.example.com", DnsRecordType.AAAA, DnsRecordClass.IN))
+
+    return msg.packets()[0]
