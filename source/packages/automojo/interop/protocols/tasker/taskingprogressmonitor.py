@@ -119,19 +119,20 @@ class TaskingProgressMonitor:
             completed_list: List["TaskingResultPromise"] = []
             progress_list = []
             for prom_item in promises:
+                progress = None
                 try:
                     progress = prom_item.get_progress()
+                except BaseException:
+                    continue
 
-                    if (
-                        progress.status != ProgressCode.NotStarted
-                        and progress.status != ProgressCode.Paused
-                        and progress.status != ProgressCode.Running
-                    ):
-                        completed_list.append(progress)
-
-                    progress_list.append(progress)
-                except:
+                if (
+                    progress.status != ProgressCode.NotStarted
+                    and progress.status != ProgressCode.Paused
+                    and progress.status != ProgressCode.Running
+                ):
                     completed_list.append(progress)
+
+                progress_list.append(progress)
 
             self._lock.acquire()
             try:
