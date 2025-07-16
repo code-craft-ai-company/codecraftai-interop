@@ -16,6 +16,7 @@ __credits__ = []
 from typing import Dict, List, Optional, Union
 
 import os
+import time
 
 from base64 import b64encode
 from http import HTTPStatus
@@ -311,9 +312,68 @@ class RestClientBase:
         allowed_connection_exceptions: List[BaseException] = aspects.allowed_connection_exceptions
         must_connect: bool = aspects.must_connect
 
-        #TODO: Implement the single connected call action pattern
+        # Attempt to establish a connection and make a single call.  We will
+        # retry connecting until either a connection is made or the completion
+        # timeout is exceeded.  Once connected, the call is executed only once.
+        start_time = time.time()
+        attempt = 0
+        auth_retry = False
+        while True:
 
-        return
+            try:
+                session: Session = self._get_session(aspects)
+
+                req = Request(method=method, url=call_url, headers=headers,
+                             params=params, data=body)
+                prepared_req = req.prepare()
+
+                resp: Response = session.send(
+                    prepared_req, timeout=send_timeouts,
+                    verify=self.VERIFY_CERTIFICATE
+                )
+
+            except self.AUTHENTICATION_FAILURES:
+                if not auth_retry:
+                    auth_retry = True
+                    self._session = None
+                    continue
+                raise
+            except Exception as exc:  # Connection failure
+                if attempt % retry_logging_interval == 0:
+                    dbg_msg = (
+                        f"Connection attempt {attempt + 1} failed: {exc}"
+                    )
+                    logger.debug(dbg_msg)
+
+                if time.time() - start_time >= completion_timeout:
+                    raise TimeoutError(
+                        f"Timeout attempting call on url={call_url}"
+                    ) from exc
+
+                time.sleep(completion_interval)
+                attempt += 1
+                continue
+
+            else:
+                break
+
+        found_status = resp.status_code
+        if isinstance(exp_status, int):
+            exp_list = [exp_status]
+        else:
+            exp_list = exp_status
+
+        if found_status not in exp_list:
+            resp_content = resp.content
+            errmsg = format_http_error_message(
+                found_status, resp_content, call_url, context=context_msg
+            )
+            logger.error(errmsg)
+            raise_for_http_status(
+                found_status, resp_content, call_url, context=context_msg
+            )
+
+        return resp
     
 
     def _perform_call_until_connection_failure(self, leaf: str, method: str, params: Union[Dict[str, str], None], body: Union[Dict[str, str], None],
@@ -339,10 +399,52 @@ class RestClientBase:
         allowed_error_codes: List[int] = aspects.allowed_error_codes
         allowed_connection_exceptions: List[BaseException] = aspects.allowed_connection_exceptions
         must_connect: bool = aspects.must_connect
-        
-        #TODO: Implement the call until connection failure action pattern
 
-        return
+        # Repeatedly perform the call until we hit a connection failure or the
+        # completion timeout expires.
+        start_time = time.time()
+        attempt = 0
+        last_resp: Response = None
+        auth_retry = False
+
+        while True:
+            try:
+                session: Session = self._get_session(aspects)
+
+                req = Request(method=method, url=call_url, headers=headers,
+                             params=params, data=body)
+                prepared_req = req.prepare()
+
+                resp: Response = session.send(
+                    prepared_req, timeout=send_timeouts,
+                    verify=self.VERIFY_CERTIFICATE
+                )
+                last_resp = resp
+
+            except self.AUTHENTICATION_FAILURES:
+                if not auth_retry:
+                    auth_retry = True
+                    self._session = None
+                    continue
+                break
+            except Exception as exc:
+                # Any exception is treated as a connection failure
+                if attempt % retry_logging_interval == 0:
+                    dbg_msg = (
+                        f"Connection failure after {attempt + 1} attempts: {exc}"
+                    )
+                    logger.debug(dbg_msg)
+                break
+
+            if time.time() - start_time >= completion_timeout:
+                raise TimeoutError(
+                    f"Timeout waiting for connection failure on url={call_url}"
+                )
+
+            time.sleep(completion_interval)
+            attempt += 1
+
+        return last_resp
     
 
     def _perform_call_until_success(self, leaf: str, method: str, params: Union[Dict[str, str], None], body: Union[Dict[str, str], None],
@@ -368,9 +470,71 @@ class RestClientBase:
         allowed_connection_exceptions: List[BaseException] = aspects.allowed_connection_exceptions
         must_connect: bool = aspects.must_connect
 
-        #TODO: Implement the call until success action pattern
+        # Loop until we obtain a successful response or a timeout occurs.
+        start_time = time.time()
+        attempt = 0
+        auth_retry = False
 
-        return
+        while True:
+            try:
+                session: Session = self._get_session(aspects)
+
+                req = Request(method=method, url=call_url, headers=headers,
+                             params=params, data=body)
+                prepared_req = req.prepare()
+
+                resp: Response = session.send(
+                    prepared_req, timeout=send_timeouts,
+                    verify=self.VERIFY_CERTIFICATE
+                )
+
+            except self.AUTHENTICATION_FAILURES:
+                if not auth_retry:
+                    auth_retry = True
+                    self._session = None
+                    continue
+                if must_connect:
+                    raise
+                resp = None
+            except Exception as exc:
+                if must_connect:
+                    raise
+                resp = None
+                if attempt % retry_logging_interval == 0:
+                    logger.debug(
+                        f"Call attempt {attempt + 1} failed: {exc}"
+                    )
+
+            else:
+                found_status = resp.status_code
+                if isinstance(exp_status, int):
+                    exp_list = [exp_status]
+                else:
+                    exp_list = exp_status
+
+                if found_status in exp_list:
+                    return resp
+
+                if allowed_error_codes and found_status in allowed_error_codes:
+                    resp = None
+                else:
+                    resp_content = resp.content
+                    errmsg = format_http_error_message(
+                        found_status, resp_content, call_url, context=context_msg
+                    )
+                    logger.error(errmsg)
+                    raise_for_http_status(
+                        found_status, resp_content, call_url, context=context_msg
+                    )
+
+            if time.time() - start_time >= completion_timeout:
+                raise TimeoutError(
+                    f"Timeout waiting for successful call on url={call_url}"
+                )
+
+            time.sleep(completion_interval)
+            attempt += 1
+
     
 
     def _perform_call_while_success(self, leaf: str, method: str, params: Union[Dict[str, str], None], body: Union[Dict[str, str], None],
@@ -396,7 +560,69 @@ class RestClientBase:
         allowed_connection_exceptions: List[BaseException] = aspects.allowed_connection_exceptions
         must_connect: bool = aspects.must_connect
 
-        #TODO: Implement the call while success action pattern
+        # Continue making calls while each call succeeds.  Stop when a call
+        # fails or when the completion timeout is reached.
+        start_time = time.time()
+        attempt = 0
+        last_resp: Response = None
+        auth_retry = False
 
-        return
+        while True:
+            try:
+                session: Session = self._get_session(aspects)
+
+                req = Request(method=method, url=call_url, headers=headers,
+                             params=params, data=body)
+                prepared_req = req.prepare()
+
+                resp: Response = session.send(
+                    prepared_req, timeout=send_timeouts,
+                    verify=self.VERIFY_CERTIFICATE
+                )
+
+            except self.AUTHENTICATION_FAILURES:
+                if not auth_retry:
+                    auth_retry = True
+                    self._session = None
+                    continue
+                if must_connect:
+                    raise
+                break
+            except Exception as exc:
+                if must_connect:
+                    raise
+                if attempt % retry_logging_interval == 0:
+                    logger.debug(
+                        f"Call failed after {attempt + 1} attempts: {exc}"
+                    )
+                break
+            else:
+                last_resp = resp
+                found_status = resp.status_code
+                if isinstance(exp_status, int):
+                    exp_list = [exp_status]
+                else:
+                    exp_list = exp_status
+
+                if found_status not in exp_list:
+                    if allowed_error_codes and found_status in allowed_error_codes:
+                        break
+                    resp_content = resp.content
+                    errmsg = format_http_error_message(
+                        found_status, resp_content, call_url, context=context_msg
+                    )
+                    logger.error(errmsg)
+                    raise_for_http_status(
+                        found_status, resp_content, call_url, context=context_msg
+                    )
+
+            if time.time() - start_time >= completion_timeout:
+                raise TimeoutError(
+                    f"Timeout waiting for call failure on url={call_url}"
+                )
+
+            time.sleep(completion_interval)
+            attempt += 1
+
+        return last_resp
     
