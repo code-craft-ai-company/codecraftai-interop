@@ -23,7 +23,7 @@ class DnsText(DnsRecord):
         A DNS text record
     """
 
-    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, text: bytes, supress_compression: bool = False) -> None:
+    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, text: bytes, suppress_compression: bool = False) -> None:
         """
             Constructs a DNS text record.
 
@@ -32,11 +32,11 @@ class DnsText(DnsRecord):
             :param rclass: Record class.
             :param ttl: Time-to-live for the record.
             :param text: Text payload as bytes.
-            :param supress_compression: Optional parameter offering control over whether to suppress compression
+            :param suppress_compression: Optional parameter offering control over whether to suppress compression
                                         for the record.
         """
         assert isinstance(text, (bytes, type(None)))
-        DnsRecord.__init__(self, name, rtype, rclass, ttl, supress_compression=supress_compression)
+        DnsRecord.__init__(self, name, rtype, rclass, ttl, suppress_compression=suppress_compression)
         self._text = text
 
     @property

@@ -35,7 +35,7 @@ class DnsPointer(DnsRecord):
             :param suppress_compression: Optional parameter offering control over whether to suppress compression
                                         for the record.
         """
-        DnsRecord.__init__(self, name, rtype, rclass, ttl, supress_compression=supress_compression)
+        DnsRecord.__init__(self, name, rtype, rclass, ttl, suppress_compression=suppress_compression)
         self._alias = alias
         self._suppress_compression = suppress_compression
         return

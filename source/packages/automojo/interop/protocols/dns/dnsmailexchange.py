@@ -23,7 +23,7 @@ class DnsMailExchange(DnsRecord):
         A DNS mail exchange (MX) record.
     """
 
-    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, preference: int, exchange: str, supress_compression: str = False) -> None:
+    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, preference: int, exchange: str, suppress_compression: str = False) -> None:
         """
             Constructs a DNS mail exchange record.
 
@@ -33,10 +33,10 @@ class DnsMailExchange(DnsRecord):
             :param ttl: Time-to-live for the record.
             :param preference: Preference value for the mail exchange server.
             :param exchange: Hostname of the mail exchange server.
-            :param supress_compression: Optional parameter offering control over whether to suppress compression
+            :param suppress_compression: Optional parameter offering control over whether to suppress compression
                                         for the record.
         """
-        super().__init__(name, rtype, rclass, ttl, supress_compression=supress_compression)
+        super().__init__(name, rtype, rclass, ttl, suppress_compression=suppress_compression)
         self._preference = preference
         self._exchange = exchange
         return
@@ -66,7 +66,7 @@ class DnsMailExchange(DnsRecord):
             :param out: The outbound DNS message to write the record to.
         """
         out.write_short(self._preference)
-        out.write_name(self._exchange, force_no_compression=self._supress_compression)
+        out.write_name(self._exchange, force_no_compression=self._suppress_compression)
         return
 
     def __eq__(self, other: DnsRecord) -> bool:

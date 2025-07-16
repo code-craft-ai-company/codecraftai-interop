@@ -33,10 +33,10 @@ class DnsHostInfo(DnsRecord):
             :param ttl: Time-to-live for the record.
             :param cpu: CPU architecture string.
             :param os: Operating system description.
-            :param supress_compression: Optional parameter offering control over whether to suppress compression
+            :param suppress_compression: Optional parameter offering control over whether to suppress compression
                                         for the record.
         """
-        DnsRecord.__init__(self, name, rtype, rclass, ttl, supress_compression=suppress_compression)
+        DnsRecord.__init__(self, name, rtype, rclass, ttl, suppress_compression=suppress_compression)
         self._cpu = cpu
         self._os = os
         return

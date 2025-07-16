@@ -64,7 +64,7 @@ class DnsRecord:
         +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
     """
-    def __init__(self, name: str, rtype: DnsRecordType, rclass: DnsRecordClass, ttl: Union[float, int], supress_compression: bool=False) -> None:
+    def __init__(self, name: str, rtype: DnsRecordType, rclass: DnsRecordClass, ttl: Union[float, int], suppress_compression: bool=False) -> None:
         """
             Constructs a DNS record.
 
@@ -78,7 +78,7 @@ class DnsRecord:
         self._rtype = rtype
         self._rclass = DnsRecordClass(rclass & DnsRecordClass.MASK)
         self._ttl = ttl
-        self._supress_compression = supress_compression
+        self._suppress_compression = suppress_compression
 
         self._unique = (rclass & DnsRecordClass.UNIQUE) != 0
         self._updated = current_time_millis()
@@ -125,11 +125,11 @@ class DnsRecord:
         return self._rtype
 
     @property
-    def supress_compression(self) -> bool:
+    def suppress_compression(self) -> bool:
         """
             Inicates if the record should be left uncompressed during compressed write outs.
         """
-        return self._supress_compression
+        return self._suppress_compression
 
     @property
     def ttl(self) -> int:

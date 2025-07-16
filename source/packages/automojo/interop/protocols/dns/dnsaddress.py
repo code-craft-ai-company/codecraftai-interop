@@ -28,7 +28,7 @@ class DnsAddress(DnsRecord):
         A DNS address record
     """
 
-    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, address: bytes, supress_compression: bool = False) -> None:
+    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, address: bytes, suppress_compression: bool = False) -> None:
         """
             Constructs a DNS address record.
 
@@ -37,11 +37,11 @@ class DnsAddress(DnsRecord):
             :param rclass: Record class.
             :param ttl: Time-to-live for the record.
             :param address: Raw address bytes.
-            :param supress_compression: Optional parameter offering control over whether to suppress compression
+            :param suppress_compression: Optional parameter offering control over whether to suppress compression
                                         for the record.
         """
 
-        DnsRecord.__init__(self, name, rtype, rclass, ttl, supress_compression=supress_compression)
+        DnsRecord.__init__(self, name, rtype, rclass, ttl, suppress_compression=suppress_compression)
         self._address = address
         return
 
