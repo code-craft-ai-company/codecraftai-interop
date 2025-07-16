@@ -23,15 +23,13 @@ from automojo.xmodules.xconvert import safe_as_bytes, safe_as_str
 
 from automojo.interop.agents.serialagentbase import SerialAgentBase
 
-import telnetlib
-
 
 class TcpSerialBase(SerialAgentBase):
     """
         Base class for TCP serial implementations.
     """
 
-    SERIAL_PROMPT = b"@@@&@@@&"
+    SERIAL_PROMPT = b"@@@&@@@&"  # We use a special prompt that is not likely to occur in our serial output
     NORMAL_PROMPT = b"#"
 
     def __init__(
@@ -69,8 +67,8 @@ class TcpSerialBase(SerialAgentBase):
 
         tnconn.write(b'export PS1="%s"\n' % self.SERIAL_PROMPT)
 
-        cmd_out = tnconn.read_until(self.SERIAL_PROMPT)
-        cmd_out = tnconn.read_until(self.SERIAL_PROMPT)
+        cmd_out = tnconn.read_until(self.SERIAL_PROMPT) # Read the echo of our export command
+        cmd_out = tnconn.read_until(self.SERIAL_PROMPT) # Read the actual prompt we set
         return tnconn
 
     def _restore_prompt(self, tnconn: telnetlib.Telnet) -> None:
