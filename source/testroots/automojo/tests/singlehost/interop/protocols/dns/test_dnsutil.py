@@ -2,7 +2,7 @@ import automojo.testbase as testbase
 from automojo.interop.protocols.dns.dnsutil import service_type_name
 from automojo.interop.protocols.dns.exceptions import DnsBadTypeInNameError
 from automojo.interop.protocols.dns import dnsutil
-from unittest import mock
+from automojo.testbase.mocking import create_module_patch
 
 
 def test_service_type_name_returns_fqname() -> None:
@@ -12,7 +12,7 @@ def test_service_type_name_returns_fqname() -> None:
 
 
 def test_service_type_name_calls_validate_service_name() -> None:
-    with mock.patch.object(dnsutil, "validate_service_name") as vsn:
+    with create_module_patch(dnsutil, "validate_service_name") as vsn:
         service_type_name("_http._tcp.local", allow_underscores=True)
         vsn.assert_called_once_with("_http", allow_underscores=True)
     return

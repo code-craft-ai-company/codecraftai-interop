@@ -1,7 +1,8 @@
 import automojo.testbase as testbase
 from automojo.interop.protocols.dns.dnstext import DnsText
 from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
-from unittest import mock
+import time
+from automojo.testbase.mocking import create_module_patch
 
 
 class DummyOut:
@@ -32,7 +33,8 @@ def test_equality_and_inequality():
 
 
 def test_str_truncates_long_text():
-    with mock.patch("time.time", return_value=0):
+    with create_module_patch(time, "time") as mock_time:
+        mock_time.configure(return_value=0)
         rec = DnsText(
             "example.com",
             DnsRecordType.TXT,

@@ -1,13 +1,14 @@
 import automojo.testbase as testbase
 from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
 from automojo.interop.protocols.dns import dnsapi
-from unittest import mock
+from automojo.testbase.mocking import Mock, create_module_patch
 
 
 def test_dns_query_name_returns_query_string():
-    with mock.patch.object(dnsapi, "DnsQuestion", autospec=True) as mock_question:
-        instance = mock_question.return_value
-        instance.as_dns_string.return_value = "query"
+    with create_module_patch(dnsapi, "DnsQuestion") as mock_question:
+        instance = Mock(recursive=True)
+        mock_question.configure(return_value=instance)
+        instance.as_dns_string.configure(return_value="query")
         result = dnsapi.dns_query_name("example.com", DnsRecordType.A, DnsRecordClass.IN)
         mock_question.assert_called_once_with("example.com", DnsRecordType.A, DnsRecordClass.IN)
         instance.as_dns_string.assert_called_once_with()
@@ -16,8 +17,9 @@ def test_dns_query_name_returns_query_string():
 
 
 def test_dns_query_services_starts_server_and_waits():
-    with mock.patch.object(dnsapi, "DnsServer", autospec=True) as mock_server:
-        instance = mock_server.return_value
+    with create_module_patch(dnsapi, "DnsServer") as mock_server:
+        instance = Mock(recursive=True)
+        mock_server.configure(return_value=instance)
         dnsapi.dns_query_services(["_http._tcp.local"])
         mock_server.assert_called_once_with()
         instance.start.assert_called_once_with()

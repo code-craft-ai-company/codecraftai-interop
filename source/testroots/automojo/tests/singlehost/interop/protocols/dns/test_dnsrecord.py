@@ -1,7 +1,8 @@
 import automojo.testbase as testbase
 from automojo.interop.protocols.dns.dnsrecord import DnsRecord
 from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
-from unittest import mock
+from automojo.interop.protocols.dns import dnsrecord
+from automojo.testbase.mocking import create_module_patch
 
 
 def test_dnsrecord_rclass_equality():
@@ -14,20 +15,17 @@ def test_as_dns_string_and_str_include_ttl_values():
     """Verify as_dns_string and __str__ show TTL information."""
 
     # Make time deterministic
-    with mock.patch(
-        "automojo.interop.protocols.dns.dnsrecord.current_time_millis", return_value=0
-    ):
+    with create_module_patch(dnsrecord, "current_time_millis") as ctm:
+        ctm.configure(return_value=0)
         rec = DnsRecord("example.com", DnsRecordType.A, DnsRecordClass.IN, ttl=10)
 
-    with mock.patch(
-        "automojo.interop.protocols.dns.dnsrecord.current_time_millis", return_value=5000
-    ):
+    with create_module_patch(dnsrecord, "current_time_millis") as ctm:
+        ctm.configure(return_value=5000)
         sval = rec.as_dns_string("info")
     testbase.assert_equal(sval, "record[1,1,example.com]=10/5,info")
 
-    with mock.patch(
-        "automojo.interop.protocols.dns.dnsrecord.current_time_millis", return_value=0
-    ):
+    with create_module_patch(dnsrecord, "current_time_millis") as ctm:
+        ctm.configure(return_value=0)
         sval = str(rec)
     testbase.assert_equal(sval, "record[1,1,example.com]=10/10,None")
 
@@ -35,9 +33,8 @@ def test_as_dns_string_and_str_include_ttl_values():
 def test_get_remaining_ttl_and_expiration():
     """Ensure remaining TTL and expiration checks work."""
 
-    with mock.patch(
-        "automojo.interop.protocols.dns.dnsrecord.current_time_millis", return_value=0
-    ):
+    with create_module_patch(dnsrecord, "current_time_millis") as ctm:
+        ctm.configure(return_value=0)
         rec = DnsRecord("example.com", DnsRecordType.A, DnsRecordClass.IN, ttl=10)
 
     testbase.assert_equal(rec.get_remaining_ttl(5000), 5)
@@ -48,14 +45,12 @@ def test_get_remaining_ttl_and_expiration():
 def test_update_ttl_recomputes_markers():
     """Update TTL values from another record."""
 
-    with mock.patch(
-        "automojo.interop.protocols.dns.dnsrecord.current_time_millis", return_value=0
-    ):
+    with create_module_patch(dnsrecord, "current_time_millis") as ctm:
+        ctm.configure(return_value=0)
         rec1 = DnsRecord("example.com", DnsRecordType.A, DnsRecordClass.IN, ttl=10)
 
-    with mock.patch(
-        "automojo.interop.protocols.dns.dnsrecord.current_time_millis", return_value=5000
-    ):
+    with create_module_patch(dnsrecord, "current_time_millis") as ctm:
+        ctm.configure(return_value=5000)
         rec2 = DnsRecord("example.com", DnsRecordType.A, DnsRecordClass.IN, ttl=20)
 
     rec1.update_ttl(rec2)
@@ -71,9 +66,8 @@ class DummyMsg:
 def test_suppressed_by_answer_and_message():
     """Check suppression logic using another record and message."""
 
-    with mock.patch(
-        "automojo.interop.protocols.dns.dnsrecord.current_time_millis", return_value=0
-    ):
+    with create_module_patch(dnsrecord, "current_time_millis") as ctm:
+        ctm.configure(return_value=0)
         rec1 = DnsRecord("example.com", DnsRecordType.A, DnsRecordClass.IN, ttl=10)
 
     rec2 = DnsRecord("example.com", DnsRecordType.A, DnsRecordClass.IN, ttl=6)
