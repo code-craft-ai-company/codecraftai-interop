@@ -596,7 +596,7 @@ def validate_message_DNS_IPV6_RESPONSE_SRV_SIP(pkt: bytes) -> None:
     testbase.assert_equal(q.rclass, DnsRecordClass.IN)
 
     a = msg.answers[0]
-    testbase.assert_equal(a.target, "sipserver.example.com.")
+    testbase.assert_equal(a.server, "sipserver.example.com.")
     testbase.assert_equal(a.port, 5060)
     testbase.assert_equal(a.ttl, 60)
     return
