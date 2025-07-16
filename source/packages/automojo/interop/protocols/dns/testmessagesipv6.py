@@ -8,28 +8,26 @@
 
 __author__ = "AutomationX"
 
-from automojo.interop.protocols.dns.dnsconst import DnsQr
-from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
+from automojo.interop.protocols.dns.dnsconst import (
+    DnsRecordClass,
+    DnsRecordType,
+)
+from automojo.interop.protocols.dns.dnsflags import DnsFlags
 from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
+from automojo.interop.protocols.dns.dnspointer import DnsPointer
+from automojo.interop.protocols.dns.dnsservice import DnsService
+from automojo.interop.protocols.dns.dnstext import DnsText
+from automojo.interop.protocols.dns.dnsaddress import DnsAddress
 
 
-def _build_dns_message(example: str) -> bytes:
-    """Builds a DNS packet using :mod:`DnsOutboundMessage`."""
+class _RawDnsAddress(DnsAddress):
+    """Helper record used to emit raw address bytes."""
 
-    inbound = DnsInboundMessage(bytes(example, "latin1"))
-    use_compression = inbound.flags.qr == DnsQr.Response
-
-    outbound = DnsOutboundMessage(
-        inbound.flags, id=inbound.id, multicast=False, use_compression=use_compression
-    )
-
-    for question in inbound.questions:
-        outbound.add_question(question)
-
-    for answer in inbound.answers:
-        outbound.add_answer(answer)
-
-    return outbound.packets()[0]
+    def write(self, out: DnsOutboundMessage) -> None:  # noqa: D401 - Too simple
+        """Write raw address bytes to the outbound message."""
+        out.write(self._address)
+        return
 
 
 DNS_IPV6_QUERY_AAAA_EXAMPLE = "\x12\x34\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x07\x65\x78\x61\x6d\x70\x6c\x65\x03\x63\x6f\x6d\x00\x00\x1c\x00\x01"
@@ -70,114 +68,321 @@ DNS_IPV6_MULTI_QUERY_A_AAAA = "\x56\x78\x01\x00\x00\x02\x00\x00\x00\x00\x00\x00\
 
 def builder_for_DNS_IPV6_QUERY_AAAA_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_AAAA_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_QUERY_AAAA_EXAMPLE)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.AAAA, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_AAAA_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_AAAA_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_AAAA_EXAMPLE)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.AAAA, DnsRecordClass.IN))
+    addr_bytes = bytes.fromhex("26062800022000010248189200000000")
+    msg.add_answer(_RawDnsAddress("example.com.", DnsRecordType.AAAA, DnsRecordClass.IN, 60, addr_bytes))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_CNAME_WWW() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_CNAME_WWW`."""
-    return _build_dns_message(DNS_IPV6_QUERY_CNAME_WWW)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("www.example.com.", DnsRecordType.CNAME, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_CNAME_WWW() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_CNAME_WWW`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_CNAME_WWW)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("www.example.com.", DnsRecordType.CNAME, DnsRecordClass.IN))
+    msg.add_answer(
+        DnsPointer(
+            "www.example.com.",
+            DnsRecordType.CNAME,
+            DnsRecordClass.IN,
+            ttl=60,
+            alias="example.com.",
+        )
+    )
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_MX_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_MX_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_QUERY_MX_EXAMPLE)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.MX, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_MX_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_MX_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_MX_EXAMPLE)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.MX, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_TXT_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_TXT_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_QUERY_TXT_EXAMPLE)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.TXT, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_TXT_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_TXT_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_TXT_EXAMPLE)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.TXT, DnsRecordClass.IN))
+    msg.add_answer(DnsText("example.com.", DnsRecordType.TXT, DnsRecordClass.IN, 60, b"\x05hello"))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_NS_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_NS_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_QUERY_NS_EXAMPLE)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.NS, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_NS_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_NS_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_NS_EXAMPLE)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.NS, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_SOA_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_SOA_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_QUERY_SOA_EXAMPLE)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.SOA, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_SOA_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_SOA_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_SOA_EXAMPLE)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.SOA, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_PTR_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_PTR_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_QUERY_PTR_EXAMPLE)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(
+        DnsQuestion(
+            "0.0.0.0.0.0.0.0.2.9.8.1.8.4.2.0.1.0.0.0.0.2.2.0.0.0.8.2.6.0.6.2.ip6.arpa.",
+            DnsRecordType.PTR,
+            DnsRecordClass.IN,
+        )
+    )
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_PTR_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_PTR_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_PTR_EXAMPLE)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(
+        DnsQuestion(
+            "0.0.0.0.0.0.0.0.2.9.8.1.8.4.2.0.1.0.0.0.0.2.2.0.0.0.8.2.6.0.6.2.ip6.arpa.",
+            DnsRecordType.PTR,
+            DnsRecordClass.IN,
+        )
+    )
+    msg.add_answer(
+        DnsPointer(
+            "0.0.0.0.0.0.0.0.2.9.8.1.8.4.2.0.1.0.0.0.0.2.2.0.0.0.8.2.6.0.6.2.ip6.arpa.",
+            DnsRecordType.PTR,
+            DnsRecordClass.IN,
+            ttl=60,
+            alias="example.com.",
+        )
+    )
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_SRV_SIP() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_SRV_SIP`."""
-    return _build_dns_message(DNS_IPV6_QUERY_SRV_SIP)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("_sip._tcp.example.com.", DnsRecordType.SRV, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_SRV_SIP() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_SRV_SIP`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_SRV_SIP)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("_sip._tcp.example.com.", DnsRecordType.SRV, DnsRecordClass.IN))
+    msg.add_answer(
+        DnsService(
+            "_sip._tcp.example.com.",
+            DnsRecordType.SRV,
+            DnsRecordClass.IN,
+            ttl=60,
+            priority=0,
+            weight=5,
+            port=5060,
+            server="sipserver.example.com.",
+        )
+    )
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_NAPTR_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_NAPTR_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_QUERY_NAPTR_EXAMPLE)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.NAPTR, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_NAPTR_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_NAPTR_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_NAPTR_EXAMPLE)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.NAPTR, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_DS_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_DS_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_QUERY_DS_EXAMPLE)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.DS, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_DS_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_DS_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_DS_EXAMPLE)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.DS, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_QUERY_DNSKEY_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_QUERY_DNSKEY_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_QUERY_DNSKEY_EXAMPLE)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.DNSKEY, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE() -> bytes:
     """Builder for :data:`DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE`."""
-    return _build_dns_message(DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE)
+
+    flags = DnsFlags.parse(0x8180)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("example.com.", DnsRecordType.DNSKEY, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
 
 
 def builder_for_DNS_IPV6_MULTI_QUERY_A_AAAA() -> bytes:
     """Builder for :data:`DNS_IPV6_MULTI_QUERY_A_AAAA`."""
-    return _build_dns_message(DNS_IPV6_MULTI_QUERY_A_AAAA)
+
+    flags = DnsFlags.parse(0x0100)
+    msg = DnsOutboundMessage(flags, id=0x5678, multicast=False, use_compression=False)
+    msg.add_question(DnsQuestion("www.example.com.", DnsRecordType.A, DnsRecordClass.IN))
+    msg.add_question(DnsQuestion("www.example.com.", DnsRecordType.AAAA, DnsRecordClass.IN))
+    packets = msg.packets()
+    pkt = packets[0]
+
+    return pkt
