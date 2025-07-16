@@ -132,7 +132,7 @@ debugpy = "^1.8.12"
 type = "git"
 url = "https://github.com/automationmojo/automojo-runtime.git"
 reference = "main"
-resolved_reference = "237434c1ace7f25b79791037ee704fb409dfa16b"
+resolved_reference = "a9c000cf3241a04dc992881231fc648865a449bd"
 
 [[package]]
 name = "automojo-testbase"
@@ -157,7 +157,7 @@ click = "^8.1.8"
 type = "git"
 url = "https://github.com/automationmojo/automojo-testbase.git"
 reference = "main"
-resolved_reference = "a5b315e9c0c53eecb049cbd6980d2b7a6d7897a3"
+resolved_reference = "3edc127668b2c00440439127dbce574184b5683f"
 
 [[package]]
 name = "automojo-waiting"
@@ -192,7 +192,7 @@ debugpy = "^1.8.14"
 type = "git"
 url = "https://github.com/automationmojo/automojo-xmodules.git"
 reference = "main"
-resolved_reference = "90b5384a84155639594a1f4db5c14c7059e1a0f1"
+resolved_reference = "eab5feb102197bd96406a81a2dc4285d6bbe03ab"
 
 [[package]]
 name = "bcrypt"
