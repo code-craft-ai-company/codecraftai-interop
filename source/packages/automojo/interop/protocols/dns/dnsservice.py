@@ -96,7 +96,7 @@ class DnsService(DnsRecord):
         out.write_short(self._priority)
         out.write_short(self._weight)
         out.write_short(self._port)
-        out.write_name(self._server)
+        out.write_name(self._server, force_no_compression=True)
         return
 
     def __eq__(self, other: DnsRecord) -> bool:

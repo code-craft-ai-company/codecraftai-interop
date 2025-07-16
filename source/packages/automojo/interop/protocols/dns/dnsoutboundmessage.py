@@ -427,7 +427,7 @@ class DnsOutboundMessage:
         self._pack(b'!I', int(value))
         return
 
-    def _write_name(self, name: str) -> None:
+    def _write_name(self, name: str, force_no_compression: bool = False) -> None:
         """
             Write names to packet
 
@@ -438,7 +438,7 @@ class DnsOutboundMessage:
             compact two-byte reference to an appearance of that data somewhere earlier in the message [RFC1035].
         """
 
-        if self._use_compression:
+        if not force_no_compression and self._use_compression:
             name = name.rstrip(".")
 
             # If the full name if found in the compression names, then we have already
@@ -577,10 +577,12 @@ class DnsOutboundMessage:
         self.write_character_string(buffer)
         return
 
-    def write_name(self, name: str) -> None:
-        """Write a domain name using compression when enabled."""
+    def write_name(self, name: str, force_no_compression: bool = False) -> None:
+        """
+            Write a domain name using compression when enabled.
+        """
 
-        self._write_name(name)
+        self._write_name(name, force_no_compression=force_no_compression)
         return
 
     def write_short(self, value: int) -> None:
