@@ -233,8 +233,7 @@ class RestClientBase:
 
         logger = aspects.logger
 
-        connection_timeout: float = aspects.connection_timeout
-        monitor_delay: float = aspects.monitor_delay
+        send_timeouts = (aspects.connection_timeout, aspects.inactivity_timeout)
         allowed_error_codes: List[int] = aspects.allowed_error_codes
         allowed_connection_exceptions: List[BaseException] = aspects.allowed_connection_exceptions
 
@@ -247,7 +246,7 @@ class RestClientBase:
                 req = Request(method=method, url=call_url, headers=headers, params=params, data=body)
                 prepared_req = req.prepare()
                 
-                resp :Response = session.send(prepared_req, timeout=connection_timeout, verify=self.VERIFY_CERTIFICATE)
+                resp :Response = session.send(prepared_req, timeout=send_timeouts, verify=self.VERIFY_CERTIFICATE)
 
             except self.AUTHENTICATION_FAILURES as autherr:
                 if not auth_retry:
@@ -295,12 +294,9 @@ class RestClientBase:
 
         logger = aspects.logger
 
+        send_timeouts = (aspects.connection_timeout, aspects.inactivity_timeout)
         completion_timeout: float = aspects.completion_timeout
         completion_interval: float = aspects.completion_interval
-        connection_timeout: float = aspects.connection_timeout
-        connection_interval: float = aspects.connection_interval
-        inactivity_timeout: float = aspects.inactivity_timeout
-        inactivity_interval: float = aspects.inactivity_interval
         monitor_delay: float = aspects.monitor_delay
         logging_pattern: LoggingPattern = aspects.logging_pattern
         retry_logging_interval: int = aspects.retry_logging_interval
@@ -327,12 +323,9 @@ class RestClientBase:
 
         logger = aspects.logger
 
+        send_timeouts = (aspects.connection_timeout, aspects.inactivity_timeout)
         completion_timeout: float = aspects.completion_timeout
         completion_interval: float = aspects.completion_interval
-        connection_timeout: float = aspects.connection_timeout
-        connection_interval: float = aspects.connection_interval
-        inactivity_timeout: float = aspects.inactivity_timeout
-        inactivity_interval: float = aspects.inactivity_interval
         monitor_delay: float = aspects.monitor_delay
         logging_pattern: LoggingPattern = aspects.logging_pattern
         retry_logging_interval: int = aspects.retry_logging_interval
@@ -358,12 +351,9 @@ class RestClientBase:
 
         logger = aspects.logger
 
+        send_timeouts = (aspects.connection_timeout, aspects.inactivity_timeout)
         completion_timeout: float = aspects.completion_timeout
         completion_interval: float = aspects.completion_interval
-        connection_timeout: float = aspects.connection_timeout
-        connection_interval: float = aspects.connection_interval
-        inactivity_timeout: float = aspects.inactivity_timeout
-        inactivity_interval: float = aspects.inactivity_interval
         monitor_delay: float = aspects.monitor_delay
         logging_pattern: LoggingPattern = aspects.logging_pattern
         retry_logging_interval: int = aspects.retry_logging_interval
@@ -389,12 +379,9 @@ class RestClientBase:
 
         logger = aspects.logger
 
+        send_timeouts = (aspects.connection_timeout, aspects.inactivity_timeout)
         completion_timeout: float = aspects.completion_timeout
         completion_interval: float = aspects.completion_interval
-        connection_timeout: float = aspects.connection_timeout
-        connection_interval: float = aspects.connection_interval
-        inactivity_timeout: float = aspects.inactivity_timeout
-        inactivity_interval: float = aspects.inactivity_interval
         monitor_delay: float = aspects.monitor_delay
         logging_pattern: LoggingPattern = aspects.logging_pattern
         retry_logging_interval: int = aspects.retry_logging_interval
