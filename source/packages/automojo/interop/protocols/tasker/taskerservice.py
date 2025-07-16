@@ -656,7 +656,7 @@ class TaskerService(rpyc.Service):
                 reinitialize_service_logging = True
 
             if logging_level is not None:
-                this_type.logging_level = expand_path(logging_level)
+                this_type.logging_level = logging_level
                 reinitialize_service_logging = True
 
             if reinitialize_service_logging:
