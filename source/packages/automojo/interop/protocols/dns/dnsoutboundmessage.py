@@ -460,6 +460,7 @@ class DnsOutboundMessage:
             if name:
                 for part in name.split('.'):
                     self._write_utf(part)
+                    
             self._write_single_byte(0)
 
         return
