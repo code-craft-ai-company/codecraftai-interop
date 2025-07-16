@@ -782,8 +782,8 @@ class TaskerService(rpyc.Service):
         logging_dir = this_type.logging_directory
         if not os.path.exists(logging_dir):
             try:
-                logging_dir = os.makedirs(logging_dir)
-            except:
+                os.makedirs(logging_dir)
+            except BaseException:
                 logging_dir = tempfile.mkdtemp()
                 this_type.logging_directory = logging_dir
 

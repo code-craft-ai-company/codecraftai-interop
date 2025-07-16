@@ -658,9 +658,13 @@ class TaskerSession:
         try:
             for tasking_id, tasking in tasking_table.items():
                 tstatus = status_table[tasking_id]
-            
-            if tstatus in [ProgressCode.NotStarted, ProgressCode.Paused, ProgressCode.Running]:
-                tasking.shutdown()
+
+                if tstatus in [
+                    ProgressCode.NotStarted,
+                    ProgressCode.Paused,
+                    ProgressCode.Running,
+                ]:
+                    tasking.shutdown()
         finally:
             events_server.shutdown()
         
@@ -745,21 +749,21 @@ class TaskerSession:
                     self._session_lock.acquire()
                     try:
                         self._progress_table[tasking_id] = progress
-                    
+
                         if isinstance(progress, TaskingResult):
                             result: TaskingResult = progress
-                        
-                        if len(result.errors) > 0:
-                            self._status_table[tasking_id] = str(ProgressCode.Errored.value)
-                        elif len(result.failures) > 0:
-                            self._status_table[tasking_id] = str(ProgressCode.Failed.value)
+
+                            if len(result.errors) > 0:
+                                self._status_table[tasking_id] = str(ProgressCode.Errored.value)
+                            elif len(result.failures) > 0:
+                                self._status_table[tasking_id] = str(ProgressCode.Failed.value)
+                            else:
+                                self._status_table[tasking_id] = str(ProgressCode.Completed.value)
+                                self._results_table[tasking_id] = result
+                                break
                         else:
-                            self._status_table[tasking_id] = str(ProgressCode.Completed.value) 
-                            self._results_table[tasking_id] = result
-                            break
-                    
-                        prog_status = str(progress.status.value)
-                        self._status_table[tasking_id] = prog_status
+                            prog_status = str(progress.status.value)
+                            self._status_table[tasking_id] = prog_status
                 
                     finally:
                         self._session_lock.release()
