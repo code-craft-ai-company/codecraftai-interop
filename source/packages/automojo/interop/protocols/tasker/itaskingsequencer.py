@@ -12,6 +12,8 @@ __credits__ = []
 
 from typing import Protocol
 
+from automojo.errors.exceptions import AbstractMethodError
+
 
 from automojo.testbase.results.recorders.resultrecorder import ResultRecorder
 from automojo.testbase.results.model.taskinggroup import TaskingGroup
@@ -35,6 +37,9 @@ class ITaskingSequencer(Protocol):
             
             :returns: A :class:`TaskingResult` instance.
         """
+        raise AbstractMethodError(
+            "ITaskingSequencer.create_tasking_result must be overloaded by derived types"
+        )
 
     def create_tasking_group(
         self, scope_id: str, name: str, parent_inst: str
@@ -48,6 +53,9 @@ class ITaskingSequencer(Protocol):
             
             :returns: A :class:`TaskingGroup` instance.
         """
+        raise AbstractMethodError(
+            "ITaskingSequencer.create_tasking_group must be overloaded by derived types"
+        )
 
     def get_recorder(self) -> ResultRecorder:
         """
@@ -55,6 +63,9 @@ class ITaskingSequencer(Protocol):
             
             :returns: The active :class:`ResultRecorder` instance.
         """
+        raise AbstractMethodError(
+            "ITaskingSequencer.get_recorder must be overloaded by derived types"
+        )
 
     def get_top_scope_id(self) -> str:
         """
@@ -62,3 +73,6 @@ class ITaskingSequencer(Protocol):
             
             :returns: The active scope identifier.
         """
+        raise AbstractMethodError(
+            "ITaskingSequencer.get_top_scope_id must be overloaded by derived types"
+        )
