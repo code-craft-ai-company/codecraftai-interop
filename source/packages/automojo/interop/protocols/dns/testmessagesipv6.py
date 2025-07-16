@@ -79,7 +79,7 @@ DNS_IPV6_MULTI_QUERY_A_AAAA = "\x56\x78\x01\x00\x00\x02\x00\x00\x00\x00\x00\x00\
 def builder_for_DNS_IPV6_QUERY_AAAA_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.AAAA, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -90,7 +90,7 @@ def builder_for_DNS_IPV6_QUERY_AAAA_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_AAAA_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.AAAA, DnsRecordClass.IN))
     addr_bytes = bytes.fromhex("26062800022000010248189200000000")
     msg.add_answer(_RawDnsAddress("example.com.", DnsRecordType.AAAA, DnsRecordClass.IN, 60, addr_bytes))
@@ -103,7 +103,7 @@ def builder_for_DNS_IPV6_RESPONSE_AAAA_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_QUERY_CNAME_WWW() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("www.example.com.", DnsRecordType.CNAME, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -114,7 +114,7 @@ def builder_for_DNS_IPV6_QUERY_CNAME_WWW() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_CNAME_WWW() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("www.example.com.", DnsRecordType.CNAME, DnsRecordClass.IN))
     msg.add_answer(
         DnsPointer(
@@ -134,7 +134,7 @@ def builder_for_DNS_IPV6_RESPONSE_CNAME_WWW() -> bytes:
 def builder_for_DNS_IPV6_QUERY_MX_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.MX, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -145,7 +145,7 @@ def builder_for_DNS_IPV6_QUERY_MX_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_MX_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.MX, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -156,7 +156,7 @@ def builder_for_DNS_IPV6_RESPONSE_MX_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_QUERY_TXT_EXAMPLE() -> bytes:
 
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.TXT, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -167,7 +167,7 @@ def builder_for_DNS_IPV6_QUERY_TXT_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_TXT_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.TXT, DnsRecordClass.IN))
     msg.add_answer(DnsText("example.com.", DnsRecordType.TXT, DnsRecordClass.IN, 60, b"\x05hello"))
     packets = msg.packets()
@@ -179,7 +179,7 @@ def builder_for_DNS_IPV6_RESPONSE_TXT_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_QUERY_NS_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.NS, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -190,7 +190,7 @@ def builder_for_DNS_IPV6_QUERY_NS_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_NS_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.NS, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -201,7 +201,7 @@ def builder_for_DNS_IPV6_RESPONSE_NS_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_QUERY_SOA_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.SOA, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -212,7 +212,7 @@ def builder_for_DNS_IPV6_QUERY_SOA_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_SOA_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.SOA, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -223,7 +223,7 @@ def builder_for_DNS_IPV6_RESPONSE_SOA_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_QUERY_PTR_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(
         DnsQuestion(
             "0.0.0.0.0.0.0.0.2.9.8.1.8.4.2.0.1.0.0.0.0.2.2.0.0.0.8.2.6.0.6.2.ip6.arpa.",
@@ -240,7 +240,7 @@ def builder_for_DNS_IPV6_QUERY_PTR_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_PTR_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(
         DnsQuestion(
             "0.0.0.0.0.0.0.0.2.9.8.1.8.4.2.0.1.0.0.0.0.2.2.0.0.0.8.2.6.0.6.2.ip6.arpa.",
@@ -266,7 +266,7 @@ def builder_for_DNS_IPV6_RESPONSE_PTR_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_QUERY_SRV_SIP() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("_sip._tcp.example.com.", DnsRecordType.SRV, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -277,7 +277,7 @@ def builder_for_DNS_IPV6_QUERY_SRV_SIP() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_SRV_SIP() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("_sip._tcp.example.com.", DnsRecordType.SRV, DnsRecordClass.IN))
     msg.add_answer(
         DnsService(
@@ -300,7 +300,7 @@ def builder_for_DNS_IPV6_RESPONSE_SRV_SIP() -> bytes:
 def builder_for_DNS_IPV6_QUERY_NAPTR_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.NAPTR, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -311,7 +311,7 @@ def builder_for_DNS_IPV6_QUERY_NAPTR_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_NAPTR_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.NAPTR, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -322,7 +322,7 @@ def builder_for_DNS_IPV6_RESPONSE_NAPTR_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_QUERY_DS_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.DS, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -333,7 +333,7 @@ def builder_for_DNS_IPV6_QUERY_DS_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_DS_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.DS, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -344,7 +344,7 @@ def builder_for_DNS_IPV6_RESPONSE_DS_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_QUERY_DNSKEY_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.DNSKEY, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -355,7 +355,7 @@ def builder_for_DNS_IPV6_QUERY_DNSKEY_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE() -> bytes:
     
     flags = DnsFlags.parse(0x8180)
-    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x1234, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("example.com.", DnsRecordType.DNSKEY, DnsRecordClass.IN))
     packets = msg.packets()
     pkt = packets[0]
@@ -366,7 +366,7 @@ def builder_for_DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV6_MULTI_QUERY_A_AAAA() -> bytes:
     
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x5678, multicast=False, use_compression=False)
+    msg = DnsOutboundMessage(flags, id=0x5678, multicast=False, use_compression=True)
     msg.add_question(DnsQuestion("www.example.com.", DnsRecordType.A, DnsRecordClass.IN))
     msg.add_question(DnsQuestion("www.example.com.", DnsRecordType.AAAA, DnsRecordClass.IN))
     packets = msg.packets()

@@ -452,7 +452,14 @@ class DnsOutboundMessage:
                 self._write_compressed_name(name, parts)
 
         else:
-            self._write_utf(name)
+            # When compression is disabled we still need to write the
+            # domain name as individual labels.  Each label is encoded
+            # with a one byte length prefix followed by the UTF-8 bytes
+            # for that label.  The name is terminated with a zero byte.
+            name = name.rstrip(".")
+            if name:
+                for part in name.split('.'):
+                    self._write_utf(part)
             self._write_single_byte(0)
 
         return
