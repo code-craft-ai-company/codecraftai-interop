@@ -1,12 +1,36 @@
 """
-    .. module:: testmessagesipv6
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Sample IPv6 DNS messages used for unit testing.
+.. module:: testmessagesipv6
+:platform: Darwin, Linux, Unix, Windows
+:synopsis: Sample IPv6 DNS messages used for unit testing.
 
-    .. moduleauthor:: AutomationX
+.. moduleauthor:: AutomationX
 """
 
 __author__ = "AutomationX"
+
+from automojo.interop.protocols.dns.dnsconst import DnsQr
+from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
+from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+
+
+def _build_dns_message(example: str) -> bytes:
+    """Builds a DNS packet using :mod:`DnsOutboundMessage`."""
+
+    inbound = DnsInboundMessage(bytes(example, "latin1"))
+    use_compression = inbound.flags.qr == DnsQr.Response
+
+    outbound = DnsOutboundMessage(
+        inbound.flags, id=inbound.id, multicast=False, use_compression=use_compression
+    )
+
+    for question in inbound.questions:
+        outbound.add_question(question)
+
+    for answer in inbound.answers:
+        outbound.add_answer(answer)
+
+    return outbound.packets()[0]
+
 
 DNS_IPV6_QUERY_AAAA_EXAMPLE = "\x12\x34\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x07\x65\x78\x61\x6d\x70\x6c\x65\x03\x63\x6f\x6d\x00\x00\x1c\x00\x01"
 DNS_IPV6_RESPONSE_AAAA_EXAMPLE = "\x12\x34\x81\x80\x00\x01\x00\x01\x00\x00\x00\x00\x07\x65\x78\x61\x6d\x70\x6c\x65\x03\x63\x6f\x6d\x00\x00\x1c\x00\x01\xc0\x0c\x00\x1c\x00\x01\x00\x00\x00\x3c\x00\x10\x26\x06\x28\x00\x02\x20\x00\x01\x02\x48\x18\x92\x00\x00\x00\x00"
@@ -43,22 +67,117 @@ DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE = "\x12\x34\x81\x80\x00\x01\x00\x01\x00\x00\x00
 
 DNS_IPV6_MULTI_QUERY_A_AAAA = "\x56\x78\x01\x00\x00\x02\x00\x00\x00\x00\x00\x00\x03\x77\x77\x77\x07\x65\x78\x61\x6d\x70\x6c\x65\x03\x63\x6f\x6d\x00\x00\x01\x00\x01\x03\x77\x77\x77\x07\x65\x78\x61\x6d\x70\x6c\x65\x03\x63\x6f\x6d\x00\x00\x1c\x00\x01"
 
-def builder_for_DNS_IPV6_QUERY_A_EXAMPLE() -> bytes:
 
-    rtnbytes = None
+def builder_for_DNS_IPV6_QUERY_AAAA_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_AAAA_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_QUERY_AAAA_EXAMPLE)
 
-    #TODO: Build the message using dns elements in 'source/automojo/interop/protocols/dns
 
-    #TODO: Serialze the message into bytes and return the bytes
+def builder_for_DNS_IPV6_RESPONSE_AAAA_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_AAAA_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_AAAA_EXAMPLE)
 
-    return rtnbytes
 
-def builder_for_DNS_IPV6_RESPONSE_A_EXAMPLE() -> bytes:
+def builder_for_DNS_IPV6_QUERY_CNAME_WWW() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_CNAME_WWW`."""
+    return _build_dns_message(DNS_IPV6_QUERY_CNAME_WWW)
 
-    rtnbytes = None
 
-    #TODO: Build the message using dns elements in 'source/automojo/interop/protocols/dns
+def builder_for_DNS_IPV6_RESPONSE_CNAME_WWW() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_CNAME_WWW`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_CNAME_WWW)
 
-    #TODO: Serialze the message into bytes and return the bytes
 
-    return rtnbytes
+def builder_for_DNS_IPV6_QUERY_MX_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_MX_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_QUERY_MX_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_RESPONSE_MX_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_MX_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_MX_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_QUERY_TXT_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_TXT_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_QUERY_TXT_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_RESPONSE_TXT_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_TXT_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_TXT_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_QUERY_NS_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_NS_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_QUERY_NS_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_RESPONSE_NS_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_NS_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_NS_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_QUERY_SOA_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_SOA_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_QUERY_SOA_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_RESPONSE_SOA_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_SOA_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_SOA_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_QUERY_PTR_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_PTR_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_QUERY_PTR_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_RESPONSE_PTR_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_PTR_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_PTR_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_QUERY_SRV_SIP() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_SRV_SIP`."""
+    return _build_dns_message(DNS_IPV6_QUERY_SRV_SIP)
+
+
+def builder_for_DNS_IPV6_RESPONSE_SRV_SIP() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_SRV_SIP`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_SRV_SIP)
+
+
+def builder_for_DNS_IPV6_QUERY_NAPTR_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_NAPTR_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_QUERY_NAPTR_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_RESPONSE_NAPTR_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_NAPTR_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_NAPTR_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_QUERY_DS_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_DS_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_QUERY_DS_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_RESPONSE_DS_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_DS_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_DS_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_QUERY_DNSKEY_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_QUERY_DNSKEY_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_QUERY_DNSKEY_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE() -> bytes:
+    """Builder for :data:`DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE`."""
+    return _build_dns_message(DNS_IPV6_RESPONSE_DNSKEY_EXAMPLE)
+
+
+def builder_for_DNS_IPV6_MULTI_QUERY_A_AAAA() -> bytes:
+    """Builder for :data:`DNS_IPV6_MULTI_QUERY_A_AAAA`."""
+    return _build_dns_message(DNS_IPV6_MULTI_QUERY_A_AAAA)
