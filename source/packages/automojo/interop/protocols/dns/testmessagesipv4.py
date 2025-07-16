@@ -13,6 +13,8 @@ __credits__ = []
 from automojo.interop.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType
 from automojo.interop.protocols.dns.dnsflags import DnsFlags
 from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
+import automojo.testbase as testbase
 from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
 from automojo.interop.protocols.dns.dnsrecord import DnsRecord
 
@@ -275,3 +277,321 @@ def builder_for_DNS_IPV4_MULTI_QUERY_A_AAAA() -> bytes:
     msg.add_question(DnsQuestion("www.example.com", DnsRecordType.AAAA, DnsRecordClass.IN))
 
     return msg.packets()[0]
+
+
+def validate_message_DNS_IPV4_QUERY_A_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.A)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_RESPONSE_A_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 1)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.A)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+
+    a = msg.answers[0]
+    testbase.assert_equal(a.address, bytes.fromhex("5db8d822"))
+    testbase.assert_equal(a.ttl, 60)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_CNAME_WWW(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "www.example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.CNAME)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_CNAME_WWW(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 1)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "www.example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.CNAME)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+
+    a = msg.answers[0]
+    testbase.assert_equal(a.alias, "example.com.")
+    testbase.assert_equal(a.ttl, 60)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_MX_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.MX)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_MX_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 1)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.MX)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+
+    a = msg.answers[0]
+    testbase.assert_equal(a.preference, 10)
+    testbase.assert_equal(a.exchange, "mail.example.com.")
+    testbase.assert_equal(a.ttl, 60)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_TXT_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.TXT)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_TXT_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 1)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.TXT)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+
+    a = msg.answers[0]
+    testbase.assert_equal(a.text, b"\x05hello")
+    testbase.assert_equal(a.ttl, 60)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_NS_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.NS)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_NS_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 1)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.NS)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+
+    a = msg.answers[0]
+    testbase.assert_equal(a.alias, "ns1.example.com.")
+    testbase.assert_equal(a.ttl, 60)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_SOA_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.SOA)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_SOA_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 1)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.SOA)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+
+    a = msg.answers[0]
+    testbase.assert_equal(a.mname, "ns1.example.com.")
+    testbase.assert_equal(a.rname, "hostmaster.example.com.")
+    testbase.assert_equal(a.ttl, 60)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_PTR_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "4.3.2.1.in-addr.arpa.")
+    testbase.assert_equal(q.rtype, DnsRecordType.PTR)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_PTR_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 1)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "4.3.2.1.in-addr.arpa.")
+    testbase.assert_equal(q.rtype, DnsRecordType.PTR)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+
+    a = msg.answers[0]
+    testbase.assert_equal(a.alias, "example.com.")
+    testbase.assert_equal(a.ttl, 60)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_SRV_SIP(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "_sip._tcp.example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.SRV)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_SRV_SIP(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 1)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "_sip._tcp.example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.SRV)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+
+    a = msg.answers[0]
+    testbase.assert_equal(a.target, "sipserver.example.com.")
+    testbase.assert_equal(a.port, 5060)
+    testbase.assert_equal(a.ttl, 60)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_NAPTR_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.NAPTR)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_NAPTR_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 1)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.NAPTR)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+
+    a = msg.answers[0]
+    testbase.assert_equal(a.flags, "U")
+    testbase.assert_equal(a.services, "E2U+sip")
+    testbase.assert_equal(a.regexp, "!^.*$!sip:info@example.com!")
+    testbase.assert_equal(a.ttl, 60)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_DS_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.DS)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_DS_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.DS)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_QUERY_DNSKEY_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.DNSKEY)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_RESPONSE_DNSKEY_EXAMPLE(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 1)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q = msg.questions[0]
+    testbase.assert_equal(q.name, "example.com.")
+    testbase.assert_equal(q.rtype, DnsRecordType.DNSKEY)
+    testbase.assert_equal(q.rclass, DnsRecordClass.IN)
+    return
+
+
+def validate_message_DNS_IPV4_MULTI_QUERY_A_AAAA(pkt: bytes) -> None:
+    msg = DnsInboundMessage(pkt)
+    testbase.assert_equal(len(msg.questions), 2)
+    testbase.assert_equal(len(msg.answers), 0)
+
+    q0, q1 = msg.questions
+    testbase.assert_equal(q0.name, "www.example.com.")
+    testbase.assert_equal(q0.rtype, DnsRecordType.A)
+    testbase.assert_equal(q1.name, "www.example.com.")
+    testbase.assert_equal(q1.rtype, DnsRecordType.AAAA)
+    return
