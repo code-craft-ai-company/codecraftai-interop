@@ -7,10 +7,10 @@ from automojo.testbase.mocking import create_module_patch
 
 class DummyOut:
     def __init__(self):
-        self.names = []
+        self.received = []
 
-    def write_name(self, name: str) -> None:
-        self.names.append(name)
+    def write_name(self, name: str, force_no_compression: bool) -> None:
+        self.received.append((name, force_no_compression))
 
 
 def test_write_calls_write_name() -> None:
@@ -23,7 +23,7 @@ def test_write_calls_write_name() -> None:
     )
     dummy = DummyOut()
     rec.write(dummy)
-    testbase.assert_equal(dummy.names[0], "alias.local")
+    testbase.assert_equal(dummy.received, [("alias.local", False)])
     return
 
 

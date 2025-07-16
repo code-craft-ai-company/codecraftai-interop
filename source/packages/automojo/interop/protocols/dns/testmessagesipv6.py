@@ -137,6 +137,7 @@ def builder_for_DNS_IPV6_RESPONSE_CNAME_WWW() -> bytes:
             DnsRecordClass.IN,
             ttl=60,
             alias="example.com.",
+            supress_compression=True
         )
     )
     packets = msg.packets()

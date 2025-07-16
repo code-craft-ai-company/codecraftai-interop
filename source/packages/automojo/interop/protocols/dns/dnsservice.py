@@ -26,7 +26,7 @@ class DnsService(DnsRecord):
     """
 
     def __init__(self, name: str, rtype: int, rclass: int, ttl: Union[float, int], priority: int,
-                 weight: int, port: int, server: str) -> None:
+                 weight: int, port: int, server: str, supress_compression: bool = True) -> None:
         """
             Constructs a DNS service record.
 
@@ -38,8 +38,10 @@ class DnsService(DnsRecord):
             :param weight: Service weight.
             :param port: Service port number.
             :param server: Hostname providing the service.
+            :param supress_compression: Optional parameter offering control over whether to suppress compression
+                                        for the record.  Default is true for SRV records
         """
-        DnsRecord.__init__(self, name, rtype, rclass, ttl)
+        DnsRecord.__init__(self, name, rtype, rclass, ttl, supress_compression=supress_compression)
         self._priority = priority
         self._weight = weight
         self._port = port
@@ -96,7 +98,7 @@ class DnsService(DnsRecord):
         out.write_short(self._priority)
         out.write_short(self._weight)
         out.write_short(self._port)
-        out.write_name(self._server, force_no_compression=True)
+        out.write_name(self._server, force_no_compression=self._supress_compression)
         return
 
     def __eq__(self, other: DnsRecord) -> bool:
