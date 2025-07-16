@@ -224,6 +224,11 @@ class RestClientBase:
 
             :returns: The :class:`Response` object from the request.
         """
+
+        # We need expected status in the form of a collection for our comparison
+        if isinstance(exp_status, int):
+            exp_status = [exp_status]
+
         call_url = self._format_call_url(leaf)
 
         logger = aspects.logger
@@ -255,7 +260,7 @@ class RestClientBase:
                 break
 
         found_status = resp.status_code
-        if found_status != exp_status:
+        if found_status not in exp_status:
             resp_content = resp.content
 
             errmsg = format_http_error_message(found_status, resp_content, call_url, context=context_msg)
