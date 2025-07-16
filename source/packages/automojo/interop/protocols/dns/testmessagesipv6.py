@@ -7,6 +7,8 @@
 """
 
 __author__ = "AutomationX"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
+__credits__ = []
 
 from automojo.interop.protocols.dns.dnsconst import (
     DnsRecordClass,
