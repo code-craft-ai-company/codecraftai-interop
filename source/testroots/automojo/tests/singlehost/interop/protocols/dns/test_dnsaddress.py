@@ -2,7 +2,8 @@ import automojo.testbase as testbase
 from automojo.interop.protocols.dns.dnsaddress import DnsAddress
 from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
 import socket
-from unittest import mock
+import time
+from automojo.testbase.mocking import create_module_patch
 
 class DummyOut:
     def __init__(self):
@@ -33,7 +34,8 @@ def test_equality_and_inequality():
 
 
 def test_str_ipv4_and_ipv6():
-    with mock.patch("time.time", return_value=0):
+    with create_module_patch(time, "time") as mock_time:
+        mock_time.configure(return_value=0)
         ipv4 = DnsAddress(
             "example.com",
             DnsRecordType.A,

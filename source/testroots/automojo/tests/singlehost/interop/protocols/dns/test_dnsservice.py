@@ -1,7 +1,8 @@
 import automojo.testbase as testbase
 from automojo.interop.protocols.dns.dnsservice import DnsService
 from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
-from unittest import mock
+import time
+from automojo.testbase.mocking import create_module_patch
 
 
 class DummyOut:
@@ -79,7 +80,8 @@ def test_equality_and_inequality():
 
 
 def test_str_contains_all_fields():
-    with mock.patch("time.time", return_value=0):
+    with create_module_patch(time, "time") as mock_time:
+        mock_time.configure(return_value=0)
         rec = DnsService(
             "svc.local",
             DnsRecordType.SRV,

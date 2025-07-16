@@ -1,7 +1,7 @@
 import automojo.testbase as testbase
 from automojo.interop.protocols.dns.mdnsbrowser import MdnsBrowser
 from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
-from unittest import mock
+from automojo.testbase.mocking import create_class_patch
 
 
 class DummySocket:
@@ -19,7 +19,8 @@ def test_discover_services_sends_packets():
     dummy_socket = DummySocket()
     browser._get_search_socket = lambda: dummy_socket
 
-    with mock.patch.object(DnsOutboundMessage, "packets", return_value=[b"p1", b"p2"]):
+    with create_class_patch(DnsOutboundMessage, "packets") as mock_packets:
+        mock_packets.configure(return_value=[b"p1", b"p2"])
         browser.discover_services(["_http._tcp.local"])
 
     testbase.assert_equal(len(dummy_socket.sent), 2)
