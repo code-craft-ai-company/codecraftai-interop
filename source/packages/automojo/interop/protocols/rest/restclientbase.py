@@ -41,6 +41,11 @@ class RestClientBase:
     """
 
     AUTH_LEAF = ""
+
+    # This code is for use with REST clients that can be used in both a production and test environment.
+    # we must be able to make calls with SSL certificate verification turned off as some test environments
+    # utilized self signed certificates.  Allowing the client to make calls with verify turned off is not a bug
+    # its a feature.
     VERIFY_CERTIFICATE = False
 
     AUTHENTICATION_FAILURES = (HttpForbiddenError)
@@ -113,7 +118,7 @@ class RestClientBase:
         session = Session()
         session.verify = self.VERIFY_CERTIFICATE
 
-        resp: Response = session.post(auth_url, headers=headers)
+        resp: Response = session.post(auth_url, headers=headers, verify=self.VERIFY_CERTIFICATE)
         if resp.status_code != HTTPStatus.OK:
             errmsg_lines = [
                 f"Error attempting to authenticate on url={auth_url}.",
