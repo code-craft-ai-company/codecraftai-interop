@@ -575,7 +575,7 @@ class TaskerService(rpyc.Service):
             this_type.logger.info("Method 'exposed_close_session_all' was called.")
 
             closed_sessions = []
-            for session_id, session in session in this_type.active_sessions.items():
+            for session_id, session in this_type.active_sessions.items():
                 session.shutdown()
                 closed_sessions.append(session_id)
 
