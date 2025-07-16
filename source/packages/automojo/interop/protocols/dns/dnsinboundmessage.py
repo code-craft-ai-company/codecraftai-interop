@@ -38,6 +38,8 @@ from automojo.interop.protocols.dns.dnsrecord import DnsRecord
 from automojo.interop.protocols.dns.dnsservice import DnsService
 from automojo.interop.protocols.dns.dnsmailexchange import DnsMailExchange
 from automojo.interop.protocols.dns.dnstext import DnsText
+from automojo.interop.protocols.dns.dnsnaptr import DnsNaptr
+from automojo.interop.protocols.dns.dnssoa import DnsSoa
 
 logger = logging.getLogger()
 
@@ -230,6 +232,10 @@ class DnsInboundMessage:
                     alias = self._read_name()
                     rec = DnsPointer(domain, rtype, rclass, ttl, alias)
 
+                elif rtype == DnsRecordType.NS:
+                    alias = self._read_name()
+                    rec = DnsPointer(domain, rtype, rclass, ttl, alias)
+
                 elif rtype == DnsRecordType.MX:
                     preference = self._read_unsigned_short()
                     exchange = self._read_name()
@@ -239,6 +245,91 @@ class DnsInboundMessage:
                     text = self._read_string_characters(length)
 
                     rec = DnsText(domain, rtype, rclass, ttl, text)
+
+                elif rtype == DnsRecordType.NAPTR:
+                    rdata = self._data[self._offset : self._offset + length]
+                    self._offset += length
+
+                    cursor = 0
+                    order = struct.unpack_from("!H", rdata, cursor)[0]
+                    cursor += 2
+                    preference = struct.unpack_from("!H", rdata, cursor)[0]
+                    cursor += 2
+
+                    flen = rdata[cursor]
+                    cursor += 1
+                    flags = rdata[cursor : cursor + flen].decode("utf-8", "replace")
+                    cursor += flen
+
+                    slen = rdata[cursor]
+                    cursor += 1
+                    services = rdata[cursor : cursor + slen].decode("utf-8", "replace")
+                    cursor += slen
+
+                    rlen = rdata[cursor]
+                    cursor += 1
+                    avail = len(rdata) - cursor
+                    use_len = min(rlen, avail)
+                    regexp_bytes = rdata[cursor : cursor + use_len]
+                    cursor += use_len
+                    if rlen > use_len and len(regexp_bytes) > 0 and regexp_bytes[-1] == 0:
+                        regexp_bytes = regexp_bytes[:-1]
+                    regexp = regexp_bytes.decode("utf-8", "replace")
+
+                    replacement = ""
+                    if cursor < len(rdata):
+                        rep_bytes = rdata[cursor:]
+                        parts = []
+                        rep_cursor = 0
+                        while rep_cursor < len(rep_bytes):
+                            part_len = rep_bytes[rep_cursor]
+                            rep_cursor += 1
+                            if part_len == 0:
+                                break
+                            parts.append(
+                                rep_bytes[rep_cursor : rep_cursor + part_len].decode(
+                                    "utf-8", "replace"
+                                )
+                            )
+                            rep_cursor += part_len
+                        if parts:
+                            replacement = ".".join(parts) + "."
+
+                    rec = DnsNaptr(
+                        domain,
+                        rtype,
+                        rclass,
+                        ttl,
+                        order,
+                        preference,
+                        flags,
+                        services,
+                        regexp,
+                        replacement,
+                    )
+
+                elif rtype == DnsRecordType.SOA:
+                    mname = self._read_name()
+                    rname = self._read_name()
+                    serial = self._read_unsigned_int()
+                    refresh = self._read_unsigned_int()
+                    retry = self._read_unsigned_int()
+                    expire = self._read_unsigned_int()
+                    minimum = self._read_unsigned_int()
+
+                    rec = DnsSoa(
+                        domain,
+                        rtype,
+                        rclass,
+                        ttl,
+                        mname,
+                        rname,
+                        serial,
+                        refresh,
+                        retry,
+                        expire,
+                        minimum,
+                    )
 
                 elif rtype == DnsRecordType.HINFO:
                     host_cpu = self._read_string().decode('utf-8')

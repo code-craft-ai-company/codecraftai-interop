@@ -9,8 +9,8 @@ class DummyOut:
     def __init__(self):
         self.received = []
 
-    def write_name(self, name: str, force_no_compression: bool) -> None:
-        self.received.append((name, force_no_compression))
+    def write_name(self, name: str, suppress_compression: bool = False) -> None:
+        self.names.append((name, suppress_compression))
 
 
 def test_write_calls_write_name() -> None:
@@ -23,7 +23,7 @@ def test_write_calls_write_name() -> None:
     )
     dummy = DummyOut()
     rec.write(dummy)
-    testbase.assert_equal(dummy.received, [("alias.local", False)])
+    testbase.assert_equal(dummy.names[0], ("alias.local", False))
     return
 
 
