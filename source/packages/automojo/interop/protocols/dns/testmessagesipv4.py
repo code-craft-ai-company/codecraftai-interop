@@ -338,7 +338,7 @@ def builder_for_DNS_IPV4_RESPONSE_DNSKEY_EXAMPLE() -> bytes:
 def builder_for_DNS_IPV4_MULTI_QUERY_A_AAAA() -> bytes:
 
     flags = DnsFlags.parse(0x0100)
-    msg = DnsOutboundMessage(flags, id=0x5678, multicast=False, use_compression=True)
+    msg = DnsOutboundMessage(flags, id=0x5678, multicast=False, use_compression=False)
     msg.add_question(DnsQuestion("www.example.com", DnsRecordType.A, DnsRecordClass.IN))
     msg.add_question(DnsQuestion("www.example.com", DnsRecordType.AAAA, DnsRecordClass.IN))
 
