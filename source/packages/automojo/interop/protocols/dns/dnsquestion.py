@@ -19,7 +19,14 @@ class DnsQuestion:
         The :class:`DnsQuestion` object is utilized to formulate DNS querys and to check to
         see if a :class:`DnsRecord` answers the query provided.
     """
-    def __init__(self, name: str, rtype: DnsRecordType, rclass: DnsRecordClass) -> None:
+    def __init__(
+        self,
+        name: str,
+        rtype: DnsRecordType,
+        rclass: DnsRecordClass,
+        *,
+        suppress_compression: bool = False,
+    ) -> None:
         """
             Constructs a DNS query question.
 
@@ -31,6 +38,7 @@ class DnsQuestion:
         self._rtype = rtype
         self._rclass = DnsRecordClass(rclass & DnsRecordClass.MASK)
         self._unique = (rclass & DnsRecordClass.UNIQUE) != 0
+        self._suppress_compression = suppress_compression
         return
 
     @property
@@ -68,6 +76,12 @@ class DnsQuestion:
             :returns: ``True`` if a unique record is requested.
         """
         return self._unique
+
+    @property
+    def suppress_compression(self) -> bool:
+        """Indicates if compression should be suppressed when writing this question."""
+
+        return self._suppress_compression
 
     def answered_by(self, rec: DnsRecord) -> bool:
         """

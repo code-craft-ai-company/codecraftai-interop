@@ -23,7 +23,16 @@ class DnsPointer(DnsRecord):
         A DNS pointer record
     """
 
-    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, alias: str) -> None:
+    def __init__(
+        self,
+        name: str,
+        rtype: int,
+        rclass: int,
+        ttl: int,
+        alias: str,
+        *,
+        suppress_compression: bool = False,
+    ) -> None:
         """
             Constructs a DNS pointer record.
 
@@ -35,6 +44,7 @@ class DnsPointer(DnsRecord):
         """
         DnsRecord.__init__(self, name, rtype, rclass, ttl)
         self._alias = alias
+        self._suppress_compression = suppress_compression
         return
 
     @property
@@ -46,13 +56,19 @@ class DnsPointer(DnsRecord):
         """
         return self._alias
 
+    @property
+    def suppress_compression(self) -> bool:
+        """Indicates if the alias name should be written without compression."""
+
+        return self._suppress_compression
+
     def write(self, out: 'DnsOutboundMessage') -> None:
         """
             Used in constructing an outgoing packet
 
             :param out: The outbound DNS message to write the record to.
         """
-        out.write_name(self._alias)
+        out.write_name(self._alias, suppress_compression=self._suppress_compression)
         return
 
     def __eq__(self, other: DnsRecord) -> bool:
