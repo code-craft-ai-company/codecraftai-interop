@@ -16,9 +16,9 @@ from typing import Union
 
 from automojo.errors.exceptions import SemanticError
 
-from automojo.xmodules.extension.dynamicextension import (
-    collect_extensions_under_code_container,
-    collect_extensions_under_folder
+from automojo.extension.resource.resourceextension import (
+    collect_resource_extensions_under_code_container,
+    collect_resource_extensions_under_folder
 )
 
 from automojo.xmodules.ximport import import_by_name
@@ -209,7 +209,7 @@ class UpnpDeviceFactory:
         """
             Method that scans a code container and its descendants for UpnpRootDevice objects.
         """
-        extcoll = collect_extensions_under_code_container(container, UpnpRootDevice)
+        extcoll = collect_resource_extensions_under_code_container(container, UpnpRootDevice)
         for _, extcls in extcoll:
             if hasattr(extcls, "EXTENSION_KEY"):
                 extkey = getattr(extcls, "EXTENSION_KEY"),
@@ -220,7 +220,7 @@ class UpnpDeviceFactory:
         """
             Method that scans a code container and its descendants for UpnpServiceProxy objects.
         """
-        extcoll = collect_extensions_under_code_container(container, UpnpServiceProxy)
+        extcoll = collect_resource_extensions_under_code_container(container, UpnpServiceProxy)
         for _, extcls in extcoll:
             if hasattr(extcls, "EXTENSION_KEY"):
                 extkey = getattr(extcls, "EXTENSION_KEY")
@@ -231,7 +231,7 @@ class UpnpDeviceFactory:
         """
             Method that scans a code container and its descendants for UpnpRootDevice objects.
         """
-        extcoll = collect_extensions_under_folder(directory, UpnpRootDevice)
+        extcoll = collect_resource_extensions_under_folder(directory, UpnpRootDevice)
         for _, extcls in extcoll:
             if hasattr(extcls, "EXTENSION_KEY"):
                 extkey = getattr(extcls, "EXTENSION_KEY")
@@ -242,7 +242,7 @@ class UpnpDeviceFactory:
         """
             Method that scans a code container and its descendants for UpnpServiceProxy objects.
         """
-        extcoll = collect_extensions_under_folder(directory, UpnpServiceProxy)
+        extcoll = collect_resource_extensions_under_folder(directory, UpnpServiceProxy)
         for _, extcls in extcoll:
             if hasattr(extcls, "EXTENSION_KEY"):
                 extkey = getattr(extcls, "EXTENSION_KEY")

@@ -14,7 +14,7 @@ __credits__ = []
 from typing import Dict, Type
 
 
-from automojo.xmodules.extension.wellknown import ConfiguredSuperFactorySingleton
+from automojo.presence.wellknown import ConfiguredSuperFactorySingleton
 
 from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
 from automojo.interop.protocols.upnp.upnpextensionprotocol import UpnpFactoryProtocol
