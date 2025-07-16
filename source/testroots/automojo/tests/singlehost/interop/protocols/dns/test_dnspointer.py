@@ -7,7 +7,7 @@ from automojo.testbase.mocking import create_module_patch
 
 class DummyOut:
     def __init__(self):
-        self.names = []
+        self.received = []
 
     def write_name(self, name: str, suppress_compression: bool = False) -> None:
         self.names.append((name, suppress_compression))

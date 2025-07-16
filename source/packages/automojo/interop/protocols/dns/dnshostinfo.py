@@ -23,7 +23,7 @@ class DnsHostInfo(DnsRecord):
         A DNS host information record
     """
 
-    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, cpu: str, os: str) -> None:
+    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, cpu: str, os: str, suppress_compression: bool = False) -> None:
         """
             Constructs a DNS host information record.
 
@@ -33,8 +33,10 @@ class DnsHostInfo(DnsRecord):
             :param ttl: Time-to-live for the record.
             :param cpu: CPU architecture string.
             :param os: Operating system description.
+            :param supress_compression: Optional parameter offering control over whether to suppress compression
+                                        for the record.
         """
-        DnsRecord.__init__(self, name, rtype, rclass, ttl)
+        DnsRecord.__init__(self, name, rtype, rclass, ttl, supress_compression=suppress_compression)
         self._cpu = cpu
         self._os = os
         return
