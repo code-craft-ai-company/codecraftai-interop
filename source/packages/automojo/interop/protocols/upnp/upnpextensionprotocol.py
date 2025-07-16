@@ -13,7 +13,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import List, Type, TYPE_CHECKING
+from typing import List, Type
 
 from automojo.errors.exceptions import AbstractMethodError
 

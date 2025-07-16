@@ -21,7 +21,6 @@ from types import TracebackType
 
 from automojo.interop.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS
 from automojo.credentials.sshcredential import SshCredential
-from automojo.interop.interfaces.isystemcontext import ISystemContext
 
 from automojo.interop.protocols.ssh.sshconst import (
     SshJumpParams,
