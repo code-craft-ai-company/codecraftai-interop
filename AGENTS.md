@@ -113,7 +113,43 @@ There is a machine processable JSOS stream file in the output folder.
 
 "*outputfolder*/testrun_results_stream.jsos"
 
-JSOS (JSON Object Stream) consists of a stream of JSON objects seperated by the the ASCII record seperator character.
+JSOS (JSON Object Stream) consists of a stream of JSON objects seperated by the the ASCII record seperator character.  When a
+test starts it writes a preview to the stream.  The test preview has a 'result' equal to 'UNSET'.  Example Preview:
+
+```
+{
+    "name": "automojo.tests.singlehost.interop.protocols.dns.test_dnsaddress#test_write_passes_address",
+    "monikers": [],
+    "pivots": {},
+    "instance": "abb868e4-ce97-4bae-b0af-715da0d61d92",
+    "parent": "5aad244e-41dc-438f-97a6-bd8365cccdd2",
+    "rtype": "TEST",
+    "result": "UNSET",
+    "start": "2025-07-15T22:07:03.275239",
+    "stop": ""
+}
+```
+
+When a test finishes it writes a result to the stream.  A test result will always have a 'detail' attribute. Example Result:
+
+```
+{
+    "name": "automojo.tests.singlehost.interop.protocols.dns.test_dnsaddress#test_write_passes_address",
+    "monikers": [],
+    "pivots": {},
+    "instance": "abb868e4-ce97-4bae-b0af-715da0d61d92",
+    "parent": "5aad244e-41dc-438f-97a6-bd8365cccdd2",
+    "rtype": "TEST",
+    "result": "PASSED",
+    "start": "2025-07-15T22:07:03.275239",
+    "stop": "2025-07-15T22:07:03.276034",
+    "detail": {
+        "errors": [],
+        "failures": [],
+        "warnings": []
+    }
+}
+```
 
 # Environment Setup
 When checking out the code for this repository in order to test changes, agents must:
