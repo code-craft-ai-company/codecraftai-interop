@@ -47,8 +47,8 @@ class TaskingGroupState:
     """
 
     NotStarted = 0
-    Running = 0
-    Completed = 0
+    Running = 1
+    Completed = 2
 
 
 class TaskingGroupScope:
