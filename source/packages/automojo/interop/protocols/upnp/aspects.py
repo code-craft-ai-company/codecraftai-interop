@@ -39,7 +39,7 @@ UPNP_CALL_COMPLETION_INTERVAL = 5
 UPNP_CALL_INACTIVITY_TIMEOUT = 30
 UPNP_CALL_INACTIVITY_INTERVAL = 1
 
-class AspectsUPnP(Aspects):
+class AspectsUPnP:
     """
         Default aspects configuration for UPnP protocol operations.
     """
@@ -69,11 +69,17 @@ class AspectsUPnP(Aspects):
             :param must_connect: ``True`` if connection failures should raise.
             :param logger: Optional logger for diagnostics.
         """
-        Aspects.__init__(self, action_pattern=action_pattern, completion_timeout=completion_timeout,
-                            completion_interval=completion_interval, inactivity_timeout=inactivity_timeout,
-                            inactivity_interval=inactivity_interval, monitor_delay=monitor_delay,
-                            logging_pattern=logging_pattern, retry_logging_interval=retry_logging_interval,
-                            allowed_error_codes=allowed_error_codes, must_connect=must_connect, logger=logger)
+        self.action_pattern=action_pattern
+        self.completion_timeout=completion_timeout
+        self.completion_interval=completion_interval
+        self.inactivity_timeout=inactivity_timeout
+        self.inactivity_interval=inactivity_interval
+        self.monitor_delay=monitor_delay
+        self.logging_pattern=logging_pattern
+        self.retry_logging_interval=retry_logging_interval
+        self.allowed_error_codes=allowed_error_codes
+        self.must_connect=must_connect
+        self.logger=logger
         return
 
 DEFAULT_UPNP_ASPECTS = AspectsUPnP()

@@ -122,7 +122,7 @@ class Aspects:
             self.logger = logger
 
         return
-class AspectsCmd(Aspects):
+class AspectsCmd:
     """
         Extends :class:`Aspects` with command-specific parameters.
     """
@@ -148,15 +148,37 @@ class AspectsCmd(Aspects):
             :param expected_status: Status code or list of acceptable status codes.
             :param user: Optional user name to use for command execution.
             :param pty_params: Dictionary of pseudo-terminal parameters.
+            :param action_pattern: The :class:`ActionPattern` that the API should exhibit such as
+                                   SINGULAR, DO_UNTIL_SUCCESS, DO_WHILE_SUCCESS
+            :param completion_timeout: The time in seconds as a float that is the max time before
+                                       timeout for the activity to complete.
+            :param completion_interval: The time in seconds as a float that is waited before reattempting
+                                        an activity.
+            :param connection_timeout: The time in seconds as a float that is the timeout for making a connection.
+            :param connection_interval: The time in seconds as a float that is waited before reattempting
+                                        to connect.
+            :param inactivity_timeout: The time in seconds as a float that is the max time before timeout
+                                       that is waited before a :class:`TimeoutError` is raised due to inactivity.
+            :param inactivity_interval: The time in seconds as a float that is waited before reattempting an activity.
+            :param monitor_delay: Delay in seconds before monitoring activity after startup.
+            :param logging_pattern: Pattern controlling how command results are logged.
+            :param retry_logging_interval: The logging interval for retry loops.
+            :param allowed_error_codes: A list of error codes that allow retry
+            :param allowed_connection_exceptions: List of exceptions that do not count as connection failures.
         """
 
-        Aspects.__init__(self, action_pattern=action_pattern, completion_timeout=completion_timeout,
-                            completion_interval=completion_interval, connection_timeout=connection_timeout,
-                            connection_interval=connection_interval, inactivity_timeout=inactivity_timeout,
-                            inactivity_interval=inactivity_interval, monitor_delay=monitor_delay,
-                            logging_pattern=logging_pattern, retry_logging_interval=retry_logging_interval,
-                            allowed_error_codes=allowed_error_codes, allowed_connection_exceptions=allowed_connection_exceptions,
-                            logger=logger)
+        self.action_pattern = action_pattern
+        self.completion_timeout = completion_timeout
+        self.completion_interval = completion_interval
+        self.connection_timeout = connection_timeout
+        self.connection_interval = connection_interval
+        self.inactivity_timeout = inactivity_timeout
+        self.inactivity_interval = inactivity_interval
+        self.monitor_delay = monitor_delay
+        self.logging_pattern = logging_pattern
+        self.retry_logging_interval = retry_logging_interval
+        self.allowed_error_codes = allowed_error_codes
+        self.allowed_connection_exceptions = allowed_connection_exceptions
         
         self.expected_status = expected_status
         self.user = user

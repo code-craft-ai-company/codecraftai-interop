@@ -20,15 +20,12 @@ import logging
 from requests import Session
 
 from automojo.interop.aspects import (
-    Aspects,
     ActionPattern,
     LoggingPattern,
     DEFAULT_COMPLETION_TIMEOUT,
     DEFAULT_COMPLETION_INTERVAL,
     DEFAULT_CONNECTION_TIMEOUT,
-    DEFAULT_CONNECTION_INTERVAL,
     DEFAULT_INACTIVITY_TIMEOUT,
-    DEFAULT_INACTIVITY_INTERVAL,
     DEFAULT_MONITOR_DELAY,
     DEFAULT_LOGGING_PATTERN,
     DEFAULT_RETRY_LOGGING_INTERVAL,
@@ -37,7 +34,7 @@ from automojo.interop.aspects import (
     DEFAULT_MUST_CONNECT
 )
 
-class AspectsRest(Aspects):
+class AspectsRest:
     """
         Aspects container specialized for REST operations.
     """
@@ -71,34 +68,21 @@ class AspectsRest(Aspects):
             :param logger: Logger to use for messages.
             :param session: Requests session to reuse.
         """
-        super().__init__(
-            action_pattern=action_pattern,
-            completion_timeout=completion_timeout,
-            completion_interval=completion_interval,
-            connection_timeout=connection_timeout,
-            connection_interval=connection_interval,
-            inactivity_timeout=inactivity_timeout,
-            inactivity_interval=inactivity_interval,
-            monitor_delay=monitor_delay,
-            logging_pattern=logging_pattern,
-            retry_logging_interval=retry_logging_interval,
-            allowed_error_codes=allowed_error_codes,
-            allowed_connection_exceptions=allowed_connection_exceptions,
-            must_connect=must_connect,
-            logger=logger,
-        )
-        self._session = session
+        
+        self.action_pattern=action_pattern
+        self.completion_timeout=completion_timeout
+        self.completion_interval=completion_interval
+        self.connection_timeout=connection_timeout
+        self.inactivity_timeout=inactivity_timeout
+        self.monitor_delay=monitor_delay
+        self.logging_pattern=logging_pattern
+        self.retry_logging_interval=retry_logging_interval
+        self.allowed_error_codes=allowed_error_codes
+        self.allowed_connection_exceptions=allowed_connection_exceptions
+        self.must_connect=must_connect
+        self.logger=logger
+        self.session = session
         return
-    
-    @property
-    def session(self) -> Union[Session, None]:
-        """
-            Requests :class:`Session` object associated with the aspects.
-
-            :returns: A :class:`requests.Session` or ``None``.
-        """
-        return self._session
-
 
 
 DEFAULT_REST_ASPECTS = AspectsRest()
