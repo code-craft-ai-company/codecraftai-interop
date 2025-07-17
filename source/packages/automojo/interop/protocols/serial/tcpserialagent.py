@@ -128,10 +128,13 @@ class TcpSerialSession(TcpSerialBase):
 
     def close(self):
         """
-            Closes the telnet session and the associated connection.
+            Closes the telnet session and the associated connection.  If this
+            session owns the connection, the command prompt is restored before
+            the connection is closed.
         """
-        # Only close the client if this session owns the client
-        if self._session_basis is None:
+        # Only restore the prompt and close if this session owns the client
+        if self._session_basis is None and self._telnet_conn is not None:
+            self._restore_prompt(self._telnet_conn)
             self._telnet_conn.close()
         return
 
@@ -139,8 +142,10 @@ class TcpSerialSession(TcpSerialBase):
         self, command: str, aspects: Optional[AspectsCmd] = None
     ) -> Tuple[int, str, str]:
         """
-            Runs a command on the designated host using the telnet connection
-            held open by this session.
+            Runs a command over the telnet connection held open by this
+            session.  The command is executed without restoring the command
+            prompt or closing the connection so that multiple commands can be
+            run within the session scope.
 
             :param command: The command to run.
             :param aspects: The run aspects to use when running the command.
@@ -174,8 +179,6 @@ class TcpSerialSession(TcpSerialBase):
         stdout = "\n".join(safe_as_str(stdout_raw).splitlines(False)[1:-1])
         stderr = "\n".join(safe_as_str(stderr_raw).splitlines(False)[1:-1])
         status = int(status_bytes)
-
-        self._restore_prompt(tnconn)
 
         return status, stdout, stderr
 
