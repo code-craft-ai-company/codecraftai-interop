@@ -153,6 +153,9 @@ class TcpSerialSession(TcpSerialBase):
             :returns: The status, stdout and stderr from the command that was run.
         """
 
+        if aspects is None:
+            aspects = self._aspects
+
         status = None
         stdout = None
         stderr = None
@@ -164,17 +167,17 @@ class TcpSerialSession(TcpSerialBase):
 
         tnconn = self._telnet_conn
         tnconn.write(b"export TNSTDERR=/tmp/tnstderr\n")
-        tnconn.read_until(self.SERIAL_PROMPT, timeout=5)
+        tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
         tnconn.write(command)
-        stdout_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=5)
+        stdout_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
         tnconn.write(b"echo $?\n")
-        status_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=5)
+        status_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
         status_bytes = status_raw.splitlines(False)[1]
 
         tnconn.write(b"cat $TNSTDERR\n")
-        stderr_raw = tnconn.read_until(self.SERIAL_PROMPT)
+        stderr_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
         stdout = "\n".join(safe_as_str(stdout_raw).splitlines(False)[1:-1])
         stderr = "\n".join(safe_as_str(stderr_raw).splitlines(False)[1:-1])
@@ -199,9 +202,10 @@ class TcpSerialSession(TcpSerialBase):
             :returns: A newly created :class:`TcpSerialSession` instance.
         """
 
-        session_aspects = None
         if aspects is None:
             session_aspects = self._aspects
+        else:
+            session_aspects = aspects
 
         session = None
         if session_basis is not None:
@@ -276,9 +280,10 @@ class TcpSerialAgent(TcpSerialBase):
             :returns: A newly created :class:`TcpSerialSession` instance.
         """
 
-        session_aspects = None
         if aspects is None:
             session_aspects = self._aspects
+        else:
+            session_aspects = aspects
 
         session = None
         if session_basis is not None:
@@ -306,6 +311,9 @@ class TcpSerialAgent(TcpSerialBase):
             
             :returns: The status, stderr and stdout from the command that was run.
         """
+        if aspects is None:
+            aspects = self._aspects
+
         status = None
         stdout = None
         stderr = None
@@ -315,17 +323,17 @@ class TcpSerialAgent(TcpSerialBase):
         tnconn = self._create_connection()
         try:
             tnconn.write(b"export TNSTDERR=/tmp/tnstderr\n")
-            cmdout = tnconn.read_until(self.SERIAL_PROMPT, timeout=5)
+            tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
             tnconn.write(command)
-            stdout_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=5)
+            stdout_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
             tnconn.write(b"echo $?\n")
-            status_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=5)
+            status_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
             status_bytes = status_raw.splitlines(False)[1]
 
             tnconn.write(b"cat $TNSTDERR\n")
-            stderr_raw = tnconn.read_until(self.SERIAL_PROMPT)
+            stderr_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
             stdout = "\n".join(safe_as_str(stdout_raw).splitlines(False)[1:-1])
             stderr = "\n".join(safe_as_str(stderr_raw).splitlines(False)[1:-1])
