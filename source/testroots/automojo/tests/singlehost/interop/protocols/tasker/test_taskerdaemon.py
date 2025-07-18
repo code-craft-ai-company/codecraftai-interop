@@ -50,18 +50,21 @@ def test_write_trace_appends_lines():
 
 
 def test_process_exists_true_and_false():
-    daemon = taskerdaemon.TaskerServerDaemon()
+    tmpdir, orig = _setup_temp_server_paths()
+    try:
+        daemon = taskerdaemon.TaskerServerDaemon()
+        with create_module_patch(taskerdaemon.os, "kill") as mock_kill:
+            mock_kill.configure(return_value=None)
+            testbase.assert_equal(daemon.process_exists(1), True)
 
-    with create_module_patch(taskerdaemon.os, "kill") as mock_kill:
-        mock_kill.configure(return_value=None)
-        testbase.assert_equal(daemon.process_exists(1), True)
+        def raise_oserror(pid, sig):
+            raise OSError()
 
-    def raise_oserror(pid, sig):
-        raise OSError()
-
-    with create_module_patch(taskerdaemon.os, "kill") as mock_kill:
-        mock_kill.configure(side_effect=raise_oserror)
-        testbase.assert_equal(daemon.process_exists(2), False)
+        with create_module_patch(taskerdaemon.os, "kill") as mock_kill:
+            mock_kill.configure(side_effect=raise_oserror)
+            testbase.assert_equal(daemon.process_exists(2), False)
+    finally:
+        _restore_server_paths(orig)
     return
 
 
