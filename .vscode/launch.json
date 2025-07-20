@@ -27,7 +27,7 @@
                 "--breakpoint=testrun-start"
             ],
             "console": "integratedTerminal",
-            "justMyCode": false,
+            "justMyCode": false
         }
     ]
 }
