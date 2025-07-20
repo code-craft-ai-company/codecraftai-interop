@@ -13,7 +13,7 @@ __credits__ = []
 
 from typing import Callable, Optional, Tuple
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 import stat
 import time
@@ -32,7 +32,7 @@ from automojo.interop.protocols.ssh.sshconst import (
     REGEX_DIRECTORY_ENTRY
 )
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 
 def lookup_entry_type(pdir: str, ename: str, finfo: paramiko.SFTPAttributes) -> str:

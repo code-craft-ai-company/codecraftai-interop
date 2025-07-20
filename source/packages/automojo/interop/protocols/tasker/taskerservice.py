@@ -17,6 +17,7 @@ __credits__ = []
 from typing import Dict, Optional
 
 import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 import pickle
 import tempfile
@@ -772,9 +773,9 @@ class TaskerService(rpyc.Service):
         this_type = type(self)
 
         if this_type.logger is None:
-            this_type.logger = logging.getLogger()
+            this_type.logger = getEnhancedLogger()
         
-        handlers_list = [h for h in this_type.logger.handlers]
+        handlers_list = [h for h in this_type.logger._logger.handlers]
 
         for handler in handlers_list:
             this_type.logger.removeHandler(handler)

@@ -20,6 +20,7 @@ import os
 import socket
 import tempfile
 import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import threading
 
 from logging.handlers import WatchedFileHandler
@@ -35,7 +36,7 @@ TASKER_PROTOCOL_CONFIG = {
     "import_custom_exceptions": True,
     "allow_custom_exceptions": True,
     "sync_request_timeout": 60,
-    "logger": logging.getLogger()
+    "logger": getEnhancedLogger()
 }
 
 class TaskerServer(ThreadedServer):
@@ -73,7 +74,7 @@ class TaskerServer(ThreadedServer):
         log_handler = WatchedFileHandler(log_file)
         logging.basicConfig(format=logging.BASIC_FORMAT, level=logging.DEBUG, handlers=[log_handler])
         
-        logger = logging.getLogger("tasker-server")
+        logger = getEnhancedLogger("tasker-server")
 
         super().__init__(TaskerService, hostname=hostname, ipv6=ipv6, port=port, backlog=backlog, reuse_addr=reuse_addr,
                          authenticator=authenticator, registrar=registrar, auto_register=auto_register,

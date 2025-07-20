@@ -14,7 +14,7 @@ __credits__ = []
 
 from typing import Dict, List, Optional, Union, TYPE_CHECKING
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import threading
 
 import requests
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from automojo.interop.protocols.upnp.model.devices.upnpdevicefactory import UpnpDeviceFactory
 
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 
 class UpnpDeviceBase:

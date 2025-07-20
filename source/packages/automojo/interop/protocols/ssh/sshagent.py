@@ -14,7 +14,7 @@ __credits__ = []
 
 from typing import Optional, Sequence, Union, Tuple
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
 import paramiko
 
@@ -28,7 +28,7 @@ from automojo.interop.protocols.ssh.sshconst import (
 from automojo.interop.protocols.ssh.sshsession import SshSession
 
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 
 class SshAgent(SshBase):

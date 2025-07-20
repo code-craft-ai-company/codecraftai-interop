@@ -13,7 +13,7 @@ __credits__ = []
 
 from typing import Any, List, Optional, TYPE_CHECKING
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 import time
 
@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from automojo.interop.protocols.tasker.taskernode import TaskerNode
 
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 
 @dataclass

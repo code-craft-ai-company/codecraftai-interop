@@ -12,7 +12,7 @@ __credits__ = []
 
 from typing import List, Optional, Type, Union, TYPE_CHECKING
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 import weakref
 
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     from automojo.interop.protocols.tasker.taskingadapter import TaskingAdapter
 
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 
 class TaskingGroupState:

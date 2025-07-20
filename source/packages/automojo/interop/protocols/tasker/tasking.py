@@ -20,6 +20,7 @@ import multiprocessing.managers
 
 import json
 import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 import requests
 import threading
@@ -104,7 +105,7 @@ def instantiate_tasking(
         log_handler = FileHandler(logfile)
         log_handler.setLevel(log_level)
 
-        logger = logging.getLogger("TASKING")
+        logger = getEnhancedLogger("TASKING")
         logger.addHandler(log_handler)
 
         tasking_type: Type[Tasking] = getattr(module, tasking_name)

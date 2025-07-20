@@ -14,6 +14,7 @@ __credits__ = []
 from typing import Any, Dict, List, Optional
 
 import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import rpyc
 import pickle
 import weakref
@@ -36,7 +37,7 @@ TASKER_PROTOCOL_CONFIG = {
     "import_custom_exceptions": True,
     "allow_custom_exceptions": True,
     "sync_request_timeout": 120,
-    "logger": logging.getLogger(),
+    "logger": getEnhancedLogger(),
 }
 
 

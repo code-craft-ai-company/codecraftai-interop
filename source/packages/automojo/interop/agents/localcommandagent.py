@@ -18,7 +18,7 @@ import subprocess
 import threading
 import time
 
-from logging import getLogger
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
 from automojo.waiting import TimeoutContext
 
@@ -30,7 +30,7 @@ from automojo.interop.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS, ActionPatt
 from automojo.xmodules.xformatting import indent_lines, format_command_result
 from automojo.xmodules.xlogging.monitoredscope import MonitoredScope
 
-logger = getLogger()
+logger = getEnhancedLogger()
 
 class LocalCommandAgent(ISystemContext):
     """

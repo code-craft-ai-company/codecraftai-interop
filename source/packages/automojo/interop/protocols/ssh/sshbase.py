@@ -14,7 +14,7 @@ __credits__ = []
 
 from typing import Optional, Sequence, Union, Tuple
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 import socket
 import stat
@@ -55,7 +55,7 @@ from automojo.interop.protocols.ssh.sshhelpers import (
     ssh_execute_command
 )
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 
 class SshBase(ISystemContext):

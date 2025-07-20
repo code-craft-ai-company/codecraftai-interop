@@ -15,7 +15,7 @@ __credits__ = []
 
 from typing import Optional, Union, TYPE_CHECKING
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 import threading
 import time
@@ -48,7 +48,7 @@ from automojo.interop.protocols.upnp.model.description.basic1devicedesc import B
 from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 if TYPE_CHECKING:
     from automojo.interop.protocols.upnp.model.devices.upnpdevicebase import UpnpDeviceBase

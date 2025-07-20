@@ -15,7 +15,7 @@ __credits__ = []
 from typing import Callable, Dict, List, Optional, Tuple
 
 import copy
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import re
 import socket
 import threading
@@ -46,7 +46,7 @@ from automojo.interop.protocols.upnp.model.description.serviceevidence import Se
 REGEX_NOTIFY_HEADER = re.compile("NOTIFY[ ]+[*/]+[ ]+HTTP/1")
 
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 
 class SsdpProtocol:
