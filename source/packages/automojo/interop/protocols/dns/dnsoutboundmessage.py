@@ -14,7 +14,7 @@ __credits__ = []
 
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import struct
 
 from enum import IntEnum
@@ -27,7 +27,7 @@ from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
 from automojo.interop.protocols.dns.dnsrecord import DnsRecord
 from automojo.interop.protocols.dns.dnspointer import DnsPointer
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 struct_int_to_byte = struct.Struct(">B")
 

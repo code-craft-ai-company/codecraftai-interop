@@ -15,7 +15,7 @@ __credits__ = []
 
 from typing import Optional
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 
 from http import HTTPStatus
@@ -31,7 +31,7 @@ from automojo.interop.protocols.upnp.model.description.basic1devicedesc import B
 from automojo.interop.protocols.upnp.wellknown import DeviceDetailMapperRegistrySingleton
 
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 
 class DeviceQueryManager:

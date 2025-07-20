@@ -15,9 +15,9 @@ __credits__ = []
 
 from typing import Any, Dict, List, Optional
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 from xml.etree.ElementTree import Element
 

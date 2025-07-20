@@ -16,6 +16,7 @@ from typing import List, Optional, Union
 from enum import IntEnum
 
 import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
 
 class ActionPattern(IntEnum):
@@ -117,7 +118,7 @@ class Aspects:
         self.must_connect=must_connect
 
         if logger is None:
-            self.logger = logging.getLogger()
+            self.logger = getEnhancedLogger()
         else:
             self.logger = logger
 

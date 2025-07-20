@@ -15,7 +15,7 @@ __credits__ = []
 
 from typing import List, Optional, Tuple, Union
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 import struct
 
@@ -41,7 +41,7 @@ from automojo.interop.protocols.dns.dnstext import DnsText
 from automojo.interop.protocols.dns.dnsnaptr import DnsNaptr
 from automojo.interop.protocols.dns.dnssoa import DnsSoa
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 class DnsInboundMessage:
     """

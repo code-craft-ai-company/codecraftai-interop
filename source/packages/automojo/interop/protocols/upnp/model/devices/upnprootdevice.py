@@ -14,7 +14,7 @@ __credits__ = []
 
 from typing import Dict, List, Optional, Tuple, Union, TYPE_CHECKING
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
 import re
 import threading
@@ -62,7 +62,7 @@ UPNP_DIR = os.path.dirname(upnp_module.__file__)
 
 REGEX_SUBSCRIPTION_TIMEOUT = re.compile("^Second-([0-9]+|infinite)", flags=re.IGNORECASE)
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 def device_description_load(location: str) -> Union[ElementTree, None]:
     """

@@ -14,7 +14,7 @@ __credits__ = []
 
 from typing import Optional, Sequence, Union, Tuple
 
-import logging
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import paramiko
 
 from types import TracebackType
@@ -34,7 +34,7 @@ from automojo.interop.protocols.ssh.sshhelpers import (
 )
 from automojo.interop.protocols.ssh.sshbase import SshBase
 
-logger = logging.getLogger()
+logger = getEnhancedLogger()
 
 class SshSession(SshBase):
     """
