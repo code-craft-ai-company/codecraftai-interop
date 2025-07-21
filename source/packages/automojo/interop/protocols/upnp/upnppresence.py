@@ -27,6 +27,8 @@ from io import BytesIO
 
 import requests
 
+from automojo.errors.raising import raise_for_http_status
+
 from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 from automojo.xmodules.xthreading.looper import Looper
 from automojo.xmodules.xthreading.looperpool import LooperPool
@@ -36,7 +38,6 @@ from automojo.networking.multicast import create_multicast_listener_socket, crea
 from automojo.networking.interfaces import get_correspondance_ip_address, get_ipv4_address, get_interface_for_ip
 
 from automojo.interop.protocols.upnp.constants import MSearchTargets, MSearchKeys
-
 from automojo.interop.protocols.upnp.upnpsearchwindow import UpnpSearchWindow
 from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDetail
 from automojo.interop.protocols.upnp.devicequerymanager import DeviceQueryManager
@@ -749,70 +750,97 @@ class UpnpPresence:
         return
 
 
-    def service_subscribe(self, service_addr: str, subscribe_url: str, subscribe_auth: str, subscribe_timeout_secs: int, service_event_callback: Callable):
+    def service_subscribe(self, host_ip: str, subscribe_url: str, subscribe_timeout_secs: int, service_event_callback: Callable,
+                        custom_headers: Optional[Dict[str, str]] = None) -> Union[Tuple[None, None], Tuple[str, datetime]]:
+        """
+            Subscribe to a remote service.
 
-        ifname = get_interface_for_ip(service_addr)
+            :param host_ip: The ip address of the interface on the host computer that will be used to communicate with the service.
+            :param subscribe_url: The url of the service to use for creating the subscription.
+            :param service_event_callback: The callback that is called when events occur for the subscription.
+            :param custom_headers: A optional set of custom headers to use when creating the subscription
 
-        host_addr = get_correspondance_ip_address(ifname)
+            :returns: The 'sid' subscription id of the new subscription.
+        """
+
+        sub_sid = None
+        sub_expires = None
+
+        ifname = get_interface_for_ip(host_ip)
 
         callback_url = self.form_callback_url_for_interface(ifname)
         if callback_url is None:
             errmsg = f"No callback url found for ifname={ifname}"
             raise RuntimeError(errmsg) from None
 
-        headers = { "HOST": host_addr, "User-Agent": UPNP_HEADERS.USER_AGENT, "CALLBACK": callback_url, "NT": "upnp:event"}
+        headers = { "HOST": host_ip, "User-Agent": UPNP_HEADERS.USER_AGENT, "CALLBACK": callback_url, "NT": "upnp:event"}
         if subscribe_timeout_secs is not None:
             headers["TIMEOUT"] = "Seconds-%s" % subscribe_timeout_secs
 
-        custom_headers = self.get_custom_subscribe_headers()
         if custom_headers is not None:
             headers.update(custom_headers)
 
-        resp: requests.Response = requests.request("SUBSCRIBE", subscribe_url, headers=headers, auth=subscribe_auth)
+        resp: requests.Response = requests.request("SUBSCRIBE", subscribe_url, headers=headers)
 
-        #============================== Expected Response Headers ==============================
-        # SID: uuid:RINCON_7828CA09247C01400_sub0000000207
-        # TIMEOUT: Second-86400
-        # Server: Linux UPnP/1.0 Sonos/62.1-82260-monaco_dev (ZPS13)
-        # Connection: close
-        resp_headers = {k.upper(): v for k, v in resp.headers.items()}
+        if resp.status_code == 200:
+            #============================== Expected Response Headers ==============================
+            # SID: uuid:RINCON_7828CA09247C01400_sub0000000207
+            # TIMEOUT: Second-86400
+            # Server: Linux UPnP/1.0 Sonos/62.1-82260-monaco_dev (ZPS13)
+            # Connection: close
+            resp_headers: Dict[str, str] = {str(hk).upper(): hv for hk, hv in resp.headers.items()}
 
-        nxtheader = None
-        try:
-            nxtheader = "SID"
-            sub_sid = resp_headers[nxtheader]
+            nxtheader = None
+            try:
+                nxtheader = "SID"
+                sub_sid = resp_headers[nxtheader]
 
-            nxtheader = "TIMEOUT"
-            sub_timeout_str = resp_headers[nxtheader]
+                nxtheader = "TIMEOUT"
+                sub_timeout_str = resp_headers[nxtheader]
 
-            sub_timeout = None
-            mobj = REGEX_SUBSCRIPTION_TIMEOUT.match(sub_timeout_str)
-            if mobj is not None:
-                timeout_str = mobj.groups()[0]
-                sub_timeout = 86400 if timeout_str == "infinite" else int(timeout_str)
+                sub_timeout = None
+                mobj = REGEX_SUBSCRIPTION_TIMEOUT.match(sub_timeout_str)
+                if mobj is not None:
+                    timeout_str = mobj.groups()[0]
+                    sub_timeout = 86400 if timeout_str == "infinite" else int(timeout_str)
 
-            if sub_sid is not None:
-                sub_expires = datetime.now() + timedelta(seconds=sub_timeout)
-                self._lock.acquire()
-                try:
-                    self._subscription_to_callback[sub_sid] = service_event_callback
-                finally:
-                    self._lock.release()
+                if sub_sid is not None:
+                    sub_expires = datetime.now() + timedelta(seconds=sub_timeout)
+                    self._lock.acquire()
+                    try:
+                        self._subscription_to_callback[sub_sid] = service_event_callback
+                    finally:
+                        self._lock.release()
+                
+            except KeyError as kerr:
+                errmsg = "Event subscription response was missing in %r header." % nxtheader
+                raise KeyError(errmsg) from kerr
+        else:
+            ctxmsg = f"While attempting to subscribe to subscribe_url={subscribe_url}"
+            raise_for_http_status(resp.status_code, resp.content, ctxmsg)
+
+        return sub_sid, sub_expires
+    
+
+    def service_unsubscribe(self, host_ip: str, subscribe_url: str, subscription_id: str, custom_headers: Optional[Dict[str, str]] = None):
+        """
+            Unsubscribe to a service.
+
+            :param host_ip: The ip address of the interface on the host computer that will be used to communicate with the service.
+            :param subscribe_url: The url of the service to use for creating the subscription.
+            :param custom_headers: A optional set of custom headers to use when creating the subscription
+        """
+
+        headers = { "HOST": host_ip, "User-Agent":  UPNP_HEADERS.USER_AGENT, "SID": subscription_id}
+
+        if custom_headers is not None:
+            headers.update(custom_headers)
             
-        except KeyError as kerr:
-            errmsg = "Event subscription response was missing in %r header." % nxtheader
-            raise KeyError(errmsg) from kerr
+        resp: requests.Response = requests.request("UNSUBSCRIBE", subscribe_url, headers=headers)
+        if resp.status_code != 200 and resp.status_code != 412:
+            ctxmsg = "Error while unsubscribing from service."
+            raise_for_http_status(resp.status_code, resp.content, ctxmsg)
 
-        return
-    
-
-    def service_unsubscribe(self, dev_id: str, subscription_id: str):
-        
-        return
-    
-
-    def service_unsubscribe_all(self, dev_id: str):
-        
         return
 
 
