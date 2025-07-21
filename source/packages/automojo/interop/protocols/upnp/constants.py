@@ -14,6 +14,8 @@ __credits__ = []
 
 import platform
 
+from automojo.networking.constants import HTTP1_1_LINESEP
+
 UPNP_DEVICE1_NAMESPACE = "urn:schemas-upnp-org:device-1-0"
 UPNP_DEVICE1_NAMESPACE_PREFIX = "{" + UPNP_DEVICE1_NAMESPACE + "}"
 
@@ -26,12 +28,23 @@ UPNP_DEFAULT_SEARCH_MONITOR_INTERVAL = float(2)
 
 TIMEDELTA_RENEWAL_WINDOW = 120
 
+
 class UPNP_HEADERS:
     """
         Default HTTP headers used by the UPNP implementation.
     """
     USER_AGENT = "AutomationMojo/1.0 UPNP Test Package"
     SERVER = "{},{},AutomationKit/1.0".format(platform.system(), platform.release())
+
+
+UPNP_SUBSCRIPTION_NOTIFY_RESPONSE_OK = HTTP1_1_LINESEP.join([
+    b'HTTP/1.1 200 OK',
+    b'Connection: close',
+    b'Content-Length: 0',
+    b'Content-Type: text/html',
+    b'Server: %s,UPnP/1.0' % UPNP_HEADERS.SERVER.encode(),
+    b''
+])
 
 
 class MSearchTargets:

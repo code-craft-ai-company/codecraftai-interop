@@ -12,10 +12,10 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import copy
-from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
+import os
 import re
 import socket
 import threading
@@ -23,10 +23,17 @@ import uuid
 import weakref
 
 from datetime import datetime, timedelta
+from io import BytesIO
 
-from automojo.networking.constants import HTTP1_1_LINESEP
+import requests
+
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
+from automojo.xmodules.xthreading.looper import Looper
+from automojo.xmodules.xthreading.looperpool import LooperPool
+
+from automojo.networking.constants import HTTP1_1_LINESEP, HTTP1_1_END_OF_HEADER
 from automojo.networking.multicast import create_multicast_listener_socket, create_multicast_listener_socket_for_iface
-from automojo.networking.interfaces import get_correspondance_ip_address
+from automojo.networking.interfaces import get_correspondance_ip_address, get_ipv4_address, get_interface_for_ip
 
 from automojo.interop.protocols.upnp.constants import MSearchTargets, MSearchKeys
 
@@ -35,7 +42,9 @@ from automojo.interop.protocols.upnp.model.upnpdevicedetail import UpnpDeviceDet
 from automojo.interop.protocols.upnp.devicequerymanager import DeviceQueryManager
 from automojo.interop.protocols.upnp.constants import (
     UPNP_DEFAULT_SEARCH_WINDOW_LENGTH,
-    UPNP_DEFAULT_SEARCH_MONITOR_INTERVAL
+    UPNP_DEFAULT_SEARCH_MONITOR_INTERVAL,
+    UPNP_SUBSCRIPTION_NOTIFY_RESPONSE_OK,
+    UPNP_HEADERS
 )
 
 from automojo.interop.protocols.upnp.model.upnpdevicehint import UpnpDeviceHint
@@ -45,6 +54,7 @@ from automojo.interop.protocols.upnp.model.description.serviceevidence import Se
 
 REGEX_NOTIFY_HEADER = re.compile("NOTIFY[ ]+[*/]+[ ]+HTTP/1")
 
+REGEX_SUBSCRIPTION_TIMEOUT = re.compile("^Second-([0-9]+|infinite)", flags=re.IGNORECASE)
 
 logger = getEnhancedLogger()
 
@@ -112,6 +122,31 @@ def notify_parse_request(content: str) -> dict:
             resp_body = body_content
 
     return resp_headers, resp_body
+
+
+def parse_http_headers(header_content: bytes) -> Tuple[str, Dict[str, str]]:
+    """
+        Parses an HTTP header block and returns the request line and
+        dictionary of header values.
+
+        :param header_content: Raw bytes of the HTTP header.
+
+        :returns: Tuple of the request line and a dictionary of headers.
+    """
+
+    headers = {}
+    header_lines = header_content.splitlines(False)
+
+    assert len(header_lines) > 0, "The header content was not a valid HTTP request header."
+    req_line = header_lines[0]
+    for hline in header_lines[1:]:
+        name_end = hline.find(b":")
+        if name_end > -1:
+            hname = hline[:name_end].upper().decode().strip()
+            hval = hline[name_end + 1:].decode().strip()
+            headers[hname] = hval
+
+    return req_line, headers
 
 
 def parse_ssdp_message(content: bytes) -> Dict[str, str]:
@@ -214,10 +249,16 @@ class UpnpPresence:
         self._presence_sockets = {}
         self._presence_threads = {}
 
+        self._callback_sockets = {}
+        self._callback_address_from_iface: Dict[str, Tuple[str, int]] = {}
+        self._callback_threads = {}
+
+        self._dispatch_pool = None
+
         self._inactive_devices: Dict[str, UpnpDeviceDetail] = {}
         self._active_devices: Dict[str, UpnpDeviceDetail] = {}
 
-        self._services_by_device = {}
+        self._subscription_to_callback: Dict[str, Callable] = {}
 
         self._query_manager = DeviceQueryManager()
 
@@ -266,6 +307,16 @@ class UpnpPresence:
             self._lock.release()
 
         return rtnval
+
+
+    @property
+    def presence_endpoint(self) -> Tuple[str, int]:
+        """
+            Returns the endpoint that this presence is listening on.
+            
+            :returns: A tuple containing the IP address and port of the presence socket.
+        """
+        return self._multicast_address, self._multicast_port
 
 
     def discover_devices(self, limit_to: List[UpnpDeviceHint]=None, custom_headers: Optional[Dict[str, str]] = None,
@@ -338,15 +389,6 @@ class UpnpPresence:
             raise
 
         return disco_window
-
-
-    def get_presence_endpoint(self) -> Tuple[str, int]:
-        """
-            Returns the endpoint that this presence is listening on.
-            
-            :returns: A tuple containing the IP address and port of the presence socket.
-        """
-        return self._multicast_address, self._multicast_port
 
 
     def dispatch_embedded_device_notification(self, ifname: str, from_ip: str, usn: str, nt: str, nts: str, msg_info: Dict[str, str]):
@@ -434,6 +476,38 @@ class UpnpPresence:
             self._lock.release()
 
         return
+
+
+    def dispatch_subscription_event_callback(self, ifname: str, sid: str, svc_addr: Tuple[str, int], req_headers: Dict[str, str], req_body: str):
+
+        service_event_callback = None
+        self._lock.acquire()
+        try:
+            if sid in self._subscription_to_callback:
+                service_event_callback = self._subscription_to_callback[sid]
+        finally:
+            self._lock.release()
+
+        if service_event_callback is not None:
+            service_event_callback(ifname, sid, svc_addr, req_headers, req_body)
+
+        return
+
+
+    def form_callback_url_for_interface(self, ifname: str) -> Union[str, None]:
+
+        callback_url = None
+
+        self._lock.acquire()
+        try:
+            if ifname in self._callback_address_from_iface:
+                callback_addr, callback_port = self._callback_address_from_iface[ifname]
+
+                callback_url = f"<http://{callback_addr}:{callback_port}/notify>"
+        finally:
+            self._lock.release()
+
+        return callback_url
 
 
     def process_msearch(self, ifname: str, from_endpoint: Tuple[str, int], response: bytes):
@@ -623,24 +697,6 @@ class UpnpPresence:
         return
 
 
-    def register_service_notification_handler(self, usn: str, notify_callback: Callable):
-        """
-            Register a callback function to be called when a service is found.
-            
-            :param usn: The USN of the service to register the callback for.
-            :param notify_callback: The callback function to call when the service is found.
-        """
-        self._lock.acquire()
-        try:
-            if usn in self._service_notifications_by_usn:
-                self._service_notifications_by_usn[usn].append(notify_callback)
-            else:
-                self._service_notifications_by_usn[usn] = [notify_callback]
-        finally:
-            self._lock.release()
-        return
-
-
     def register_root_device_notification_handler(self, usn: str, notify_callback: Callable):
         """
             Register a callback function to be called when a root device is found.
@@ -654,6 +710,24 @@ class UpnpPresence:
                 self._root_device_notifications_by_usn[usn].append(notify_callback)
             else:
                 self._root_device_notifications_by_usn[usn] = [notify_callback]
+        finally:
+            self._lock.release()
+        return
+
+
+    def register_service_notification_handler(self, usn: str, notify_callback: Callable):
+        """
+            Register a callback function to be called when a service is found.
+            
+            :param usn: The USN of the service to register the callback for.
+            :param notify_callback: The callback function to call when the service is found.
+        """
+        self._lock.acquire()
+        try:
+            if usn in self._service_notifications_by_usn:
+                self._service_notifications_by_usn[usn].append(notify_callback)
+            else:
+                self._service_notifications_by_usn[usn] = [notify_callback]
         finally:
             self._lock.release()
         return
@@ -675,6 +749,73 @@ class UpnpPresence:
         return
 
 
+    def service_subscribe(self, service_addr: str, subscribe_url: str, subscribe_auth: str, subscribe_timeout_secs: int, service_event_callback: Callable):
+
+        ifname = get_interface_for_ip(service_addr)
+
+        host_addr = get_correspondance_ip_address(ifname)
+
+        callback_url = self.form_callback_url_for_interface(ifname)
+        if callback_url is None:
+            errmsg = f"No callback url found for ifname={ifname}"
+            raise RuntimeError(errmsg) from None
+
+        headers = { "HOST": host_addr, "User-Agent": UPNP_HEADERS.USER_AGENT, "CALLBACK": callback_url, "NT": "upnp:event"}
+        if subscribe_timeout_secs is not None:
+            headers["TIMEOUT"] = "Seconds-%s" % subscribe_timeout_secs
+
+        custom_headers = self.get_custom_subscribe_headers()
+        if custom_headers is not None:
+            headers.update(custom_headers)
+
+        resp: requests.Response = requests.request("SUBSCRIBE", subscribe_url, headers=headers, auth=subscribe_auth)
+
+        #============================== Expected Response Headers ==============================
+        # SID: uuid:RINCON_7828CA09247C01400_sub0000000207
+        # TIMEOUT: Second-86400
+        # Server: Linux UPnP/1.0 Sonos/62.1-82260-monaco_dev (ZPS13)
+        # Connection: close
+        resp_headers = {k.upper(): v for k, v in resp.headers.items()}
+
+        nxtheader = None
+        try:
+            nxtheader = "SID"
+            sub_sid = resp_headers[nxtheader]
+
+            nxtheader = "TIMEOUT"
+            sub_timeout_str = resp_headers[nxtheader]
+
+            sub_timeout = None
+            mobj = REGEX_SUBSCRIPTION_TIMEOUT.match(sub_timeout_str)
+            if mobj is not None:
+                timeout_str = mobj.groups()[0]
+                sub_timeout = 86400 if timeout_str == "infinite" else int(timeout_str)
+
+            if sub_sid is not None:
+                sub_expires = datetime.now() + timedelta(seconds=sub_timeout)
+                self._lock.acquire()
+                try:
+                    self._subscription_to_callback[sub_sid] = service_event_callback
+                finally:
+                    self._lock.release()
+            
+        except KeyError as kerr:
+            errmsg = "Event subscription response was missing in %r header." % nxtheader
+            raise KeyError(errmsg) from kerr
+
+        return
+    
+
+    def service_unsubscribe(self, dev_id: str, subscription_id: str):
+        
+        return
+    
+
+    def service_unsubscribe_all(self, dev_id: str):
+        
+        return
+
+
     def start(self):
         """
             Start background threads for presence monitoring and discovery.
@@ -684,23 +825,312 @@ class UpnpPresence:
 
         sgate = threading.Event()
         
-        for ifname in self._presence_interfaces:
-            sgate.clear()
-            presence_thread = threading.Thread(target=self._presence_thread_entry, name=f"am-upnp-presence-{ifname}", args=(sgate, ifname), daemon=True)
-            self._lock.acquire()
-            try:
+        self._running = True
+
+        self._lock.acquire()
+        try:
+            dispatch_pool = LooperPool(Looper, "am-upnp-dispatch", min_loopers=5, max_loopers=10, highwater=5, daemon=True)
+            dispatch_pool.start_pool()
+
+            self._dispatch_pool = dispatch_pool
+
+            for ifname in self._presence_interfaces:
+
+                # We need a presence thread and callback thread for each interface we want to support
+                sgate.clear()
+                presence_thread = threading.Thread(target=self._thread_entry_for_presence, name=f"am-upnp-presence-{ifname}", args=(sgate, ifname), daemon=True)
+                presence_thread.start()
+                sgate.wait()
+
+                sgate.clear()
+                callback_thread = threading.Thread(target=self._thread_entry_for_callback, name=f"am-upnp-callback-{ifname}", args=(sgate, ifname), daemon=True)
+                callback_thread.start()
+                sgate.wait()
+            
+                self._callback_threads[ifname] = callback_thread
                 self._presence_threads[ifname] = presence_thread
-            finally:
-                self._lock.release()
-            presence_thread.start()
+
+            sgate.clear()
+            self._msearch_thread = threading.Thread(target=self._thread_entry_for_msearch, name="am-upnp-search", args=(sgate,), daemon=True)
+            self._msearch_thread.start()
             sgate.wait()
 
-        sgate.clear()
-        
-        self._msearch_thread = threading.Thread(target=self._msearch_thread_entry, name="am-upnp-search", args=(sgate,), daemon=True)
-        self._msearch_thread.start()
+        finally:
+                self._lock.release()
 
-        sgate.wait()
+        return
+
+
+    def _get_callback_socket(self, ifname: str) -> socket.socket:
+        """
+            Return or create a callback service socket.
+        """
+
+        sock = None
+
+        self._lock.acquire()
+        try:
+
+            if ifname in self._callback_sockets:
+                sock = self._callback_sockets[ifname]
+            else:
+                ifaddr = get_ipv4_address(ifname)
+                if ifaddr is not None:
+
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    
+                    # Bind to port 0 so we can get an ephimeral port
+                    sock.bind((ifaddr, 0))
+
+                    # Get the ephimeral port assigned to our callback socket
+                    _, port = sock.getsockname()
+
+                    # Listen with a small backlog of 1
+                    sock.listen(1)
+
+                    callback_addr = (ifaddr, port)
+
+                    self._callback_sockets[ifname] = sock
+                    self._callback_address_from_iface[ifname] = callback_addr
+
+        finally:
+            self._lock.release()
+
+        return sock
+
+
+    def _get_presence_socket(self, ifname: str) -> socket.socket:
+        """
+            Return or create the multicast socket for a given interface.
+        """
+
+        sock = None
+
+        self._lock.acquire()
+        try:
+            if ifname not in self._presence_sockets:
+                if ifname == "any":
+                    sock: socket.socket = create_multicast_listener_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
+                else:
+                    sock: socket.socket = create_multicast_listener_socket_for_iface(ifname, self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
+
+                self._presence_sockets[ifname] = sock
+            else:
+                sock = self._presence_sockets[ifname]
+        finally:
+            self._lock.release()
+            
+        return sock
+
+
+    def _get_search_socket(self) -> socket.socket:
+        """
+            Return or create the socket used for M-SEARCH operations.
+        """
+
+        sock = None
+
+        self._lock.acquire()
+        try:
+            if self._msearch_sock is None:
+                self._msearch_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+
+            sock = self._msearch_sock
+        finally:
+            self._lock.release()
+            
+        return sock
+
+
+    def _process_callback(self, ifname: str, svc_addr: Tuple[str, int], accepted_sock: socket.socket):
+        
+        cbbuffer = BytesIO()
+
+        req_headers = None
+
+        headers_length = None
+        content_length = None
+
+        message_length = None
+        read_so_far = 0
+        remaining_length = 1024
+        try:
+            # Read To Header
+            while self._running and remaining_length > 0:
+                # Process the requests
+                nxtbuff = accepted_sock.recv(remaining_length)
+                read_so_far += len(nxtbuff)
+
+                # If we didn't get anything from recv, it means we hit the end of
+                # the pipe.  We can exit the read loop.
+                if len(nxtbuff) == 0:
+                    break
+
+                cbbuffer.write(nxtbuff)
+
+                if req_headers is None:
+                    current_content = cbbuffer.getvalue()
+                    header_end = current_content.find(HTTP1_1_END_OF_HEADER)
+                    if header_end > -1:
+                        header_content = current_content[:header_end]
+                        headers_length = len(header_content) + len(HTTP1_1_END_OF_HEADER)
+                        req_line, req_headers = parse_http_headers(header_content)
+                        if "CONTENT-LENGTH" in req_headers:
+                            content_length = int(req_headers["CONTENT-LENGTH"])
+                            message_length = headers_length + content_length
+                
+                if message_length is not None:
+                    remaining_length = message_length - read_so_far
+
+        finally:
+            accepted_sock.sendall(UPNP_SUBSCRIPTION_NOTIFY_RESPONSE_OK)
+            accepted_sock.close()
+
+        request = cbbuffer.getvalue()
+
+        cbbuffer.truncate(0)
+        cbbuffer.seek(0)
+
+        req_body = request[headers_length:]
+        req_body = req_body.decode("utf-8")
+
+        #TODO: Add package capture support for debugging callback requests
+
+        if "SID" in req_headers:
+            sid = req_headers["SID"]
+
+            self.dispatch_subscription_event_callback(ifname, sid, svc_addr, req_headers, req_body)
+
+        else:
+            dbgmsg_lines = [
+                "Received subscription notification without an SID. svc_addr={}".format(svc_addr),
+                "REQUEST HEADERS:"
+            ]
+
+            for hdr_key, hdr_val in req_headers.items():
+                dbgmsg_lines.append("    {}:{}".format(hdr_key, hdr_val))
+
+            dbgmsg_lines.append("REQUEST BODY:")
+            dbgmsg_lines.append(req_body.decode("utf-8"))
+
+            dbgmsg = os.linesep.join(dbgmsg_lines)
+
+            logger.debug(dbgmsg)
+
+        return
+
+
+    def _thread_entry_for_callback(self, sgate: threading.Event, ifname: str):
+        """
+            Thread loop used to listen for subscription callbacks.
+        """
+
+        sgate.set()
+
+        while self._running:
+
+            sock = self._get_callback_socket(ifname)
+
+            try:
+                rcv_sock, rcv_addr =  sock.accept()
+
+                # Queue the callback workpacket for dispatching by the dispatch pool
+                wkpacket = (self._process_callback, (ifname, rcv_addr, rcv_sock))
+                
+                self._dispatch_pool.push_work(wkpacket)
+
+            except socket.timeout:
+                pass
+
+            except:
+                self._lock.acquire()
+                try:
+                    if sock is not None:
+                        sock.close()
+
+                    del self._callback_sockets[ifname]
+                finally:
+                    self._lock.release()
+
+        return
+
+
+    def _thread_entry_for_msearch(self, sgate: threading.Event):
+        """
+            Thread loop used to send and receive M-SEARCH discovery messages.
+        """
+
+        self._msearch_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+
+        sgate.set()
+
+        while self._running:
+
+            sock = self._get_search_socket()
+
+            try:
+                resp, addr = sock.recvfrom(1024)
+
+                if resp.startswith(b"HTTP/"):
+                    self.process_msearch_reply(addr, resp)
+                
+                else:
+                    print(resp)
+
+            except socket.timeout:
+                pass
+
+            except OSError:
+                self._lock.acquire()
+                try:
+                    if sock is not None:
+                        sock.close()
+
+                    self._msearch_sock = None
+                finally:
+                    self._lock.release()
+
+        return
+
+
+    def _thread_entry_for_presence(self, sgate: threading.Event, ifname: str):
+        """
+            Thread loop used to listen for SSDP presence messages.
+            
+            The presence thread entry point is called when the presence thread is
+            started. It listens for incoming SSDP messages and dispatches them.
+        """
+
+        sgate.set()
+
+        while self._running:
+
+            sock = self._get_presence_socket(ifname)
+
+            try:
+                msg_in, addr = sock.recvfrom(1024)
+
+                if msg_in.startswith(b"M-SEARCH * HTTP/"):
+                    self.process_msearch(ifname, addr, msg_in)
+
+                elif msg_in.startswith(b"NOTIFY * HTTP/"):
+                    self.process_notify(ifname, addr, msg_in)
+                
+                else:
+                    logger.debug(msg_in)
+
+            except socket.timeout:
+                pass
+
+            except:
+                self._lock.acquire()
+                try:
+                    if sock is not None:
+                        sock.close()
+
+                    del self._presence_sockets[ifname]
+                finally:
+                    self._lock.release()
 
         return
 
@@ -752,129 +1182,4 @@ class UpnpPresence:
 
         return
 
-
-    def _get_presence_socket(self, ifname: str) -> socket.socket:
-        """
-            Return or create the multicast socket for a given interface.
-        """
-
-        sock = None
-
-        self._lock.acquire()
-        try:
-            if ifname not in self._presence_sockets:
-                if ifname == "any":
-                    sock: socket.socket = create_multicast_listener_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
-                else:
-                    sock: socket.socket = create_multicast_listener_socket_for_iface(ifname, self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
-
-                self._presence_sockets[ifname] = sock
-            else:
-                sock = self._presence_sockets[ifname]
-        finally:
-            self._lock.release()
-            
-        return sock
-
-
-    def _get_search_socket(self) -> socket.socket:
-        """
-            Return or create the socket used for M-SEARCH operations.
-        """
-
-        sock = None
-
-        self._lock.acquire()
-        try:
-            if self._msearch_sock is None:
-                self._msearch_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-
-            sock = self._msearch_sock
-        finally:
-            self._lock.release()
-            
-        return sock
-
-
-    def _msearch_thread_entry(self, sgate: threading.Event):
-        """
-            Thread loop used to send and receive M-SEARCH discovery messages.
-        """
-
-        self._running = True
-
-        self._msearch_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-
-        sgate.set()
-
-        while self._running:
-
-            sock = self._get_search_socket()
-
-            try:
-                resp, addr = sock.recvfrom(1024)
-
-                if resp.startswith(b"HTTP/"):
-                    self.process_msearch_reply(addr, resp)
-                
-                else:
-                    print(resp)
-
-            except socket.timeout:
-                pass
-
-            except OSError:
-                self._lock.acquire()
-                try:
-                    if sock is not None:
-                        sock.close()
-
-                    self._msearch_sock = None
-                finally:
-                    self._lock.release()
-
-        return
-
-    def _presence_thread_entry(self, sgate: threading.Event, ifname: str):
-        """
-            Thread loop used to listen for SSDP presence messages.
-            
-            The presence thread entry point is called when the presence thread is
-            started. It listens for incoming SSDP messages and dispatches them.
-        """
-
-        self._running = True
-
-        sgate.set()
-
-        while self._running:
-
-            sock = self._get_presence_socket(ifname)
-
-            try:
-                msg_in, addr = sock.recvfrom(1024)
-
-                if msg_in.startswith(b"M-SEARCH * HTTP/"):
-                    self.process_msearch(ifname, addr, msg_in)
-
-                elif msg_in.startswith(b"NOTIFY * HTTP/"):
-                    self.process_notify(ifname, addr, msg_in)
-                
-                else:
-                    logger.debug(msg_in)
-
-            except socket.timeout:
-                pass
-
-            except:
-                self._lock.acquire()
-                try:
-                    if sock is not None:
-                        sock.close()
-
-                    del self._presence_sockets[ifname]
-                finally:
-                    self._lock.release()
-
-        return
 
