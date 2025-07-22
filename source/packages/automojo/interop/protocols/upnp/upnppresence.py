@@ -284,7 +284,7 @@ class UpnpPresence:
 
 
     @property
-    def active_devices(self) -> Dict[str, Dict[str, str]]:
+    def active_devices(self) -> Dict[str, UpnpDeviceDetail]:
         """
             Return a copy of the currently active devices.
         """
@@ -300,7 +300,7 @@ class UpnpPresence:
 
 
     @property
-    def inactive_devices(self) -> Dict[str, Dict[str, str]]:
+    def inactive_devices(self) -> Dict[str, UpnpDeviceDetail]:
         """
             Return a copy of devices that have gone inactive.
         """
@@ -702,7 +702,7 @@ class UpnpPresence:
                         # notification subtype as a constant.  If a device replies to m-search requests, it is considered alive.
                         self._update_device("M-SEARCH", from_ip, usn, "ssdp:alive", reply_info)
                         
-                        active_search_windows: List[weakref.ref] = []
+                        active_search_windows: List[UpnpSearchWindow] = []
 
                         # Check to see if there are any active search windows searching for devices
                         self._lock.acquire()
@@ -904,6 +904,7 @@ class UpnpPresence:
 
             :param host_ip: The ip address of the interface on the host computer that will be used to communicate with the service.
             :param subscribe_url: The url of the service to use for creating the subscription.
+            :param subscription_id: The id of the subscription to unsubscribe from.
             :param custom_headers: A optional set of custom headers to use when creating the subscription
         """
 
