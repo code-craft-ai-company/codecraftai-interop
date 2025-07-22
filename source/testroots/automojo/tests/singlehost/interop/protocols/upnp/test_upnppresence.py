@@ -66,7 +66,7 @@ def test_start_creates_callback_sockets_when_no_interfaces():
         if_patch.configure(return_value=["eth0"])
         pool_patch.configure(return_value=DummyPool())
 
-        UpnpPresence._get_presence_socket = fake_presence_socket
+        upnppresence.UpnpPresence._get_presence_socket = fake_presence_socket
         upnppresence.UpnpPresence._get_callback_socket = fake_callback_socket
         upnppresence.UpnpPresence._thread_entry_for_presence = fake_presence_thread
         upnppresence.UpnpPresence._thread_entry_for_callback = fake_callback_thread
