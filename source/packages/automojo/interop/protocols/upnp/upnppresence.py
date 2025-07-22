@@ -594,7 +594,9 @@ class UpnpPresence:
 
                             self.dispatch_root_device_notification(ifname, from_ip, usn, nt, nts, msg_info)
 
-                            print(f"NOTIFY - DEVICE: ifname={ifname} nt={nt} usn={usn} from={from_ip}")
+                            logger.debug(
+                                f"NOTIFY - DEVICE: ifname={ifname} nt={nt} usn={usn} from={from_ip}"
+                            )
                         else:
                             logger.debug("NTS header missing for root device notification.")
     
@@ -606,7 +608,9 @@ class UpnpPresence:
                             if nts is not None:
                                 self.dispatch_service_notification(ifname, from_ip, usn, nt, nts, msg_info)
 
-                                print(f"NOTIFY - SERVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} service={nt} status={status}")
+                                logger.debug(
+                                    f"NOTIFY - SERVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} service={nt} status={status}"
+                                )
                             else:
                                 logger.debug("NTS header missing for service notification.")
                         elif nt_comp_type == "device":
@@ -614,13 +618,19 @@ class UpnpPresence:
                                 # This is an embedded device notification
                                 self.dispatch_embedded_device_notification(ifname, from_ip, usn, nt, nts, msg_info)
 
-                                print(f"NOTIFY - EMBEDDED DEVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>")
+                                logger.debug(
+                                    f"NOTIFY - EMBEDDED DEVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>"
+                                )
                             else:
                                 logger.debug("NTS header missing for embedded device notification.")
                         else:
-                            print(f"NOTIFY - UNKNOWN TYPE ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>")
+                            logger.debug(
+                                f"NOTIFY - UNKNOWN TYPE ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>"
+                            )
                     else:
-                        print(f"NOTIFY - OTHER ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>")
+                        logger.debug(
+                            f"NOTIFY - OTHER ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>"
+                        )
 
         else:
             logger.debug("msg_info was None.")
@@ -1155,7 +1165,7 @@ class UpnpPresence:
                     self.process_msearch_reply(addr, resp)
                 
                 else:
-                    print(resp)
+                    logger.debug(resp)
 
             except socket.timeout:
                 pass
@@ -1258,7 +1268,9 @@ class UpnpPresence:
             finally:
                 self._lock.release()
 
-        print(f"UPDATE DEVICE: context={context} usn={usn} status={status} location={location}")
+        logger.info(
+            f"UPDATE DEVICE: context={context} usn={usn} status={status} location={location}"
+        )
 
         return
 
