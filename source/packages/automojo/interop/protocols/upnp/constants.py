@@ -65,6 +65,7 @@ class MSearchKeys:
     NTS = "NTS"
     SERVER = "SERVER"
     ST = "ST"
+    MX = "MX"
     USN = "USN"
     USN_DEV = "USN_DEV"
     USN_CLS = "USN_CLS"
