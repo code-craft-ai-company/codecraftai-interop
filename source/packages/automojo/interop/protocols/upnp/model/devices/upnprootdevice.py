@@ -195,7 +195,7 @@ class UpnpRootDevice(UpnpDeviceBase):
         """
             The cache control timeout for the device from the MSEARCH response.
         """
-        return self._cachecontrol
+        return self._device_evidence.other.get("CACHE-CONTROL")
 
     @property
     def embedded_device_descriptions(self) -> List[EmbeddedDeviceDesc]:
@@ -498,7 +498,7 @@ class UpnpRootDevice(UpnpDeviceBase):
 
         self._device_lock.acquire()
         try:
-            device = self._embedded_devices[device_type]
+            device = self._embedded_devices.get(device_type)
         finally:
             self._device_lock.release()
 
@@ -549,18 +549,18 @@ class UpnpRootDevice(UpnpDeviceBase):
                 for svc_type in subscription_type_list:
                     sub_sid, _ = self._subscriptions[svc_type]
 
-                    if sub_sid in self._sid_to_service_lookup:
-                        svc_obj = self._sid_to_service_lookup[sub_sid]
+                    svc_obj = self._sid_to_service_lookup.get(sub_sid)
 
-                    # Call notify_byebye on each service object so we can mark all the
-                    # references to variables as expired.
-                    svc_obj.invalidate_subscription()
+                    if svc_obj is not None:
+                        # Call notify_byebye on each service object so we can mark all the
+                        # references to variables as expired.
+                        svc_obj.invalidate_subscription()
 
                     # Since we got a byebye, remove the subscription information
                     dbgmsg = "Removing subscription for device {} service {}, because of {}.".format(
                         device_identity, svc_type, reason
                     )
-                    self._logger.debug(dbgmsg)
+                    logger.debug(dbgmsg)
                     del self._subscriptions[svc_type]
 
         finally:
@@ -598,7 +598,7 @@ class UpnpRootDevice(UpnpDeviceBase):
             if psetNode is not None and psetNode.tag == "{%s}propertyset" % NS_UPNP_EVENT:
                 propertyNodeList = psetNode.findall("{%s}property" % NS_UPNP_EVENT)
 
-                service._update_event_variables(sender_ip, self._usn_dev, propertyNodeList) # pylint: disable=protected-access
+                service._update_event_variables(sender_ip, self.USN_DEV, propertyNodeList) # pylint: disable=protected-access
 
         return
 
@@ -676,14 +676,13 @@ class UpnpRootDevice(UpnpDeviceBase):
             NOTE: This method should be called with the device lock held.
         """
         for deviceInfo in description.deviceList:
-    
+
             devkey = deviceInfo.get_extension_key()
 
             if devkey not in self._embedded_devices:
-                dev_inst = factory.create_embedded_device_instance(description)
+                dev_inst = factory.create_embedded_device_instance(deviceInfo)
                 self._embedded_devices[devkey] = dev_inst
-
-                self._locked_populate_services_descriptions(factory, deviceInfo)
+                self._populate_services_descriptions(deviceInfo)
             else:
                 dev_inst = self._embedded_devices[devkey]
 
@@ -733,5 +732,5 @@ class UpnpRootDevice(UpnpDeviceBase):
         """
             Returns a brief description of the device as a string.
         """
-        rtnstr = "%s: USN:%s MAC=%s IP=%s" % (self.modelName, self.USN, self.MACAddress, self.IPAddress)
+        rtnstr = "%s: USN:%s IP=%s" % (self.modelName, self.USN, self.IPAddress)
         return rtnstr
