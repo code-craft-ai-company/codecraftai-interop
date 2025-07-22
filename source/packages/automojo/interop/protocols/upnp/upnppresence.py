@@ -859,7 +859,7 @@ class UpnpPresence:
         """
             Start background threads for presence monitoring and discovery.
         """
-        if self._running:
+        if self._running or self._msearch_thread is not None or self._presence_threads or self._callback_threads:
             raise RuntimeError("SSDP Scanner is already running.")
 
         sgate = threading.Event()
@@ -896,6 +896,45 @@ class UpnpPresence:
 
         finally:
                 self._lock.release()
+
+        return
+
+
+    def stop(self) -> None:
+        self._running = False
+
+        self._lock.acquire()
+        try:
+            for sock in self._presence_sockets.values():
+                sock.close()
+            self._presence_sockets.clear()
+
+            for sock in self._callback_sockets.values():
+                sock.close()
+            self._callback_sockets.clear()
+            self._callback_address_from_iface.clear()
+
+            if self._msearch_sock is not None:
+                self._msearch_sock.close()
+                self._msearch_sock = None
+        finally:
+            self._lock.release()
+
+        for th in self._presence_threads.values():
+            th.join(timeout=2)
+        self._presence_threads.clear()
+
+        for th in self._callback_threads.values():
+            th.join(timeout=2)
+        self._callback_threads.clear()
+
+        if self._msearch_thread is not None:
+            self._msearch_thread.join(timeout=2)
+            self._msearch_thread = None
+
+        if self._dispatch_pool is not None:
+            self._dispatch_pool.shutdown()
+            self._dispatch_pool = None
 
         return
 
