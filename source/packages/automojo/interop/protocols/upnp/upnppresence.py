@@ -1066,9 +1066,6 @@ class UpnpPresence:
                 
                 self._dispatch_pool.push_work(wkpacket)
 
-            except socket.timeout:
-                pass
-
             except:
                 self._lock.acquire()
                 try:
