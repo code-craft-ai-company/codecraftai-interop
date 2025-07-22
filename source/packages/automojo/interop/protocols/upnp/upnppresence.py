@@ -1066,12 +1066,17 @@ class UpnpPresence:
             sock = self._get_callback_socket(ifname)
 
             try:
+                # Wait untile we get a connection or the socket is closed on us.
                 rcv_sock, rcv_addr =  sock.accept()
 
                 # Queue the callback workpacket for dispatching by the dispatch pool
                 wkpacket = (self._process_callback, (ifname, rcv_addr, rcv_sock))
                 
                 self._dispatch_pool.push_work(wkpacket)
+
+            except socket.timeout:
+                dbgmsg = "Our socket timed out.  Don't do anything except loop around and call accept again."
+                logger.debug(dbgmsg)
 
             except:
                 self._lock.acquire()
