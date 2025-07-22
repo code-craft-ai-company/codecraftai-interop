@@ -1192,11 +1192,16 @@ class UpnpPresence:
             Thread loop used to listen for subscription callbacks.
         """
 
+        sock = self._get_callback_socket(ifname)
+
         sgate.set()
 
         while self._running:
 
-            sock = self._get_callback_socket(ifname)
+            if sock is None:
+                sock = self._get_callback_socket(ifname)
+                if sock is None:
+                    continue
 
             try:
                 # Wait untile we get a connection or the socket is closed on us.
@@ -1226,6 +1231,8 @@ class UpnpPresence:
                     self._callback_sockets.pop(ifname, None)
                 finally:
                     self._lock.release()
+
+                sock = None
 
         return
 
