@@ -35,8 +35,13 @@ from automojo.xmodules.xthreading.looper import Looper
 from automojo.xmodules.xthreading.looperpool import LooperPool
 
 from automojo.networking.constants import HTTP1_1_LINESEP, HTTP1_1_END_OF_HEADER
-from automojo.networking.multicast import create_multicast_listener_socket, create_multicast_listener_socket_for_iface
-from automojo.networking.interfaces import get_correspondance_ip_address, get_ipv4_address, get_interface_for_ip
+from automojo.networking.multicast import create_multicast_listener_socket_for_iface
+from automojo.networking.interfaces import (
+    get_all_ipv4_interfaces,
+    get_correspondance_ip_address,
+    get_ipv4_address,
+    get_interface_for_ip,
+)
 
 from automojo.interop.protocols.upnp.constants import MSearchTargets, MSearchKeys
 from automojo.interop.protocols.upnp.upnpsearchwindow import UpnpSearchWindow
@@ -277,8 +282,8 @@ class UpnpPresence:
         if presence_interfaces is not None:
             self._presence_interfaces = presence_interfaces
         else:
-            # If no interfaces are specified, then we will listen on all interfaces
-            self._presence_interfaces = ["any"]
+            # If no interfaces are specified, enumerate IPv4 capable interfaces
+            self._presence_interfaces = get_all_ipv4_interfaces()
 
         return
 
@@ -1072,11 +1077,13 @@ class UpnpPresence:
         self._lock.acquire()
         try:
             if ifname not in self._presence_sockets:
-                if ifname == "any":
-                    sock: socket.socket = create_multicast_listener_socket(self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
-                else:
-                    sock: socket.socket = create_multicast_listener_socket_for_iface(ifname, self._multicast_address, self._multicast_port, family=socket.AF_INET, ttl=self._ttl)
-
+                sock: socket.socket = create_multicast_listener_socket_for_iface(
+                    ifname,
+                    self._multicast_address,
+                    self._multicast_port,
+                    family=socket.AF_INET,
+                    ttl=self._ttl,
+                )
                 self._presence_sockets[ifname] = sock
             else:
                 sock = self._presence_sockets[ifname]
