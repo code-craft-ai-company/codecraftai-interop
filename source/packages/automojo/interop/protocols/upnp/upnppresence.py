@@ -222,7 +222,7 @@ class UpnpPresence:
 
     def __init__(self, agent_id: Optional[UpnpPresenceId] = None, multicast_address = SsdpProtocol.MULTICAST_ADDRESS,
                  multicast_port = SsdpProtocol.PORT, presence_interfaces: Optional[List[str]] = None, interface_port: int = 80,
-                 discover_interval: int = 60, ttl: int=32):
+                 ttl: int=32):
         """
             :param agent_id: The id that is used to provide a presence for this node.  If not provided, the agent will
             not respond to M-SEARCH events.
@@ -240,7 +240,6 @@ class UpnpPresence:
         self._multicast_port = multicast_port
         self._interface_port = interface_port
 
-        self._discover_interval = discover_interval
         self._ttl = ttl
 
         self._lock = threading.Lock()
@@ -1160,7 +1159,13 @@ class UpnpPresence:
                 dbgmsg = "Our socket timed out.  Don't do anything except loop around and call accept again."
                 logger.debug(dbgmsg)
 
-            except:
+            except Exception as xcpt:
+                err_type = type(xcpt).__name__
+                logger.exception(
+                    "Unexpected %s in callback thread for %s.",
+                    err_type,
+                    ifname,
+                )
                 self._lock.acquire()
                 try:
                     if sock is not None:
@@ -1240,7 +1245,13 @@ class UpnpPresence:
             except socket.timeout:
                 pass
 
-            except:
+            except Exception as xcpt:
+                err_type = type(xcpt).__name__
+                logger.exception(
+                    "Unexpected %s in presence thread for %s.",
+                    err_type,
+                    ifname,
+                )
                 self._lock.acquire()
                 try:
                     if sock is not None:
