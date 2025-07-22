@@ -670,9 +670,8 @@ class UpnpPresence:
 
                             for search_window in active_search_windows:
                                 search_window.add_device(usn, device_detail)
-
-                    else:
-                        logger.error(f"Unable to get device description for {location}.")
+                        else:
+                            logger.error(f"Unable to get device description for {location}.")
 
         else:
             logger.debug(f"REPLY: from={from_ip} usn=<not found>")
