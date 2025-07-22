@@ -30,6 +30,7 @@ import requests
 from automojo.errors.raising import raise_for_http_status
 
 from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
+from automojo.xmodules.xformatting import indent_lines
 from automojo.xmodules.xthreading.looper import Looper
 from automojo.xmodules.xthreading.looperpool import LooperPool
 
@@ -526,42 +527,66 @@ class UpnpPresence:
             
             msg_info = parse_ssdp_message(response)
             
-            # Process the M-SEARCH message info
-            st = msg_info.get(MSearchKeys.ST, None)
-            if st is not None:
-                mx = msg_info.get(MSearchKeys.MX, "1")
+            if msg_info is not None:
+                # Process the M-SEARCH message info
+                st = msg_info.get(MSearchKeys.ST, None)
+                if st is not None:
+                    mx = msg_info.get(MSearchKeys.MX, "1")
 
-                # Check the ST header to see if it is a request for the root device
-                if st == MSearchTargets.ROOTDEVICE:
+                    logger.debug(f"M-SEARCH: ifname={ifname} from={from_ip} ST={st}")
 
-                    # Get the IP that should be used by a specific client to attempt to communicate with the local device
-                    # We need to get the IP address that corresponds to the interface that the M-SEARCH request came in on
-                    # because we might be listening on multiple networks, if we respond with the wrong IP address, then the
-                    # client might not be able to communicate with us.
-                    interface_ip = get_correspondance_ip_address(from_ip)
+                    # Check the ST header to see if it is a request for the root device
+                    if st == MSearchTargets.ROOTDEVICE:
 
-                    # If the ST header is for the root device, then we will respond with our presence
-                    usn = self._agent_id.to_usn()
-                    server = "Automation Mojo UPnP Presence Agent/1.0"
-                    location = f"http://{interface_ip}:{self._interface_port}/upnp/device.xml"
+                        # Get the IP that should be used by a specific client to attempt to communicate with the local device
+                        # We need to get the IP address that corresponds to the interface that the M-SEARCH request came in on
+                        # because we might be listening on multiple networks, if we respond with the wrong IP address, then the
+                        # client might not be able to communicate with us.
+                        interface_ip = get_correspondance_ip_address(from_ip)
 
-                    response_lines = [
-                        b"HTTP/1.1 200 OK",
-                        b"ST: upnp:rootdevice",
-                        b"USN: %s" % usn.encode("utf-8"),
-                        b"SERVER: %s" % server.encode("utf-8"),
-                        b"LOCATION: %s" % location.encode("utf-8"),
-                        b"CACHE-CONTROL: max-age=1800",
-                        b"",
-                        b""
+                        # If the ST header is for the root device, then we will respond with our presence
+                        usn = self._agent_id.to_usn()
+                        server = "Automation Mojo UPnP Presence Agent/1.0"
+                        location = f"http://{interface_ip}:{self._interface_port}/upnp/device.xml"
+
+                        response_lines = [
+                            b"HTTP/1.1 200 OK",
+                            b"ST: upnp:rootdevice",
+                            b"USN: %s" % usn.encode("utf-8"),
+                            b"SERVER: %s" % server.encode("utf-8"),
+                            b"LOCATION: %s" % location.encode("utf-8"),
+                            b"CACHE-CONTROL: max-age=1800",
+                            b"",
+                            b""
+                        ]
+
+                        response_msg = HTTP1_1_LINESEP.join(response_lines)
+
+                        sock = self._get_presence_socket(ifname)
+                        sock.sendto(response_msg, from_endpoint)
+
+                else:
+                    response = response.decode()
+                    response = indent_lines(response, 1, indent=4)
+
+                    dbgmsg_lines = [
+                        f"M-SEARCH message id not have an 'ST' field from={from_ip}:",
+                        response
                     ]
 
-                    response_msg = HTTP1_1_LINESEP.join(response_lines)
+                    dbgmsg = os.linesep.join(dbgmsg_lines)
+                    logger.debug(dbgmsg)
+            else:
+                response = response.decode()
+                response = indent_lines(response, 1, indent=4)
 
-                    sock = self._get_presence_socket(ifname)
-                    sock.sendto(response_msg, from_endpoint)
+                dbgmsg_lines = [
+                    f"Unable to process M-SEARCH message from={from_ip}:",
+                    response
+                ]
 
-            logger.debug(f"M-SEARCH: ifname={ifname} from={from_ip} ST={msg_info["ST"]}")
+                dbgmsg = os.linesep.join(dbgmsg_lines)
+                logger.debug(dbgmsg)
         
         return
 
@@ -634,9 +659,22 @@ class UpnpPresence:
                         logger.debug(
                             f"NOTIFY - OTHER ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>"
                         )
-
+                else:
+                    logger.debug(f"REPLY: from={from_ip} NT=<not found>")
+            else:
+                logger.debug(f"REPLY: from={from_ip} USN=<not found>")
         else:
-            logger.debug("msg_info was None.")
+            message = message.decode()
+            message = indent_lines(message, 1, indent=4)
+
+            dbgmsg_lines = [
+                f"Unable to process NOTIFY message from={from_ip}:",
+                message
+            ]
+
+            dbgmsg = os.linesep.join(dbgmsg_lines)
+            logger.debug(dbgmsg)
+
         
         return
 
@@ -650,51 +688,64 @@ class UpnpPresence:
 
         reply_info = parse_ssdp_message(response)
 
-        if MSearchKeys.USN in reply_info:
-            if "ST" in reply_info:
-                st = reply_info["ST"]
+        if reply_info is not None:
+            if MSearchKeys.USN in reply_info:
+                if "ST" in reply_info:
+                    st = reply_info["ST"]
 
-                if st == 'upnp:rootdevice':
-                    usn = reply_info["USN"]
-                    server = reply_info["SERVER"]
-                    location = reply_info["LOCATION"]
+                    if st == 'upnp:rootdevice':
+                        usn = reply_info["USN"]
+                        server = reply_info["SERVER"]
+                        location = reply_info["LOCATION"]
 
-                    # Update our active device tables with then newly discovered device, pass along the 'ssdp:alive'
-                    # notification subtype as a constant.  If a device replies to m-search requests, it is considered alive.
-                    self._update_device("M-SEARCH", from_ip, usn, "ssdp:alive", reply_info)
-                    
-                    active_search_windows: List[weakref.ref] = []
+                        # Update our active device tables with then newly discovered device, pass along the 'ssdp:alive'
+                        # notification subtype as a constant.  If a device replies to m-search requests, it is considered alive.
+                        self._update_device("M-SEARCH", from_ip, usn, "ssdp:alive", reply_info)
+                        
+                        active_search_windows: List[weakref.ref] = []
 
-                    # Check to see if there are any active search windows searching for devices
-                    self._lock.acquire()
-                    try:
-                        for wid, search_window_ref in self._search_windows.items():
+                        # Check to see if there are any active search windows searching for devices
+                        self._lock.acquire()
+                        try:
+                            for wid, search_window_ref in self._search_windows.items():
 
-                                search_window: UpnpSearchWindow = search_window_ref()
-                                if search_window is not None:
-                                    # If the search window is still active, then add the device to the search window
-                                    if search_window.is_active():
-                                        active_search_windows.append(search_window)
+                                    search_window: UpnpSearchWindow = search_window_ref()
+                                    if search_window is not None:
+                                        # If the search window is still active, then add the device to the search window
+                                        if search_window.is_active():
+                                            active_search_windows.append(search_window)
 
-                    finally:
-                        self._lock.release()
+                        finally:
+                            self._lock.release()
 
-                    # If there are any active search windows, then we will need to query the device for its description and then pass the device detail
-                    # to the any active search windows.
-                    if len(active_search_windows):
-                        device_evidence = DeviceEvidence(usn=usn, status="alive", server=server, location=location, ip=from_ip, other=reply_info, presence=self)
-                        device_desc = self._query_manager.query_device_description(location)
-                        if device_desc is not None:
+                        # If there are any active search windows, then we will need to query the device for its description and then pass the device detail
+                        # to the any active search windows.
+                        if len(active_search_windows):
+                            device_evidence = DeviceEvidence(usn=usn, status="alive", server=server, location=location, ip=from_ip, other=reply_info, presence=self)
+                            device_desc = self._query_manager.query_device_description(location)
+                            if device_desc is not None:
 
-                            device_detail = UpnpDeviceDetail(device_evidence, device_desc)
+                                device_detail = UpnpDeviceDetail(device_evidence, device_desc)
 
-                            for search_window in active_search_windows:
-                                search_window.add_device(usn, device_detail)
-                        else:
-                            logger.error(f"Unable to get device description for {location}.")
+                                for search_window in active_search_windows:
+                                    search_window.add_device(usn, device_detail)
+                            else:
+                                logger.error(f"Unable to get device description for {location}.")
 
+            else:
+                logger.debug(f"REPLY: from={from_ip} USN=<not found>")
+                
         else:
-            logger.debug(f"REPLY: from={from_ip} usn=<not found>")
+            response = response.decode()
+            response = indent_lines(response, 1, indent=4)
+
+            dbgmsg_lines = [
+                f"Unable to process M-SEARCH reply message from={from_ip}:",
+                response
+            ]
+
+            dbgmsg = os.linesep.join(dbgmsg_lines)
+            logger.debug(dbgmsg)
 
         return
 
@@ -909,7 +960,7 @@ class UpnpPresence:
             sgate.wait()
 
         finally:
-                self._lock.release()
+            self._lock.release()
 
         return
 
