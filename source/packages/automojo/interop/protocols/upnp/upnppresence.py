@@ -260,8 +260,8 @@ class UpnpPresence:
 
         self._dispatch_pool = None
 
-        self._inactive_devices: Dict[str, UpnpDeviceDetail] = {}
-        self._active_devices: Dict[str, UpnpDeviceDetail] = {}
+        self._inactive_devices: Dict[str, DeviceEvidence] = {}
+        self._active_devices: Dict[str, DeviceEvidence] = {}
 
         self._subscription_to_callback: Dict[str, Callable] = {}
 
@@ -284,7 +284,7 @@ class UpnpPresence:
 
 
     @property
-    def active_devices(self) -> Dict[str, UpnpDeviceDetail]:
+    def active_devices(self) -> Dict[str, DeviceEvidence]:
         """
             Return a copy of the currently active devices.
         """
@@ -300,7 +300,7 @@ class UpnpPresence:
 
 
     @property
-    def inactive_devices(self) -> Dict[str, UpnpDeviceDetail]:
+    def inactive_devices(self) -> Dict[str, DeviceEvidence]:
         """
             Return a copy of devices that have gone inactive.
         """
