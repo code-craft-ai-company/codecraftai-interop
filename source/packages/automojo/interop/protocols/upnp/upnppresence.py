@@ -249,8 +249,7 @@ class UpnpPresence:
         self._ttl = ttl
 
         self._lock = threading.Lock()
-        self._lock_sockets = threading.Lock() # We keep a seperate lock around sockets
-
+        
         self._running = False
         self._stop_called = False
 
@@ -931,40 +930,46 @@ class UpnpPresence:
         """
             Start background threads for presence monitoring and discovery.
         """
-        if self._running or self._msearch_thread is not None or self._presence_threads or self._callback_threads:
-            raise RuntimeError("SSDP Scanner is already running.")
-
-        sgate = threading.Event()
-        
-        self._running = True
 
         self._lock.acquire()
         try:
-            dispatch_pool = LooperPool(Looper, "am-upnp-dispatch", min_loopers=5, max_loopers=10, highwater=5, daemon=True)
-            dispatch_pool.start_pool()
 
-            self._dispatch_pool = dispatch_pool
-
-            for ifname in self._presence_interfaces:
-
-                # We need a presence thread and callback thread for each interface we want to support
-                sgate.clear()
-                presence_thread = threading.Thread(target=self._thread_entry_for_presence, name=f"am-upnp-presence-{ifname}", args=(sgate, ifname), daemon=True)
-                presence_thread.start()
-                sgate.wait()
-
-                sgate.clear()
-                callback_thread = threading.Thread(target=self._thread_entry_for_callback, name=f"am-upnp-callback-{ifname}", args=(sgate, ifname), daemon=True)
-                callback_thread.start()
-                sgate.wait()
+            if self._running or self._msearch_thread is not None or self._presence_threads or self._callback_threads:
+                raise RuntimeError("SSDP Scanner is already running.")
             
-                self._callback_threads[ifname] = callback_thread
-                self._presence_threads[ifname] = presence_thread
+            self._running = True
 
-            sgate.clear()
-            self._msearch_thread = threading.Thread(target=self._thread_entry_for_msearch, name="am-upnp-search", args=(sgate,), daemon=True)
-            self._msearch_thread.start()
-            sgate.wait()
+            self._lock.release()
+            try:
+                sgate = threading.Event()
+
+                dispatch_pool = LooperPool(Looper, "am-upnp-dispatch", min_loopers=5, max_loopers=10, highwater=5, daemon=True)
+                dispatch_pool.start_pool()
+
+                self._dispatch_pool = dispatch_pool
+
+                for ifname in self._presence_interfaces:
+
+                    # We need a presence thread and callback thread for each interface we want to support
+                    sgate.clear()
+                    presence_thread = threading.Thread(target=self._thread_entry_for_presence, name=f"am-upnp-presence-{ifname}", args=(sgate, ifname), daemon=True)
+                    presence_thread.start()
+                    sgate.wait()
+
+                    sgate.clear()
+                    callback_thread = threading.Thread(target=self._thread_entry_for_callback, name=f"am-upnp-callback-{ifname}", args=(sgate, ifname), daemon=True)
+                    callback_thread.start()
+                    sgate.wait()
+                
+                    self._callback_threads[ifname] = callback_thread
+                    self._presence_threads[ifname] = presence_thread
+
+                sgate.clear()
+                self._msearch_thread = threading.Thread(target=self._thread_entry_for_msearch, name="am-upnp-search", args=(sgate,), daemon=True)
+                self._msearch_thread.start()
+                sgate.wait()
+            finally:
+                self._lock.acquire()
 
         finally:
             self._lock.release()
@@ -1037,7 +1042,7 @@ class UpnpPresence:
 
         sock = None
 
-        self._lock_sockets.acquire()
+        self._lock.acquire()
         try:
 
             if ifname in self._callback_sockets:
@@ -1063,7 +1068,7 @@ class UpnpPresence:
                     self._callback_address_from_iface[ifname] = callback_addr
 
         finally:
-            self._lock_sockets.release()
+            self._lock.release()
 
         return sock
 
@@ -1075,7 +1080,7 @@ class UpnpPresence:
 
         sock = None
 
-        self._lock_sockets.acquire()
+        self._lock.acquire()
         try:
             if ifname not in self._presence_sockets:
                 sock: socket.socket = create_multicast_listener_socket_for_iface(
@@ -1089,7 +1094,7 @@ class UpnpPresence:
             else:
                 sock = self._presence_sockets[ifname]
         finally:
-            self._lock_sockets.release()
+            self._lock.release()
             
         return sock
 
@@ -1101,14 +1106,14 @@ class UpnpPresence:
 
         sock = None
 
-        self._lock_sockets.acquire()
+        self._lock.acquire()
         try:
             if self._msearch_sock is None:
                 self._msearch_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
             sock = self._msearch_sock
         finally:
-            self._lock_sockets.release()
+            self._lock.release()
             
         return sock
 
