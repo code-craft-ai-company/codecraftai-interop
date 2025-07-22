@@ -109,7 +109,7 @@ requests = "^2.32.3"
 type = "git"
 url = "https://github.com/automationmojo/automojo-networking.git"
 reference = "main"
-resolved_reference = "2be6ccc381aeeaa6286c251b33e6cb002cad320f"
+resolved_reference = "e7c21039fe938935260adc3c50f33b3b47e9ce40"
 
 [[package]]
 name = "automojo-presence"
