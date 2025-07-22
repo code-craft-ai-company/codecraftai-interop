@@ -1039,7 +1039,7 @@ class UpnpPresence:
                 dbgmsg_lines.append("    {}:{}".format(hdr_key, hdr_val))
 
             dbgmsg_lines.append("REQUEST BODY:")
-            dbgmsg_lines.append(req_body.decode("utf-8"))
+            dbgmsg_lines.append(req_body)
 
             dbgmsg = os.linesep.join(dbgmsg_lines)
 
