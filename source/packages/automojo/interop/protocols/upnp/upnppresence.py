@@ -204,16 +204,19 @@ class UpnpPresence:
         The UpnpPresence class is used to manage the presence of a device on the network using SSDP. The UpnpPresence object
         maintains a multi-cast listening socket and thread that listens for incoming multi-cast SSDP messages allowing the
         UpnpPresence to establish a UPNP device presence on the network.
-        
+
         The UpnpPresence class also maintains a multip-cast send and receive socket that is associated M-SEARCH activites on
         the network.  The purpose of the seperate M-SEARCH socket is because devices receiving M-SEARCH messages are going to send back
         responses in the form of a reply to the M-SEARCH request and not in the form of a broadcast.  This means we need to listend for
         M-SEARCH responses on the socket that the M-SEARCH messages were sent from.
-        
+
         The M-SEARCH socket thread containuously calls the socket.recvfrom() method to listen for incoming M-SEARCH messages.  Because the
         socket is thread safe, when a 'discovery' call is made, then the calling thread simply sends the M-SEARCH message on the send side
         of the socket.
-        
+
+        This is a single use object.  Once it has been started and then stopped, it should not be reused.  Create a new
+        :class:`UpnpPresence` instance if presence services are needed again.
+
     """
 
 
@@ -243,6 +246,7 @@ class UpnpPresence:
         self._lock = threading.Lock()
 
         self._running = False
+        self._stop_called = False
 
         self._msearch_sock = None
         self._msearch_thread = None
@@ -912,40 +916,59 @@ class UpnpPresence:
 
 
     def stop(self) -> None:
+        """Stop all running threads and close sockets."""
+
+        if self._stop_called:
+            return
+
+        self._stop_called = True
         self._running = False
 
         self._lock.acquire()
         try:
             for sock in self._presence_sockets.values():
                 sock.close()
-            self._presence_sockets.clear()
 
             for sock in self._callback_sockets.values():
                 sock.close()
-            self._callback_sockets.clear()
-            self._callback_address_from_iface.clear()
 
             if self._msearch_sock is not None:
                 self._msearch_sock.close()
-                self._msearch_sock = None
         finally:
             self._lock.release()
 
         for th in self._presence_threads.values():
-            th.join(timeout=2)
-        self._presence_threads.clear()
+            th.join()
 
         for th in self._callback_threads.values():
-            th.join(timeout=2)
-        self._callback_threads.clear()
+            th.join()
 
         if self._msearch_thread is not None:
-            self._msearch_thread.join(timeout=2)
-            self._msearch_thread = None
+            self._msearch_thread.join()
 
         if self._dispatch_pool is not None:
             self._dispatch_pool.shutdown()
-            self._dispatch_pool = None
+
+        return
+
+    def cleanup(self) -> None:
+        """Forcefully clean up sockets and thread references after stopping."""
+
+        self.stop()
+
+        self._lock.acquire()
+        try:
+            self._presence_sockets.clear()
+            self._callback_sockets.clear()
+            self._callback_address_from_iface.clear()
+
+            self._msearch_sock = None
+        finally:
+            self._lock.release()
+
+        self._presence_threads.clear()
+        self._callback_threads.clear()
+        self._msearch_thread = None
 
         return
 
@@ -1143,7 +1166,7 @@ class UpnpPresence:
                     if sock is not None:
                         sock.close()
 
-                    del self._callback_sockets[ifname]
+                    self._callback_sockets.pop(ifname, None)
                 finally:
                     self._lock.release()
 
@@ -1223,7 +1246,7 @@ class UpnpPresence:
                     if sock is not None:
                         sock.close()
 
-                    del self._presence_sockets[ifname]
+                    self._presence_sockets.pop(ifname, None)
                 finally:
                     self._lock.release()
 
