@@ -934,9 +934,11 @@ class UpnpPresence:
         self._lock.acquire()
         try:
 
-            if self._running or self._msearch_thread is not None or self._presence_threads or self._callback_threads:
+            if self._running:
                 raise RuntimeError("SSDP Scanner is already running.")
             
+            # If running was False, the we are uninitialed and non of the threads have been created or started, set running
+            # to true and begin the startup of all threads.
             self._running = True
 
             self._lock.release()
