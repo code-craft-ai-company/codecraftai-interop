@@ -1025,6 +1025,10 @@ class UpnpPresence:
         cbbuffer.truncate(0)
         cbbuffer.seek(0)
 
+        if headers_length is None:
+            logger.error("Callback message missing header terminator. svc_addr=%s", svc_addr)
+            return
+
         req_body = request[headers_length:]
         req_body = req_body.decode("utf-8")
 
