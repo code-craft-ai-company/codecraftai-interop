@@ -570,11 +570,14 @@ class UpnpPresence:
 
         from_ip = from_endpoint[0]
 
+
         msg_info = parse_ssdp_message(message)
 
         if msg_info is not None:
             message_st = msg_info.get(MSearchKeys.ST, None)
-        
+
+            nts = msg_info.get("NTS")
+
             if MSearchKeys.USN in msg_info:
 
                 if "NT" in msg_info:
@@ -583,33 +586,37 @@ class UpnpPresence:
                     status = None
 
                     ntparts = nt.split(":")
-                    
+
                     if nt == 'upnp:rootdevice':
 
-                        if "NTS" in msg_info:
-                            nts = msg_info["NTS"]
-                            
+                        if nts is not None:
                             self._update_device("NOTIFY", from_ip, usn, nts, msg_info)
-                            
-                        self.dispatch_root_device_notification(ifname, from_ip, usn, nt, nts, msg_info)
 
-                        print(f"NOTIFY - DEVICE: ifname={ifname} nt={nt} usn={usn} from={from_ip}")
+                            self.dispatch_root_device_notification(ifname, from_ip, usn, nt, nts, msg_info)
+
+                            print(f"NOTIFY - DEVICE: ifname={ifname} nt={nt} usn={usn} from={from_ip}")
+                        else:
+                            logger.debug("NTS header missing for root device notification.")
     
                     elif len(ntparts) > 2:
                         nt_comp_group = ntparts[1]
                         nt_comp_type = ntparts[2]
 
                         if nt_comp_type == "service":
-                            nts = msg_info["NTS"]
+                            if nts is not None:
+                                self.dispatch_service_notification(ifname, from_ip, usn, nt, nts, msg_info)
 
-                            self.dispatch_service_notification(ifname, from_ip, usn, nt, nts, msg_info)
-
-                            print(f"NOTIFY - SERVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} service={nt} status={status}")
+                                print(f"NOTIFY - SERVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} service={nt} status={status}")
+                            else:
+                                logger.debug("NTS header missing for service notification.")
                         elif nt_comp_type == "device":
-                            # This is an embedded device notification
-                            self.dispatch_embedded_device_notification(ifname, from_ip, usn, nt, nts, msg_info)
+                            if nts is not None:
+                                # This is an embedded device notification
+                                self.dispatch_embedded_device_notification(ifname, from_ip, usn, nt, nts, msg_info)
 
-                            print(f"NOTIFY - EMBEDDED DEVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>")
+                                print(f"NOTIFY - EMBEDDED DEVICE ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>")
+                            else:
+                                logger.debug("NTS header missing for embedded device notification.")
                         else:
                             print(f"NOTIFY - UNKNOWN TYPE ifname={ifname} nt={nt} usn={usn} from={from_ip} status=<unknown>")
                     else:
