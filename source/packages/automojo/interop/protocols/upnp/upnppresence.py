@@ -249,20 +249,21 @@ class UpnpPresence:
         self._ttl = ttl
 
         self._lock = threading.Lock()
+        self._lock_sockets = threading.Lock() # We keep a seperate lock around sockets
 
         self._running = False
         self._stop_called = False
 
         self._msearch_sock = None
-        self._msearch_thread = None
-        
         self._presence_sockets = {}
-        self._presence_threads = {}
-
         self._callback_sockets = {}
-        self._callback_address_from_iface: Dict[str, Tuple[str, int]] = {}
+        
+        self._msearch_thread = None
+        self._presence_threads = {}
         self._callback_threads = {}
 
+        self._callback_address_from_iface: Dict[str, Tuple[str, int]] = {}
+        
         self._dispatch_pool = None
 
         self._inactive_devices: Dict[str, DeviceEvidence] = {}
@@ -1036,7 +1037,7 @@ class UpnpPresence:
 
         sock = None
 
-        self._lock.acquire()
+        self._lock_sockets.acquire()
         try:
 
             if ifname in self._callback_sockets:
@@ -1062,7 +1063,7 @@ class UpnpPresence:
                     self._callback_address_from_iface[ifname] = callback_addr
 
         finally:
-            self._lock.release()
+            self._lock_sockets.release()
 
         return sock
 
@@ -1074,7 +1075,7 @@ class UpnpPresence:
 
         sock = None
 
-        self._lock.acquire()
+        self._lock_sockets.acquire()
         try:
             if ifname not in self._presence_sockets:
                 sock: socket.socket = create_multicast_listener_socket_for_iface(
@@ -1088,7 +1089,7 @@ class UpnpPresence:
             else:
                 sock = self._presence_sockets[ifname]
         finally:
-            self._lock.release()
+            self._lock_sockets.release()
             
         return sock
 
@@ -1100,14 +1101,14 @@ class UpnpPresence:
 
         sock = None
 
-        self._lock.acquire()
+        self._lock_sockets.acquire()
         try:
             if self._msearch_sock is None:
                 self._msearch_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
             sock = self._msearch_sock
         finally:
-            self._lock.release()
+            self._lock_sockets.release()
             
         return sock
 
