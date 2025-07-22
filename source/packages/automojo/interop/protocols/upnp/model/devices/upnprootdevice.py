@@ -380,139 +380,75 @@ class UpnpRootDevice(UpnpDeviceBase):
         dval["USN_CLS"] = self.USN_CLS
         return dval
 
-    def events_subscribe(self, service: UpnpServiceProxy, renew: bool=False, timeout: Optional[float] = None)-> Union[Tuple[str, datetime], Tuple[None, None]]:
-        """
-            Creates a subscription to the events for a UPNP service.
 
-            :param service: A :class:`mojo.protocols.upnp.services.upnpserviceproxy.UpnpServiceProxy`
-                            for which to subscribe to events.
-            :param renew: A boolean value indicating if the subscription is being renewed.
-            :param timeout: The timeout to pass as a header when creating the subscription.
-
-            :returns: A tuple with the subscription ID and the expiration datetime for the subscription.
+    def events_subscribe(self, service: UpnpServiceProxy, renew: bool = False, timeout: Optional[float] = None) -> Union[Tuple[str, datetime], Tuple[None, None]]:
         """
+            Creates a subscription to the events for a UPnP service.
+
+            :param service: The :class:`UpnpServiceProxy` to subscribe to.
+            :param renew: Indicates if the subscription is being renewed.
+            :param timeout: Optional timeout in seconds for the subscription.
+
+            :returns: ``(sid, expires)`` of the subscription or ``(None, None)`` if no subscription occurred.
+        """
+
         sub_sid = None
         sub_expires = None
 
         if len(service.SERVICE_EVENT_VARIABLES) > 0:
-
             service_type = service.SERVICE_TYPE
 
             new_subscription = False
-            self._device_lock.acquire()
-            try:
+            with self._device_lock:
                 if service_type not in self._subscriptions:
                     new_subscription = True
                     self._subscriptions[service_type] = (None, None)
                 else:
                     sub_sid, sub_expires = self._subscriptions[service_type]
-
                     if sub_sid is None and sub_expires is None:
-                        # The service was unsubscribed so this is the same as a new
-                        # subscription.
                         new_subscription = True
-            finally:
-                self._device_lock.release()
 
             check_time = datetime.now() + timedelta(seconds=TIMEDELTA_RENEWAL_WINDOW)
             if sub_expires is not None and check_time > sub_expires:
                 renew = True
 
             if new_subscription or renew:
-                # If we created an uninitialized variable and added it to the subsciptions table
-                # we need to statup the subsciption here.  If the startup process fails, we can
-                # later remove the subscription from the subscription table.
-
                 svckey = service.get_extension_key()
                 service = self._services[svckey]
 
                 subscribe_url = urljoin(self.URLBase, service.eventSubURL)
-                subscribe_auth = ""
 
-                ifname = self._primary_route[MSearchRouteKeys.IFNAME]
+                presence = self.presence
+                if presence is None:
+                    raise RuntimeError("Presence reference was lost.")
 
-                callback_url = coord.lookup_callback_url_for_interface(ifname)
-                if callback_url is None:
-                    errmsg = "No callback url found for ifname={}".format(ifname)
-                    raise RuntimeError(errmsg) from None
-
-                headers = { "HOST": self._host, "User-Agent": UPNP_HEADERS.USER_AGENT, "CALLBACK": callback_url, "NT": "upnp:event"}
-                if timeout is not None:
-                    headers["TIMEOUT"] = "Seconds-%s" % timeout
+                host_ip = self._primary_route[MSearchRouteKeys.IP]
 
                 custom_headers = self.get_custom_subscribe_headers()
-                if custom_headers is not None:
-                    headers.update(custom_headers)
-
-                resp: requests.Response = requests.request(
-                    "SUBSCRIBE", subscribe_url, headers=headers, auth=subscribe_auth
+                sub_sid, sub_expires = presence.service_subscribe(
+                    host_ip,
+                    subscribe_url,
+                    timeout,
+                    self.process_subscription_callback,
+                    custom_headers=custom_headers
                 )
 
-                if resp.status_code == 200:
-                    #============================== Expected Response Headers ==============================
-                    # SID: uuid:RINCON_7828CA09247C01400_sub0000000207
-                    # TIMEOUT: Second-86400
-                    # Server: Linux UPnP/1.0 Sonos/62.1-82260-monaco_dev (ZPS13)
-                    # Connection: close
-                    resp_headers = {k.upper(): v for k, v in resp.headers.items()}
-
-                    nxtheader = None
-                    try:
-                        nxtheader = "SID"
-                        sub_sid = resp_headers[nxtheader]
-
-                        nxtheader = "TIMEOUT"
-                        sub_timeout_str = resp_headers[nxtheader]
-                    except KeyError as kerr:
-                        errmsg = "Event subscription response was missing in %r header." % nxtheader
-                        raise ProtocolError(errmsg) from kerr
-
-                    sub_timeout = None
-                    mobj = REGEX_SUBSCRIPTION_TIMEOUT.match(sub_timeout_str)
-                    if mobj is not None:
-                        timeout_str = mobj.groups()[0]
-                        sub_timeout = 86400 if timeout_str == "infinite" else int(timeout_str)
-
+                with self._device_lock:
                     if sub_sid is not None:
-                        sub_expires = datetime.now() + timedelta(seconds=sub_timeout)
-                        self._device_lock.acquire()
-                        try:
-                            self._sid_to_service_lookup[sub_sid] = service
-                            self._subscriptions[service_type] = (sub_sid, sub_expires)
-                        finally:
-                            self._device_lock.release()
-
-                        # Notify the coordinator which device has this subscription, we need to
-                        # register the subscription ID so the coordinator can forward along
-                        # notify message content
-                        coord.register_subscription_for_device(sub_sid, self)
+                        self._sid_to_service_lookup[sub_sid] = service
+                        self._subscriptions[service_type] = (sub_sid, sub_expires)
                     else:
-                        self._device_lock.acquire()
-                        try:
-                            if service_type in self._subscriptions:
-                                del self._subscriptions[service_type]
-                        finally:
-                            self._device_lock.release()
-
-                else:
-                    context_msg = "SUBSCRIBING at {}:".format(subscribe_url)
-                    details = {
-                        "SERVICE_KEY:": svckey,
-                        "URL_BASE": self.URLBase,
-                        "EVENT_SUB_URL": service.eventSubURL
-                    }
-                    raise_for_http_status(context_msg, resp, details=details)
+                        if service_type in self._subscriptions:
+                            del self._subscriptions[service_type]
 
         return sub_sid, sub_expires
 
-    def events_unsubscribe(self, service: UpnpServiceProxy, subscription_id: Optional[str]=None):
+    def events_unsubscribe(self, service: UpnpServiceProxy, subscription_id: Optional[str] = None):
         """
-            Unsubscribes from the events for a UPNP service.
-            
-            :param service: A :class:`mojo.protocols.upnp.services.upnpserviceproxy.UpnpServiceProxy`
-                            for which to unsubscribe from events.
-            :param subscription_id: The subscription ID to use for the unsubscribe request. If None, the
-                                    subscription ID will be taken from the service instance.
+            Unsubscribes from the events for a UPnP service.
+
+            :param service: The :class:`UpnpServiceProxy` to unsubscribe from.
+            :param subscription_id: Optional explicit subscription ID to unsubscribe.
         """
 
         if len(service.SERVICE_EVENT_VARIABLES) > 0:
@@ -521,19 +457,28 @@ class UpnpRootDevice(UpnpDeviceBase):
 
             service._clear_subscription()
 
-            subscribe_url = urljoin(self.URLBase, service.eventSubURL)
-            subscribe_auth = ""
-            headers = { "HOST": self._host, "User-Agent": UPNP_HEADERS.USER_AGENT, "SID": subscription_id}
-                
-            resp: requests.Response = requests.request(
-                    "UNSUBSCRIBE", subscribe_url, headers=headers, auth=subscribe_auth
-                )
+            presence = self.presence
+            if presence is None:
+                raise RuntimeError("Presence reference was lost.")
 
-            if resp.status_code != 200 and resp.status_code != 412:
-                errmsg = "Error while unsubscribing from service."
-                raise UpnpError(resp.status_code, errmsg)
+            host_ip = self._primary_route[MSearchRouteKeys.IP]
+            subscribe_url = urljoin(self.URLBase, service.eventSubURL)
+
+            custom_headers = self.get_custom_subscribe_headers()
+            presence.service_unsubscribe(host_ip, subscribe_url, subscription_id, custom_headers=custom_headers)
+
+            with self._device_lock:
+                if subscription_id in self._sid_to_service_lookup:
+                    del self._sid_to_service_lookup[subscription_id]
+
+                svc_type = service.SERVICE_TYPE
+                if svc_type in self._subscriptions:
+                    self._subscriptions[svc_type] = (None, None)
 
         return
+
+    subscribe_to_events = events_subscribe
+    unsubscribe_to_events = events_unsubscribe
 
     def get_custom_subscribe_headers(self) -> Optional[Dict[str, str]]:
         """
