@@ -760,7 +760,7 @@ class UpnpPresence:
             :param service_event_callback: The callback that is called when events occur for the subscription.
             :param custom_headers: A optional set of custom headers to use when creating the subscription
 
-            :returns: The 'sid' subscription id of the new subscription.
+            :returns: A tuple with the 'sid' subscription id of the new subscription and the expiration the subscription.
         """
 
         sub_sid = None
@@ -783,7 +783,7 @@ class UpnpPresence:
         resp: requests.Response = requests.request("SUBSCRIBE", subscribe_url, headers=headers)
 
         if resp.status_code == 200:
-            #============================== Expected Response Headers ==============================
+            #============================== Example Expected Response Headers ==============================
             # SID: uuid:RINCON_7828CA09247C01400_sub0000000207
             # TIMEOUT: Second-86400
             # Server: Linux UPnP/1.0 Sonos/62.1-82260-monaco_dev (ZPS13)
@@ -813,7 +813,7 @@ class UpnpPresence:
                         self._lock.release()
                 
             except KeyError as kerr:
-                errmsg = "Event subscription response was missing in %r header." % nxtheader
+                errmsg = f"Event subscription response was missing in '{nxtheader}' header."
                 raise KeyError(errmsg) from kerr
         else:
             ctxmsg = f"While attempting to subscribe to subscribe_url={subscribe_url}"
