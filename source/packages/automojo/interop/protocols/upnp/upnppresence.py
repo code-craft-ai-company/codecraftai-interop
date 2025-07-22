@@ -767,6 +767,7 @@ class UpnpPresence:
             :param custom_headers: A optional set of custom headers to use when creating the subscription
 
             :returns: A tuple with the 'sid' subscription id of the new subscription and the expiration the subscription.
+            :raises ValueError: If the ``TIMEOUT`` header contains an invalid value.
         """
 
         sub_sid = None
@@ -811,6 +812,10 @@ class UpnpPresence:
                     sub_timeout = 86400 if timeout_str == "infinite" else int(timeout_str)
 
                 if sub_sid is not None:
+                    if sub_timeout is None:
+                        errmsg = f"Invalid timeout value in 'TIMEOUT' header: '{sub_timeout_str}'"
+                        raise ValueError(errmsg)
+
                     sub_expires = datetime.now() + timedelta(seconds=sub_timeout)
                     self._lock.acquire()
                     try:
