@@ -80,12 +80,12 @@ SSDP_IPV6_MULTICAST_ADDRESS_ORG_LOCAL="FF08::C"
 SSDP_IPV6_MULTICAST_ADDRESS_GLOBAL_LOCAL="FF0E::"
 
 
-def notify_parse_request(content: str) -> dict:
+def notify_parse_request(content: bytes) -> dict:
     """
         Takes in the content of the NOTIFY request and parses it into a
         python dictionary object.
         
-        :param content: Notify request content as a string.
+        :param content: Notify request content as bytes.
         
         :returns: A python dictionary with key and values from the Notify request
     """
