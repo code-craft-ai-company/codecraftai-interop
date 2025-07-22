@@ -756,13 +756,14 @@ class UpnpPresence:
         return
 
 
-    def service_subscribe(self, host_ip: str, subscribe_url: str, subscribe_timeout_secs: int, service_event_callback: Callable,
+    def service_subscribe(self, host_ip: str, subscribe_url: str, subscribe_timeout_secs: Optional[int], service_event_callback: Callable,
                         custom_headers: Optional[Dict[str, str]] = None) -> Union[Tuple[None, None], Tuple[str, datetime]]:
         """
             Subscribe to a remote service.
 
             :param host_ip: The ip address of the interface on the host computer that will be used to communicate with the service.
             :param subscribe_url: The url of the service to use for creating the subscription.
+            :param subscribe_timeout_secs: Optional timeout in seconds for the subscription.
             :param service_event_callback: The callback that is called when events occur for the subscription.
             :param custom_headers: A optional set of custom headers to use when creating the subscription
 
