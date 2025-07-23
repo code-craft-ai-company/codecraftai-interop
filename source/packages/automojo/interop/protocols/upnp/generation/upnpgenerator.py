@@ -20,8 +20,6 @@ import io
 import os
 import sys
 
-from argparse import ArgumentParser, ArgumentError
-
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import fromstring as xml_fromstring
 

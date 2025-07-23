@@ -11,11 +11,11 @@ __copyright__ = "Copyright 2024, Myron W Walker"
 __credits__ = []
 
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from xml.etree.ElementTree import Element
 
-from automojo.interop.manufacturers.bose.constants import MANUFACTURER_NAME
+from automojo.interop.manufacturers.bose.constants import BOSE_MANUFACTURER_NAME
 
 from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
 from automojo.interop.protocols.upnp.model.description.specversion import SpecVersion
@@ -29,13 +29,35 @@ from automojo.interop.manufacturers.bose.description.boseembeddeddevicedetail im
 from automojo.interop.manufacturers.bose.description.bosemultiroomversions import BoseMultiRoomVersions
 from automojo.interop.manufacturers.bose.description.bosefeatureversion import BoseFeatureVersion
 
+
 class BoseDeviceDetailMapper(DeviceDetailMapper):
     """
         The :class:`BoseDeviceDetailMapper` provides customized processing of Bose specific device descriptions for the purpose of
         mapping device description content to a common device description model.
     """
 
-    MANUFACTURER_NAME = MANUFACTURER_NAME
+    MANUFACTURER_NAME = BOSE_MANUFACTURER_NAME
+
+    @classmethod
+    def create_root_device_description(cls, root_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
+                                       locationURL: Optional[str] = None) -> BoseDeviceDetail:
+        """
+            Creates a device description object from the root device element.
+
+            :param root_el: Root element from the device description document.
+            :param namespaces: Namespace mapping for XML parsing.
+            :param specVersion: Parsed :class:`SpecVersion` information.
+            :param locationURL: Optional location URL for the device.
+
+            :returns: Newly created :class:`Basic1DeviceDesc` instance.
+        """
+
+        device_el: Element = root_el.find("device", namespaces=namespaces)
+
+        device_desc = cls._process_device(root_el, device_el, namespaces, specVersion, locationURL=locationURL, is_embedded=False)
+
+        return device_desc
+
 
     @classmethod
     def _create_basic1_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,

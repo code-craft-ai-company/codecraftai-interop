@@ -15,11 +15,12 @@ from typing import List, Type
 
 
 from automojo.interop.protocols.upnp.upnpextensionprotocol import UpnpFactoryProtocol
+from automojo.extension.factory.factoryextension import FactoryExtension
 from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
 
 from automojo.interop.manufacturers.bose.mapping.bosedevicedetailmapper import BoseDeviceDetailMapper
 
-class BoseUpnpExtensionProtocol(UpnpFactoryProtocol):
+class BoseUpnpExtensionProtocol(UpnpFactoryProtocol, FactoryExtension):
     """
         Extension protocol for Bose devices.
     """

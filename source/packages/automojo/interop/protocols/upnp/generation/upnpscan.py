@@ -6,6 +6,11 @@ import requests
 
 from automojo.presence.wellknown import ConfiguredSuperFactorySingleton
 
+from automojo.interop.protocols.upnp.generation.common import (
+    normalize_model_name,
+    parse_service_type
+)
+
 from automojo.interop.protocols.upnp.upnppresence import UpnpPresence
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
 from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
@@ -14,6 +19,7 @@ from automojo.runtime.runtimevariables import AM_RUNTIME_VARIABLES
 
 
 def pull_device_description(device_scan_directory: str, device_name: str, device_desc: Basic1DeviceDesc):
+
     extension_key = device_desc.get_extension_key()
 
     device_ext_leaf = extension_key
@@ -40,8 +46,13 @@ def pull_service_description(service_scan_directory: str, device_desc: Basic1Dev
 
     service_type = service_evidence.serviceType
 
-    service_desc_file_base_name = service_type.replace(":", "-")
-    service_desc_filename = os.path.join(service_scan_directory, f"{service_desc_file_base_name}.xml")
+    service_agency, service_name = parse_service_type(service_type)
+
+    service_dir = os.path.join(service_scan_directory, service_agency)
+    if not os.path.exists(service_dir):
+        os.makedirs(service_dir)
+
+    service_desc_filename = os.path.join(service_dir, f"{service_name.lower()}.xml")
 
     if not os.path.exists(service_desc_filename):
         base_url = device_desc.baseURL.rstrip("/")
@@ -74,11 +85,11 @@ def upnp_scan_devices_main():
     disco_window = scanner.discover_devices()
     disco_window.wait()
 
-    device_scan_directory = os.path.join(AM_RUNTIME_VARIABLES.AM_PRESENCE_DIRECTORY, "scan", "upnp", "dynamic", "devices")
+    device_scan_directory = os.path.join(AM_RUNTIME_VARIABLES.AM_PRESENCE_DIRECTORY, "scan", "upnp", "devices")
     if not os.path.exists(device_scan_directory):
         os.makedirs(device_scan_directory)
     
-    service_scan_directory = os.path.join(AM_RUNTIME_VARIABLES.AM_PRESENCE_DIRECTORY, "scan", "upnp", "dynamic", "services")
+    service_scan_directory = os.path.join(AM_RUNTIME_VARIABLES.AM_PRESENCE_DIRECTORY, "scan", "upnp", "services")
     if not os.path.exists(service_scan_directory):
         os.makedirs(service_scan_directory)
 
@@ -88,8 +99,8 @@ def upnp_scan_devices_main():
         device_evidence = device.evidence
         device_desc = device.description
 
-        device_name = device_desc.modelName
-        print(f"Processing Device: {usn}")
+        device_name = normalize_model_name(device_desc.modelName)
+        print(f"Processing Device: {usn} ({type(device_desc).__name__})")
         print(f"  Location: {device_evidence.location}")
         print(f"  Model: {device_desc.modelName}")
         print(f"  Manufacturer: {device_desc.manufacturer}")
