@@ -154,3 +154,14 @@ class BoseDeviceDetail(Basic1DeviceDesc):
         self.multiroom = multi_room
 
         return
+    
+    def get_extension_key(self) -> str:
+        """
+            Generates a unique key that identifies an extension type based on where it was found in a hiearchy of code containers.
+
+            :returns: A unique path like string that is an identifier used to lookup a device type.
+        """
+        
+        extkey = f"{self._manufacturer}/{self._modelName}"
+        
+        return extkey

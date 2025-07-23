@@ -20,13 +20,7 @@ from automojo.runtime.runtimevariables import AM_RUNTIME_VARIABLES
 
 def pull_device_description(device_scan_directory: str, device_name: str, device_desc: Basic1DeviceDesc):
 
-    extension_key = device_desc.get_extension_key()
-
-    device_ext_leaf = extension_key
-    if sys.platform == 'win32':
-        device_ext_leaf = device_ext_leaf.replace('/', '\\')
-
-    device_ext_dir = os.path.join(device_scan_directory, device_ext_leaf)
+    device_ext_dir = os.path.join(device_scan_directory, device_desc.manufacturer)
     if not os.path.exists(device_ext_dir):
         os.makedirs(device_ext_dir)
 
