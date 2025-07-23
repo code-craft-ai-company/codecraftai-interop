@@ -78,7 +78,7 @@ class DeviceDetailMapper:
         try:
             spec_ver_el = root_el.find("specVersion", namespaces)
 
-            spec_ver = cls._process_spec_version(spec_ver_el, namespaces=namespaces)
+            spec_ver = cls.process_spec_version(spec_ver_el, namespaces=namespaces)
 
             device_el = root_el.find("device", namespaces=namespaces)
             manufacturer_el = device_el.find("manufacturer", namespaces=namespaces)
@@ -110,13 +110,13 @@ class DeviceDetailMapper:
             :returns: Created :class:`Basic1DeviceDesc` instance.
         """
 
-        device = Basic1DeviceDesc(specVersion=specVersion, **params, locationURL=locationURL)
+        device = Basic1DeviceDesc(specVersion=specVersion, locationURL=locationURL, **params)
 
         return device
 
     @classmethod
     def _create_embedded_device_desc(cls, root_el: Element, device_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,
-                                     params: Dict[str, Any]) -> Basic1DeviceDesc:
+                                     locationURL: str, params: Dict[str, Any]) -> Basic1DeviceDesc:
         """
             Instantiate an :class:`EmbeddedDeviceDesc` from parsed parameters.
 
@@ -124,12 +124,13 @@ class DeviceDetailMapper:
             :param device_el: Device element being processed.
             :param namespaces: Namespace mapping for XML parsing.
             :param specVersion: Parsed :class:`SpecVersion` information.
+            :param locationURL: The location URL from the root device.
             :param params: Parameter dictionary for constructor.
 
             :returns: Created :class:`EmbeddedDeviceDesc` instance.
         """
 
-        device = EmbeddedDeviceDesc(specVersion=specVersion, **params)
+        device = EmbeddedDeviceDesc(specVersion=specVersion, locationURL=locationURL, **params)
 
         return device
 
@@ -262,7 +263,7 @@ class DeviceDetailMapper:
                     propEl = nxtEl.find("deviceType", namespaces=namespaces)
                     deviceType = propEl.text
 
-                    svcInfo = cls._process_device(nxtEl, nxtEl, namespaces=namespaces, specVersion=specVersion)
+                    svcInfo = cls._process_device(nxtEl, nxtEl, namespaces=namespaces, specVersion=specVersion, is_embedded=True)
                     
                     devicesList.append(svcInfo)
                 elif tag == "specVersion":

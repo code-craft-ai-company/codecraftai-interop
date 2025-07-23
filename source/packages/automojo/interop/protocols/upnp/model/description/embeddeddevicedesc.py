@@ -28,15 +28,14 @@ class EmbeddedDeviceDesc(Basic1DeviceDesc):
         It inherits from :class:`Basic1DeviceDesc` and adds additional attributes and methods specific to embedded devices.
     """
 
-    def __init__(self, specVersion: SpecVersion, deviceType: str, friendlyName: str, manufacturer: str, modelName: str, modelNumber: str,
+    def __init__(self, *, specVersion: SpecVersion, deviceType: str, friendlyName: str, manufacturer: str, modelName: str, modelNumber: str,
                  UDN: str, serialNumber: str="", manufacturerURL: str="", modelDescription: str = "", modelURL: str = "", UPC: str="",
                 presentationURL: str="", iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None,
-                deviceList: Optional[List['EmbeddedDeviceDesc']] = None, **extras: dict):
+                locationURL: Optional[str]=None, deviceList: Optional[List['EmbeddedDeviceDesc']] = None, **extras: dict):
         """
             Initialize the embedded device description structure.
         """
-        super().__init__(specVersion, deviceType, friendlyName, manufacturer, manufacturerURL,
-                         modelDescription, modelName, modelNumber, modelURL,
-                         serialNumber, UDN, UPC, deviceList=deviceList, iconList=iconList,
-                         serviceList=serviceList, locationURL=None, **extras)
+        super().__init__(specVersion=specVersion, deviceType=deviceType, friendlyName=friendlyName, manufacturer=manufacturer, manufacturerURL=manufacturerURL,
+                         modelDescription=modelDescription, modelName=modelName, modelNumber=modelNumber, modelURL=modelURL, serialNumber=serialNumber, UDN=UDN,
+                         UPC=UPC, deviceList=deviceList, iconList=iconList, serviceList=serviceList, locationURL=locationURL, **extras)
         return

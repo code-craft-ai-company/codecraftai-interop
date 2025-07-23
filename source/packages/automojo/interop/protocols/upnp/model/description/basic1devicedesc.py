@@ -17,13 +17,20 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 import json
 
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
+
 from automojo.networking.constants import HTTP1_1_LINESEP
+
 from automojo.interop.protocols.upnp.model.description.icondesc import IconDesc
 from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 from automojo.interop.protocols.upnp.model.description.specversion import SpecVersion
 
 if TYPE_CHECKING:
     from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import EmbeddedDeviceDesc
+
+
+logger = getEnhancedLogger()
+
 
 def xml_format_basci1_device_desc(iconList: Optional[List[IconDesc]] = None, serviceList: Optional[List[ServiceEvidence]] = None,
                                   deviceList: Optional[List["EmbeddedDeviceDesc"]] = None, indent: str = "") -> str:
@@ -142,9 +149,29 @@ class Basic1DeviceDesc:
         self.serviceList: List[ServiceEvidence] = serviceList if serviceList is not None else []
         
         self._locationURL = locationURL
+        self._baseURL = locationURL
+
+        if locationURL is not None:
+            endScheme = locationURL.find("://")
+            if endScheme > -1:
+                endScheme += 3
+                startLeaf = locationURL.find("/", endScheme)
+                if startLeaf > -1:
+                    self._baseURL = locationURL[:startLeaf]
+        else:
+            dbgmsg = "Device description without a locationURL, this could be an embedded device"
+            logger.debug(dbgmsg)
 
         self._extras = extras
         return
+
+
+    @property
+    def baseURL(self) -> str:
+        """
+            The base URL that should be used to make request for service and embedded device descriptions.
+        """
+        return self._baseURL
 
     @property
     def deviceType(self) -> str:
