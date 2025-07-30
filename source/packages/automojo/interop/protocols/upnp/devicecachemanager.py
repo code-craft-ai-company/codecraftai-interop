@@ -69,7 +69,11 @@ class DeviceCacheManager:
     
 
     def load_service_description(self, service_evidence: ServiceEvidence) -> ServiceDesc:
+        """
+            Load a service description from the device service cache.
 
+            :raises: FileNotFound error and XML Parse Errors
+        """
         service_type = service_evidence.serviceType
 
         parse_service_type(service_type)

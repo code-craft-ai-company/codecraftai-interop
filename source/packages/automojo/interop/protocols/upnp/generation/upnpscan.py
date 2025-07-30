@@ -39,7 +39,8 @@ def pull_device_description(device_scan_directory: str, device_name: str, device
     return
 
 def pull_service_description(service_scan_directory: str, device_desc: Basic1DeviceDesc, service_evidence: ServiceEvidence):
-
+    """
+    """
     service_type = service_evidence.serviceType
 
     service_agency, service_name = parse_service_type(service_type)
