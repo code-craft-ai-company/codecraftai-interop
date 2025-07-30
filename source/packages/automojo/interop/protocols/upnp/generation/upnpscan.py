@@ -1,4 +1,6 @@
 
+from typing import List
+
 import os
 import sys
 
@@ -60,15 +62,13 @@ def pull_service_description(service_scan_directory: str, device_desc: Basic1Dev
 
     return
 
-def upnp_scan_devices_main():
-
-    """
-        Debug the  UPnP discovery process.
-    """
+def upnp_scan_devices(window_length: float, factory_modules: List[str]):
 
     super_factory = ConfiguredSuperFactorySingleton()
-    super_factory.add_factory_module("automojo.interop.manufacturers.bose.boseupnpextension")
 
+    for fmod in factory_modules:
+        super_factory.add_factory_module(fmod)
+    
     scanner = UpnpPresence()
     
     scanner.start()
@@ -76,7 +76,7 @@ def upnp_scan_devices_main():
     # Perform a discovery
     print("")
     print("---------- STARTING DISCOVERY ----------")
-    disco_window = scanner.discover_devices()
+    disco_window = scanner.discover_devices(window_length=window_length)
     disco_window.wait()
 
     device_scan_directory = os.path.join(AM_RUNTIME_VARIABLES.AM_PRESENCE_DIRECTORY, "scan", "upnp", "devices")
@@ -106,6 +106,21 @@ def upnp_scan_devices_main():
         for service_evidence in device_desc.serviceList:
             pull_service_description(service_scan_directory, device_desc, service_evidence)
 
+    return
+
+def upnp_scan_devices_main():
+
+    """
+        Debug the  UPnP discovery process.
+    """
+
+    window_length = 30.0
+    factory_modules = [
+        "automojo.interop.manufacturers.bose.boseupnpextension"
+    ]
+
+    upnp_scan_devices(window_length=window_length, factory_modules=factory_modules)
+    
     return
 
 

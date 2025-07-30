@@ -19,6 +19,7 @@ from automojo.errors.exceptions import AbstractMethodError
 
 from automojo.extension.factory.factoryprotocolbase import FactoryProtocolBase
 from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
+from automojo.interop.protocols.upnp.generation.upnpdevicegenerator import UpnpDeviceGenerator
 
 class UpnpFactoryProtocol(FactoryProtocolBase):
     """
@@ -35,3 +36,7 @@ class UpnpFactoryProtocol(FactoryProtocolBase):
             :returns: A list of :class:`DeviceDetailMapper` types.
         """
         raise AbstractMethodError("The 'get_device_detail_mapper_type' class method must be implemented for this protocol.")
+
+    @classmethod
+    def get_device_generator_types(self) -> List[Type[UpnpDeviceGenerator]]:
+        raise AbstractMethodError("The 'get_device_generator_types' class method must be implemented for this protocol.")
