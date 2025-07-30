@@ -38,7 +38,9 @@ class DeviceDetailMapper:
         of information queries for devices.
     """
 
-    MANUFACTURER_NAME = ""
+    @classmethod
+    def get_manufacturer(cls) -> str:
+        raise NotImplementedError(f"'get_manufacturer' must be implemented by the '{cls.__name__}' extension")
 
     @classmethod
     def create_root_device_description(cls, root_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,

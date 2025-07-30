@@ -46,7 +46,7 @@ class DeviceDetailMapperRegistry:
         mapper_type: Type[DeviceDetailMapper]
 
         for mapper_type in super_factory.iterate_override_types_for_each(UpnpFactoryProtocol.get_device_detail_mapper_types):
-            manufacturer_name = mapper_type.MANUFACTURER_NAME.upper()
+            manufacturer_name = mapper_type.get_manufacturer().upper()
             if len(manufacturer_name) > 0 and manufacturer_name not in self._mappers:
                 self._mappers[manufacturer_name] = mapper_type
 
@@ -54,7 +54,7 @@ class DeviceDetailMapperRegistry:
 
     def lookup_device_detail_mapper(self, manufacturer: str) -> DeviceDetailMapper:
         """
-            Get the detail mapper for a specific device type.
+            Get the detail mapper for a specific device manufacturer.
         """
         mapper = DeviceDetailMapper
         

@@ -1,6 +1,8 @@
 from typing import List
 
-class UpnpDeviceGenerator:
+class UpnpDeviceClassGenerator:
+
+    MANUFACTURER = None
     
     @classmethod
     def get_base_device_imports(cls) -> List[str]:
