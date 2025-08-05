@@ -1,9 +1,9 @@
 """
-.. module:: testmessagesipv6
-:platform: Darwin, Linux, Unix, Windows
-:synopsis: Sample IPv6 DNS messages used for unit testing.
-
-.. moduleauthor:: AutomationX
+    .. module:: testmessagesipv6
+    :platform: Darwin, Linux, Unix, Windows
+    :synopsis: Sample IPv6 DNS messages used for unit testing.
+    
+    .. moduleauthor:: AutomationX
 """
 
 __author__ = "AutomationX"

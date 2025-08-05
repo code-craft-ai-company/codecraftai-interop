@@ -1,11 +1,11 @@
 
 """
-.. module:: upnpgenerator
+    .. module:: upnpgenerator
     :platform: Darwin, Linux, Unix, Windows
     :synopsis: Module that processes service descriptions and generates proxy service wrappers used
-               to communicated with UPNP services.
-
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    to communicate with UPNP services.
+    
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 
 """
 
