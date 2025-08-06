@@ -1,10 +1,13 @@
 
+from typing import Union
+
 import os
 
 from xml.etree.ElementTree import fromstring as parse_xml_content
 
 from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
+from automojo.interop.constants import DIR_AUTOMOJO_INTEROP
 from automojo.interop.protocols.upnp.constants import UPNP_DEVICE1_NAMESPACE
 
 
@@ -21,20 +24,30 @@ from automojo.interop.protocols.upnp.wellknown import DeviceDetailMapperRegistry
 
 logger = getEnhancedLogger()
 
+
+DIR_METADATA = os.path.join(DIR_AUTOMOJO_INTEROP, "protocols", "upnp", "metadata")
+DIR_METADATA_STANDARD = os.path.join(DIR_METADATA, "standard")
+DIR_METADATA_STANDARD_DEVICES = os.path.join(DIR_METADATA_STANDARD, "devices")
+DIR_METADATA_STANDARD_EMBEDDED_DEVICES = os.path.join(DIR_METADATA_STANDARD, "embeddeddevices")
+DIR_METADATA_STANDARD_SERVICES = os.path.join(DIR_METADATA_STANDARD, "services")
+
 class DeviceCacheManager:
 
-    def __init__(self, device_cache_root: str, service_cache_root: str):
+    def __init__(self, device_cache_root: str, service_cache_root: str, update_metadata: bool = False):
         self._device_cache_root = device_cache_root
         self._service_cache_root = service_cache_root
         
-        self._device_static_root = ""
-        self._service_static_root = ""
+        self._device_static_root = DIR_METADATA_STANDARD_DEVICES
+        self._embeddeddevices_static_root = DIR_METADATA_STANDARD_EMBEDDED_DEVICES
+        self._service_static_root = DIR_METADATA_STANDARD_SERVICES
+
+        self._update_metadata = update_metadata
 
         self._mapper_registry = DeviceDetailMapperRegistrySingleton()
         return
 
 
-    def load_device_description(self, device_cache_leaf: str) -> Basic1DeviceDesc:
+    def load_device_description(self, device_cache_leaf: str) -> Union[Basic1DeviceDesc, None]:
         """
             Load a UPnP device description from an xml description file.
 
@@ -45,7 +58,9 @@ class DeviceCacheManager:
 
         device_desc = None
 
-        desc_filename = os.path.join(self._device_cache_root, device_cache_leaf)
+        desc_filename = os.path.join(self._device_static_root, device_cache_leaf)
+        if not os.path.exists(desc_filename):
+            desc_filename = os.path.join(self._device_cache_root, device_cache_leaf)
 
         with open(desc_filename, 'r') as ddf:
             desc_content = ddf.read()
@@ -54,7 +69,7 @@ class DeviceCacheManager:
                 default_namespaces = {"": UPNP_DEVICE1_NAMESPACE}
                 root_el = parse_xml_content(desc_content)
                 
-                spec_ver, manufacturer = DeviceDetailMapper.pull_spec_version_and_manufacturer(root_el, default_namespaces)
+                spec_ver, manufacturer = DeviceDetailMapper.read_spec_version_and_manufacturer(root_el, default_namespaces)
                 
                 if spec_ver is not None and manufacturer is not None:
 
@@ -70,7 +85,7 @@ class DeviceCacheManager:
         return device_desc
     
 
-    def load_service_description(self, service_evidence: ServiceEvidence) -> ServiceDesc:
+    def load_service_description(self, service_evidence: ServiceEvidence) -> Union[ServiceDesc, None]:
         """
             Load a service description from the device service cache.
 
@@ -85,12 +100,18 @@ class DeviceCacheManager:
         service_agency = service_agency.lower()
         service_name = service_name.lower()
 
-        service_dir = os.path.join(self._service_cache_root, service_agency)
-        if not os.path.exists(service_dir):
-            os.makedirs(service_dir)
+        service_desc_filename = None
 
+        service_dir = os.path.join(self._service_static_root, service_agency)
         service_desc_filename = os.path.join(service_dir, f"{service_name}.xml")
+        if not os.path.exists(service_desc_filename):
 
-        desc_content = ServiceDesc.load_service_description(service_desc_filename)
+            service_dir = os.path.join(self._service_cache_root, service_agency)
+            service_desc_filename = os.path.join(service_dir, f"{service_name}.xml")
+
+        desc_content = None
+
+        if not os.path.exists(service_desc_filename):
+            desc_content = ServiceDesc.load_service_description(service_desc_filename)
 
         return desc_content

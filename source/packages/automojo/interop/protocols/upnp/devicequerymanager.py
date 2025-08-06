@@ -69,7 +69,7 @@ class DeviceQueryManager:
                     xml_content = resp.content.decode("utf-8")
                     root_el = parse_xml_content(xml_content)
                     
-                    spec_ver, manufacturer = DeviceDetailMapper.pull_spec_version_and_manufacturer(root_el, default_namespaces)
+                    spec_ver, manufacturer = DeviceDetailMapper.read_spec_version_and_manufacturer(root_el, default_namespaces)
                     
                     if spec_ver is not None and manufacturer is not None:
 

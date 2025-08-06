@@ -64,7 +64,7 @@ class DeviceDetailMapper:
 
 
     @classmethod
-    def pull_spec_version_and_manufacturer(cls, root_el: Element, namespaces: Dict[str, str]) -> SpecVersion:
+    def read_spec_version_and_manufacturer(cls, root_el: Element, namespaces: Dict[str, str]) -> SpecVersion:
         """
             Extract the spec version and manufacturer from a device description document.
 
