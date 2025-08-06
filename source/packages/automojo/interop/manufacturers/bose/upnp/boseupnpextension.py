@@ -18,7 +18,7 @@ from automojo.interop.protocols.upnp.upnpextensionprotocol import UpnpFactoryPro
 from automojo.extension.factory.factoryextension import FactoryExtension
 from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
 
-from automojo.interop.manufacturers.bose.mapping.bosedevicedetailmapper import BoseDeviceDetailMapper
+from automojo.interop.manufacturers.bose.upnp.mapping.bosedevicedetailmapper import BoseDeviceDetailMapper
 
 class BoseUpnpExtensionProtocol(UpnpFactoryProtocol, FactoryExtension):
     """

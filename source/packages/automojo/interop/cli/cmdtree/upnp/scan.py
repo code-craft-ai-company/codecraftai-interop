@@ -7,6 +7,7 @@ import click
 
 from automojo.presence.wellknown import ConfiguredSuperFactorySingleton
 
+from automojo.interop.constants import DEFAULT_INCLUDED_FACTORY_MODULES
 from automojo.interop.protocols.upnp.generation.common import (
     normalize_model_name
 )
@@ -18,12 +19,6 @@ from automojo.interop.protocols.upnp.generation.upnpscan import (
 
 from automojo.interop.protocols.upnp.upnppresence import UpnpPresence
 from automojo.runtime.runtimevariables import AM_RUNTIME_VARIABLES
-
-
-DEFAULT_INCLUDED_FACTORY_MODULES = [
-    "automojo.interop.manufacturers.bose.boseupnpextension"
-]
-
 
 @click.command("scan")
 @click.option("--window-length", default=30.0, help="Specify a scan window length in seconds.")

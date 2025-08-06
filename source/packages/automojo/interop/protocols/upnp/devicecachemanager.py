@@ -14,7 +14,6 @@ from automojo.interop.protocols.upnp.model.description.servicedesc import Servic
 from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 
 from automojo.interop.protocols.upnp.generation.common import (
-    normalize_model_name,
     parse_service_type
 )
 
@@ -28,6 +27,9 @@ class DeviceCacheManager:
         self._device_cache_root = device_cache_root
         self._service_cache_root = service_cache_root
         
+        self._device_static_root = ""
+        self._service_static_root = ""
+
         self._mapper_registry = DeviceDetailMapperRegistrySingleton()
         return
 

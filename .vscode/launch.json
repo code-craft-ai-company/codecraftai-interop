@@ -28,6 +28,32 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "Python: UPnP - Generate",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/source/packages/automojo/interop/cli/am_interop_command.py",
+            "envFile": "${workspaceFolder}/.env",
+            "args": [
+                "upnp",
+                "generate"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: UPnP - Scan",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/source/packages/automojo/interop/cli/am_interop_command.py",
+            "envFile": "${workspaceFolder}/.env",
+            "args": [
+                "upnp",
+                "scan"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }

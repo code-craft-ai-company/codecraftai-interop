@@ -24,10 +24,10 @@ from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDet
 from automojo.interop.manufacturers.bose.constants import BOSE_XML_NAMESPACES, BOSE_NAMESPACE_PREFIX_END
 
 
-from automojo.interop.manufacturers.bose.description.bosedevicedetail import BoseDeviceDetail
-from automojo.interop.manufacturers.bose.description.boseembeddeddevicedetail import BoseEmbeddedDeviceDetail
-from automojo.interop.manufacturers.bose.description.bosemultiroomversions import BoseMultiRoomVersions
-from automojo.interop.manufacturers.bose.description.bosefeatureversion import BoseFeatureVersion
+from automojo.interop.manufacturers.bose.upnp.description.bosedevicedetail import BoseDeviceDetail
+from automojo.interop.manufacturers.bose.upnp.description.boseembeddeddevicedetail import BoseEmbeddedDeviceDetail
+from automojo.interop.manufacturers.bose.upnp.description.bosemultiroomversions import BoseMultiRoomVersions
+from automojo.interop.manufacturers.bose.upnp.description.bosefeatureversion import BoseFeatureVersion
 
 
 class BoseDeviceDetailMapper(DeviceDetailMapper):
@@ -36,7 +36,10 @@ class BoseDeviceDetailMapper(DeviceDetailMapper):
         mapping device description content to a common device description model.
     """
 
-    MANUFACTURER_NAME = BOSE_MANUFACTURER_NAME
+
+    @classmethod
+    def get_manufacturer(cls):
+        return BOSE_MANUFACTURER_NAME
 
     @classmethod
     def create_root_device_description(cls, root_el: Element, namespaces: Dict[str, str], specVersion: SpecVersion,

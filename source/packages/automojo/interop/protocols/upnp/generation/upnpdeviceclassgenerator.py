@@ -8,5 +8,6 @@ class UpnpDeviceClassGenerator:
     
     @classmethod
     def generate_device_class(description: str) -> None:
-
         return
+    
+    

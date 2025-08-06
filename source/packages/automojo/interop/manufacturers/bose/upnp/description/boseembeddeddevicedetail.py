@@ -19,8 +19,8 @@ from automojo.interop.protocols.upnp.model.description.embeddeddevicedesc import
 from automojo.interop.protocols.upnp.model.description.icondesc import IconDesc
 from automojo.interop.protocols.upnp.model.description.serviceevidence import ServiceEvidence
 
-from automojo.interop.manufacturers.bose.description.bosedevicedetail import BoseDeviceDetail
-from automojo.interop.manufacturers.bose.description.bosemultiroomversions import BoseMultiRoomVersions
+from automojo.interop.manufacturers.bose.upnp.description.bosedevicedetail import BoseDeviceDetail
+from automojo.interop.manufacturers.bose.upnp.description.bosemultiroomversions import BoseMultiRoomVersions
 
 class BoseEmbeddedDeviceDetail(BoseDeviceDetail):
     """

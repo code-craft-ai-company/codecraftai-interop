@@ -24,7 +24,7 @@ from automojo.interop.protocols.upnp.model.description.serviceevidence import (
     ServiceEvidence,
 )
 
-from automojo.interop.manufacturers.bose.description.bosemultiroomversions import (
+from automojo.interop.manufacturers.bose.upnp.description.bosemultiroomversions import (
     BoseMultiRoomVersions,
 )
 

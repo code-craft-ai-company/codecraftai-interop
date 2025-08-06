@@ -1,5 +1,6 @@
 
 import click
 
-def interop_upnp_generate():
+@click.command("generate")
+def command_am_interop_upnp_generate():
     return
