@@ -8,8 +8,13 @@ from xml.etree.ElementTree import fromstring as parse_xml_content
 from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
 from automojo.interop.constants import DIR_AUTOMOJO_INTEROP
-from automojo.interop.protocols.upnp.constants import UPNP_DEVICE1_NAMESPACE
-
+from automojo.interop.protocols.upnp.constants import (
+    DIR_METADATA,
+    DIR_METADATA_DEVICES,
+    DIR_METADATA_EMBEDDED_DEVICES,
+    DIR_METADATA_SERVICES,
+    UPNP_DEVICE1_NAMESPACE
+)
 
 from automojo.interop.protocols.upnp.mapping.devicedetailmapper import DeviceDetailMapper
 from automojo.interop.protocols.upnp.model.description.basic1devicedesc import Basic1DeviceDesc
@@ -25,22 +30,18 @@ from automojo.interop.protocols.upnp.wellknown import DeviceDetailMapperRegistry
 logger = getEnhancedLogger()
 
 
-DIR_METADATA = os.path.join(DIR_AUTOMOJO_INTEROP, "protocols", "upnp", "metadata")
-DIR_METADATA_STANDARD = os.path.join(DIR_METADATA, "standard")
-DIR_METADATA_STANDARD_DEVICES = os.path.join(DIR_METADATA_STANDARD, "devices")
-DIR_METADATA_STANDARD_EMBEDDED_DEVICES = os.path.join(DIR_METADATA_STANDARD, "embeddeddevices")
-DIR_METADATA_STANDARD_SERVICES = os.path.join(DIR_METADATA_STANDARD, "services")
+class DeviceMetadataManager:
 
-class DeviceCacheManager:
+    def __init__(self, metadata_cache_root: str, update_metadata: bool = False):
+        self._metadata_cache_root = metadata_cache_root
+        self._metadata_cache_devices = os.path.join(metadata_cache_root, "devices")
+        self._metadata_cache_services = os.path.join(metadata_cache_root, "services")
 
-    def __init__(self, device_cache_root: str, service_cache_root: str, update_metadata: bool = False):
-        self._device_cache_root = device_cache_root
-        self._service_cache_root = service_cache_root
+        self._metadata_static_root = DIR_METADATA
+        self._metadata_static_devices = DIR_METADATA_DEVICES
+        self._metadata_static_embedded_devices = DIR_METADATA_EMBEDDED_DEVICES
+        self._metadata_static_services = DIR_METADATA_SERVICES
         
-        self._device_static_root = DIR_METADATA_STANDARD_DEVICES
-        self._embeddeddevices_static_root = DIR_METADATA_STANDARD_EMBEDDED_DEVICES
-        self._service_static_root = DIR_METADATA_STANDARD_SERVICES
-
         self._update_metadata = update_metadata
 
         self._mapper_registry = DeviceDetailMapperRegistrySingleton()
@@ -58,9 +59,9 @@ class DeviceCacheManager:
 
         device_desc = None
 
-        desc_filename = os.path.join(self._device_static_root, device_cache_leaf)
+        desc_filename = os.path.join(self._metadata_static_root, device_cache_leaf)
         if not os.path.exists(desc_filename):
-            desc_filename = os.path.join(self._device_cache_root, device_cache_leaf)
+            desc_filename = os.path.join(self._metadata_cache_root, device_cache_leaf)
 
         with open(desc_filename, 'r') as ddf:
             desc_content = ddf.read()
@@ -102,11 +103,11 @@ class DeviceCacheManager:
 
         service_desc_filename = None
 
-        service_dir = os.path.join(self._service_static_root, service_agency)
+        service_dir = os.path.join(self._metadata_static_root, service_agency)
         service_desc_filename = os.path.join(service_dir, f"{service_name}.xml")
         if not os.path.exists(service_desc_filename):
 
-            service_dir = os.path.join(self._service_cache_root, service_agency)
+            service_dir = os.path.join(self._metadata_cache_root, service_agency)
             service_desc_filename = os.path.join(service_dir, f"{service_name}.xml")
 
         desc_content = None

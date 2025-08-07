@@ -12,8 +12,10 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
+import os
 import platform
 
+from automojo.interop.constants import DIR_AUTOMOJO_INTEROP
 from automojo.networking.constants import HTTP1_1_LINESEP
 
 UPNP_DEVICE1_NAMESPACE = "urn:schemas-upnp-org:device-1-0"
@@ -28,6 +30,11 @@ UPNP_DEFAULT_SEARCH_MONITOR_INTERVAL = float(2)
 
 TIMEDELTA_RENEWAL_WINDOW = 120
 
+
+DIR_METADATA = os.path.join(DIR_AUTOMOJO_INTEROP, "protocols", "upnp", "metadata")
+DIR_METADATA_DEVICES = os.path.join(DIR_METADATA, "devices")
+DIR_METADATA_EMBEDDED_DEVICES = os.path.join(DIR_METADATA, "embeddeddevices")
+DIR_METADATA_SERVICES = os.path.join(DIR_METADATA, "services")
 
 class UPNP_HEADERS:
     """
