@@ -2,21 +2,33 @@
 
 ## Overview
 
-The automojo-interop package implements a layered architecture that provides consistent interoperability protocols for automation testing. The design follows a modular approach where each protocol (SSH, UPnP, DNS, Power, Serial) is implemented as a separate component with shared aspects-based configuration. The system emphasizes debuggability over performance and readability over conciseness, making it ideal for test automation scenarios.
+The automojo-interop package implements a layered architecture that provides consistent interoperability protocols for automation
+testing. The design follows a modular approach whereby protocol (SSH, UPnP, DNS, Power, Serial) is implemented as a separate
+component with shared aspects-based configuration. The system emphasizes debuggability over performance and readability over
+conciseness, making it ideal for test automation scenarios.
 
 ### Core Design Philosophy
 
-This is an **interop library designed to be consumed by test frameworks** (like testbase and testplus) and deliberately favors **stability and exactness over performance and resilience**. The architecture is built around two fundamental principles:
+This is an **interop library designed to be consumed by test frameworks** (like testbase and testplus) and deliberately favors
+**stability and exactness over performance and resilience**. The architecture is built around two fundamental principles:
 
 #### 1. Application Layer Control
-The application layer code (test code) maintains complete control over code flow and error handling, not the framework code. Framework APIs strictly follow exception handling rules from the coding standards. When common error handling implementations are needed to reduce verbosity, an explicit contract exists between application and framework layers through the **Aspects** system. The aspects object conveys contractual behavior parameters, ensuring all flow control and error handling decisions are explicitly delegated from application to framework via API contract.
+The application layer code (test code) maintains complete control over code flow and error handling, not the framework code.
+Framework APIs strictly follow exception handling rules from the coding standards. When common error handling implementations
+are needed to reduce verbosity, an explicit contract exists between application and framework layers through the **Aspects**
+system. The aspects object conveys contractual behavior parameters, ensuring all flow control and error handling decisions are
+explicitly delegated from application to framework via API contract.
 
 #### 2. Measured Reliability
-Because this code interoperates with distributed systems for testing purposes, the application layer must control the persistence of individual calls to remote hosts or APIs. Test code identifies constraints and uses them to determine framework persistence behavior. For example:
+Because this code interoperates with distributed systems for testing purposes, the application layer must control the persistence
+of individual calls to remote hosts or APIs. Test code identifies constraints and uses them to determine framework persistence
+behavior. For example:
+
 - Testing REST API error responses: Framework should only retry connections, then accept and return any API response
 - Testing successful operations: Framework should wait for both successful connection and successful response
 
-The **Action Patterns** (SINGLE_CALL, DO_UNTIL_SUCCESS, DO_WHILE_SUCCESS, etc.) provide this measured reliability control, allowing test code to specify exactly how persistent the protocol code should be under different circumstances.
+The **Action Patterns** (SINGLE_CALL, DO_UNTIL_SUCCESS, DO_WHILE_SUCCESS, etc.) provide this measured reliability control,
+allowing test code to specify exactly how persistent the protocol code should be under different circumstances.
 
 ## Architecture
 
@@ -240,24 +252,36 @@ class SshCredential:
 
 ### Retry Strategies (Measured Reliability)
 
-The framework provides action patterns that allow test code to specify exactly how persistent operations should be:
+The framework provides action patterns that allow test code to specify exactly how persistent operations
+should be:
 
-1. **SINGLE_CALL**: Execute once, return result - for testing error conditions where retries would mask the behavior being tested
-2. **DO_UNTIL_SUCCESS**: Retry until operation succeeds - for testing successful operations where transient failures should be overcome
+1. **SINGLE_CALL**: Execute once, return result - for testing error conditions where retries would mask the
+   behavior being tested
+2. **DO_UNTIL_SUCCESS**: Retry until operation succeeds - for testing successful operations where transient
+   failures should be overcome
 3. **DO_WHILE_SUCCESS**: Continue while operations succeed - for testing sustained operations
-4. **DO_UNTIL_CONNECTION_FAILURE**: Retry only on connection issues, accept all response codes - for testing API responses while handling network instability
+4. **DO_UNTIL_CONNECTION_FAILURE**: Retry only on connection issues, accept all response codes - for testing
+   API responses while handling network instability
 
-Each pattern serves specific testing scenarios where the application layer needs precise control over framework persistence behavior.
+Each pattern serves specific testing scenarios where the application layer needs precise control over framework
+persistence behavior.
 
 ### Error Handling Philosophy
 
-**There is no error recovery in the interop library.** When an error condition occurs that exceeds the specified constraints in the aspects configuration, the error is immediately raised and passed to the consuming application (such as a test framework) to handle appropriately.
+**There is no error recovery in the interop library.** When an error condition occurs that exceeds the specified
+constraints in the aspects configuration, the error is immediately raised and passed to the consuming application
+(such as a test framework) to handle appropriately.
 
-- **Immediate failure on constraint violation**: Library raises exceptions immediately when operations exceed specified timeouts, retry limits, or encounter disallowed error conditions
-- **Loud and immediate error reporting**: Errors are reported with full context at the moment they occur to capture accurate diagnostic information
-- **Configurable constraints**: Consuming application specifies exactly what constitutes a failure through aspects (allowed error codes, timeout limits, retry patterns)
-- **No silent failures**: Library never suppresses or recovers from errors - all failures are explicitly surfaced to the consuming application
-- **Context preservation**: When errors occur, full operational context is preserved and reported to aid in debugging the specific failure condition
+- **Immediate failure on constraint violation**: Library raises exceptions immediately when operations exceed
+  specified timeouts, retry limits, or encounter disallowed error conditions
+- **Loud and immediate error reporting**: Errors are reported with full context at the moment they occur to capture
+  accurate diagnostic information
+- **Configurable constraints**: Consuming application specifies exactly what constitutes a failure through aspects
+  (allowed error codes, timeout limits, retry patterns)
+- **No silent failures**: Library never suppresses or recovers from errors - all failures are explicitly surfaced
+  to the consuming application
+- **Context preservation**: When errors occur, full operational context is preserved and reported to aid in debugging
+  the specific failure condition
 
 ## Testing Strategy
 

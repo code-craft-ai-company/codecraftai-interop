@@ -2,7 +2,11 @@
 
 ## Introduction
 
-The automojo-interop package provides a comprehensive set of interoperability protocols and agents for automation testing and device management. The system enables communication with remote devices through various protocols including SSH, UPnP, DNS/mDNS, power management, and serial communication. The package follows a consistent aspects-based approach for configuring retry patterns, timeouts, and logging behaviors across all protocols.
+The automojo-interop package provides a comprehensive set of interoperability protocols and agents for
+automation testing and device management. The system enables communication with remote devices through
+various protocols including SSH, UPnP, DNS/mDNS, power management, and serial communication. The package
+follows a consistent aspects-based approach for configuring retry patterns, timeouts, and logging behaviors
+across all protocols.
 
 ## Glossary
 
@@ -18,19 +22,24 @@ The automojo-interop package provides a comprehensive set of interoperability pr
 
 ### Requirement 1
 
-**User Story:** As a test automation engineer, I want to execute commands on remote SSH hosts with configurable retry patterns, so that I can reliably interact with devices under test even when network conditions are unstable.
+**User Story:** As a test automation engineer, I want to execute commands on remote SSH hosts with
+configurable retry patterns, so that I can reliably interact with devices under test even when network
+conditions are unstable.
 
 #### Acceptance Criteria
 
 1. WHEN an SSH connection is established, THE Interop_System SHALL authenticate using provided credentials
 2. WHEN a command is executed via SSH, THE Interop_System SHALL return status code, stdout, and stderr
-3. WHEN retry aspects are configured, THE Interop_System SHALL retry failed operations according to the specified pattern
+3. WHEN retry aspects are configured, THE Interop_System SHALL retry failed operations according to the
+   specified pattern
 4. WHEN connection timeout is exceeded, THE Interop_System SHALL raise a timeout exception
-5. WHEN logging aspects are configured, THE Interop_System SHALL log command execution according to the specified pattern
+5. WHEN logging aspects are configured, THE Interop_System SHALL log command execution according to the
+   specified pattern
 
 ### Requirement 2
 
-**User Story:** As a network automation engineer, I want to discover UPnP devices on the network and generate device-specific client code, so that I can interact with discovered devices programmatically.
+**User Story:** As a network automation engineer, I want to discover UPnP devices on the network and
+generate device-specific client code, so that I can interact with discovered devices programmatically.
 
 #### Acceptance Criteria
 
@@ -42,7 +51,8 @@ The automojo-interop package provides a comprehensive set of interoperability pr
 
 ### Requirement 3
 
-**User Story:** As a service discovery engineer, I want to query DNS records and discover mDNS services, so that I can locate network services and devices automatically.
+**User Story:** As a service discovery engineer, I want to query DNS records and discover mDNS services, so
+that I can locate network services and devices automatically.
 
 #### Acceptance Criteria
 
@@ -54,7 +64,8 @@ The automojo-interop package provides a comprehensive set of interoperability pr
 
 ### Requirement 4
 
-**User Story:** As a power management engineer, I want to control power outlets on DLI power strips via REST API, so that I can remotely power cycle devices during testing.
+**User Story:** As a power management engineer, I want to control power outlets on DLI power strips via REST API,
+so that I can remotely power cycle devices during testing.
 
 #### Acceptance Criteria
 
@@ -66,7 +77,8 @@ The automojo-interop package provides a comprehensive set of interoperability pr
 
 ### Requirement 5
 
-**User Story:** As a serial communication engineer, I want to communicate with devices over TCP-based serial connections, so that I can control and monitor serial devices remotely.
+**User Story:** As a serial communication engineer, I want to communicate with devices over TCP-based serial
+connections, so that I can control and monitor serial devices remotely.
 
 #### Acceptance Criteria
 
@@ -78,7 +90,8 @@ The automojo-interop package provides a comprehensive set of interoperability pr
 
 ### Requirement 6
 
-**User Story:** As a test framework developer, I want to configure consistent retry patterns and logging behaviors across all protocols, so that I can maintain uniform error handling and debugging capabilities.
+**User Story:** As a test framework developer, I want to configure consistent retry patterns and logging
+behaviors across all protocols, so that I can maintain uniform error handling and debugging capabilities.
 
 #### Acceptance Criteria
 
@@ -90,7 +103,8 @@ The automojo-interop package provides a comprehensive set of interoperability pr
 
 ### Requirement 7
 
-**User Story:** As a CLI user, I want to scan for UPnP devices and generate device classes from the command line, so that I can quickly discover and interact with network devices.
+**User Story:** As a CLI user, I want to scan for UPnP devices and generate device classes from the command
+line, so that I can quickly discover and interact with network devices.
 
 #### Acceptance Criteria
 
@@ -102,7 +116,8 @@ The automojo-interop package provides a comprehensive set of interoperability pr
 
 ### Requirement 8
 
-**User Story:** As a test developer, I want to run comprehensive tests using the testbase framework, so that I can validate protocol implementations and ensure code quality.
+**User Story:** As a test developer, I want to run comprehensive tests using the testbase framework, so that
+I can validate protocol implementations and ensure code quality.
 
 #### Acceptance Criteria
 

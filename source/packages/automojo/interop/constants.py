@@ -1,9 +1,6 @@
 
 import os
 
-DEFAULT_INCLUDED_FACTORY_MODULES = [
-    "automojo.interop.manufacturers.bose.upnp.boseupnpextension"
-]
-
+DEFAULT_INCLUDED_FACTORY_MODULES = set()
 
 DIR_AUTOMOJO_INTEROP = os.path.dirname(__file__)
