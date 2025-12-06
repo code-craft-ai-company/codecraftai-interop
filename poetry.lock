@@ -166,7 +166,7 @@ click = "^8.1.8"
 type = "git"
 url = "https://github.com/automationmojo/automojo-testbase.git"
 reference = "main"
-resolved_reference = "fa2980b1aae5d4943f6429d687f94a69a5cc21bb"
+resolved_reference = "b5bb5f72742a6d5f3c0fd84496d64f19976a6c8a"
 
 [[package]]
 name = "automojo-this-app"
@@ -186,7 +186,7 @@ automojo-extension = {git = "https://github.com/automationmojo/automojo-extensio
 type = "git"
 url = "https://github.com/automationmojo/automojo-this-app.git"
 reference = "main"
-resolved_reference = "919933bbbfdb95b3d0c3b47f26eba4171b5cd35c"
+resolved_reference = "c76c9409b6b36191c53cdea1127a611ab7326a54"
 
 [[package]]
 name = "automojo-waiting"
