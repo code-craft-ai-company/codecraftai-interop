@@ -238,8 +238,14 @@ class DnsInboundMessage:
         rtype, rclass = self._read_type_and_class()
         ttl = self._read_ttl()
         length = self._read_unsigned_short()
-        
+
         rec = None  # type: Optional[DnsRecord]
+
+        rdata_end = self._offset + length
+        if rdata_end > len(self._data):
+            raise DnsDecodeError(
+                f"DnsInboundMessage[{self._source}] RDATA length exceeds packet bounds. offset={self._offset} length={length}"
+            )
 
         if rtype == DnsRecordType.SRV:
             priority = self._read_unsigned_short()
@@ -287,9 +293,9 @@ class DnsInboundMessage:
             elif rtype == DnsRecordType.NAPTR:
                 order = self._read_unsigned_short()
                 preference = self._read_unsigned_short()
-                flags = self._read_string().decode("utf-8", "replace")
-                services = self._read_string().decode("utf-8", "replace")
-                regexp = self._read_string().decode("utf-8", "replace")
+                flags = self._read_string_bounded(rdata_end).decode("utf-8", "replace")
+                services = self._read_string_bounded(rdata_end).decode("utf-8", "replace")
+                regexp = self._read_string_bounded(rdata_end, reserve=1).decode("utf-8", "replace")
 
                 replacement = self._read_name()
 
@@ -348,6 +354,14 @@ class DnsInboundMessage:
                 # records can be parsed correctly
                 self._offset += length
 
+        if self._offset < rdata_end:
+            # Ensure we advance past any unread bytes inside the RDATA so the next record starts correctly.
+            self._offset = rdata_end
+        elif self._offset > rdata_end:
+            raise DnsDecodeError(
+                f"DnsInboundMessage[{self._source}] Parsed past end of RDATA. end={rdata_end} offset={self._offset}"
+            )
+
         return rec
     
 
@@ -384,12 +398,16 @@ class DnsInboundMessage:
         consumed = 0
 
         while True:
+            if cursor >= len(self._data):
+                raise DnsDecodeError(
+                    f"DnsInboundMessage[{self._source}] Name decoding exceeded packet length. cursor={cursor}"
+                )
 
             first_octet = self._data[cursor]
-            if len(followed) == 0:
-                consumed += 1
 
             if first_octet == 0x00:
+                if len(followed) == 0:
+                    consumed += 1
                 break
 
             comp_flags = (first_octet & DNS_COMP_MASK)
@@ -397,6 +415,11 @@ class DnsInboundMessage:
             if comp_flags == 0x00:
                 comp_start = cursor + 1
                 comp_length = first_octet & DNS_OFFSET_MASK
+                if comp_length == 0:
+                    raise DnsDecodeError(
+                        f"DnsInboundMessage[{self._source}] Zero-length label encountered mid-name at offset {cursor}."
+                    )
+
                 comp_val = self._read_utf(comp_start, comp_length)
                 result = f"{result}{comp_val}."
 
@@ -404,12 +427,17 @@ class DnsInboundMessage:
 
                 # We only consume bytes of the packet if we have not yet followed a pointer.
                 if len(followed) == 0:
-                    consumed += comp_length
-            
+                    consumed += comp_length + 1
+
             elif comp_flags == DNS_COMP_MASK:
+                if cursor + 1 >= len(self._data):
+                    raise DnsDecodeError(
+                        f"DnsInboundMessage[{self._source}] Incomplete name compression pointer at offset {cursor}."
+                    )
+
                 second_octet = self._data[cursor + 1]
                 if len(followed) == 0:
-                    consumed += 1
+                    consumed += 2
 
                 offset_ptr = ((first_octet & DNS_OFFSET_MASK) << 8) + second_octet
                 if offset_ptr >= start:
@@ -461,12 +489,39 @@ class DnsInboundMessage:
 
         return strval
 
+    def _read_string_bounded(self, end_offset: int, reserve: int = 0) -> bytes:
+        """
+            Reads a character string ensuring the read stays within a known boundary.
+
+            :param end_offset: Absolute offset within the packet where the current
+                               record's RDATA should end.
+            :param reserve: Number of bytes to leave unread to allow parsing of
+                            fields following the string.
+        """
+        if self._offset >= end_offset:
+            raise DnsDecodeError(
+                f"DnsInboundMessage[{self._source}] Attempt to read string past RDATA boundary. offset={self._offset} end={end_offset}"
+            )
+
+        length = int(self._data[self._offset])
+        self._offset += 1
+
+        remaining = max(0, end_offset - self._offset - reserve)
+        read_length = min(length, remaining)
+
+        strval = self._read_string_characters(read_length)
+
+        return strval
+
     def _read_string_characters(self, length: int) -> bytes:
         """
             Reads a string of a given length from the packet
         """
-        strval = self._data[self._offset : self._offset + length]
-        self._offset += length
+        available = len(self._data) - self._offset
+        read_length = min(length, available)
+
+        strval = self._data[self._offset : self._offset + read_length]
+        self._offset += read_length
         return strval
 
     def _read_ttl(self) -> int:
