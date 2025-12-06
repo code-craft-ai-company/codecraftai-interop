@@ -65,7 +65,7 @@ class DnsHostInfo(DnsRecord):
 
             :param out: The outbound DNS message to write the record to.
         """
-        out.write_character_string(self._cpu.encode('utf-8'))
+        out.write(self._cpu.encode('utf-8'))
         out.write_character_string(self._os.encode('utf-8'))
         return
 
