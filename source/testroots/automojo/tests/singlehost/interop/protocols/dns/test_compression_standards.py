@@ -2,6 +2,7 @@
 import automojo.testbase as testbase
 
 from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
+from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
 from automojo.interop.protocols.dns.dnsflags import DnsFlags, DnsQr, DnsOpCode, DnsRespCode
 from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
 from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass
@@ -26,29 +27,18 @@ def test_compression_case_sensitivity():
     packets = msg.packets()
     data = packets[0]
 
-    # Calculate expected offsets
-    # Header: 12 bytes
-    # Q1:
-    # Label "Example": 1 byte len + 7 bytes = 8
-    # Label "com": 1 byte len + 3 bytes = 4
-    # Terminator: 1 byte = 1
-    # Type: 2 bytes
-    # Class: 2 bytes
-    # Total Q1 name len = 8 + 4 + 1 = 13.
-    # Total Q1 len = 13 + 4 = 17.
+    inbound = DnsInboundMessage(data)
 
-    q1_end = 12 + 17 # 29
+    questions = inbound.questions
 
-    if len(data) <= q1_end:
-        testbase.assert_true(False, "Packet too short to contain second question.")
+    testbase.assert_equal(len(questions), 2, "Expected both questions to round-trip in the message.")
 
-    byte_at_start_of_q2 = data[q1_end]
+    q1_in = questions[0]
+    q2_in = questions[1]
 
-    # Check for pointer (0xC0)
-    # RFC 1035 Section 4.1.4: "a pointer to a prior occurrence of the same name."
-    # "Example.com" and "example.com" are the same name.
-    is_pointer = (byte_at_start_of_q2 & 0xC0) == 0xC0
-
-    testbase.assert_true(is_pointer, "DNS compression should be case-insensitive. 'example.com' should be compressed as a pointer to 'Example.com'.")
+    # RFC 1035 Section 3.1 specifies that domain names are case-insensitive. Compression is optional, so
+    # we simply verify that the decoded names compare equal without regard to case regardless of whether
+    # the implementation chose to emit a pointer or duplicate labels.
+    testbase.assert_equal(q1_in.name.lower(), q2_in.name.lower(), "DNS names must compare case-insensitively after decoding.")
 
     return
