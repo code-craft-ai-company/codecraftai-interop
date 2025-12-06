@@ -8,6 +8,10 @@ from automojo.testbase.mocking import create_module_patch
 class DummyOut:
     def __init__(self):
         self.data = None
+
+    def write(self, value):
+        self.data = value
+
     def _write_utf(self, value):
         self.data = value
 
