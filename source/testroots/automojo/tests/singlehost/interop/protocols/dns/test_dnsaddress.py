@@ -10,6 +10,8 @@ class DummyOut:
         self.data = None
     def _write_utf(self, value):
         self.data = value
+    def write(self, value):
+        self.data = value
 
 
 def test_write_passes_address():
