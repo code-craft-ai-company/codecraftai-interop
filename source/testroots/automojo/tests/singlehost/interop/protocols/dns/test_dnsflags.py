@@ -28,7 +28,8 @@ def test_flags_roundtrip() -> None:
 
 
 def test_default_flags_query_value() -> None:
-    testbase.assert_equal(DEFAULT_DNS_FLAGS_QUERY.flags(), 0x0002)
+    # DEFAULT_DNS_FLAGS_QUERY has Opcode=Query(0) and all other flags 0
+    testbase.assert_equal(DEFAULT_DNS_FLAGS_QUERY.flags(), 0x0000)
     return
 
 
