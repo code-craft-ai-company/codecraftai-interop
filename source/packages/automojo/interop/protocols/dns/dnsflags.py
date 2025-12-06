@@ -24,7 +24,7 @@ class DnsFlags:
            1  1  1  1  1  1
            5  4  3  2  1  0  9  8  7  6  5  4  3  2  1  0
           +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-          |   RCODE   |   Z    |RA|RD|TC|AA|   Opcode  |QR|
+          |QR|   Opcode  |AA|TC|RD|RA|   Z    |   RCODE   |
           +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
  
     """
@@ -120,14 +120,14 @@ class DnsFlags:
             Converts a :class:`DnsFlags` object to a flags integer.
         """
         
-        flags: int = (self._rcode << 12) & 0xF000
-        flags |= (self._z << 9) & 0x0E00
-        flags |= (int(self._ra) << 8) & 0x0100
-        flags |= (int(self._rd) << 7) & 0x0080
-        flags |= (int(self._tc) << 6) & 0x0040
-        flags |= (int(self._aa) << 5) & 0x0020
-        flags |= (self._opcode << 1) & 0x001E
-        flags |= self._qr & 0x0001
+        flags: int = (self._qr << 15) & 0x8000
+        flags |= (self._opcode << 11) & 0x7800
+        flags |= (int(self._aa) << 10) & 0x0400
+        flags |= (int(self._tc) << 9) & 0x0200
+        flags |= (int(self._rd) << 8) & 0x0100
+        flags |= (int(self._ra) << 7) & 0x0080
+        flags |= (self._z << 4) & 0x0070
+        flags |= self._rcode & 0x000F
 
         return flags
 
@@ -138,14 +138,14 @@ class DnsFlags:
             :param flags: Integer containing the encoded flag bits.
         """
 
-        self._rcode = DnsRespCode((flags & 0xF000) >> 12)
-        z = int((flags & 0x0E00) >> 9)
-        ra = True if (flags & 0x0100) >> 8 else False
-        rd = True if (flags & 0x0080) >> 7 else False 
-        tc = True if (flags & 0x0040) >> 6 else False 
-        aa = True if (flags & 0x0020) >> 5 else False 
-        opcode = DnsOpCode((flags & 0x001E) >> 1)  
-        qr = DnsQr(flags & 0x0001)
+        self._qr = DnsQr((flags & 0x8000) >> 15)
+        self._opcode = DnsOpCode((flags & 0x7800) >> 11)
+        self._aa = True if (flags & 0x0400) >> 10 else False
+        self._tc = True if (flags & 0x0200) >> 9 else False
+        self._rd = True if (flags & 0x0100) >> 8 else False
+        self._ra = True if (flags & 0x0080) >> 7 else False
+        self._z = (flags & 0x0070) >> 4
+        self._rcode = DnsRespCode(flags & 0x000F)
 
         return flags
 
@@ -154,14 +154,14 @@ class DnsFlags:
         """
             Parses a flags integer and converts it to a :class:`DnsFlags` object.
         """
-        rcode = DnsRespCode((flags & 0xF000) >> 12)
-        z = int((flags & 0x0E00) >> 9)
-        ra = True if (flags & 0x0100) >> 8 else False
-        rd = True if (flags & 0x0080) >> 7 else False 
-        tc = True if (flags & 0x0040) >> 6 else False 
-        aa = True if (flags & 0x0020) >> 5 else False 
-        opcode = DnsOpCode((flags & 0x001E) >> 1)  
-        qr = DnsQr(flags & 0x0001)
+        qr = DnsQr((flags & 0x8000) >> 15)
+        opcode = DnsOpCode((flags & 0x7800) >> 11)
+        aa = True if (flags & 0x0400) >> 10 else False
+        tc = True if (flags & 0x0200) >> 9 else False
+        rd = True if (flags & 0x0100) >> 8 else False
+        ra = True if (flags & 0x0080) >> 7 else False
+        z = (flags & 0x0070) >> 4
+        rcode = DnsRespCode(flags & 0x000F)
 
         fobj = DnsFlags(qr=qr, opcode=opcode, aa=aa, tc=tc, rd=rd, ra=ra, rcode=rcode, z=z, flags=flags)
 
