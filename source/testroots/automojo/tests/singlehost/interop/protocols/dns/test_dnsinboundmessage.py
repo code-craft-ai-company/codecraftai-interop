@@ -41,7 +41,7 @@ def test_is_query_and_response() -> None:
     # Build a minimal response packet with one answer
     rheader = (
         b"\xab\xcd"  # id
-        b"\x00\x01"  # flags - response
+        b"\x80\x00"  # flags - response (QR=1)
         b"\x00\x00"  # questions
         b"\x00\x01"  # answers
         b"\x00\x00"  # authorities
