@@ -23,7 +23,7 @@ class DnsText(DnsRecord):
         A DNS text record
     """
 
-    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, text: bytes, suppress_compression: bool = False) -> None:
+    def __init__(self, name: str, rtype: int, rclass: int, ttl: int, text: bytes, suppress_compression: bool = False, is_raw_rdata: bool = False) -> None:
         """
             Constructs a DNS text record.
 
@@ -34,10 +34,13 @@ class DnsText(DnsRecord):
             :param text: Text payload as bytes.
             :param suppress_compression: Optional parameter offering control over whether to suppress compression
                                         for the record.
+            :param is_raw_rdata: Indicates if the text payload is already encoded as raw RDATA (with length prefixes).
+                                 If True, the data is written as-is. If False, it is wrapped as a character-string.
         """
         assert isinstance(text, (bytes, type(None)))
         DnsRecord.__init__(self, name, rtype, rclass, ttl, suppress_compression=suppress_compression)
         self._text = text
+        self._is_raw_rdata = is_raw_rdata
 
     @property
     def text(self) -> str:
@@ -54,7 +57,10 @@ class DnsText(DnsRecord):
 
             :param out: The outbound DNS message to write the record to.
         """
-        out.write_character_string(self._text)
+        if self._is_raw_rdata:
+            out.write(self._text)
+        else:
+            out.write_character_string(self._text)
 
     def __eq__(self, other: DnsRecord) -> bool:
         """

@@ -14,14 +14,17 @@ __credits__ = []
 
 from typing import Optional, Sequence, Union, Tuple
 
-from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
-import paramiko
-
 from types import TracebackType
 
-from automojo.interop.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS
+import paramiko
+
+from automojo.errors.exceptions import UnExpectedSessionClosureError
+
+from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
+
 from automojo.credentials.sshcredential import SshCredential
 
+from automojo.interop.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS
 from automojo.interop.protocols.ssh.sshconst import (
     SshJumpParams,
     DEFAULT_SSH_TIMEOUT,
@@ -128,44 +131,6 @@ class SshSession(SshBase):
         if self._basis_session is None:
             self._ssh_client.close()
         return
-
-    def reboot(self, aspects: Optional[AspectsCmd] = None):
-        """
-            Reboots the designated host by running the 'reboot' command on the host.
-            
-            ..note: This method is not a typical SSH functionality, but it was added so that
-                    automatic reconnects can be implemented as required on session objects.
-
-        """
-        reboot_cmd = 'reboot'
-        try:
-            status, stdout, stderr = self.run_cmd(reboot_cmd, aspects=aspects)
-        except:
-            # We might see a connection dropout exception here, so we need
-            # to handle it.
-            pass
-
-        # Since we are a session, we need to reconnect to the remote machine after the reboot.
-        # We raise a TimeoutError if we do not reconnect before the reboot_timeout runs out.
-        
-        return
-
-    def run_cmd(self, command: str, exp_status: Union[int, Sequence]=0, user: str = None, pty_params: dict = None, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
-        """
-            Runs a command on the designated host using the current session SSH session and client.
-
-            :param command: The command to run.
-            :param exp_status: An integer or sequence of integers that specify the set of expected status codes from the command.
-            :param user: The registered name of the user role to use to lookup the credentials for running the command.
-            :param pty_params: The pty parameters to use to request a PTY when running the command.
-            :param aspects: The run aspects to use when running the command.
-
-            :returns: The status, stderr and stdout from the command that was run.
-        """
-
-        status, stdout, stderr = self._run_cmd(self._ssh_runner, command, user=user, pty_params=pty_params, aspects=aspects)
-
-        return status, stdout, stderr
 
     def directory(self, root_dir: str) -> dict:
         """
@@ -274,6 +239,45 @@ class SshSession(SshBase):
                                  jump=self._jump, pty_params=pty_params, interactive=interactive,
                                  look_for_keys=self._look_for_keys, aspects=aspects)
         return session
+
+    def reboot(self, aspects: Optional[AspectsCmd] = None):
+        """
+            Reboots the designated host by running the 'reboot' command on the host.
+            
+            ..note: This method is not a typical SSH functionality, but it was added so that
+                    automatic reconnects can be implemented as required on session objects.
+
+        """
+        reboot_cmd = 'reboot'
+        try:
+            status, stdout, stderr = self.run_cmd(reboot_cmd, aspects=aspects)
+        except:
+            # We might see a connection dropout exception here, so we need
+            # to handle it.
+            pass
+
+        # Since we are a session, we need to reconnect to the remote machine after the reboot.
+        errmsg = "Session closed due to reboot."
+        raise UnExpectedSessionClosureError(errmsg)
+ 
+        return
+
+    def run_cmd(self, command: str, exp_status: Union[int, Sequence]=0, user: str = None, pty_params: dict = None, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
+        """
+            Runs a command on the designated host using the current session SSH session and client.
+
+            :param command: The command to run.
+            :param exp_status: An integer or sequence of integers that specify the set of expected status codes from the command.
+            :param user: The registered name of the user role to use to lookup the credentials for running the command.
+            :param pty_params: The pty parameters to use to request a PTY when running the command.
+            :param aspects: The run aspects to use when running the command.
+
+            :returns: The status, stderr and stdout from the command that was run.
+        """
+
+        status, stdout, stderr = self._run_cmd(self._ssh_runner, command, exp_status=exp_status, user=user, pty_params=pty_params, aspects=aspects)
+
+        return status, stdout, stderr
 
     def _create_client(self, session_user: Optional[str] = None) -> paramiko.SSHClient:
         """

@@ -60,6 +60,9 @@ class DnsInboundMessage:
         self._data: bytes = data
         self._questions: List[DnsQuestion] = []
         self._answers: List[DnsRecord] = []
+        self._authorities: List[DnsRecord] = []
+        self._additionals: List[DnsRecord] = []
+
         self._id: int = 0
         self._flags: DnsFlags = None  # type: int
         self._num_questions: int = 0
@@ -75,7 +78,7 @@ class DnsInboundMessage:
             elif isinstance(source_endpoint, bytes):
                 self._source = source_endpoint.decode('utf-8')
             else:
-                self._source = f"{source_endpoint[0], source_endpoint[1]}"
+                self._source = f"{source_endpoint[0]}:{source_endpoint[1]}"
 
         try:
             self._ingest_header()
@@ -85,7 +88,7 @@ class DnsInboundMessage:
             self._valid = True
 
         except (IndexError, struct.error, DnsDecodeError):
-            logger.exception('Choked at offset %d while unpacking %r', self._offset, data)
+            logger.error('Choked at offset %d while unpacking %r', self._offset, data, exc_info=True)
             pass
 
         return
@@ -96,6 +99,20 @@ class DnsInboundMessage:
             List of answer records contained in the message.
         """
         return self._answers
+
+    @property
+    def authorities(self) -> List[DnsRecord]:
+        """
+            List of authority records contained in the message.
+        """
+        return self._authorities
+
+    @property
+    def additionals(self) -> List[DnsRecord]:
+        """
+            List of additional records contained in the message.
+        """
+        return self._additionals
 
     @property
     def data(self) -> bytes:
@@ -191,169 +208,147 @@ class DnsInboundMessage:
         """
             Processes the answers, authorities and additionals section of the message
         """
-        n = self._num_answers + self._num_authorities + self._num_additionals
-        for i in range(n):
-            record_offset = self._offset
+        
+        # Process Answers
+        for _ in range(self._num_answers):
+            rec = self._read_record()
+            if rec is not None:
+                self._answers.append(rec)
 
-            domain = self._read_name()
+        # Process Authorities
+        for _ in range(self._num_authorities):
+            rec = self._read_record()
+            if rec is not None:
+                self._authorities.append(rec)
 
-            rtype, rclass = self._read_type_and_class()
-            ttl = self._read_ttl()
-            length = self._read_unsigned_short()
+        # Process Additionals
+        for _ in range(self._num_additionals):
+            rec = self._read_record()
+            if rec is not None:
+                self._additionals.append(rec)
 
-            if rtype == DnsRecordType.SRV:
-                priority = self._read_unsigned_short()
-                weight = self._read_unsigned_short()
-                port = self._read_unsigned_short()
-                server = self._read_name()
+        return
 
-                rec = DnsService(
+    def _read_record(self) -> Optional[DnsRecord]:
+        """
+            Reads a single resource record from the current offset.
+        """
+        domain = self._read_name()
+
+        rtype, rclass = self._read_type_and_class()
+        ttl = self._read_ttl()
+        length = self._read_unsigned_short()
+        
+        rec = None  # type: Optional[DnsRecord]
+
+        if rtype == DnsRecordType.SRV:
+            priority = self._read_unsigned_short()
+            weight = self._read_unsigned_short()
+            port = self._read_unsigned_short()
+            server = self._read_name()
+
+            rec = DnsService(
+                domain,
+                rtype,
+                rclass,
+                ttl,
+                priority,
+                weight,
+                port,
+                server,
+            )
+        else:
+            if rtype == DnsRecordType.A:
+                address = self._read_string_characters(4)
+                rec = DnsAddress(domain, rtype, rclass, ttl, address)
+
+            elif rtype == DnsRecordType.AAAA:
+                address = self._read_string_characters(16)
+                rec = DnsAddress(domain, rtype, rclass, ttl, address)
+
+            elif rtype == DnsRecordType.CNAME or rtype == DnsRecordType.PTR:
+                alias = self._read_name()
+                rec = DnsPointer(domain, rtype, rclass, ttl, alias)
+
+            elif rtype == DnsRecordType.NS:
+                alias = self._read_name()
+                rec = DnsPointer(domain, rtype, rclass, ttl, alias)
+
+            elif rtype == DnsRecordType.MX:
+                preference = self._read_unsigned_short()
+                exchange = self._read_name()
+                rec = DnsMailExchange(domain, rtype, rclass, ttl, preference, exchange)
+
+            elif rtype == DnsRecordType.TXT:
+                text = self._read_string_characters(length)
+
+                rec = DnsText(domain, rtype, rclass, ttl, text, is_raw_rdata=True)
+
+            elif rtype == DnsRecordType.NAPTR:
+                order = self._read_unsigned_short()
+                preference = self._read_unsigned_short()
+                flags = self._read_string().decode("utf-8", "replace")
+                services = self._read_string().decode("utf-8", "replace")
+                regexp = self._read_string().decode("utf-8", "replace")
+
+                replacement = self._read_name()
+
+                rec = DnsNaptr(
                     domain,
                     rtype,
                     rclass,
                     ttl,
-                    priority,
-                    weight,
-                    port,
-                    server,
+                    order,
+                    preference,
+                    flags,
+                    services,
+                    regexp,
+                    replacement,
                 )
+
+            elif rtype == DnsRecordType.SOA:
+                mname = self._read_name()
+                rname = self._read_name()
+                serial = self._read_unsigned_int()
+                refresh = self._read_unsigned_int()
+                retry = self._read_unsigned_int()
+                expire = self._read_unsigned_int()
+                minimum = self._read_unsigned_int()
+
+                rec = DnsSoa(
+                    domain,
+                    rtype,
+                    rclass,
+                    ttl,
+                    mname,
+                    rname,
+                    serial,
+                    refresh,
+                    retry,
+                    expire,
+                    minimum,
+                )
+
+            elif rtype == DnsRecordType.HINFO:
+                host_cpu = self._read_string().decode('utf-8')
+                host_os = self._read_string().decode('utf-8')
+
+                rec = DnsHostInfo(
+                    domain,
+                    rtype,
+                    rclass,
+                    ttl,
+                    host_cpu,
+                    host_os,
+                )
+
             else:
+                # Try to ignore types we don't know about
+                # Skip the payload for the resource record so the next
+                # records can be parsed correctly
+                self._offset += length
 
-                rec = None  # type: Optional[DnsRecord]
-                if rtype == DnsRecordType.A:
-                    address = self._read_string_characters(4)
-                    rec = DnsAddress(domain, rtype, rclass, ttl, address)
-
-                elif rtype == DnsRecordType.AAAA:
-                    address = self._read_string_characters(16)
-                    rec = DnsAddress(domain, rtype, rclass, ttl, address)
-
-                elif rtype == DnsRecordType.CNAME or rtype == DnsRecordType.PTR:
-                    alias = self._read_name()
-                    rec = DnsPointer(domain, rtype, rclass, ttl, alias)
-
-                elif rtype == DnsRecordType.NS:
-                    alias = self._read_name()
-                    rec = DnsPointer(domain, rtype, rclass, ttl, alias)
-
-                elif rtype == DnsRecordType.MX:
-                    preference = self._read_unsigned_short()
-                    exchange = self._read_name()
-                    rec = DnsMailExchange(domain, rtype, rclass, ttl, preference, exchange)
-
-                elif rtype == DnsRecordType.TXT:
-                    text = self._read_string_characters(length)
-
-                    rec = DnsText(domain, rtype, rclass, ttl, text)
-
-                elif rtype == DnsRecordType.NAPTR:
-                    rdata = self._data[self._offset : self._offset + length]
-                    self._offset += length
-
-                    cursor = 0
-                    order = struct.unpack_from("!H", rdata, cursor)[0]
-                    cursor += 2
-                    preference = struct.unpack_from("!H", rdata, cursor)[0]
-                    cursor += 2
-
-                    flen = rdata[cursor]
-                    cursor += 1
-                    flags = rdata[cursor : cursor + flen].decode("utf-8", "replace")
-                    cursor += flen
-
-                    slen = rdata[cursor]
-                    cursor += 1
-                    services = rdata[cursor : cursor + slen].decode("utf-8", "replace")
-                    cursor += slen
-
-                    rlen = rdata[cursor]
-                    cursor += 1
-                    avail = len(rdata) - cursor
-                    use_len = min(rlen, avail)
-                    regexp_bytes = rdata[cursor : cursor + use_len]
-                    cursor += use_len
-                    if rlen > use_len and len(regexp_bytes) > 0 and regexp_bytes[-1] == 0:
-                        regexp_bytes = regexp_bytes[:-1]
-                    regexp = regexp_bytes.decode("utf-8", "replace")
-
-                    replacement = ""
-                    if cursor < len(rdata):
-                        rep_bytes = rdata[cursor:]
-                        parts = []
-                        rep_cursor = 0
-                        while rep_cursor < len(rep_bytes):
-                            part_len = rep_bytes[rep_cursor]
-                            rep_cursor += 1
-                            if part_len == 0:
-                                break
-                            parts.append(
-                                rep_bytes[rep_cursor : rep_cursor + part_len].decode(
-                                    "utf-8", "replace"
-                                )
-                            )
-                            rep_cursor += part_len
-                        if parts:
-                            replacement = ".".join(parts) + "."
-
-                    rec = DnsNaptr(
-                        domain,
-                        rtype,
-                        rclass,
-                        ttl,
-                        order,
-                        preference,
-                        flags,
-                        services,
-                        regexp,
-                        replacement,
-                    )
-
-                elif rtype == DnsRecordType.SOA:
-                    mname = self._read_name()
-                    rname = self._read_name()
-                    serial = self._read_unsigned_int()
-                    refresh = self._read_unsigned_int()
-                    retry = self._read_unsigned_int()
-                    expire = self._read_unsigned_int()
-                    minimum = self._read_unsigned_int()
-
-                    rec = DnsSoa(
-                        domain,
-                        rtype,
-                        rclass,
-                        ttl,
-                        mname,
-                        rname,
-                        serial,
-                        refresh,
-                        retry,
-                        expire,
-                        minimum,
-                    )
-
-                elif rtype == DnsRecordType.HINFO:
-                    host_cpu = self._read_string().decode('utf-8')
-                    host_os = self._read_string().decode('utf-8')
-
-                    rec = DnsHostInfo(
-                        domain,
-                        rtype,
-                        rclass,
-                        ttl,
-                        host_cpu,
-                        host_os,
-                    )
-
-                else:
-                    # Try to ignore types we don't know about
-                    # Skip the payload for the resource record so the next
-                    # records can be parsed correctly
-                    self._offset += length
-
-            if rec is not None:
-                self.answers.append(rec)
-
-        return
+        return rec
     
 
     def _read_name(self) -> str:
@@ -426,9 +421,19 @@ class DnsInboundMessage:
                     ]
                     err_msg = os.linesep.join(err_msg_lines)
                     raise DnsDecodeError(err_msg)
+                if offset_ptr in followed:
+                    err_msg_lines = [
+                        f"DnsInboundMessage[{self._source}] Loop detected in name compression.",
+                        f"    NAME START: {start}",
+                        f"    OFFSET POINTER: {offset_ptr}",
+                        f"    FOLLOWED: {followed}"
+                    ]
+                    err_msg = os.linesep.join(err_msg_lines)
+                    raise DnsDecodeError(err_msg)
+
                 followed.append(offset_ptr)
                 comp_val, _ = self._read_name_at_offset(start, offset_ptr, followed)
-                result = result = f"{result}{comp_val}"
+                result = f"{result}{comp_val}"
 
                 break  # Once we hit a pointer, then that is the end of the name
 
@@ -546,6 +551,8 @@ class DnsInboundMessage:
                 'n_add=%s' % self._num_additionals,
                 'questions=%s' % self._questions,
                 'answers=%s' % self._answers,
+                'authorities=%s' % self._authorities,
+                'additionals=%s' % self._additionals,
             ]
         )
         return strval

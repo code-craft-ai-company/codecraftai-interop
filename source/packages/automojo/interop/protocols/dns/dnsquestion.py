@@ -35,6 +35,7 @@ class DnsQuestion:
             :param rclass: Record class with flags.
         """
         self._name = name
+        self._key = name.lower()
         self._rtype = rtype
         self._rclass = DnsRecordClass(rclass & DnsRecordClass.MASK)
         self._unique = (rclass & DnsRecordClass.UNIQUE) != 0
@@ -94,7 +95,7 @@ class DnsQuestion:
         bval = False
         if self._rclass == rec._rclass:
             if self._rtype == rec._rtype or self._rtype == DnsRecordType.ANY:
-               bval = self._name == rec._name
+               bval = self._key == rec.key
         return bval
 
     def as_query_bytes(self) -> bytes:

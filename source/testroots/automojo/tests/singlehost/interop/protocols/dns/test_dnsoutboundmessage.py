@@ -88,3 +88,17 @@ def test_str_includes_key_fields() -> None:
     testbase.assert_expression(desc, r".*flags=.*")
     testbase.assert_expression(desc, r".*questions=.*")
     return
+
+
+def test_write_name_root_encoding() -> None:
+    msg = DnsOutboundMessage(DEFAULT_DNS_FLAGS_QUERY, multicast=True)
+    msg.write_name(".")
+    # The root domain should always be encoded as a single null byte (0x00).
+    # Previous bug caused it to be encoded as 0x00 0x00 when compression was enabled.
+    testbase.assert_equal(msg.data[-1], b'\0')
+    if len(msg.data) > 1:
+        # If there are other parts, make sure the encoding is just one byte effectively for the name
+        # msg.data is a list of bytes. find the last part added.
+        last_part = msg.data[-1]
+        testbase.assert_equal(last_part, b'\0')
+    return

@@ -190,4 +190,4 @@ class DnsFlags:
         return repr(self)
 
 
-DEFAULT_DNS_FLAGS_QUERY = DnsFlags(qr=DnsQr.Query, opcode=DnsOpCode.IQuery, aa=False, tc=False, rd=False, ra=False, rcode=DnsRespCode.NoError)
+DEFAULT_DNS_FLAGS_QUERY = DnsFlags(qr=DnsQr.Query, opcode=DnsOpCode.Query, aa=False, tc=False, rd=False, ra=False, rcode=DnsRespCode.NoError)

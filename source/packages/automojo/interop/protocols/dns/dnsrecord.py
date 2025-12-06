@@ -266,7 +266,7 @@ class DnsRecord:
         iseq = False
         if isinstance(other, type(self)):
             if self._rtype == other._rtype and self._rclass == other._rclass:
-                iseq = self._name == other._name
+                iseq = self._key == other._key
         return iseq
 
     def __ne__(self, other: 'DnsRecord') -> bool:

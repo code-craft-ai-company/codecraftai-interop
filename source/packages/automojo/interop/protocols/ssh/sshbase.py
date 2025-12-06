@@ -237,18 +237,6 @@ class SshBase(ISystemContext):
 
         """
         raise AbstractMethodError("SshBase.reboot must be overloaded by derived class '%s'." % type(self).__name__) from None
-        reboot_cmd = 'reboot'
-        try:
-            status, stdout, stderr = self.run_cmd(reboot_cmd, aspects=aspects)
-        except:
-            # We might see a connection dropout exception here, so we need
-            # to handle it.
-            pass
-
-        # Try to reconnect to the remote machine after the reboot.  We raise a TimeoutError
-        # if we do not reconnect before the reboot_timeout runs out.
-        
-        return
 
     def run_cmd(self, command: str, exp_status: Union[int, Sequence]=0, user: str = None, pty_params: dict = None, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
         """

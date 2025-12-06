@@ -60,7 +60,7 @@ class DnsAddress(DnsRecord):
 
             :param out: The outbound DNS message to write the record to.
         """
-        out._write_utf(self._address)
+        out.write(self._address)
         return
 
     def __eq__(self, other: DnsRecord) -> bool:

@@ -162,6 +162,15 @@ When checking out the code for this repository in order to test changes, agents 
 * run the 'repository-setup/rehome-repository' script.  It creates a needed '.env' file.
 * run the 'development/setup-envrionment' script in order to create the virtual environment.
 
+
+## Python Virtual Environment
+The python virtual environment is created in the '.venv' folder.  It is created using the 'development/setup-envrionment' script.  The setup script also
+adds code to the virtual environment's activation script to configure environment variables needed for the repository.
+
+To activate the virtual environment in a shell, run the '.venv/bin/activate' script.
+
+To deactivate the virtual environment in a shell, run the 'deactivate' script.
+
 # Project Specific Rules
 
 

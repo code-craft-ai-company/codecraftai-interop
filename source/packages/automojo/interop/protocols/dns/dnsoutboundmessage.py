@@ -248,7 +248,7 @@ class DnsOutboundMessage:
                 self._answers.append((record, now))
         return
 
-    def add_authorative_answer(self, record: DnsPointer) -> None:
+    def add_authoritative_answer(self, record: DnsPointer) -> None:
         """
             Adds an authoritative answer
         """
@@ -292,23 +292,35 @@ class DnsOutboundMessage:
             questions_written = 0
 
             # Write out all the questions, we expect questions to be kept to a minimum for each outbound DnsMessage
-            for question in self._questions:
-                self._write_question(question)
-                questions_written += 1
+            allow_long = True 
+            for question in self._questions[questions_offset:]:
+                if self._write_question(question, allow_long):
+                    questions_written += 1
+                    allow_long = False
+                else:
+                    break
 
             allow_long = True  # at most one answer must be allowed even if it creates a long DNS packet
             for answer, time_ in self._answers[answer_offset:]:
                 if self._write_record(answer, time_, allow_long):
                     answers_written += 1
-                allow_long = False
+                    allow_long = False
+                else:
+                    break
 
             for authority in self._authorities[authority_offset:]:
-                if self._write_record(authority, 0):
+                if self._write_record(authority, 0, allow_long):
                     authorities_written += 1
+                    allow_long = False
+                else:
+                    break
 
             for additional in self._additionals[additional_offset:]:
-                if self._write_record(additional, 0):
+                if self._write_record(additional, 0, allow_long):
                     additionals_written += 1
+                    allow_long = False
+                else:
+                    break
 
             # Insert the Flags and Header at the beginning of the packet stream
             self._insert_short(0, additionals_written)
@@ -390,7 +402,8 @@ class DnsOutboundMessage:
 
             # Top level names are just written out.        
             if len(parts) == 1:    
-                self._write_utf(name)
+                if len(name) > 0:
+                    self._write_utf(name)
                 self._write_single_byte(0) # Terminate the name with a '0' octect
             
             # If we are not a top level name, write out our parent first, then write ourselves and
@@ -465,16 +478,37 @@ class DnsOutboundMessage:
 
         return
 
-    def _write_question(self, question: DnsQuestion) -> None:
+    def _write_question(self, question: DnsQuestion, allow_long: bool = False) -> bool:
         """
-            Writes a question to the packet
+            Writes a question to the packet. Returns True on success, or False if
+            we did not (either because the packet was already finished or because the question does not fit.)
         """
+        if self._state == DnsPacketBuilderState.Finished:
+            return False
+
+        start_data_length, start_size = len(self._data), self._packet_offset
+        start_compression_names = self._compression_names.copy()
+
         self._write_name(
             question.name, suppress_compression=question.suppress_compression
         )
         self._write_short(question.rtype)
-        self._write_short(question.rclass)
-        return
+        if question.unique:
+            self._write_short(question.rclass | DnsRecordClass.UNIQUE)
+        else:
+            self._write_short(question.rclass)
+
+        len_limit = MAX_MSG_ABSOLUTE if allow_long else MAX_MSG_TYPICAL
+
+        # if we go over, then rollback and quit
+        if self._packet_offset > len_limit:
+            while len(self._data) > start_data_length:
+                self._data.pop()
+            self._packet_offset = start_size
+            self._compression_names = start_compression_names
+            return False
+
+        return True
 
     def _write_record(self, record: 'DnsRecord', now: float, allow_long: bool = False) -> bool:
         """
@@ -485,6 +519,8 @@ class DnsOutboundMessage:
             return False
 
         start_data_length, start_size = len(self._data), self._packet_offset
+        start_compression_names = self._compression_names.copy()
+
         self._write_name(record.name)
         self._write_short(record.rtype)
 
@@ -516,6 +552,7 @@ class DnsOutboundMessage:
             while len(self._data) > start_data_length:
                 self._data.pop()
             self._packet_offset = start_size
+            self._compression_names = start_compression_names
             return False
 
         return True
@@ -545,7 +582,7 @@ class DnsOutboundMessage:
         """
         bytes = s.encode('utf-8')
         length = len(bytes)
-        if length > 64:
+        if length > 63:
             raise DnsNamePartTooLongError
         self._write_single_byte(length)
         self._write_bytes(bytes)
