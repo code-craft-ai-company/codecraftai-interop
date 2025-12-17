@@ -166,7 +166,7 @@ click = "^8.1.8"
 type = "git"
 url = "https://github.com/automationmojo/automojo-testbase.git"
 reference = "main"
-resolved_reference = "b5bb5f72742a6d5f3c0fd84496d64f19976a6c8a"
+resolved_reference = "415a92441e4661215bfcce6e7a3eae66c06d94fc"
 
 [[package]]
 name = "automojo-this-app"
