@@ -2,21 +2,28 @@
 
 ## Introduction
 
-The automojo-interop package provides a comprehensive set of interoperability protocols and agents for
-automation testing and device management. The system enables communication with remote devices through
-various protocols including SSH, UPnP, DNS/mDNS, power management, and serial communication. The package
-follows a consistent aspects-based approach for configuring retry patterns, timeouts, and logging behaviors
-across all protocols.
+The automojo-interop package provides a core set of interoperability protocols and agents for automation
+testing and device management. The system enables communication with remote devices through essential
+protocols including SSH, DNS/mDNS, power management, serial communication, and REST-based services. The
+package follows a consistent aspects-based approach for configuring retry patterns, timeouts, and logging
+behaviors across all protocols.
+
+The architecture is designed for extensibility, allowing additional protocols to be developed as separate
+modules while maintaining compatibility with the core framework through well-defined interfaces and base
+classes.
 
 ## Glossary
 
-- **Interop_System**: The automojo-interop package that provides protocol implementations and agents
+- **Interop_System**: The automojo-interop package that provides core protocol implementations and extensibility framework
 - **SSH_Agent**: Component that manages SSH connections and command execution on remote hosts
-- **UPnP_Presence**: Component that discovers and manages UPnP devices on the network
 - **DNS_API**: Component that provides DNS query and mDNS service discovery capabilities
+- **Power_Agent**: Component that manages power control for network-attached power strips
+- **Serial_Agent**: Component that provides TCP-based serial communication capabilities
+- **REST_Client**: Base component for REST API communication with aspects-based configuration
 - **Aspects**: Configuration objects that define retry patterns, timeouts, and logging behaviors
 - **Test_Framework**: The testbase framework used for running automated tests
-- **CLI_Interface**: Command-line interface for interacting with protocol implementations
+- **CLI_Interface**: Extensible command-line interface with dynamic protocol command discovery
+- **Protocol_Interface**: Well-defined interfaces (ISystemContext, INetworkClient) for protocol extensibility
 
 ## Requirements
 
@@ -38,16 +45,17 @@ conditions are unstable.
 
 ### Requirement 2
 
-**User Story:** As a network automation engineer, I want to discover UPnP devices on the network and
-generate device-specific client code, so that I can interact with discovered devices programmatically.
+**User Story:** As a REST API automation engineer, I want to interact with REST-based services using
+consistent retry patterns and authentication, so that I can reliably test REST APIs with configurable
+persistence behavior.
 
 #### Acceptance Criteria
 
-1. WHEN UPnP discovery is initiated, THE Interop_System SHALL broadcast SSDP M-SEARCH requests
-2. WHEN UPnP devices respond, THE Interop_System SHALL collect device descriptions and service definitions
-3. WHEN device scanning is complete, THE Interop_System SHALL provide access to discovered device details
-4. WHEN code generation is requested, THE Interop_System SHALL create device-specific proxy classes
-5. WHERE manufacturer extensions exist, THE Interop_System SHALL apply manufacturer-specific device mappings
+1. WHEN REST client is initialized, THE Interop_System SHALL authenticate using provided credentials
+2. WHEN REST calls are made, THE Interop_System SHALL apply configured aspects for retry and timeout behavior
+3. WHEN authentication expires, THE Interop_System SHALL automatically re-authenticate and retry the operation
+4. WHEN action patterns are specified, THE Interop_System SHALL execute calls according to the defined pattern
+5. WHEN connection failures occur, THE Interop_System SHALL retry according to configured aspects
 
 ### Requirement 3
 
@@ -103,16 +111,16 @@ behaviors across all protocols, so that I can maintain uniform error handling an
 
 ### Requirement 7
 
-**User Story:** As a CLI user, I want to scan for UPnP devices and generate device classes from the command
-line, so that I can quickly discover and interact with network devices.
+**User Story:** As a protocol developer, I want to extend the interop system with new protocols using
+well-defined interfaces, so that I can add protocol support without modifying the core framework.
 
 #### Acceptance Criteria
 
-1. WHEN UPnP scan command is executed, THE Interop_System SHALL perform device discovery for the specified window length
-2. WHEN factory modules are specified, THE Interop_System SHALL load manufacturer-specific device factories
-3. WHEN scan results are available, THE Interop_System SHALL save device descriptions to the scan directory
-4. WHEN verbose logging is enabled, THE Interop_System SHALL provide detailed discovery information
-5. WHEN generation command is executed, THE Interop_System SHALL create device proxy classes
+1. WHEN implementing a new protocol, THE Interop_System SHALL provide base classes and interfaces for consistent integration
+2. WHEN adding CLI commands, THE Interop_System SHALL automatically discover and register command groups via namespace packages
+3. WHEN using aspects system, THE Interop_System SHALL apply consistent retry, timeout, and logging patterns across all protocols
+4. WHEN extending agent functionality, THE Interop_System SHALL support inheritance from SystemAgentBase, SerialAgentBase, or PowerAgentBase
+5. WHEN developing manufacturer-specific implementations, THE Interop_System SHALL provide extensible factory registration mechanisms
 
 ### Requirement 8
 
