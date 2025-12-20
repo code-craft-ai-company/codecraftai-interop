@@ -16,7 +16,7 @@ from automojo.interop.protocols.dns.dnsrecord import DnsRecord
 
 class DnsQuestion:
     """
-        The :class:`DnsQuestion` object is utilized to formulate DNS querys and to check to
+        The :class:`DnsQuestion` object is utilized to formulate DNS queries and to check to
         see if a :class:`DnsRecord` answers the query provided.
     """
     def __init__(
@@ -86,7 +86,7 @@ class DnsQuestion:
 
     def answered_by(self, rec: DnsRecord) -> bool:
         """
-            Returns true if the question is answered by the record.
+            Returns True if the question is answered by the record.
 
             :param rec: Record to test against this question.
 
