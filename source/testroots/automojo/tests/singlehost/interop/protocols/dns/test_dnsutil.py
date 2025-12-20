@@ -67,3 +67,16 @@ def test_service_type_name_control_character_raises() -> None:
         exc = err
     testbase.assert_equal(isinstance(exc, DnsBadTypeInNameError), True)
     return
+
+
+def test_service_type_name_subtype_control_character_raises_with_message() -> None:
+    subtype = "good\x01bad"
+    exc = None
+    try:
+        service_type_name(f"{subtype}._sub._http._tcp.local")
+    except DnsBadTypeInNameError as err:
+        exc = err
+    expected_message = "Ascii control character 0x00-0x1F and 0x7F illegal in '%s'" % subtype
+    testbase.assert_equal(isinstance(exc, DnsBadTypeInNameError), True)
+    testbase.assert_equal(str(exc), expected_message)
+    return
