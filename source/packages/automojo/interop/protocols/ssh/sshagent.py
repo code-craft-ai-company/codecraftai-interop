@@ -26,6 +26,7 @@ from automojo.interop.protocols.ssh.sshconst import (
     SshJumpParams
 )
 from automojo.interop.protocols.ssh.sshsession import SshSession
+from automojo.interop.protocols.ssh.sshtunnel import SshTunnel
 
 
 logger = getEnhancedLogger()
@@ -85,6 +86,29 @@ class SshAgent(SshBase):
             session = SshSession(self._host, self._primary_credential, users=self._users, port=self._port,
                                  jump=self._jump, pty_params=pty_params, interactive=interactive, look_for_keys=self._look_for_keys, aspects=aspects)
         return session
+
+    def open_tunnel(self, local_port: int = 0, remote_host: str = 'localhost', remote_port: int = 5432, 
+                    pty_params: Optional[dict] = None, aspects: Optional[AspectsCmd] = None) -> SshTunnel:
+        """
+            Creates a single SSH port forwarding tunnel to a remote service. This is the ONLY way to create 
+            SSH tunnels. Each tunnel represents exactly one port forward. To create multiple tunnels, 
+            call this method multiple times.
+
+            :param local_port: Local port to bind for forwarding. If 0, an available port will be chosen.
+            :param remote_host: Remote host to forward to (default: localhost on remote machine).
+            :param remote_port: Remote port to forward to (default: 5432 for PostgreSQL).
+            :param pty_params: The default pty parameters to use to request a PTY when running commands through the tunnel.
+            :param aspects: The default run aspects to use for the operations performed by the tunnel.
+
+            :returns: A new :class:`SshTunnel` instance representing a single port forward with an established SSH connection.
+        """
+        # Create and establish the SSH connection
+        ssh_client = self._create_client()
+        
+        # Create the tunnel using the internal creation method
+        tunnel = SshTunnel._create_internal(ssh_client, local_port, remote_host, remote_port)
+        
+        return tunnel
 
     def reboot(self, aspects: Optional[AspectsCmd] = None):
         """
