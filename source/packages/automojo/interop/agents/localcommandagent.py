@@ -51,8 +51,8 @@ class LocalCommandAgent(ISystemContext):
     @property
     def aspects(self) -> AspectsCmd:
         """
-            The logging, iteration and other aspects that have been assigned to
-            be used with interacting with the remote SSH service.
+            The logging, iteration and other aspects that govern how commands
+            are executed and monitored on the local host.
         """
         return self._aspects
 
@@ -69,8 +69,7 @@ class LocalCommandAgent(ISystemContext):
 
     def run_cmd(self, command: str, exp_status: Union[int, Sequence] = 0, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
         """
-            Runs a command on the designated host using the specified
-            parameters.
+            Runs a command on the local host using the specified parameters.
 
             :param command: The command to run.
             :param exp_status: An integer or sequence of integers that specify
@@ -101,7 +100,7 @@ class LocalCommandAgent(ISystemContext):
         # Run the command using the SINGULAR pattern, we run it once and then return the result
         if aspects.action_pattern == ActionPattern.SINGLE_CALL:
 
-            # Setup a monitored scope for the call to the remote device in case of timeout failure
+            # Setup a monitored scope for the local call in case of timeout failure
             with MonitoredScope("RUNCMD-SINGULAR", monmsg, completion_toctx, notify_delay=monitor_delay) as _:
 
                 proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -120,7 +119,7 @@ class LocalCommandAgent(ISystemContext):
 
             while True:
 
-                # Setup a monitored scope for the call to the remote device in case of timeout failure
+                # Setup a monitored scope for the local call in case of timeout failure
                 with MonitoredScope("RUNCMD-DO_UNTIL_SUCCESS", monmsg, completion_toctx, notify_delay=monitor_delay) as _:
                     proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     stdout, stderr = proc.communicate(timeout=inactivity_timeout)
@@ -203,11 +202,11 @@ class LocalCommandAgent(ISystemContext):
 
     def verify_connectivity(self) -> bool:
         """
-            Method that can be used to verify connectivity to the target
-            computer.
+            Method that can be used to verify that the local command execution
+            environment is reachable.
 
             :returns: A boolean value indicating whether connectivity with the
-                      remote machine was successful.
+                      local machine was successful.
         """
         return True
 
@@ -245,4 +244,3 @@ class LocalCommandAgent(ISystemContext):
                     fullmsg = format_command_result(msg, command, status, stdout, stderr)
 
         return
-
