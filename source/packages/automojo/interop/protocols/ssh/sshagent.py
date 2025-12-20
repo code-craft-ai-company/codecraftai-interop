@@ -17,6 +17,8 @@ from typing import Optional, Sequence, Union, Tuple
 from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
 import paramiko
+import socket
+import time
 
 from automojo.interop.aspects import  AspectsCmd, DEFAULT_CMD_ASPECTS
 from automojo.credentials.sshcredential import SshCredential
@@ -78,17 +80,16 @@ class SshAgent(SshBase):
 
         session = None
         if basis_session is not None:
-            bs: SshBase = basis_session
+            bs = basis_session
             session = SshSession(bs._host, bs._primary_credential, users=bs._users, port=bs._port,
                                  jump=bs._jump, pty_params=pty_params, interactive=interactive,
-                                 basis_session=basis_session, look_for_keys=bs._look_for_keys, aspects=aspects)
+                                 basis_session=basis_session, look_for_keys=bs._look_for_keys, primitive=primitive, aspects=aspects)
         else:
             session = SshSession(self._host, self._primary_credential, users=self._users, port=self._port,
-                                 jump=self._jump, pty_params=pty_params, interactive=interactive, look_for_keys=self._look_for_keys, aspects=aspects)
+                                 jump=self._jump, pty_params=pty_params, interactive=interactive, look_for_keys=self._look_for_keys, primitive=primitive, aspects=aspects)
         return session
 
-    def open_tunnel(self, local_port: int = 0, remote_host: str = 'localhost', remote_port: int = 5432, 
-                    pty_params: Optional[dict] = None, aspects: Optional[AspectsCmd] = None) -> SshTunnel:
+    def open_tunnel(self, local_port: int = 0, remote_host: str = 'localhost', remote_port: int = 5432) -> SshTunnel:
         """
             Creates a single SSH port forwarding tunnel to a remote service. This is the ONLY way to create 
             SSH tunnels. Each tunnel represents exactly one port forward. To create multiple tunnels, 
@@ -97,18 +98,29 @@ class SshAgent(SshBase):
             :param local_port: Local port to bind for forwarding. If 0, an available port will be chosen.
             :param remote_host: Remote host to forward to (default: localhost on remote machine).
             :param remote_port: Remote port to forward to (default: 5432 for PostgreSQL).
-            :param pty_params: The default pty parameters to use to request a PTY when running commands through the tunnel.
-            :param aspects: The default run aspects to use for the operations performed by the tunnel.
 
             :returns: A new :class:`SshTunnel` instance representing a single port forward with an established SSH connection.
+            
+            :raises: RuntimeError if tunnel creation fails.
+            :raises: ConnectionError if SSH connection cannot be established.
         """
         # Create and establish the SSH connection
         ssh_client = self._create_client()
         
-        # Create the tunnel using the internal creation method
-        tunnel = SshTunnel._create_internal(ssh_client, local_port, remote_host, remote_port)
-        
-        return tunnel
+        try:
+            # Create the tunnel using the internal creation method
+            tunnel = SshTunnel._create_internal(ssh_client, local_port, remote_host, remote_port)
+            return tunnel
+        except Exception as e:
+            # If tunnel creation fails, clean up the SSH client
+            try:
+                ssh_client.close()
+            except Exception:
+                # Ignore errors when closing the client
+                pass
+            
+            # Re-raise the original exception with additional context
+            raise RuntimeError(f"Failed to create SSH tunnel to {remote_host}:{remote_port}: {e}") from e
 
     def reboot(self, aspects: Optional[AspectsCmd] = None):
         """
@@ -121,16 +133,48 @@ class SshAgent(SshBase):
         reboot_cmd = 'reboot'
         try:
             status, stdout, stderr = self.run_cmd(reboot_cmd, aspects=aspects)
-        except:
-            # We might see a connection dropout exception here, so we need
-            # to handle it.
-            pass
+        except (ConnectionError, paramiko.SSHException, socket.error, EOFError) as e:
+            # We might see a connection dropout exception here during reboot, which is expected
+            logger.debug(f"Expected connection error during reboot: {e}")
+        except KeyboardInterrupt:
+            # Allow keyboard interrupts to propagate
+            raise
+        except SystemExit:
+            # Allow system exits to propagate
+            raise
+        except Exception as e:
+            # Log unexpected exceptions but continue with reboot verification
+            logger.warning(f"Unexpected exception during reboot command: {e}")
 
         # Since we are NOT a session, we need to verify the remote machine is back up by attempting to
         # connect to the machine and run a command. We raise a TimeoutError if we cannot connect and
         # run a command before the reboot_timeout runs out.
         
-        return
+        reboot_timeout = 300  # 5 minutes default timeout
+        if aspects and hasattr(aspects, 'completion_timeout'):
+            reboot_timeout = aspects.completion_timeout
+        
+        start_time = time.time()
+        end_time = start_time + reboot_timeout
+        retry_interval = 10  # Wait 10 seconds between attempts
+        
+        # Wait a bit for the reboot to start
+        time.sleep(30)
+        
+        while time.time() < end_time:
+            try:
+                # Try to connect and run a simple command
+                if self.verify_connectivity():
+                    logger.info(f"Host {self._host} is back online after reboot")
+                    return
+            except Exception:
+                # Connection failed, continue waiting
+                pass
+            
+            time.sleep(retry_interval)
+        
+        # If we get here, the timeout was reached
+        raise TimeoutError(f"Host {self._host} did not come back online within {reboot_timeout} seconds after reboot")
 
     def run_cmd(self, command: str, exp_status: Union[int, Sequence]=0, user: str = None, pty_params: dict = None, aspects: Optional[AspectsCmd] = None, ssh_client: Optional[paramiko.SSHClient]=None) -> Tuple[int, str, str]: # pylint: disable=arguments-differ
         """

@@ -33,7 +33,7 @@ class TcpSerialBase(SerialAgentBase):
     NORMAL_PROMPT = b"#"
 
     def __init__(
-        self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
+        self, host: str, port: int, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
     ) -> None:
         """
             Constructs a :class:`TcpSerialBase` instance.
@@ -45,6 +45,7 @@ class TcpSerialBase(SerialAgentBase):
         self._host = host
         self._port = port
         self._aspects = aspects
+        self._original_prompt = None  # Store the original prompt for restoration
         return
 
     def _create_connection(self) -> telnetlib.Telnet:
@@ -56,27 +57,35 @@ class TcpSerialBase(SerialAgentBase):
 
         tnconn = telnetlib.Telnet(host=self._host, port=self._port)
 
-        cmd_out = tnconn.read_until(self.NORMAL_PROMPT, 1)
+        cmd_out = tnconn.read_until(self.NORMAL_PROMPT, self._aspects.inactivity_timeout)
 
         tnconn.write(b"\n")
-        cmd_out = tnconn.read_until(self.NORMAL_PROMPT)
+        cmd_out = tnconn.read_until(self.NORMAL_PROMPT, self._aspects.inactivity_timeout)
 
         tnconn.write(b"echo $PS1\n")
-        ps1_out = tnconn.read_until(self.NORMAL_PROMPT)
-        self.NORMAL_PROMPT = ps1_out.splitlines(False)[1]
+        ps1_out = tnconn.read_until(self.NORMAL_PROMPT, self._aspects.inactivity_timeout)
+        
+        # Safely extract the original prompt with bounds checking
+        ps1_lines = ps1_out.splitlines(False)
+        if len(ps1_lines) > 1:
+            self._original_prompt = ps1_lines[1]  # Save the original prompt
+        else:
+            # Fallback to default prompt if we can't extract it
+            self._original_prompt = self.NORMAL_PROMPT
 
-        tnconn.write(b'export PS1="%s"\n' % self.SERIAL_PROMPT)
+        tnconn.write(b'export PS1="' + self.SERIAL_PROMPT + b'"\n')
 
-        cmd_out = tnconn.read_until(self.SERIAL_PROMPT) # Read the echo of our export command
-        cmd_out = tnconn.read_until(self.SERIAL_PROMPT) # Read the actual prompt we set
+        cmd_out = tnconn.read_until(self.SERIAL_PROMPT, self._aspects.inactivity_timeout) # Read the echo of our export command
+        cmd_out = tnconn.read_until(self.SERIAL_PROMPT, self._aspects.inactivity_timeout) # Read the actual prompt we set
         return tnconn
 
     def _restore_prompt(self, tnconn: telnetlib.Telnet) -> None:
         """
             Restores the shell prompt after a telnet session.
         """
-        tnconn.write(b"echo $PS1\n")
-        ps1_out = tnconn.read_until(self.NORMAL_PROMPT)
+        if self._original_prompt is not None:
+            tnconn.write(b'export PS1="' + self._original_prompt + b'"\n')
+            tnconn.read_until(self._original_prompt, timeout=self._aspects.inactivity_timeout)
         return
 
 
@@ -88,7 +97,7 @@ class TcpSerialSession(TcpSerialBase):
     def __init__(
         self,
         host: str,
-        port: int = 22,
+        port: int,
         session_basis: Optional["TcpSerialSession"] = None,
         aspects: AspectsCmd = DEFAULT_CMD_ASPECTS,
     ):
@@ -136,6 +145,9 @@ class TcpSerialSession(TcpSerialBase):
         if self._session_basis is None and self._telnet_conn is not None:
             self._restore_prompt(self._telnet_conn)
             self._telnet_conn.close()
+        
+        # Always clear the connection reference regardless of ownership
+        self._telnet_conn = None
         return
 
     def run_cmd(
@@ -170,18 +182,28 @@ class TcpSerialSession(TcpSerialBase):
         tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
         tnconn.write(command)
-        stdout_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
+        stdout_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.completion_timeout)
 
         tnconn.write(b"echo $?\n")
         status_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
-        status_bytes = status_raw.splitlines(False)[1]
+        
+        # Safely extract the status with bounds checking
+        status_lines = status_raw.splitlines(False)
+        if len(status_lines) > 1:
+            status_bytes = status_lines[1]
+        else:
+            raise RuntimeError(f"Unable to read exit status from telnet response: {status_raw}")
 
         tnconn.write(b"cat $TNSTDERR\n")
         stderr_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
         stdout = "\n".join(safe_as_str(stdout_raw).splitlines(False)[1:-1])
         stderr = "\n".join(safe_as_str(stderr_raw).splitlines(False)[1:-1])
-        status = int(status_bytes)
+        
+        try:
+            status = int(status_bytes)
+        except ValueError:
+            raise RuntimeError(f"Unable to parse exit status as integer: {status_bytes}")
 
         return status, stdout, stderr
 
@@ -230,10 +252,10 @@ class TcpSerialSession(TcpSerialBase):
         """
         tnconn = None
 
-        if self._session_basis is not None:
+        if self._session_basis is not None and self._session_basis._telnet_conn is not None:
             tnconn = self._session_basis._telnet_conn
         else:
-            tnconn = TcpSerialBase._create_connection(self)
+            tnconn = super()._create_connection()
 
         return tnconn
 
@@ -252,7 +274,7 @@ class TcpSerialAgent(TcpSerialBase):
     """
 
     def __init__(
-        self, host: str, port: int = 22, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
+        self, host: str, port: int, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
     ) -> None:
         """
             Creates a :class:`TcpSerialAgent` instance.
@@ -326,18 +348,28 @@ class TcpSerialAgent(TcpSerialBase):
             tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
             tnconn.write(command)
-            stdout_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
+            stdout_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.completion_timeout)
 
             tnconn.write(b"echo $?\n")
             status_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
-            status_bytes = status_raw.splitlines(False)[1]
+            
+            # Safely extract the status with bounds checking
+            status_lines = status_raw.splitlines(False)
+            if len(status_lines) > 1:
+                status_bytes = status_lines[1]
+            else:
+                raise RuntimeError(f"Unable to read exit status from telnet response: {status_raw}")
 
             tnconn.write(b"cat $TNSTDERR\n")
             stderr_raw = tnconn.read_until(self.SERIAL_PROMPT, timeout=aspects.inactivity_timeout)
 
             stdout = "\n".join(safe_as_str(stdout_raw).splitlines(False)[1:-1])
             stderr = "\n".join(safe_as_str(stderr_raw).splitlines(False)[1:-1])
-            status = int(status_bytes)
+            
+            try:
+                status = int(status_bytes)
+            except ValueError:
+                raise RuntimeError(f"Unable to parse exit status as integer: {status_bytes}")
         finally:
             if tnconn is not None:
                 self._restore_prompt(tnconn)

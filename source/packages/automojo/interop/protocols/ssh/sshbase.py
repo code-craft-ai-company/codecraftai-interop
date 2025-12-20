@@ -119,8 +119,8 @@ class SshBase(ISystemContext):
         self._user_lookup_table = {}
         self._group_lookup_table = {}
 
-        if self._password is None and self._keyfile is None and not self._allow_agent:
-            raise ConfigurationError("SshAgent requires either a 'password', an identity 'keyfile' or allow_agent=True be specified.") from None
+        if self._password is None and self._keyfile is None and self._keyraw is None and self._allow_agent is not True:
+            raise ConfigurationError("SshAgent requires either a 'password', an identity 'keyfile', 'keyraw' or allow_agent=True be specified.") from None
         return
 
     @property
@@ -186,7 +186,7 @@ class SshBase(ISystemContext):
         """
         return self._users
 
-    def lookup_user_by_uid(self, uid: int, update: bool = True) -> Union[dict, None]:
+    def lookup_user_by_uid(self, uid: int, update: bool = True) -> Union[str, None]:
         """
             A helper method used to lookup cached user information by uid.
 
@@ -207,12 +207,12 @@ class SshBase(ISystemContext):
 
         return username
 
-    def lookup_group_by_uid(self, gid: int, update: bool = True) -> Union[dict, None]:
+    def lookup_group_by_gid(self, gid: int, update: bool = True) -> Union[str, None]:
         """
-            A helper method used to lookup cached group information by uid.
+            A helper method used to lookup cached group information by gid.
 
             :param gid: The gid of a group.
-            :param update: A boolean indicating that the table should be updated if the uid is not found.
+            :param update: A boolean indicating that the table should be updated if the gid is not found.
 
             :returns: The name of the group associated with the group id or None.
         """
@@ -289,6 +289,7 @@ class SshBase(ISystemContext):
         connection_interval = self._aspects.connection_interval
         allowed_connection_exceptions = self._aspects.allowed_connection_exceptions
 
+        ssh_client = None
         while now_time < end_time:
 
             try:
@@ -303,11 +304,20 @@ class SshBase(ISystemContext):
 
                     user_creds = self._users[session_user]
 
-                    cl_username = user_creds["username"]
-                    cl_password = user_creds["password"]
-                    cl_keyfile = user_creds["keyfile"]
-                    cl_keypasswd = user_creds["keypasswd"]
-                    cl_allow_agent = user_creds["allow_agent"]
+                    cl_username = user_creds.get("username")
+                    cl_password = user_creds.get("password")
+                    cl_keyfile = user_creds.get("keyfile")
+                    cl_keyraw = user_creds.get("keyraw")
+                    cl_keypasswd = user_creds.get("keypasswd")
+                    cl_allow_agent = user_creds.get("allow_agent", False)
+
+                    # Validate that required credentials are present
+                    if cl_username is None:
+                        raise ConfigurationError(f"Username is required for session user '{session_user}' but was not provided in user credentials.") from None
+                    
+                    # Ensure at least one authentication method is available
+                    if cl_password is None and cl_keyfile is None and cl_keyraw is None and not cl_allow_agent:
+                        raise ConfigurationError(f"Session user '{session_user}' requires either a 'password', an identity 'keyfile', 'keyraw' or allow_agent=True be specified.") from None
 
                 pkey = None
                 if cl_keyfile is not None:
@@ -329,10 +339,18 @@ class SshBase(ISystemContext):
                 break
 
             except BaseException as cerr:
+                # Clean up the failed ssh_client before handling the exception
+                if ssh_client is not None:
+                    try:
+                        ssh_client.close()
+                    except Exception:
+                        pass  # Ignore errors when closing failed client
+                    ssh_client = None
+                    
                 extype = type(cerr)
 
                 if len(allowed_connection_exceptions) > 0 and extype in allowed_connection_exceptions:
-                    errmsg = f"SSH connection attempt failed for host={self._ipaddr} begin={begin_time} end={now_time} now={now_time}."
+                    errmsg = f"SSH connection attempt failed for host={self._ipaddr} begin={begin_time} end={end_time} now={now_time}."
                     logger.error(errmsg)
 
                     now_time = datetime.now()
@@ -343,6 +361,10 @@ class SshBase(ISystemContext):
                 else:
                     raise # If the exception we got is not an allowed type, re-raise it
 
+        # Ensure we have a valid connection before returning
+        if ssh_client is None:
+            errmsg = f"Failed to establish SSH connection to {self._ipaddr} within {self._aspects.connection_timeout} seconds."
+            raise ConnectionError(errmsg)
 
         return ssh_client
 
@@ -362,7 +384,7 @@ class SshBase(ISystemContext):
     
             sftp = paramiko.SFTPClient.from_transport(transport)
             try:
-                dir_info = sftp_list_directory(sftp, root_dir, self.lookup_user_by_uid, self.lookup_group_by_uid)
+                dir_info = sftp_list_directory(sftp, root_dir, self.lookup_user_by_uid, self.lookup_group_by_gid)
             finally:
                 sftp.close()
             
@@ -384,9 +406,9 @@ class SshBase(ISystemContext):
             sftp = paramiko.SFTPClient.from_transport(transport)
             try:
                 fsresult = sftp.stat(remotedir)
-                if fsresult.st_mode | stat.S_IFDIR:
+                if stat.S_ISDIR(fsresult.st_mode):
                     exists = True
-            except IOError:
+            except (FileNotFoundError, IOError):
                 exists = False
             finally:
                 sftp.close()
@@ -413,7 +435,7 @@ class SshBase(ISystemContext):
 
             sftp = paramiko.SFTPClient.from_transport(transport)
             try:
-                dir_info = sftp_list_tree(sftp, root_dir, self.lookup_user_by_uid, self.lookup_group_by_uid, max_depth=depth)
+                dir_info = sftp_list_tree(sftp, root_dir, self.lookup_user_by_uid, self.lookup_group_by_gid, max_depth=depth)
             finally:
                 sftp.close()
 
@@ -496,7 +518,8 @@ class SshBase(ISystemContext):
                 errmsg = "In order to pass a 'user' parameter, you must create the SSHAgent with a 'users' parameter with a dictionary of user credentials."
                 raise ConfigurationError(errmsg) from None
             if user not in self._users:
-                errmsg = "The specified 'user=%s' was not found in the users credentials provided to SSHAgent."
+                errmsg = "The specified 'user=%s' was not found in the users credentials provided to SSHAgent." % user
+                raise ConfigurationError(errmsg) from None
 
         completion_toctx = TimeoutContext(aspects.completion_timeout, aspects.completion_interval)
         
@@ -578,7 +601,7 @@ class SshBase(ISystemContext):
                     break
 
                 if completion_toctx.final_attempt:
-                    what_for="command failure"
+                    what_for="command continued to succeed"
                     details = [
                         "CMD: %s" % command,
                         "STDOUT:",
@@ -615,9 +638,9 @@ class SshBase(ISystemContext):
             sftp = paramiko.SFTPClient.from_transport(transport)
             try:
                 fsresult = sftp.stat(remotepath)
-                if not (fsresult.st_mode | stat.S_IFDIR):
+                if stat.S_ISREG(fsresult.st_mode):
                     exists = True
-            except FileNotFoundError as ferr:
+            except (FileNotFoundError, IOError):
                 exists = False
             finally:
                 sftp.close()
@@ -671,32 +694,26 @@ class SshBase(ISystemContext):
 
             :returns: Loaded Paramiko key object.
         """
-
         keybuffer = StringIO(keyraw)
 
-        pkey = None
-        try:
-            pkey = paramiko.RSAKey.from_private_key(keybuffer, password=keypasswd)
-        except Exception as klerr:
-            pass
+        # Try different key types in order of common usage
+        key_types = [
+            paramiko.RSAKey,
+            paramiko.ECDSAKey,
+            paramiko.Ed25519Key,
+            paramiko.DSSKey
+        ]
         
-        if pkey is None:
+        for key_type in key_types:
             try:
-                pkey = paramiko.ECDSAKey.from_private_key(keybuffer, password=keypasswd)
-            except:
-                pass
-
-        if pkey is None:
-            try:
-                pkey = paramiko.Ed25519Key.from_private_key(keybuffer, password=keypasswd)
-            except:
-                pass
-
-        if pkey is None:
-            errmsg = f"ERROR: Unable to load private from raw content."
-            raise ConfigurationError(errmsg)
-
-        return pkey
+                keybuffer.seek(0)  # Reset buffer position for each attempt
+                pkey = key_type.from_private_key(keybuffer, password=keypasswd)
+                return pkey
+            except Exception:
+                continue
+        
+        errmsg = f"ERROR: Unable to load private key from raw content. Tried RSA, ECDSA, Ed25519, and DSS formats."
+        raise ConfigurationError(errmsg)
 
     def _load_key_file(self, keyfile: str, keypasswd: str):
         """
@@ -707,32 +724,25 @@ class SshBase(ISystemContext):
 
             :returns: Loaded Paramiko key object.
         """
-
         keyfile = os.path.expanduser(os.path.expandvars(keyfile))
 
-        pkey = None
-        try:
-            pkey = paramiko.RSAKey.from_private_key_file(keyfile, password=keypasswd)
-        except Exception as klerr:
-            pass
+        # Try different key types in order of common usage
+        key_types = [
+            paramiko.RSAKey,
+            paramiko.ECDSAKey,
+            paramiko.Ed25519Key,
+            paramiko.DSSKey
+        ]
         
-        if pkey is None:
+        for key_type in key_types:
             try:
-                pkey = paramiko.ECDSAKey.from_private_key_file(keyfile)
-            except:
-                pass
-
-        if pkey is None:
-            try:
-                pkey = paramiko.Ed25519Key.from_private_key_file(keyfile)
-            except:
-                pass
-
-        if pkey is None:
-            errmsg = f"ERROR: Unable to load private keyfile={keyfile}"
-            raise ConfigurationError(errmsg)
-
-        return pkey
+                pkey = key_type.from_private_key_file(keyfile, password=keypasswd)
+                return pkey
+            except Exception:
+                continue
+        
+        errmsg = f"ERROR: Unable to load private keyfile={keyfile}. Tried RSA, ECDSA, Ed25519, and DSS formats."
+        raise ConfigurationError(errmsg)
 
     def _ssh_execute_command(self, ssh_runner, command: str, pty_params=None, inactivity_timeout: float=DEFAULT_SSH_TIMEOUT, inactivity_interval: float=DEFAULT_SSH_RETRY_INTERVAL, chunk_size: int=1024) -> Tuple[int, str, str]: # pylint: disable=no-self-use
         """

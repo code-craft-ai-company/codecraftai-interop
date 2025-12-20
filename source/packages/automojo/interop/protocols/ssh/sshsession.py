@@ -15,6 +15,8 @@ __credits__ = []
 from typing import Optional, Sequence, Union, Tuple
 
 from types import TracebackType
+import socket
+import time
 
 import paramiko
 
@@ -48,7 +50,7 @@ class SshSession(SshBase):
     """
     def __init__(self, host: str, primary_credential: SshCredential, users: Optional[dict] = None, port:int=22, jump: Union[str, SshJumpParams, None] = None,
                  pty_params: Optional[dict] = None, session_user=None, interactive=False, basis_session: Optional["SshSession"]=None,
-                 called_id: Optional[str]=None, look_for_keys: bool = False, aspects: AspectsCmd=DEFAULT_CMD_ASPECTS):
+                 called_id: Optional[str]=None, look_for_keys: bool = False, primitive: Optional[bool] = None, aspects: AspectsCmd=DEFAULT_CMD_ASPECTS):
         """
             Create a new :class:`SshSession` instance.
 
@@ -63,6 +65,7 @@ class SshSession(SshBase):
             :param basis_session: Optional session to base this one on.
             :param called_id: Friendly identifier used in logs.
             :param look_for_keys: Search for SSH keys in default locations.
+            :param primitive: Override primitive mode for this session. If None, uses credential's primitive setting.
             :param aspects: Default command aspects for operations.
         """
         SshBase.__init__(self, host, primary_credential, users=users, port=port, jump=jump,
@@ -71,6 +74,10 @@ class SshSession(SshBase):
         self._session_user = session_user
         self._interactive = interactive
         self._read_timeout = 2
+
+        # Override primitive mode if specified for this session
+        if primitive is not None:
+            self._primitive = primitive
 
         self._ssh_client = None
         self._ssh_runner = None
@@ -86,28 +93,81 @@ class SshSession(SshBase):
         if self._interactive:
             inactivity_timeout = self._aspects.inactivity_timeout
 
-            channel = self._ssh_client.get_transport().open_session(timeout=inactivity_timeout)
-
-            if self._pty_params is not None:
-                channel.get_pty(**self._pty_params)
-            else:
-                channel.get_pty()
-
-            channel.invoke_shell()
-            channel.sendall("export PS1=%s\n" % INTERACTIVE_PROMPT)
-
-            leader = b""
+            channel = None
             try:
-                while True:
-                    out = channel.in_buffer.read(1028, self._read_timeout)
-                    leader += out
-            except paramiko.buffered_pipe.PipeTimeout as _:
-                # We don't need to do anything if the pipe, times out.
-                # it means we are likely at the command prompt and that
-                # there is nothing to read.
-                pass
+                channel = self._ssh_client.get_transport().open_session(timeout=inactivity_timeout)
 
-            self._ssh_runner = channel
+                if self._pty_params is not None:
+                    channel.get_pty(**self._pty_params)
+                else:
+                    channel.get_pty()
+
+                channel.invoke_shell()
+                channel.sendall("export PS1=%s\n" % INTERACTIVE_PROMPT)
+
+                leader = b""
+                max_leader_size = 8192  # Limit accumulated data to prevent memory issues
+                start_time = time.time()
+
+                prompt_received = False
+                try:
+                    while True:
+                        # Check for overall timeout using aspects inactivity_timeout
+                        if time.time() - start_time > inactivity_timeout:
+                            logger.error("Interactive shell initialization timeout after %s seconds", inactivity_timeout)
+                            break
+                            
+                        out = channel.in_buffer.read(1028, self._read_timeout)
+                        leader += out
+                        
+                        # Prevent unlimited memory growth
+                        if len(leader) > max_leader_size:
+                            # Keep only the last portion of the data
+                            leader = leader[-max_leader_size//2:]
+                            
+                        # Check if we've received the prompt we're looking for
+                        if INTERACTIVE_PROMPT.encode('utf-8') in leader:
+                            prompt_received = True
+                            break
+                            
+                except paramiko.buffered_pipe.PipeTimeout:
+                    # We don't need to do anything if the pipe times out.
+                    # it means we are likely at the command prompt and that
+                    # there is nothing to read.
+                    prompt_received = True  # Assume we're at the prompt
+                except Exception as e:
+                    logger.error("Exception during interactive shell initialization: %s", e)
+                    # Clean up resources on failure
+                    if channel:
+                        try:
+                            channel.close()
+                        except Exception:
+                            pass
+                    self._cleanup_ssh_client()
+                    raise RuntimeError(f"Failed to initialize interactive shell: {e}") from e
+
+                # Verify that initialization was successful
+                if not prompt_received:
+                    # Clean up resources on failure
+                    if channel:
+                        try:
+                            channel.close()
+                        except Exception:
+                            pass
+                    self._cleanup_ssh_client()
+                    raise RuntimeError("Interactive shell initialization failed - prompt not received within timeout")
+
+                self._ssh_runner = channel
+                
+            except Exception as e:
+                # If any exception occurs during channel setup, clean up the SSH client
+                if channel:
+                    try:
+                        channel.close()
+                    except Exception:
+                        pass
+                self._cleanup_ssh_client()
+                raise
         else:
             self._ssh_runner = self._ssh_client
 
@@ -125,11 +185,29 @@ class SshSession(SshBase):
 
     def close(self):
         """
-            Closes the SSH session and the assocatied SSH connection.
+            Closes the SSH session and the associated SSH connection.
         """
-        # Only close the client if this session owns the client
-        if self._basis_session is None:
-            self._ssh_client.close()
+        # Close interactive channel if it exists and is different from the client
+        if hasattr(self, '_ssh_runner') and self._ssh_runner is not None and self._ssh_runner != self._ssh_client:
+            try:
+                if hasattr(self._ssh_runner, 'close'):
+                    self._ssh_runner.close()
+            except Exception:
+                # Ignore errors when closing the channel
+                pass
+            finally:
+                self._ssh_runner = None
+        
+        # Only close the client if this session owns the client and it exists
+        if self._basis_session is None and hasattr(self, '_ssh_client') and self._ssh_client is not None:
+            try:
+                self._ssh_client.close()
+            except Exception:
+                # Ignore errors when closing the client (might already be closed)
+                pass
+            finally:
+                self._ssh_client = None
+        
         return
 
     def directory(self, root_dir: str) -> dict:
@@ -233,11 +311,11 @@ class SshSession(SshBase):
             bs: SshSession = basis_session
             session = SshSession(bs._host, bs._primary_credential, users=bs._users, port=bs._port,
                                  jump=bs._jump, pty_params=pty_params, interactive=interactive,
-                                 basis_session=bs, look_for_keys=bs._look_for_keys, aspects=aspects)
+                                 basis_session=bs, look_for_keys=bs._look_for_keys, primitive=primitive, aspects=aspects)
         else:
             session = SshSession(self._host, self._primary_credential, users=self._users, port=self._port,
                                  jump=self._jump, pty_params=pty_params, interactive=interactive,
-                                 look_for_keys=self._look_for_keys, aspects=aspects)
+                                 look_for_keys=self._look_for_keys, primitive=primitive, aspects=aspects)
         return session
 
     def reboot(self, aspects: Optional[AspectsCmd] = None):
@@ -251,16 +329,22 @@ class SshSession(SshBase):
         reboot_cmd = 'reboot'
         try:
             status, stdout, stderr = self.run_cmd(reboot_cmd, aspects=aspects)
-        except:
-            # We might see a connection dropout exception here, so we need
-            # to handle it.
-            pass
+        except (ConnectionError, paramiko.SSHException, socket.error, EOFError) as e:
+            # We might see a connection dropout exception here during reboot, which is expected
+            logger.debug(f"Expected connection error during reboot: {e}")
+        except KeyboardInterrupt:
+            # Allow keyboard interrupts to propagate
+            raise
+        except SystemExit:
+            # Allow system exits to propagate
+            raise
+        except Exception as e:
+            # Log unexpected exceptions but continue with session closure
+            logger.warning(f"Unexpected exception during reboot command: {e}")
 
         # Since we are a session, we need to reconnect to the remote machine after the reboot.
         errmsg = "Session closed due to reboot."
         raise UnExpectedSessionClosureError(errmsg)
- 
-        return
 
     def run_cmd(self, command: str, exp_status: Union[int, Sequence]=0, user: str = None, pty_params: dict = None, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
         """
@@ -279,6 +363,19 @@ class SshSession(SshBase):
 
         return status, stdout, stderr
 
+    def _cleanup_ssh_client(self):
+        """
+            Helper method to clean up the SSH client when initialization fails.
+        """
+        if hasattr(self, '_ssh_client') and self._ssh_client is not None:
+            # Only close if this session owns the client (not a basis session)
+            if self._basis_session is None:
+                try:
+                    self._ssh_client.close()
+                except Exception:
+                    pass
+            self._ssh_client = None
+
     def _create_client(self, session_user: Optional[str] = None) -> paramiko.SSHClient:
         """
             Create an SSHClient to use for running commands and performing FTP operations.
@@ -286,12 +383,25 @@ class SshSession(SshBase):
             :param session_user: The user role and associated credentials to use when creating the SSHClient.
 
             :returns: An SSHClient object connected to the remote machine under the default or specified user credential.
+            
+            :raises: RuntimeError if the basis session client is invalid or no longer active.
         """
         ssh_client = None
-        if self._basis_session is not None:
-            ssh_client = self._basis_session._ssh_client
+        if self._basis_session is not None and session_user is None:
+            # Only reuse basis session client if no specific session_user is requested
+            basis_client = self._basis_session._ssh_client
+            if basis_client is None:
+                raise RuntimeError("Basis session SSH client is None - the basis session may not have been properly initialized")
+            
+            # Check if the basis session client is still connected
+            transport = basis_client.get_transport()
+            if transport is None or not transport.is_active():
+                raise RuntimeError("Basis session SSH client is no longer active - the connection has been closed or lost")
+            
+            ssh_client = basis_client
         else:
-            ssh_client = SshBase._create_client(self, session_user=session_user)
+            # Create new client with specified session_user or default credentials
+            ssh_client = super()._create_client(session_user=session_user)
         return ssh_client
 
     def _ssh_execute_command(self, ssh_runner, command: str, pty_params=None, inactivity_timeout: float=DEFAULT_SSH_TIMEOUT, inactivity_interval: float=DEFAULT_SSH_RETRY_INTERVAL, chunk_size: int=1024) -> Tuple[int, str, str]:

@@ -57,6 +57,8 @@ class SshTunnel:
         self._forward_thread = None
         self._active = False
         self._owns_ssh_client = True  # This tunnel owns the SSH client and should close it
+        self._connection_threads = []  # Track active connection threads
+        self._connection_lock = threading.Lock()  # Protect connection thread list
         
         # Start the tunnel immediately
         self._start_tunnel()
@@ -95,7 +97,7 @@ class SshTunnel:
 
     def close(self):
         """
-            Closes all port forwards and cleans up resources. Does not close the SSH client.
+            Closes all port forwards and cleans up resources. Also closes the SSH client.
             This is an alias for shutdown() for backward compatibility.
         """
         self.shutdown()
@@ -126,6 +128,17 @@ class SshTunnel:
             self._forward_thread.join(timeout=10.0)
             if self._forward_thread.is_alive():
                 logger.warning("Forwarding thread did not complete within timeout")
+        
+        # Wait for connection handler threads to complete
+        with self._connection_lock:
+            active_connections = [t for t in self._connection_threads if t.is_alive()]
+        
+        if active_connections:
+            logger.debug(f"Waiting for {len(active_connections)} connection handler threads to complete...")
+            for thread in active_connections:
+                thread.join(timeout=5.0)
+                if thread.is_alive():
+                    logger.warning(f"Connection handler thread did not complete within timeout")
         
         # Close the SSH client since this tunnel owns it
         if self._owns_ssh_client and self._ssh_client:
@@ -170,29 +183,43 @@ class SshTunnel:
         """
             Private method that handles the port forwarding loop using paramiko's local_forward_tunnel.
         """
-        transport = self._ssh_client.get_transport()
-        
         try:
             while self._active:
                 try:
+                    # Get transport each time to ensure it's still valid
+                    transport = self._ssh_client.get_transport()
+                    if transport is None or not transport.is_active():
+                        logger.error("SSH transport is no longer active, stopping tunnel")
+                        break
+                    
                     # Accept incoming connections
                     conn, addr = self._local_socket.accept()
                     logger.debug(f"Accepted connection from {addr} for tunnel to {self._remote_host}:{self._remote_port}")
                     
-                    # Use paramiko's built-in forwarding mechanism in a separate thread
-                    threading.Thread(
-                        target=local_forward_tunnel,
-                        args=(conn, self._remote_host, self._remote_port, transport),
+                    # Clean up finished connection threads before creating new ones
+                    self._cleanup_finished_threads()
+                    
+                    # Create and track connection handler thread
+                    conn_thread = threading.Thread(
+                        target=self._handle_connection,
+                        args=(conn, transport),
                         daemon=True
-                    ).start()
+                    )
+                    
+                    with self._connection_lock:
+                        self._connection_threads.append(conn_thread)
+                    
+                    conn_thread.start()
                     
                 except socket.error as e:
+                    # Socket errors during accept() are expected when shutting down
                     if self._active:
                         logger.error(f"Socket error in port forward: {e}")
+                    else:
+                        logger.debug(f"Socket error during shutdown (expected): {e}")
                     break
                 except Exception as e:
-                    if self._active:
-                        logger.error(f"Error in port forward: {e}")
+                    logger.error(f"Unexpected error in port forward: {e}")
                     break
                     
         except Exception as e:
@@ -204,13 +231,41 @@ class SshTunnel:
             except:
                 pass
 
+    def _handle_connection(self, conn: socket.socket, transport: paramiko.Transport):
+        """
+            Handle a single connection through the tunnel.
+            
+            :param conn: The client connection socket.
+            :param transport: The SSH transport to use for forwarding.
+        """
+        try:
+            local_forward_tunnel(conn, self._remote_host, self._remote_port, transport)
+        except Exception as e:
+            logger.debug(f"Connection handler error: {e}")
+        finally:
+            try:
+                conn.close()
+            except:
+                pass
+
+    def _cleanup_finished_threads(self):
+        """
+            Remove finished threads from the connection thread list.
+        """
+        with self._connection_lock:
+            self._connection_threads = [t for t in self._connection_threads if t.is_alive()]
+
     @property
     def local_port(self) -> int:
         """
             Returns the actual local port being used for the tunnel.
 
             :returns: The local port number.
+            
+            :raises: RuntimeError if the tunnel is not properly initialized.
         """
+        if self._actual_local_port is None:
+            raise RuntimeError("Tunnel is not properly initialized - no local port assigned")
         return self._actual_local_port
 
     @property
@@ -240,25 +295,39 @@ class SshTunnel:
         """
         return self._active
 
-    def get_connection_string(self, database: str = None, username: str = None, db_type: str = 'postgresql') -> str:
+    def get_connection_string(self, database: str = None, username: str = None, password: str = None, db_type: str = 'postgresql') -> str:
         """
             Helper method to generate database connection strings for use with SQLAlchemy or other ORMs.
 
             :param database: Optional database name.
             :param username: Optional username for the connection string.
+            :param password: Optional password for the connection string.
             :param db_type: Database type (postgresql, mysql, etc.).
 
             :returns: A connection string template for the tunneled connection.
+            
+            :raises: RuntimeError if the tunnel is not properly initialized.
         """
-        base_url = f"127.0.0.1:{self._actual_local_port}"
+        local_port = self.local_port  # This will raise RuntimeError if not initialized
+        base_url = f"127.0.0.1:{local_port}"
         
         conn_str: str
 
-        if username and database:
-            conn_str = f"{db_type}://{username}@{base_url}/{database}"
-        elif database:
-            conn_str = f"{db_type}://127.0.0.1:{self._actual_local_port}/{database}"
+        # Build authentication part
+        auth_part = ""
+        if username:
+            if password:
+                auth_part = f"{username}:{password}@"
+            else:
+                auth_part = f"{username}@"
+        
+        # Build connection string
+        if database:
+            conn_str = f"{db_type}://{auth_part}{base_url}/{database}"
+        elif auth_part or db_type != 'postgresql':
+            # Include protocol if we have auth or non-default db_type
+            conn_str = f"{db_type}://{auth_part}{base_url}"
         else:
-            conn_str = f"127.0.0.1:{self._actual_local_port}"
+            conn_str = base_url
 
         return conn_str
