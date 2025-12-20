@@ -1,10 +1,10 @@
 
 import automojo.testbase as testbase
+from automojo.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
 from automojo.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
 from automojo.interop.protocols.dns.dnsquestion import DnsQuestion
 from automojo.interop.protocols.dns.dnsconst import DnsRecordType, DnsRecordClass, DnsQr, DnsOpCode, DnsRespCode
 from automojo.interop.protocols.dns.dnsflags import DnsFlags
-import struct
 
 def test_dns_question_preserves_qu_bit() -> None:
     """
@@ -24,32 +24,15 @@ def test_dns_question_preserves_qu_bit() -> None:
     testbase.assert_equal(len(packets), 1)
 
     p1 = packets[0]
-    
-    # Parse the packet to find the Question Section Class field.
-    # Header: 12 bytes.
-    # Name: "qu-test.local."
-    # Labels: 
-    #   7 'qu-test'
-    #   5 'local'
-    #   0
-    # Total name length = 1 + 7 + 1 + 5 + 1 = 15 bytes.
-    # QTYPE = 2 bytes.
-    # QCLASS = 2 bytes.
-    # Offset of QCLASS = 12 + 15 + 2 = 29.
-    
-    class_offset = 12 + 15 + 2
-    
-    # Verify we are at the right place manually roughly (sanity check)
-    # The byte before QTYPE should be 0 (end of name)
-    testbase.assert_equal(p1[12 + 15 - 1], 0)
-    
-    qclass = struct.unpack("!H", p1[class_offset:class_offset+2])[0]
-    
-    # Check if UNIQUE bit (0x8000) is set.
-    # 0x8001 = 32769
-    expected_class = DnsRecordClass.IN | DnsRecordClass.UNIQUE
-    
-    testbase.assert_equal(qclass, expected_class.value)
+
+    inbound = DnsInboundMessage(p1)
+    testbase.assert_equal(len(inbound.questions), 1)
+
+    parsed_question = inbound.questions[0]
+    testbase.assert_equal(parsed_question.name, "qu-test.local.")
+    testbase.assert_equal(parsed_question.rtype, DnsRecordType.A)
+    testbase.assert_equal(parsed_question.rclass, DnsRecordClass.IN)
+    testbase.assert_equal(parsed_question.unique, True)
     return
 
 if __name__ == "__main__":
