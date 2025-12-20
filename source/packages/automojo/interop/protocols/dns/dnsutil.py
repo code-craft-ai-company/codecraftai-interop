@@ -86,18 +86,19 @@ def service_type_name(service_type: str, *, allow_underscores: bool = False) -> 
             if len(service_type_parts) < 5:
                 raise DnsBadTypeInNameError("_sub requires a subtype name")
 
-            comp_remaining= service_type_parts[4]
+            comp_remaining = service_type_parts[4]
 
         else:
             comp_remaining = service_type_parts[3]
 
+        if comp_remaining is not None:
             length = len(comp_remaining.encode('utf-8'))
             if length > 63:
-                raise DnsBadTypeInNameError("Too long: '%s'" % comp_remaining[0])
+                raise DnsBadTypeInNameError("Too long: '%s'" % comp_remaining)
 
-            if HAS_ASCII_CONTROL_CHARS.search(comp_remaining[0]):
+            if HAS_ASCII_CONTROL_CHARS.search(comp_remaining):
                 raise DnsBadTypeInNameError(
-                    "Ascii control character 0x00-0x1F and 0x7F illegal in '%s'" % comp_remaining[0]
+                    "Ascii control character 0x00-0x1F and 0x7F illegal in '%s'" % comp_remaining
                 )
 
     fqname = ".".join((comp_service_name, comp_protocol_type, comp_local, ""))
