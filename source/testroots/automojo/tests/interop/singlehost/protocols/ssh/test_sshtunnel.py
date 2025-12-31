@@ -16,6 +16,23 @@ class DummyTransport:
         self.closed = True
 
 
+class DummyThread:
+    def __init__(self, alive: bool = False):
+        self.started = False
+        self._alive = alive
+
+    def start(self):
+        self.started = True
+        return None
+
+    def is_alive(self):
+        return self._alive
+
+    def join(self, timeout=None):
+        self._alive = False
+        return None
+
+
 class DummySocket:
     def __init__(self, port=0):
         self._port = port if port != 0 else 5432
@@ -79,7 +96,8 @@ def test_tunnel_internal_creation():
         mock_socket.configure(side_effect=lambda af, sock_type: DummySocket(5433))
         
         with create_module_patch(sshtunnel.threading, "Thread") as mock_thread:
-            mock_thread_instance = mock_thread.return_value
+            mock_thread_instance = DummyThread()
+            mock_thread.configure(return_value=mock_thread_instance)
             mock_thread_instance.start = lambda: None
             
             tunnel = sshtunnel.SshTunnel._create_internal(ssh_client, 5433, 'localhost', 5432)
@@ -101,7 +119,8 @@ def test_tunnel_context_manager():
         mock_socket.configure(side_effect=lambda af, sock_type: DummySocket(5433))
         
         with create_module_patch(sshtunnel.threading, "Thread") as mock_thread:
-            mock_thread_instance = mock_thread.return_value
+            mock_thread_instance = DummyThread(alive=False)
+            mock_thread.configure(return_value=mock_thread_instance)
             mock_thread_instance.start = lambda: None
             mock_thread_instance.is_alive = lambda: False
             
@@ -125,17 +144,18 @@ def test_get_connection_string():
         mock_socket.configure(side_effect=lambda af, sock_type: DummySocket(5433))
         
         with create_module_patch(sshtunnel.threading, "Thread") as mock_thread:
-            mock_thread_instance = mock_thread.return_value
+            mock_thread_instance = DummyThread()
+            mock_thread.configure(return_value=mock_thread_instance)
             mock_thread_instance.start = lambda: None
             
             tunnel = sshtunnel.SshTunnel._create_internal(ssh_client, 5433, 'localhost', 5432)
             
             # Test PostgreSQL connection string
-            conn_str = tunnel.get_connection_string('mydb', 'user', 'postgresql')
+            conn_str = tunnel.get_connection_string('mydb', 'user', db_type='postgresql')
             testbase.assert_equal(conn_str, 'postgresql://user@127.0.0.1:5433/mydb')
             
             # Test MySQL connection string
-            conn_str = tunnel.get_connection_string('mydb', 'user', 'mysql')
+            conn_str = tunnel.get_connection_string('mydb', 'user', db_type='mysql')
             testbase.assert_equal(conn_str, 'mysql://user@127.0.0.1:5433/mydb')
             
             # Test basic host:port
@@ -154,7 +174,8 @@ def test_tunnel_properties():
         mock_socket.configure(side_effect=lambda af, sock_type: DummySocket(5433))
         
         with create_module_patch(sshtunnel.threading, "Thread") as mock_thread:
-            mock_thread_instance = mock_thread.return_value
+            mock_thread_instance = DummyThread()
+            mock_thread.configure(return_value=mock_thread_instance)
             mock_thread_instance.start = lambda: None
             
             tunnel = sshtunnel.SshTunnel._create_internal(ssh_client, 5433, 'db.example.com', 3306)
