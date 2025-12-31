@@ -685,6 +685,26 @@ class SshBase(ISystemContext):
 
         return
 
+    def _get_supported_key_types(self) -> list[Tuple[str, type]]:
+        """
+            Build a list of supported Paramiko key types in preference order.
+
+            :returns: A list of tuples containing key type labels and classes.
+        """
+        preferred_key_types = [
+            ("RSA", getattr(paramiko, "RSAKey", None)),
+            ("ECDSA", getattr(paramiko, "ECDSAKey", None)),
+            ("Ed25519", getattr(paramiko, "Ed25519Key", None)),
+            ("DSS", getattr(paramiko, "DSSKey", None))
+        ]
+
+        key_types: list[Tuple[str, type]] = []
+        for key_name, key_type in preferred_key_types:
+            if key_type is not None:
+                key_types.append((key_name, key_type))
+
+        return key_types
+
     def _load_key(self, keyraw: str, keypasswd: str):
         """
             Load a private key from raw text.
@@ -697,14 +717,11 @@ class SshBase(ISystemContext):
         keybuffer = StringIO(keyraw)
 
         # Try different key types in order of common usage
-        key_types = [
-            paramiko.RSAKey,
-            paramiko.ECDSAKey,
-            paramiko.Ed25519Key,
-            paramiko.DSSKey
-        ]
+        key_types = self._get_supported_key_types()
+        if not key_types:
+            raise ConfigurationError("ERROR: No supported private key formats are available from Paramiko.")
         
-        for key_type in key_types:
+        for _, key_type in key_types:
             try:
                 keybuffer.seek(0)  # Reset buffer position for each attempt
                 pkey = key_type.from_private_key(keybuffer, password=keypasswd)
@@ -712,7 +729,8 @@ class SshBase(ISystemContext):
             except Exception:
                 continue
         
-        errmsg = f"ERROR: Unable to load private key from raw content. Tried RSA, ECDSA, Ed25519, and DSS formats."
+        attempted_formats = ", ".join(name for name, _ in key_types)
+        errmsg = f"ERROR: Unable to load private key from raw content. Tried {attempted_formats} formats."
         raise ConfigurationError(errmsg)
 
     def _load_key_file(self, keyfile: str, keypasswd: str):
@@ -727,21 +745,19 @@ class SshBase(ISystemContext):
         keyfile = os.path.expanduser(os.path.expandvars(keyfile))
 
         # Try different key types in order of common usage
-        key_types = [
-            paramiko.RSAKey,
-            paramiko.ECDSAKey,
-            paramiko.Ed25519Key,
-            paramiko.DSSKey
-        ]
+        key_types = self._get_supported_key_types()
+        if not key_types:
+            raise ConfigurationError("ERROR: No supported private key formats are available from Paramiko.")
         
-        for key_type in key_types:
+        for _, key_type in key_types:
             try:
                 pkey = key_type.from_private_key_file(keyfile, password=keypasswd)
                 return pkey
             except Exception:
                 continue
         
-        errmsg = f"ERROR: Unable to load private keyfile={keyfile}. Tried RSA, ECDSA, Ed25519, and DSS formats."
+        attempted_formats = ", ".join(name for name, _ in key_types)
+        errmsg = f"ERROR: Unable to load private keyfile={keyfile}. Tried {attempted_formats} formats."
         raise ConfigurationError(errmsg)
 
     def _ssh_execute_command(self, ssh_runner, command: str, pty_params=None, inactivity_timeout: float=DEFAULT_SSH_TIMEOUT, inactivity_interval: float=DEFAULT_SSH_RETRY_INTERVAL, chunk_size: int=1024) -> Tuple[int, str, str]: # pylint: disable=no-self-use
