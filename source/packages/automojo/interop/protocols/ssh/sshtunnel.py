@@ -15,10 +15,10 @@ __credits__ = []
 from typing import Optional, Union
 from types import TracebackType
 import socket
+import select
 import threading
 
 import paramiko
-from paramiko.forward import local_forward_tunnel
 
 from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
@@ -181,7 +181,8 @@ class SshTunnel:
 
     def _forward_loop(self):
         """
-            Private method that handles the port forwarding loop using paramiko's local_forward_tunnel.
+            Private method that handles the port forwarding loop by accepting connections and forwarding
+            traffic over the SSH transport.
         """
         try:
             while self._active:
@@ -238,8 +239,15 @@ class SshTunnel:
             :param conn: The client connection socket.
             :param transport: The SSH transport to use for forwarding.
         """
+        chan = None
         try:
-            local_forward_tunnel(conn, self._remote_host, self._remote_port, transport)
+            chan = transport.open_channel(
+                "direct-tcpip",
+                (self._remote_host, self._remote_port),
+                conn.getsockname()
+            )
+
+            self._pump_channel(conn, chan)
         except Exception as e:
             logger.debug(f"Connection handler error: {e}")
         finally:
@@ -247,6 +255,34 @@ class SshTunnel:
                 conn.close()
             except:
                 pass
+            if chan is not None:
+                try:
+                    chan.close()
+                except:
+                    pass
+
+    def _pump_channel(self, conn: socket.socket, chan: paramiko.Channel):
+        """
+            Forward data between a local socket connection and an SSH channel until one side closes.
+        """
+        sockets = [conn, chan]
+
+        while self._active:
+            read_ready, _, _ = select.select(sockets, [], [], 1.0)
+            if not read_ready:
+                continue
+
+            if conn in read_ready:
+                data = conn.recv(1024)
+                if not data:
+                    break
+                chan.sendall(data)
+
+            if chan in read_ready:
+                data = chan.recv(1024)
+                if not data:
+                    break
+                conn.sendall(data)
 
     def _cleanup_finished_threads(self):
         """
