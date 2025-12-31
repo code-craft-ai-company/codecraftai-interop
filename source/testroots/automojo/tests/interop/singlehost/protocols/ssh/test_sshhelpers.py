@@ -89,14 +89,16 @@ def test_ssh_execute_command_in_channel_success():
     status_chunks = [chunks[2] + chunks[3]]
     chan_status = DummyChannel(status_chunks, [])
 
-    # Patch recursive call so that second call uses chan_status
-    def side_effect(channel, command, **kwargs):
-        if command == "echo $?":
-            return ssh_execute_command_in_channel(chan_status, command, **kwargs)
-        raise AssertionError("unexpected command")
+    # Patch status helper so that the exit-status check uses the dedicated status channel
+    def status_side_effect(channel, *, read_timeout, inactivity_timeout, inactivity_interval, chunk_size):
+        status_stdout_buffer, status_stderr_buffer = sshhelpers._ssh_execute_command_in_channel_imp(
+            chan_status, "echo $?", read_timeout, inactivity_timeout, inactivity_interval, chunk_size
+        )
+        status_stdout, _ = sshhelpers._process_channel_output("echo $?", status_stdout_buffer, status_stderr_buffer)
+        return int(status_stdout)
 
-    with create_module_patch(sshhelpers, "ssh_execute_command_in_channel") as mock_exec:
-        mock_exec.configure(side_effect=side_effect)
+    with create_module_patch(sshhelpers, "_get_exit_status_in_channel") as mock_status:
+        mock_status.configure(side_effect=status_side_effect)
         status, stdout, stderr = ssh_execute_command_in_channel(chan, "cmd", read_timeout=0.1)
     testbase.assert_equal(status, 0)
     testbase.assert_equal(stdout, "out")
