@@ -23,7 +23,7 @@
                 "testing",
                 "run",
                 "--root=${workspaceFolder}/source/testroots/automojo",
-                "--includes=automojo.tests.singlehost.interop.protocols.dns",
+                "--includes=automojo.tests.interop.singlehost.protocols.dns",
                 "--breakpoint=testrun-start"
             ],
             "console": "integratedTerminal",
