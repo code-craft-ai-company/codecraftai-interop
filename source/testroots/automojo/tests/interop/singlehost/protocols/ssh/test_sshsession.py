@@ -28,6 +28,9 @@ class DummyTransport:
         self.channel = channel
         self.open_calls = []
 
+    def is_active(self):
+        return True
+
     def open_session(self, timeout=None):
         self.open_calls.append(timeout)
         return self.channel
@@ -142,8 +145,10 @@ def test_run_cmd_delegates_to__run_cmd() -> None:
     session._ssh_runner = object()
     called = []
 
-    def run(runner, command, user=None, pty_params=None, aspects=None):
-        called.append((runner, command, user, pty_params, isinstance(aspects, AspectsCmd)))
+    def run(runner, command, exp_status=0, user=None, pty_params=None, aspects=None):
+        if aspects is None:
+            aspects = session._aspects
+        called.append((runner, command, exp_status, user, pty_params, isinstance(aspects, AspectsCmd)))
         return 0, "out", "err"
 
     session._run_cmd = run
@@ -152,9 +157,13 @@ def test_run_cmd_delegates_to__run_cmd() -> None:
     testbase.assert_equal(status, 0)
     testbase.assert_equal(stdout, "out")
     testbase.assert_equal(stderr, "err")
-    testbase.assert_equal(called[0][0], session._ssh_runner)
-    testbase.assert_equal(called[0][1], "cmd")
-    testbase.assert_equal(called[0][2], "u")
+    runner, command, exp_status, user, pty_params, aspects_is_cmd = called[0]
+    testbase.assert_equal(runner, session._ssh_runner)
+    testbase.assert_equal(command, "cmd")
+    testbase.assert_equal(exp_status, 0)
+    testbase.assert_equal(user, "u")
+    testbase.assert_equal(pty_params, None)
+    testbase.assert_equal(aspects_is_cmd, True)
     return
 
 
@@ -208,7 +217,7 @@ def test_open_session_with_basis_session() -> None:
 
 def test_create_client_uses_basis() -> None:
     basis = make_session()
-    dummy = DummyClient()
+    dummy = DummyClient(DummyTransport(DummyChannel()))
     basis._ssh_client = dummy
     session = make_session(basis=basis)
 
@@ -223,7 +232,8 @@ def test_create_client_calls_base() -> None:
     dummy = DummyClient()
     called = []
 
-    def base_create(self, session_user=None):
+    def base_create(*_args, **kwargs):
+        session_user = kwargs.get("session_user")
         called.append(session_user)
         return dummy
 
