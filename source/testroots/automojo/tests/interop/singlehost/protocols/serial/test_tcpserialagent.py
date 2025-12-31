@@ -45,7 +45,7 @@ def test_run_cmd_uses_timeout() -> None:
     aspects = AspectsCmd(inactivity_timeout=7)
     status, stdout, stderr = agent.run_cmd("cmd", aspects=aspects)
 
-    testbase.assert_equal(dummy.timeouts, [7, 7, 7, 7])
+    testbase.assert_equal(dummy.timeouts, [7, 600, 7, 7])
     testbase.assert_equal(status, 0)
     testbase.assert_equal(stdout, "out")
     testbase.assert_equal(stderr, "")

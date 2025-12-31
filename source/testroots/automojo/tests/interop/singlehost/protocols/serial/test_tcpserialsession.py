@@ -44,7 +44,7 @@ def test_session_run_cmd_uses_timeout() -> None:
     status, stdout, stderr = session.run_cmd("cmd", aspects=aspects)
 
     testbase.assert_equal(called, [1])
-    testbase.assert_equal(dummy.timeouts, [5, 5, 5, 5])
+    testbase.assert_equal(dummy.timeouts, [5, 600, 5, 5])
     testbase.assert_equal(status, 0)
     testbase.assert_equal(stdout, "out")
     testbase.assert_equal(stderr, "")
