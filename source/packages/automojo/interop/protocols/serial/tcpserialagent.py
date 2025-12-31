@@ -261,7 +261,7 @@ class TcpSerialSession(TcpSerialBase):
 
 
 class TcpSerialAgent(TcpSerialBase):
-    """
+    r"""
         The :class:`TcpSerialAgent` provides access to serial port hosted on a TCP/IP network.  The
         remote endpoint might be a host and port for a serial port hosted on a serial concentrator.
         It could be the host and port of a serial port hosted on a linux box via USB and ser2net.

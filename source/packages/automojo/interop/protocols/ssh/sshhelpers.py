@@ -581,6 +581,46 @@ def _ssh_execute_command_in_channel_imp(ssh_channel: paramiko.Channel, command: 
 
     return stdout_buffer, stderr_buffer
 
+def _process_channel_output(command: str, stdout_buffer: bytearray, stderr_buffer: bytearray) -> Tuple[str, str]:
+    """
+        Processes the stdout and stderr buffers from a channel command execution, validating that
+        the command was echoed and terminated with the interactive prompt, then returning trimmed output.
+    """
+    stdout = stdout_buffer.decode()
+    if not stdout.startswith(command):
+        errmsg = "The first line should have been an echo of our command."
+        raise Exception(errmsg)
+
+    if not stdout.endswith(INTERACTIVE_PROMPT):
+        errmsg = "The output should have ended with the interactive prompt."
+        raise Exception(errmsg)
+
+    stdout = stdout[len(command):-len(INTERACTIVE_PROMPT)].strip()
+    stderr = stderr_buffer.decode()
+
+    return stdout, stderr
+
+
+def _get_exit_status_in_channel(ssh_channel: paramiko.Channel, *, read_timeout: float, inactivity_timeout: float, inactivity_interval: float, chunk_size: int) -> int:
+    """
+        Executes ``echo $?`` in the provided channel and parses the resulting exit status without
+        re-entering :func:`ssh_execute_command_in_channel`, avoiding recursion concerns.
+    """
+    status_stdout_buffer, status_stderr_buffer = _ssh_execute_command_in_channel_imp(
+        ssh_channel, "echo $?", read_timeout, inactivity_timeout, inactivity_interval, chunk_size
+    )
+
+    status_stdout, _ = _process_channel_output("echo $?", status_stdout_buffer, status_stderr_buffer)
+
+    status = 1
+    if status_stdout.isdigit():
+        status = int(status_stdout)
+    else:
+        logger.warning("Could not parse exit status from: %s", status_stdout)
+
+    return status
+
+
 def ssh_execute_command_in_channel(ssh_channel: paramiko.Channel, command: str, read_timeout: float=2, inactivity_timeout: float=DEFAULT_SSH_TIMEOUT, inactivity_interval: float=DEFAULT_SSH_RETRY_INTERVAL, chunk_size: int=1024, status_check=False) -> Tuple[int, str, str]:
     """
         Runs a command on a remote server using the specified ssh_channel.  We implement our own version of ssh_execute_command
@@ -601,47 +641,24 @@ def ssh_execute_command_in_channel(ssh_channel: paramiko.Channel, command: str, 
     stdout_buffer, stderr_buffer = _ssh_execute_command_in_channel_imp(
         ssh_channel, command, read_timeout, inactivity_timeout, inactivity_interval, chunk_size
     )
-    
+
     status = 0  # Default to success
     if not status_check:
         # Get exit status by running echo $? immediately after the command
         try:
-            status_stdout_buffer, _ = _ssh_execute_command_in_channel_imp(
-                ssh_channel, "echo $?", read_timeout, inactivity_timeout, inactivity_interval, chunk_size
+            status = _get_exit_status_in_channel(
+                ssh_channel,
+                read_timeout=read_timeout,
+                inactivity_timeout=inactivity_timeout,
+                inactivity_interval=inactivity_interval,
+                chunk_size=chunk_size
             )
-            status_stdout = status_stdout_buffer.decode().strip()
-            
-            # Parse the status, looking for the numeric value
-            status_lines = status_stdout.split('\n')
-            for line in status_lines:
-                line = line.strip()
-                if line.isdigit():
-                    status = int(line)
-                    break
-            else:
-                # If no numeric status found, assume failure
-                logger.warning(f"Could not parse exit status from: {status_stdout}")
-                status = 1
-                
-        except Exception as e:
+
+        except Exception as exc:
             # If status check fails, log warning and assume failure
-            logger.warning(f"Failed to get exit status for command '{command}': {e}")
+            logger.warning("Failed to get exit status for command '%s': %s", command, exc)
             status = 1
 
-    stdout = stdout_buffer.decode()
-    del stdout_buffer
-
-    if not stdout.startswith(command):
-        errmsg = "The first line should have been an echo of our command."
-        raise Exception(errmsg)
-
-    if not stdout.endswith(INTERACTIVE_PROMPT):
-        errmsg = "The output should have ended with the interactive prompt."
-        raise Exception(errmsg)
-
-    stdout = stdout[len(command):-len(INTERACTIVE_PROMPT)].strip()
-
-    stderr = stderr_buffer.decode()
-    del stderr_buffer
+    stdout, stderr = _process_channel_output(command, stdout_buffer, stderr_buffer)
 
     return status, stdout, stderr
