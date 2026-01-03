@@ -28,30 +28,6 @@ When running tests you should create an output folder in order to be able to cap
 # Code Naming Conventions
 The code naming conventions of this repository follows the [Automation Mojo Python Naming Conventions](userguide/10-02-naming-conventions.rst)
 
-## Documentation Comments
-Documentation comments use sphinx style.  I do not put the parameter types in the comment because all the function should use type hinting.  There should be no need to duplicate the type information in the comments.  The text of the doc comment should be indented four spaces to the inside of the start of the triple quote.  The following is an example.
-
-```
-def repeat(what: str, count: int) -> List[str]:
-    """
-        This function repeats what you feed it up to 100 times.
-
-        :param what: What you want repeated.
-        :param count: How many times to repeat it.
-    
-        :returns: The repeated strings.
-        :raises: ValueError if you tyr to repeat more than 100 times.
-    """
-
-    if count > 100:
-        raise ValueError("The 'count' parameter cannot exceed 100.")
-
-    rtnval = [what for _ in range(0, count - 1)]
-
-    return rtnval
-```
-
-
 # Code Structure
 The code structure of this repository follows the [Automation Mojo Python Code Structure Standards](userguide/10-01-code-organization.rst)
 
