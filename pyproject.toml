@@ -19,7 +19,7 @@ packages = [{include="automojo", from="source/packages"}]
 python = ">=3.10,<4.0"
 paramiko = "^4.0.0"
 rpyc = "^6.0.1"
-psutil = "^7.0.0"
+psutil = "^7.2.1"
 requests = "^2.32.3"
 click = "^8.2.1"
 automojo-credentials = { git = "https://github.com/automationmojo/automojo-credentials.git", branch = "main" }

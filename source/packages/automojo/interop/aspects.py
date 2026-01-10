@@ -11,11 +11,13 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import List, Optional, Union
+from typing import Tuple, Optional, Union
 
 from enum import IntEnum
 
 import logging
+
+from automojo.xmodules.freezable import Freezable
 from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
 
@@ -43,7 +45,7 @@ DEFAULT_COMPLETION_INTERVAL = 10
 
 DEFAULT_CONNECTION_TIMEOUT = 16
 DEFAULT_CONNECTION_INTERVAL = 2
-DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS: List[BaseException] = []
+DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS: Tuple[BaseException] = []
 
 DEFAULT_INACTIVITY_TIMEOUT = 600
 DEFAULT_INACTIVITY_INTERVAL = .5
@@ -56,9 +58,9 @@ DEFAULT_LOGGING_PATTERN = LoggingPattern.ALL_RESULTS
 
 DEFAULT_MUST_CONNECT = False
 
-DEFAULT_ALLOWED_ERROR_CODES: List[int] = []
+DEFAULT_ALLOWED_ERROR_CODES: Tuple[int] = []
 
-class Aspects:
+class Aspects(Freezable):
     """
         Aspects are utilized with the interop APIs and agents such as the :class:`SSHAgent` class in order
         to modify the behavior of APIs with respect to retry parameter such as timeout, interval, looping patterns
@@ -76,8 +78,8 @@ class Aspects:
                        monitor_delay: float = DEFAULT_MONITOR_DELAY,
                        logging_pattern: LoggingPattern = DEFAULT_LOGGING_PATTERN,
                        retry_logging_interval: int = DEFAULT_RETRY_LOGGING_INTERVAL,
-                       allowed_error_codes: List[int] = DEFAULT_ALLOWED_ERROR_CODES,
-                       allowed_connection_exceptions: List[BaseException] = DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS,
+                       allowed_error_codes: Tuple[int] = DEFAULT_ALLOWED_ERROR_CODES,
+                       allowed_connection_exceptions: Tuple[BaseException] = DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS,
                        must_connect: bool = DEFAULT_MUST_CONNECT,
                        logger: Optional[logging.Logger]=None):
         """
@@ -103,6 +105,8 @@ class Aspects:
             :param must_connect: Used to indicate that connection failures should be raised.
             :param logger: Optional logger for output.
         """
+        super(Aspects).__init__()
+
         self.action_pattern = action_pattern
         self.completion_timeout = completion_timeout
         self.completion_interval = completion_interval
@@ -122,12 +126,15 @@ class Aspects:
         else:
             self.logger = logger
 
+        self.freeze()
         return
-class AspectsCmd:
+
+
+class AspectsCmd(Freezable):
     """
         Extends :class:`Aspects` with command-specific parameters.
     """
-    def __init__(self, expected_status: Union[int, List[int]]=0,
+    def __init__(self, expected_status: Union[int, Tuple[int]]=0,
                        user: Optional[str]=None,
                        pty_params: Optional[dict]=None,
                        action_pattern: ActionPattern = ActionPattern.SINGLE_CALL,
@@ -140,8 +147,8 @@ class AspectsCmd:
                        monitor_delay: float = DEFAULT_MONITOR_DELAY,
                        logging_pattern: LoggingPattern = DEFAULT_LOGGING_PATTERN,
                        retry_logging_interval: int = DEFAULT_RETRY_LOGGING_INTERVAL,
-                       allowed_error_codes: List[int] = DEFAULT_ALLOWED_ERROR_CODES,
-                       allowed_connection_exceptions: List[BaseException] = DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS,
+                       allowed_error_codes: Tuple[int] = DEFAULT_ALLOWED_ERROR_CODES,
+                       allowed_connection_exceptions: Tuple[BaseException] = DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS,
                        logger: Optional[logging.Logger]=None):
         """
             Creates an :class:`AspectsCmd` instance.
@@ -167,6 +174,7 @@ class AspectsCmd:
             :param allowed_error_codes: A list of error codes that allow retry
             :param allowed_connection_exceptions: List of exceptions that do not count as connection failures.
         """
+        super(Aspects).__init__()
 
         self.action_pattern = action_pattern
         self.completion_timeout = completion_timeout
@@ -184,6 +192,8 @@ class AspectsCmd:
         self.expected_status = expected_status
         self.user = user
         self.pty_params = pty_params
+
+        self.freeze()
         return
 
 
