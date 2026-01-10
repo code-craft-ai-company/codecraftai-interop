@@ -117,8 +117,8 @@ class Aspects(Freezable):
         self.monitor_delay = monitor_delay
         self.logging_pattern = logging_pattern
         self.retry_logging_interval = retry_logging_interval
-        self.allowed_error_codes = allowed_error_codes
-        self.allowed_connection_exceptions = allowed_connection_exceptions
+        self.allowed_error_codes = tuple(allowed_error_codes)
+        self.allowed_connection_exceptions = tuple(allowed_connection_exceptions)
         self.must_connect=must_connect
 
         if logger is None:
@@ -186,8 +186,8 @@ class AspectsCmd(Freezable):
         self.monitor_delay = monitor_delay
         self.logging_pattern = logging_pattern
         self.retry_logging_interval = retry_logging_interval
-        self.allowed_error_codes = allowed_error_codes
-        self.allowed_connection_exceptions = allowed_connection_exceptions
+        self.allowed_error_codes = tuple(allowed_error_codes)
+        self.allowed_connection_exceptions = tuple(allowed_connection_exceptions)
         
         self.expected_status = expected_status
         self.user = user
