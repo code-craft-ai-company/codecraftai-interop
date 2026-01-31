@@ -12,7 +12,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Optional, Sequence, Union, Tuple
+from typing import Dict, Optional, Sequence, Union, Tuple
 
 from types import TracebackType
 import socket
@@ -48,7 +48,7 @@ class SshSession(SshBase):
         SSH operations.  The :class:`SshSession` also holds open the SSHClient for its entire scope and ensures the SSHClient is closed and
         cleaned up properly when the :class:`SshSession` goes out of scope.
     """
-    def __init__(self, host: str, primary_credential: SshCredential, users: Optional[dict] = None, port:int=22, jump: Union[str, SshJumpParams, None] = None,
+    def __init__(self, host: str, primary_credential: SshCredential, users: Optional[Dict[str, SshCredential]] = None, port:int=22, jump: Union[str, SshJumpParams, None] = None,
                  pty_params: Optional[dict] = None, session_user=None, interactive=False, basis_session: Optional["SshSession"]=None,
                  called_id: Optional[str]=None, look_for_keys: bool = False, primitive: Optional[bool] = None, aspects: AspectsCmd=DEFAULT_CMD_ASPECTS):
         """
@@ -288,12 +288,13 @@ class SshSession(SshBase):
         home_dir = self._get_home_directory(aspects=aspects)
         return home_dir
 
-    def open_session(self, primitive: bool = False, pty_params: Optional[dict] = None, interactive=False, basis_session: Optional["SshSession"] = None,
+    def open_session(self, user: str = None, primitive: bool = False, pty_params: Optional[dict] = None, interactive=False, basis_session: Optional["SshSession"] = None,
                      aspects: Optional[AspectsCmd] = None, **kwargs) -> "SshSession":
         """
             Provies a mechanism to create a :class:`SshSession` object with derived settings.  This method allows various parameters for the session
             to be overridden.  This allows for the performing of a series of SSH operations under a particular set of shared settings and or credentials.
 
+            :param user: open the session under a different user credential.
             :param primitive: Use primitive mode for FTP operations for the session.
             :param pty_params: The default pty parameters to use to request a PTY when running commands through the session.
             :param interactive: Creates an interactive session which holds open an interactive shell so commands can interact in the shell.
@@ -306,14 +307,18 @@ class SshSession(SshBase):
         if aspects is None:
             aspects = self._aspects
 
+        session_credential = self._primary_credential
+        if user is not None:
+            session_credential = self._users[user]
+
         session = None
         if basis_session is not None:
             bs: SshSession = basis_session
-            session = SshSession(bs._host, bs._primary_credential, users=bs._users, port=bs._port,
+            session = SshSession(bs._host, session_credential, users=bs._users, port=bs._port,
                                  jump=bs._jump, pty_params=pty_params, interactive=interactive,
                                  basis_session=bs, look_for_keys=bs._look_for_keys, primitive=primitive, aspects=aspects)
         else:
-            session = SshSession(self._host, self._primary_credential, users=self._users, port=self._port,
+            session = SshSession(self._host, session_credential, users=self._users, port=self._port,
                                  jump=self._jump, pty_params=pty_params, interactive=interactive,
                                  look_for_keys=self._look_for_keys, primitive=primitive, aspects=aspects)
         return session
@@ -346,13 +351,12 @@ class SshSession(SshBase):
         errmsg = "Session closed due to reboot."
         raise UnExpectedSessionClosureError(errmsg)
 
-    def run_cmd(self, command: str, exp_status: Union[int, Sequence]=0, user: str = None, pty_params: dict = None, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
+    def run_cmd(self, command: str, exp_status: Union[int, Sequence]=0, pty_params: dict = None, aspects: Optional[AspectsCmd] = None) -> Tuple[int, str, str]:
         """
             Runs a command on the designated host using the current session SSH session and client.
 
             :param command: The command to run.
             :param exp_status: An integer or sequence of integers that specify the set of expected status codes from the command.
-            :param user: The registered name of the user role to use to lookup the credentials for running the command.
             :param pty_params: The pty parameters to use to request a PTY when running the command.
             :param aspects: The run aspects to use when running the command.
 

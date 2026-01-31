@@ -12,7 +12,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Optional, Sequence, Union, Tuple
+from typing import Dict, Optional, Sequence, Union, Tuple
 
 from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 import os
@@ -63,7 +63,7 @@ class SshBase(ISystemContext):
         The :class:`SshBase` object provides for the sharing of state and fuctional patterns
         for APIs between the :class:`SshSession` object and the :class:`SshAgent`.
     """
-    def __init__(self, host: str, primary_credential: SshCredential, users: Optional[dict] = None,
+    def __init__(self, host: str, primary_credential: SshCredential, users: Optional[Dict[str, SshCredential]] = None,
                  port: int = 22, jump: Union[str, SshJumpParams, None] = None, pty_params: Optional[dict] = None,
                  called_id: Optional[str]=None, look_for_keys: bool = False,
                  aspects: AspectsCmd = DEFAULT_CMD_ASPECTS):
@@ -180,7 +180,7 @@ class SshBase(ISystemContext):
         return self._pty_params
 
     @property
-    def users(self) -> dict:
+    def users(self) -> Dict[str, SshCredential]:
         """
             A dictionary of roles and user credentials that can be used for interaction with the remote SSH server.
         """
@@ -304,12 +304,12 @@ class SshBase(ISystemContext):
 
                     user_creds = self._users[session_user]
 
-                    cl_username = user_creds.get("username")
-                    cl_password = user_creds.get("password")
-                    cl_keyfile = user_creds.get("keyfile")
-                    cl_keyraw = user_creds.get("keyraw")
-                    cl_keypasswd = user_creds.get("keypasswd")
-                    cl_allow_agent = user_creds.get("allow_agent", False)
+                    cl_username = user_creds.username
+                    cl_password = user_creds.password
+                    cl_keyfile = user_creds.keyfile
+                    cl_keyraw = user_creds.keyraw
+                    cl_keypasswd = user_creds.keypasswd
+                    cl_allow_agent = user_creds.allow_agent
 
                     # Validate that required credentials are present
                     if cl_username is None:

@@ -12,7 +12,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Optional, Sequence, Union, Tuple
+from typing import Dict, Optional, Sequence, Union, Tuple
 
 from automojo.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
@@ -41,7 +41,7 @@ class SshAgent(SshBase):
         APIs for running command and transferring files along with code that helps ensure commands are logged cleanly.  The :class:`SshAgent` also
         provides run patterning to help eliminate duplication of code associated with running SSH commands in loops.
     """
-    def __init__(self, host: str, primary_credential: SshCredential, users: Optional[dict] = None, port: int = 22, jump: Union[str, SshJumpParams, None] = None,
+    def __init__(self, host: str, primary_credential: SshCredential, users: Optional[Dict[str, SshCredential]] = None, port: int = 22, jump: Union[str, SshJumpParams, None] = None,
                  pty_params: Optional[dict] = None, called_id: Optional[str]=None, look_for_keys: bool = False, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS):
         """
             Initialize an :class:`SshAgent` instance.
@@ -60,12 +60,13 @@ class SshAgent(SshBase):
                          pty_params=pty_params, called_id=called_id, look_for_keys=look_for_keys, aspects=aspects)
         return
 
-    def open_session(self, primitive: bool = False, pty_params: Optional[dict] = None, interactive=False, basis_session: Optional[SshSession] = None,
+    def open_session(self, user: str = None, primitive: bool = False, pty_params: Optional[dict] = None, interactive=False, basis_session: Optional[SshSession] = None,
                      aspects: Optional[AspectsCmd] = None) -> SshSession:
         """
             Provies a mechanism to create a :class:`SshSession` object with derived settings.  This method allows various parameters for the session
             to be overridden.  This allows for the performing of a series of SSH operations under a particular set of shared settings and or credentials.
 
+            :param user: open the session under a different user credential.
             :param primitive: Use primitive mode for FTP operations for the session.
             :param pty_params: The default pty parameters to use to request a PTY when running commands through the session.
             :param interactive: Creates an interactive session which holds open an interactive shell so commands can interact in the shell.
@@ -78,15 +79,20 @@ class SshAgent(SshBase):
         if aspects is None:
             aspects = self._aspects
 
+        session_credential = self._primary_credential
+        if user is not None:
+            session_credential = self._users[user]
+
         session = None
         if basis_session is not None:
             bs = basis_session
-            session = SshSession(bs._host, bs._primary_credential, users=bs._users, port=bs._port,
+            session = SshSession(bs._host, session_credential, users=bs._users, port=bs._port,
                                  jump=bs._jump, pty_params=pty_params, interactive=interactive,
                                  basis_session=basis_session, look_for_keys=bs._look_for_keys, primitive=primitive, aspects=aspects)
         else:
-            session = SshSession(self._host, self._primary_credential, users=self._users, port=self._port,
-                                 jump=self._jump, pty_params=pty_params, interactive=interactive, look_for_keys=self._look_for_keys, primitive=primitive, aspects=aspects)
+            session = SshSession(self._host, session_credential, users=self._users, port=self._port,
+                                 jump=self._jump, pty_params=pty_params, interactive=interactive,
+                                 look_for_keys=self._look_for_keys, primitive=primitive, aspects=aspects)
         return session
 
     def open_tunnel(self, local_port: int = 0, remote_host: str = 'localhost', remote_port: int = 5432) -> SshTunnel:
@@ -197,7 +203,7 @@ class SshAgent(SshBase):
             if ssh_client is None:
                 # If we are not passed in a client to use, we create one
                 # and then clean it up before returning
-                ssh_client = self._create_client()
+                ssh_client = self._create_client(user)
                 cleanup_client = True
 
             status, stdout, stderr = self._run_cmd(ssh_client, command, exp_status=exp_status, user=user, pty_params=pty_params, aspects=aspects)
