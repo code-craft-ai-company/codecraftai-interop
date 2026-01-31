@@ -21,7 +21,7 @@ from automojo.restclient.base.restapigroup import RestApiGroup
 if TYPE_CHECKING:
     from automojo.interop.protocols.power.dlipower.dlipowerclient import DliPowerRestClient
 
-class ApiNodeNetwork(RestApiGroup):
+class NetworkApiGroup(RestApiGroup):
     """
         Interface layer for REST operations on network configuration.
     """

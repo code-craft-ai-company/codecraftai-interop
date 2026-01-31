@@ -23,7 +23,7 @@ from automojo.interop.protocols.power.dlipower.responsemodel import User
 if TYPE_CHECKING:
     from automojo.interop.protocols.power.dlipower.dlipowerclient import DliPowerRestClient
 
-class ApiNodeAuth(RestApiGroup):
+class AuthApiGroup(RestApiGroup):
     """
         Interface layer for REST operations on authentication.
     """

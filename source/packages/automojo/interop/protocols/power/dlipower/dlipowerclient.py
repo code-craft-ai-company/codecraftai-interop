@@ -22,14 +22,14 @@ from automojo.credentials.basiccredential import BasicCredential
 from automojo.restclient.base.aspectsrest import AspectsRest, DEFAULT_REST_ASPECTS
 from automojo.restclient.base.restclientbase import RestClientBase
 
-from automojo.interop.protocols.power.dlipower.groups.apinoderelay import ApiNodeRelay
-from automojo.interop.protocols.power.dlipower.groups.apinodeauth import ApiNodeAuth
-from automojo.interop.protocols.power.dlipower.groups.apinodeconfig import ApiNodeConfig
-from automojo.interop.protocols.power.dlipower.groups.apinodemeter import ApiNodeMeter
-from automojo.interop.protocols.power.dlipower.groups.apinodenetwork import ApiNodeNetwork
-from automojo.interop.protocols.power.dlipower.groups.apinodeautoping import ApiNodeAutoping
-from automojo.interop.protocols.power.dlipower.groups.apinodescript import ApiNodeScript
-from automojo.interop.protocols.power.dlipower.groups.apinoderenderer import ApiNodeRenderer
+from automojo.interop.protocols.power.dlipower.groups.authapigroup import AuthApiGroup
+from automojo.interop.protocols.power.dlipower.groups.autopingapigroup import AutopingApiGroup
+from automojo.interop.protocols.power.dlipower.groups.configapigroup import ConfigApiGroup
+from automojo.interop.protocols.power.dlipower.groups.meterapigroup import MeterApiGroup
+from automojo.interop.protocols.power.dlipower.groups.networkapigroup import NetworkApiGroup
+from automojo.interop.protocols.power.dlipower.groups.relayapigroup import RelayApiGroup
+from automojo.interop.protocols.power.dlipower.groups.rendererapigroup import RendererApiGroup
+from automojo.interop.protocols.power.dlipower.groups.scriptapigroup import ScriptApiGroup
 
 
 class DliPowerRestClient(RestClientBase):
@@ -50,15 +50,14 @@ class DliPowerRestClient(RestClientBase):
         """
         super().__init__(host, credential, port, scheme, aspects)
 
-        self._node_relay = ApiNodeRelay(self)
-        self._node_auth = ApiNodeAuth(self)
-        self._node_config = ApiNodeConfig(self)
-        self._node_meter = ApiNodeMeter(self)
-        self._node_network = ApiNodeNetwork(self)
-        self._node_autoping = ApiNodeAutoping(self)
-        self._node_script = ApiNodeScript(self)
-        self._node_renderer = ApiNodeRenderer(self)
-
+        self._node_auth = AuthApiGroup(self)
+        self._node_autoping = AutopingApiGroup(self)
+        self._node_config = ConfigApiGroup(self)
+        self._node_meter = MeterApiGroup(self)
+        self._node_network = NetworkApiGroup(self)
+        self._node_relay = RelayApiGroup(self)
+        self._node_renderer = RendererApiGroup(self)
+        self._node_script = ScriptApiGroup(self)
 
         return
 

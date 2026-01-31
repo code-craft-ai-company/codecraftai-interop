@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from automojo.interop.protocols.power.dlipower.dlipowerclient import DliPowerRestClient
 
 
-class ApiNodeRelay(RestApiGroup):
+class RelayApiGroup(RestApiGroup):
     """
         Interface layer for REST operations on power relay nodes.
     """

@@ -23,7 +23,7 @@ from automojo.interop.protocols.power.dlipower.responsemodel import AutoPingItem
 if TYPE_CHECKING:
     from automojo.interop.protocols.power.dlipower.dlipowerclient import DliPowerRestClient
 
-class ApiNodeAutoping(RestApiGroup):
+class AutopingApiGroup(RestApiGroup):
     """
         Interface layer for REST operations on autoping.
     """

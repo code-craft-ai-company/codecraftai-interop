@@ -23,7 +23,7 @@ from automojo.interop.protocols.power.dlipower.responsemodel import Meter
 if TYPE_CHECKING:
     from automojo.interop.protocols.power.dlipower.dlipowerclient import DliPowerRestClient
 
-class ApiNodeMeter(RestApiGroup):
+class MeterApiGroup(RestApiGroup):
     """
         Interface layer for REST operations on meters.
     """
