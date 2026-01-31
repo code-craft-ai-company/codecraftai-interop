@@ -10,7 +10,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import List, Optional, Union, Dict, Any
+from typing import List, Optional, TYPE_CHECKING
 
 import requests
 
@@ -40,7 +40,7 @@ class AutopingApiGroup(RestApiGroup):
         leaf = "restapi/autoping/items/all/" 
         client: "DliPowerRestClient" = self.client
         
-        resp: requests.Response = client.perform_call(leaf, aspects=aspects)
+        resp: requests.Response = client.perform_call(leaf=leaf, method="GET", params=None, body=None, exp_status=[200, 207], aspects=aspects)
         
         data = resp.json()
         
@@ -48,8 +48,6 @@ class AutopingApiGroup(RestApiGroup):
         if isinstance(data, list):
             for item_data in data:
                 if isinstance(item_data, dict):
-                    # Mapping generic fields if possible. 
-                    # Spec is vague, so we use safe accesses.
                     items.append(AutoPingItem(
                         enabled=item_data.get("enabled", False),
                         host=item_data.get("host"),
@@ -61,9 +59,9 @@ class AutopingApiGroup(RestApiGroup):
 
     def set_item(self, item: AutoPingItem, item_id: str, aspects: Optional[AspectsRest] = None) -> bool:
         """
-            Updates an autoping item.
+            Updates an AutoPing item.
             
-            :param item: The item data to update.
+            :param item: The AutoPing item details.
             :param item_id: The ID of the item to update.
             :param aspects: Optional REST call aspects configuration.
         """
@@ -78,6 +76,9 @@ class AutopingApiGroup(RestApiGroup):
         if item.outlets is not None:
              payload["outlets"] = item.outlets
              
-        client.perform_call(leaf, method="PUT", data=payload, aspects=aspects)
+        import json
+        headers = {"Content-Type": "application/json"}
+        body_content = json.dumps(payload)
+        
+        client.perform_call(leaf=leaf, method="PUT", params=None, body=body_content, headers=headers, exp_status=[200, 204], aspects=aspects)
         return True
-

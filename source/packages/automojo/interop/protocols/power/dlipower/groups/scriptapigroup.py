@@ -10,7 +10,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import List, Optional, Union, Dict, Any
+from typing import Optional, TYPE_CHECKING
 
 import requests
 
@@ -52,8 +52,14 @@ class ScriptApiGroup(RestApiGroup):
         # Spec says Content-Type: application/json
         # client.perform_call with json=payload should handle it.
         
-        resp: requests.Response = client.perform_call(leaf, method="POST", json=payload, aspects=aspects)
+        import json
+        headers = {"Content-Type": "application/json"}
+        body_content = json.dumps(payload)
+        
+        resp: requests.Response = client.perform_call(leaf=leaf, method="POST", params=None, body=body_content, headers=headers, exp_status=200, aspects=aspects)
         
         # Result is a JSON string, e.g. "11"
-        return resp.json()
+        rtnval = resp.json()
+        return rtnval
+
 

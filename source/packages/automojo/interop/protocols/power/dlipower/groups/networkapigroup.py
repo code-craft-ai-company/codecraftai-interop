@@ -10,7 +10,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import List, Optional, Union, Dict, Any
+from typing import Optional, Dict, Any, TYPE_CHECKING
 
 import requests
 
@@ -37,9 +37,10 @@ class NetworkApiGroup(RestApiGroup):
         leaf = "restapi/network/"
         client: "DliPowerRestClient" = self.client
         
-        resp: requests.Response = client.perform_call(leaf, aspects=aspects)
+        resp: requests.Response = client.perform_call(leaf=leaf, method="GET", params=None, body=None, exp_status=200, aspects=aspects)
         
-        return resp.json()
+        rtnval = resp.json()
+        return rtnval
 
     def get_value(self, key: str, aspects: Optional[AspectsRest] = None) -> Any:
         """
@@ -53,9 +54,10 @@ class NetworkApiGroup(RestApiGroup):
         leaf = f"restapi/network/{key}/"
         client: "DliPowerRestClient" = self.client
         
-        resp: requests.Response = client.perform_call(leaf, aspects=aspects)
+        resp: requests.Response = client.perform_call(leaf=leaf, method="GET", params=None, body=None, exp_status=200, aspects=aspects)
         
-        return resp.json()
+        rtnval = resp.json()
+        return rtnval
 
     def set_value(self, key: str, value: Any, aspects: Optional[AspectsRest] = None) -> bool:
         """
@@ -68,7 +70,11 @@ class NetworkApiGroup(RestApiGroup):
         leaf = f"restapi/network/{key}/"
         client: "DliPowerRestClient" = self.client
         
-        client.perform_call(leaf, method="PUT", json=value, aspects=aspects)
+        import json
+        headers = {"Content-Type": "application/json"}
+        body_content = json.dumps(value)
+
+        client.perform_call(leaf=leaf, method="PUT", params=None, body=body_content, headers=headers, exp_status=[200, 204], aspects=aspects)
         return True
     
     def update(self, settings: Dict[str, Any], aspects: Optional[AspectsRest] = None) -> bool:
@@ -89,7 +95,11 @@ class NetworkApiGroup(RestApiGroup):
                 "value": v
             })
             
+        import json
         headers = {"Content-Type": "application/json-patch+json"}
-        client.perform_call(leaf, method="PATCH", json=patch_ops, headers=headers, aspects=aspects)
+        body_content = json.dumps(patch_ops)
+
+        client.perform_call(leaf=leaf, method="PATCH", params=None, body=body_content, headers=headers, exp_status=[200, 204], aspects=aspects)
         return True
+
 

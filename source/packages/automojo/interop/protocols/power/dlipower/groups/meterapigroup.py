@@ -10,7 +10,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import List, Optional, Union, Dict, Any
+from typing import List, Optional, TYPE_CHECKING
 
 import requests
 
@@ -53,7 +53,7 @@ class MeterApiGroup(RestApiGroup):
         leaf = "restapi/meter/values/"
         client: "DliPowerRestClient" = self.client
         
-        resp: requests.Response = client.perform_call(leaf, aspects=aspects)
+        resp: requests.Response = client.perform_call(leaf=leaf, method="GET", params=None, body=None, exp_status=[200, 207], aspects=aspects)
         
         data = resp.json()
         
@@ -73,4 +73,5 @@ class MeterApiGroup(RestApiGroup):
                      pass
                      
         return meters
+
 

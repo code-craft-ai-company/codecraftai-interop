@@ -10,9 +10,11 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import List, Optional, Union, Dict, Any
+from typing import List, Optional, TYPE_CHECKING
 
+import json
 import requests
+
 
 from automojo.restclient.base.aspectsrest import AspectsRest
 from automojo.restclient.base.restapigroup import RestApiGroup
@@ -58,9 +60,11 @@ class AuthApiGroup(RestApiGroup):
         # We can use matrix URI "all" to get all.
         leaf = "restapi/auth/users/all/"
         
-        resp: requests.Response = client.perform_call(leaf, aspects=aspects)
+        leaf = "restapi/auth/users/all/" 
+        client: "DliPowerRestClient" = self.client
         
-        # Response might be a list of user objects if we use "all".
+        resp: requests.Response = client.perform_call(leaf=leaf, method="GET", params=None, body=None, exp_status=[200, 207], aspects=aspects)
+        
         data = resp.json()
         
         users = []
@@ -87,7 +91,7 @@ class AuthApiGroup(RestApiGroup):
             :param user: The user object to create.
             :param aspects: Optional REST call aspects configuration.
             
-            :returns: The created :class:`User` object.
+            :returns: The created user object returned by the server.
         """
         leaf = "restapi/auth/users/"
         client: "DliPowerRestClient" = self.client
@@ -103,48 +107,42 @@ class AuthApiGroup(RestApiGroup):
         if user.is_admin:
              payload["is_admin"] = user.is_admin
 
-        # Spec says: Prefer: return=representation to get the object back.
-        headers = {"Prefer": "return=representation"}
-        # Note: RestClientBase might handle headers via aspects or direct args? 
-        # Ideally aspect should handle it but perform_call usually takes headers too if the base supports it.
-        # Assuming perform_call signature allows method and json/data.
+        headers = {"Prefer": "return=representation", "Content-Type": "application/json"}
+        body_content = json.dumps(payload)
         
-        # IMPORTANT: The provided file content for RestClientBase wasn't fully visible but perform_call usually exists.
-        # We need to check if we can pass headers.
-        # Assuming standard requests usage in perform_call wrapper.
-        
-        resp: requests.Response = client.perform_call(leaf, method="POST", data=payload, headers=headers, aspects=aspects)
+        resp: requests.Response = client.perform_call(leaf=leaf, method="POST", params=None, body=body_content, headers=headers, exp_status=201, aspects=aspects)
         
         u_data = resp.json()
-        return User(
+        rtnval = User(
             name=u_data.get("name"),
             is_allowed=u_data.get("is_allowed"),
             is_admin=u_data.get("is_admin", False),
             outlet_access=u_data.get("outlet_access", []),
             password=None
         )
+        return rtnval
 
     def delete_user(self, username: str, aspects: Optional[AspectsRest] = None) -> bool:
         """
-            Deletes a user by name.
+            Deletes a user.
             
-            :param username: Name of the user to delete.
+            :param username: The name of the user to delete.
             :param aspects: Optional REST call aspects configuration.
         """
         # Using matrix URI for idempotency as suggested in section 7.2
         leaf = f"restapi/auth/users/name={username}/"
         client: "DliPowerRestClient" = self.client
         
-        client.perform_call(leaf, method="DELETE", aspects=aspects)
+        client.perform_call(leaf=leaf, method="DELETE", params=None, body=None, exp_status=[200, 204], aspects=aspects)
         return True
 
     def change_password(self, username: str, new_password: str, old_password: Optional[str] = None, aspects: Optional[AspectsRest] = None) -> bool:
         """
             Changes a user's password.
             
-            :param username: Name of the user.
-            :param new_password: New password.
-            :param old_password: Old password (required for self-change or some checks).
+            :param username: The user to update.
+            :param new_password: The new password.
+            :param old_password: The old password (optional).
             :param aspects: Optional REST call aspects configuration.
         """
         leaf = f"restapi/auth/users/name={username}/"
@@ -154,7 +152,8 @@ class AuthApiGroup(RestApiGroup):
         if old_password:
              data["old_password"] = old_password
              
-        # Use PATCH
-        client.perform_call(leaf, method="PATCH", data=data, aspects=aspects)
+        headers = {"Content-Type": "application/json"}
+        body_content = json.dumps(data)
+             
+        client.perform_call(leaf=leaf, method="PATCH", params=None, body=body_content, headers=headers, exp_status=[200, 204], aspects=aspects)
         return True
-

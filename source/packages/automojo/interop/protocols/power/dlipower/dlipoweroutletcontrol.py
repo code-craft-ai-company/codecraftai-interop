@@ -23,15 +23,15 @@ class DliPowerOutletControl:
         Simple wrapper for controlling a Digital Loggers power relay outlet.
     """
 
-    def __init__(self, client: "DliPowerRestClient", outlet: str) -> None:
+    def __init__(self, client: "DliPowerRestClient", index: int) -> None:
         """
-            Creates a :class:`DliPowerOutletControl` bound to a specific relay outlet.
+            Creates a :class:`DliPowerSwitchControl` bound to a specific relay outlet.
 
             :param client: The client object used to communicate with the power controller.
-            :param outlet: The Outlet identifier to control.
+            :param index: The Outlet index to control.
         """
         self._client_ref = weakref.ref(client)
-        self._outlet = outlet
+        self._index = index
         return
 
     @property
@@ -47,7 +47,7 @@ class DliPowerOutletControl:
 
             :returns: ``True`` if the outlet was successfully turned on.
         """
-        success = self.client.on(outlet=self._outlet)
+        success = self.client.relay.set_outlet_state(index=self._index, state=True)
         return success
 
     def off(self) -> bool:
@@ -56,5 +56,5 @@ class DliPowerOutletControl:
 
             :returns: ``True`` if the outlet was successfully turned off.
         """
-        success = self.client.off(outlet=self._outlet)
+        success = self.client.relay.set_outlet_state(index=self._index, state=False)
         return success

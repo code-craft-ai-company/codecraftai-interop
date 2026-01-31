@@ -10,7 +10,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import List, Optional, Union, Dict, Any
+from typing import Optional, Dict, Any, TYPE_CHECKING
 
 import requests
 
@@ -37,9 +37,10 @@ class RendererApiGroup(RestApiGroup):
         leaf = "restapi/renderer/"
         client: "DliPowerRestClient" = self.client
         
-        resp: requests.Response = client.perform_call(leaf, aspects=aspects)
+        resp: requests.Response = client.perform_call(leaf=leaf, method="GET", params=None, body=None, exp_status=200, aspects=aspects)
         
-        return resp.json()
+        rtnval = resp.json()
+        return rtnval
 
     def get_known_image_formats(self, aspects: Optional[AspectsRest] = None) -> Dict[str, str]:
         """
@@ -52,7 +53,9 @@ class RendererApiGroup(RestApiGroup):
         leaf = "restapi/renderer/known_image_formats/"
         client: "DliPowerRestClient" = self.client
         
-        resp: requests.Response = client.perform_call(leaf, aspects=aspects)
+        resp: requests.Response = client.perform_call(leaf=leaf, method="GET", params=None, body=None, exp_status=200, aspects=aspects)
         
-        return resp.json()
+        rtnval = resp.json()
+        return rtnval
+
 

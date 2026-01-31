@@ -38,7 +38,7 @@ class DliPowerRestClient(RestClientBase):
     """
 
     def __init__(self, host: str, credential: BasicCredential, port: Optional[int] = None,
-                 scheme: Optional[str] = "https", aspects: AspectsRest = DEFAULT_REST_ASPECTS) -> None:
+                 scheme: Optional[str] = "http", aspects: AspectsRest = DEFAULT_REST_ASPECTS) -> None:
         """
             Initializes a :class:`DliPowerRestClient` instance.
 
@@ -59,6 +59,9 @@ class DliPowerRestClient(RestClientBase):
         self._node_renderer = RendererApiGroup(self)
         self._node_script = ScriptApiGroup(self)
 
+        if not self._host_url.endswith("/"):
+             self._host_url = f"{self._host_url}/"
+
         return
 
     def authenticate(self):
@@ -76,6 +79,7 @@ class DliPowerRestClient(RestClientBase):
         session = Session()
         session.auth = HTTPDigestAuth(username, password)
         session.verify = self._verify_certificate
+        session.headers.update({"X-CSRF": "automojo"})
         
         self._session = session
         
@@ -83,74 +87,74 @@ class DliPowerRestClient(RestClientBase):
 
 
     @property
-    def auth(self) -> ApiNodeAuth:
+    def auth(self) -> AuthApiGroup:
         """
             Provides access to the node auth REST interface.
 
-            :returns: An :class:`ApiNodeAuth` instance for this client.
+            :returns: An :class:`AuthApiGroup` instance for this client.
         """
         return self._node_auth
     
     @property
-    def autoping(self) -> ApiNodeAutoping:
+    def autoping(self) -> AutopingApiGroup:
         """
             Provides access to the node autoping REST interface.
 
-            :returns: An :class:`ApiNodeAutoping` instance for this client.
+            :returns: An :class:`AutopingApiGroup` instance for this client.
         """
         return self._node_autoping
 
     @property
-    def config(self) -> ApiNodeConfig:
+    def config(self) -> ConfigApiGroup:
         """
             Provides access to the node config REST interface.
 
-            :returns: An :class:`ApiNodeConfig` instance for this client.
+            :returns: An :class:`ConfigApiGroup` instance for this client.
         """
         return self._node_config
 
     @property
-    def meter(self) -> ApiNodeMeter:
+    def meter(self) -> MeterApiGroup:
         """
             Provides access to the node meter REST interface.
 
-            :returns: An :class:`ApiNodeMeter` instance for this client.
+            :returns: An :class:`MeterApiGroup` instance for this client.
         """
         return self._node_meter
 
     @property
-    def network(self) -> ApiNodeNetwork:
+    def network(self) -> NetworkApiGroup:
         """
             Provides access to the node network REST interface.
 
-            :returns: An :class:`ApiNodeNetwork` instance for this client.
+            :returns: An :class:`NetworkApiGroup` instance for this client.
         """
         return self._node_network
 
     @property
-    def relay(self) -> ApiNodeRelay:
+    def relay(self) -> RelayApiGroup:
         """
             Provides access to the node relay REST interface.
 
-            :returns: An :class:`ApiNodeRelay` instance for this client.
+            :returns: An :class:`RelayApiGroup` instance for this client.
         """
         return self._node_relay
     
     @property
-    def renderer(self) -> ApiNodeRenderer:
+    def renderer(self) -> RendererApiGroup:
         """
             Provides access to the node renderer REST interface.
 
-            :returns: An :class:`ApiNodeRenderer` instance for this client.
+            :returns: An :class:`RendererApiGroup` instance for this client.
         """
         return self._node_renderer
 
     @property
-    def script(self) -> ApiNodeScript:
+    def script(self) -> ScriptApiGroup:
         """
             Provides access to the node script REST interface.
 
-            :returns: An :class:`ApiNodeScript` instance for this client.
+            :returns: An :class:`ScriptApiGroup` instance for this client.
         """
         return self._node_script
     
