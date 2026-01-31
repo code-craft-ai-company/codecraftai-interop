@@ -33,17 +33,19 @@ class TcpSerialBase(SerialAgentBase):
     NORMAL_PROMPT = b"#"
 
     def __init__(
-        self, host: str, port: int, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
+        self, host: str, port: int, called_id: Optional[str]=None, aspects: AspectsCmd = DEFAULT_CMD_ASPECTS
     ) -> None:
         """
             Constructs a :class:`TcpSerialBase` instance.
             
             :param host: Hostname or IP address of the telnet server.
             :param port: Telnet port of the remote server.
+            :param called_id: Identifier used when logging sessions.
             :param aspects: Default command aspects used when executing commands.
         """
         self._host = host
         self._port = port
+        self._called_id = called_id
         self._aspects = aspects
         self._original_prompt = None  # Store the original prompt for restoration
         return
