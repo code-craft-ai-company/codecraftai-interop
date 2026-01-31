@@ -11,23 +11,35 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
+from typing import TYPE_CHECKING
 
+import weakref
 
-class DliPowerAgent:
+if TYPE_CHECKING:
+    from automojo.interop.protocols.power.dlipower.dlipowerclient import DliPowerRestClient
+
+class DliPowerOutletControl:
     """
         Simple wrapper for controlling a Digital Loggers power relay outlet.
     """
 
-    def __init__(self, interface, attachment) -> None:
+    def __init__(self, client: "DliPowerRestClient", outlet: str) -> None:
         """
-            Creates a :class:`DliPowerAgent` bound to a specific relay outlet.
+            Creates a :class:`DliPowerOutletControl` bound to a specific relay outlet.
 
-            :param interface: The interface object used to communicate with the power controller.
-            :param attachment: Outlet identifier to control.
+            :param client: The client object used to communicate with the power controller.
+            :param outlet: The Outlet identifier to control.
         """
-        self._interface = interface
-        self._attachment = attachment
+        self._client_ref = weakref.ref(client)
+        self._outlet = outlet
         return
+
+    @property
+    def client(self) -> "DliPowerRestClient":
+        """
+            Returns a hard reference to the rest client.
+        """
+        return self._client_ref()
 
     def on(self) -> bool:
         """
@@ -35,7 +47,7 @@ class DliPowerAgent:
 
             :returns: ``True`` if the outlet was successfully turned on.
         """
-        success = self._interface.on(outlet=self._attachment)
+        success = self.client.on(outlet=self._outlet)
         return success
 
     def off(self) -> bool:
@@ -44,5 +56,5 @@ class DliPowerAgent:
 
             :returns: ``True`` if the outlet was successfully turned off.
         """
-        success = self._interface.off(outlet=self._attachment)
+        success = self.client.off(outlet=self._outlet)
         return success

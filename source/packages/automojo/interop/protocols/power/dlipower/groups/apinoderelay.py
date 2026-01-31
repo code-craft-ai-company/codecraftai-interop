@@ -22,7 +22,8 @@ from http import HTTPStatus
 import requests
 
 
-from automojo.interop.protocols.rest.aspectsrest import AspectsRest
+from automojo.restclient.base.aspectsrest import AspectsRest
+from automojo.restclient.base.restapigroup import RestApiGroup
 
 
 from automojo.interop.protocols.power.dlipower.responsemodel import Outlet
@@ -31,30 +32,10 @@ if TYPE_CHECKING:
     from automojo.interop.protocols.power.dlipower.dlipowerclient import DliPowerRestClient
 
 
-class ApiNodeRelay:
+class RelayApiGroup(RestApiGroup):
     """
         Interface layer for REST operations on power relay nodes.
     """
-
-    def __init__(self, client: "DliPowerRestClient") -> None:
-        """
-            Initializes an :class:`ApiNodeRelay` instance.
-
-            :param client: Client used to issue REST requests.
-
-            :returns: ``None``
-        """
-        self._client_ref = weakref.ref(client)
-        return
-    
-    def client(self) -> "DliPowerRestClient":
-        """
-            Returns the associated :class:`DliPowerRestClient` instance.
-
-            :returns: Connected client instance.
-        """
-        return self._client_ref()
-    
 
     def get_outlets(self, aspects: Optional[AspectsRest] = None) -> List[Outlet]:
         """

@@ -19,8 +19,8 @@ from typing import Optional
 from automojo.credentials.basiccredential import BasicCredential
 
 
-from automojo.interop.protocols.rest.aspectsrest import AspectsRest, DEFAULT_REST_ASPECTS
-from automojo.interop.protocols.rest.restclientbase import RestClientBase
+from automojo.restclient.base.aspectsrest import AspectsRest, DEFAULT_REST_ASPECTS
+from automojo.restclient.base.restclientbase import RestClientBase
 
 from automojo.interop.protocols.power.dlipower.restapis.apinoderelay import ApiNodeRelay
 
@@ -46,7 +46,7 @@ class DliPowerRestClient(RestClientBase):
         self._node_relay = ApiNodeRelay(self)
 
         return
-    
+
     @property
     def relay(self) -> ApiNodeRelay:
         """
@@ -55,6 +55,16 @@ class DliPowerRestClient(RestClientBase):
             :returns: An :class:`ApiNodeRelay` instance for this client.
         """
         return self._node_relay
+    
+    def authenticate(self):
+        return super().authenticate()
+
+    def perform_call(self, leaf_url: str):
+        """
+            Peform a REST call 
+        """
+        http://admin:1234@192.168.0.100/restapi/relay/outlets/all
+        return
 
 
 
