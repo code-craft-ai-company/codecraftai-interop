@@ -66,7 +66,7 @@ automojo-this-app = {git = "https://github.com/automationmojo/automojo-this-app.
 type = "git"
 url = "https://github.com/automationmojo/automojo-credentials.git"
 reference = "main"
-resolved_reference = "9e9eee4c605707bc8c60f524519cd15eb33a1609"
+resolved_reference = "6570610f183a807afffa16ab9f043d833d716db2"
 
 [[package]]
 name = "automojo-errors"
@@ -158,7 +158,7 @@ requests = "^2.32.5"
 type = "git"
 url = "https://github.com/automationmojo/automojo-restclient-base.git"
 reference = "main"
-resolved_reference = "5ebf1b5677abf726bc3ac91afb761482fef7fed3"
+resolved_reference = "7d148ca99d76109ec0fd9ab03a084c6f71953dfe"
 
 [[package]]
 name = "automojo-runtime"
@@ -203,13 +203,12 @@ automojo-runtime = {git = "https://github.com/automationmojo/automojo-runtime.gi
 automojo-this-app = {git = "https://github.com/automationmojo/automojo-this-app.git", branch = "main"}
 automojo-waiting = {git = "https://github.com/automationmojo/automojo-waiting.git", branch = "main"}
 automojo-xmodules = {git = "https://github.com/automationmojo/automojo-xmodules.git", branch = "main"}
-click = "^8.1.8"
 
 [package.source]
 type = "git"
 url = "https://github.com/automationmojo/automojo-testbase.git"
 reference = "main"
-resolved_reference = "2f0fe0d6a4398670a153fdee792ed90d85862bc2"
+resolved_reference = "5a175256aa5481d6839c3af96ede2a6273ee8eac"
 
 [[package]]
 name = "automojo-this-app"
