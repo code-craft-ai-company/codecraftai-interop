@@ -30,11 +30,16 @@ from automojo.waiting.waitmodel import TimeoutContext
 
 from automojo.errors.exceptions import ConfigurationError, AbstractMethodError, SemanticError
 
+from automojo.interfaces.addressplane import AddressPlane, IDeviceAddressSet
+
 from automojo.interop.aspects import ActionPattern, AspectsCmd, LoggingPattern, DEFAULT_CMD_ASPECTS
 from automojo.credentials.sshcredential import SshCredential
 from automojo.interop.interfaces.isystemcontext import ISystemContext
 from automojo.xmodules.xformatting import indent_lines
 from automojo.xmodules.xlogging.monitoredscope import MonitoredScope
+
+from automojo.interop.protocols.ssh.exceptions import SSHAddressPlaneUnavailableError
+from automojo.interop.protocols.ssh.planeresolver import resolve_dial_target, skipped_planes
 
 from automojo.interop.protocols.ssh.sshconst import (
     SshJumpParams,
@@ -62,6 +67,15 @@ class SshBase(ISystemContext):
     """
         The :class:`SshBase` object provides for the sharing of state and fuctional patterns
         for APIs between the :class:`SshSession` object and the :class:`SshAgent`.
+
+        Constructing an instance directly takes a literal host string. To
+        construct from a landscape device whose addresses span multiple
+        :class:`AddressPlane` values use the :meth:`connect` classmethod,
+        which accepts the keyword-only parameters ``device``,
+        ``address_plane`` (default :attr:`AddressPlane.PUBLIC`), and
+        ``fallback_planes``. The resolution semantics are defined in the
+        ``ssh-address-plane-awareness`` spec and the upstream
+        ``device-address-set`` spec.
     """
     def __init__(self, host: str, primary_credential: SshCredential, users: Optional[Dict[str, SshCredential]] = None,
                  port: int = 22, jump: Union[str, SshJumpParams, None] = None, pty_params: Optional[dict] = None,
@@ -266,6 +280,173 @@ class SshBase(ISystemContext):
             vok = True
 
         return vok
+
+    @classmethod
+    def connect(cls, *, host: Optional[str] = None, device: Optional[object] = None,
+                address_plane: AddressPlane = AddressPlane.PUBLIC,
+                fallback_planes: Optional[Sequence[AddressPlane]] = None,
+                primary_credential: Optional[SshCredential] = None,
+                users: Optional[Dict[str, SshCredential]] = None,
+                port: int = 22,
+                jump: Union[str, SshJumpParams, None] = None,
+                pty_params: Optional[dict] = None,
+                called_id: Optional[str] = None,
+                look_for_keys: bool = False,
+                aspects: AspectsCmd = DEFAULT_CMD_ASPECTS) -> "SshBase":
+        """
+            Construct an SSH context after resolving the dial target.
+
+            The ``host`` and ``device`` arguments are mutually exclusive.
+            When ``host`` is supplied the value is used unchanged
+            (pre-feature behaviour). When ``device`` is supplied it MUST
+            expose an :class:`IDeviceAddressSet` (either by implementing
+            the protocol directly or by exposing an ``addresses()``
+            method that returns one); the dial target is resolved via
+            :func:`resolve_dial_target` using ``address_plane`` and any
+            ``fallback_planes``.
+
+            See the ``ssh-address-plane-awareness`` spec and the
+            ``device-address-set`` spec for the resolution semantics.
+
+            :param host: Literal hostname or IP address. Mutually
+                exclusive with ``device``.
+            :param device: A device exposing an
+                :class:`IDeviceAddressSet`. Mutually exclusive with
+                ``host``.
+            :param address_plane: The preferred plane to dial. Defaults
+                to :attr:`AddressPlane.PUBLIC`.
+            :param fallback_planes: An optional ordered list of planes to
+                try when ``address_plane`` is unavailable.
+            :param primary_credential: Primary SSH credential. Required.
+            :param users: Additional named user credentials.
+            :param port: SSH port number.
+            :param jump: Optional jump host specification.
+            :param pty_params: Optional PTY parameters.
+            :param called_id: Identifier used in logs.
+            :param look_for_keys: Whether to search for SSH keys.
+            :param aspects: Command aspects for operations.
+
+            :returns: A constructed ``cls`` instance bound to the
+                resolved host string.
+
+            :raises SemanticError: When both ``host`` and ``device`` are
+                supplied, when neither is supplied, or when
+                ``primary_credential`` is omitted.
+            :raises SSHAddressPlaneUnavailableError: When ``device`` is
+                supplied but no requested plane resolves.
+        """
+        if host is not None and device is not None:
+            err_msg_lines = [
+                "SshBase.connect: 'host' and 'device' are mutually exclusive.",
+                "Pass exactly one of: a literal 'host' string OR a 'device' exposing IDeviceAddressSet."
+            ]
+            err_msg = os.linesep.join(err_msg_lines)
+            raise SemanticError(err_msg) from None
+
+        if host is None and device is None:
+            err_msg = "SshBase.connect: one of 'host' or 'device' must be supplied."
+            raise SemanticError(err_msg) from None
+
+        if primary_credential is None:
+            err_msg = "SshBase.connect: 'primary_credential' is required."
+            raise SemanticError(err_msg) from None
+
+        resolved_host: Optional[str] = None
+        if host is not None:
+            resolved_host = host
+        else:
+            address_set = cls._extract_address_set(device=device)
+            device_name = cls._extract_device_name(device=device)
+
+            skipped = skipped_planes(address_set=address_set, preferred_plane=address_plane,
+                                     fallback_planes=fallback_planes)
+            if len(skipped) > 0:
+                skipped_labels = [p.name for p in skipped]
+                logger.warning("SshBase.connect: device='%s' skipped planes=%s before resolution.",
+                               device_name, skipped_labels)
+
+            resolved_host = resolve_dial_target(address_set=address_set, preferred_plane=address_plane,
+                                                fallback_planes=fallback_planes, device_name=device_name)
+
+            attempted_planes: list = [address_plane]
+            if fallback_planes is not None:
+                for plane in fallback_planes:
+                    attempted_planes.append(plane)
+            plane_used: Optional[AddressPlane] = None
+            for plane in attempted_planes:
+                if plane not in skipped:
+                    plane_used = plane
+                    break
+
+            plane_used_label = "<none>"
+            if plane_used is not None:
+                plane_used_label = plane_used.name
+            logger.info("SshBase.connect: device='%s' preferred_plane=%s plane_used=%s dial_target=%s",
+                        device_name, address_plane.name, plane_used_label, resolved_host)
+
+        instance = cls(resolved_host, primary_credential, users=users, port=port, jump=jump,
+                       pty_params=pty_params, called_id=called_id, look_for_keys=look_for_keys,
+                       aspects=aspects)
+        return instance
+
+    @staticmethod
+    def _extract_address_set(*, device: object) -> IDeviceAddressSet:
+        """
+            Extract an :class:`IDeviceAddressSet` from a device argument.
+
+            Accepts either an object already implementing the protocol,
+            or an object exposing an ``addresses()`` method that returns
+            the protocol instance.
+
+            :param device: The device argument supplied to
+                :meth:`connect`.
+
+            :returns: The device's :class:`IDeviceAddressSet`.
+
+            :raises SemanticError: When the argument exposes neither the
+                protocol nor an ``addresses()`` accessor.
+        """
+        candidate: Optional[IDeviceAddressSet] = None
+        if isinstance(device, IDeviceAddressSet):
+            candidate = device
+        elif hasattr(device, "addresses"):
+            candidate = device.addresses()
+
+        if candidate is None:
+            err_msg_lines = [
+                "SshBase.connect: 'device' must expose an IDeviceAddressSet.",
+                "Either implement the IDeviceAddressSet protocol directly,",
+                "or expose an addresses() method returning one."
+            ]
+            err_msg = os.linesep.join(err_msg_lines)
+            raise SemanticError(err_msg) from None
+
+        return candidate
+
+    @staticmethod
+    def _extract_device_name(*, device: object) -> str:
+        """
+            Best-effort extraction of a printable device identifier for
+            logs and error messages.
+
+            :param device: The device argument supplied to
+                :meth:`connect`.
+
+            :returns: The device name when discoverable, otherwise
+                ``'<unnamed-device>'``.
+        """
+        name_value: Optional[str] = None
+        for attr in ("name", "hostname", "identifier", "device_name"):
+            if hasattr(device, attr):
+                candidate = getattr(device, attr)
+                if isinstance(candidate, str) and len(candidate) > 0:
+                    name_value = candidate
+                    break
+
+        if name_value is None:
+            name_value = "<unnamed-device>"
+
+        return name_value
 
     def _create_client(self, session_user: Optional[str] = None) -> paramiko.SSHClient:
         """

@@ -1,0 +1,6 @@
+{
+    "access_token": "tskey-oauth-acc-AAAAAAAA",
+    "token_type": "Bearer",
+    "expires_in": 3600,
+    "scope": "devices:read devices:write keys:write"
+}

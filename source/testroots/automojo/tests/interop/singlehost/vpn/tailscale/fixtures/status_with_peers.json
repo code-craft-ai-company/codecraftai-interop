@@ -1,0 +1,27 @@
+{
+    "Version": "1.66.0",
+    "BackendState": "Running",
+    "Self": {
+        "ID": "selfnode",
+        "HostName": "lab-host-01",
+        "TailscaleIPs": ["100.64.10.5"],
+        "Tags": ["tag:lab"]
+    },
+    "Peer": {
+        "peer-a-key": {
+            "ID": "peerA",
+            "HostName": "peer-a",
+            "TailscaleIPs": ["100.64.20.7", "fd7a:115c:a1e0::7"]
+        },
+        "peer-b-key": {
+            "ID": "peerB",
+            "HostName": "peer-b",
+            "TailscaleIPs": ["fd7a:115c:a1e0::8", "100.64.30.8"]
+        },
+        "peer-c-key": {
+            "ID": "peerC",
+            "HostName": "peer-c",
+            "TailscaleIPs": []
+        }
+    }
+}
