@@ -37,3 +37,16 @@ class DnsBadTypeInNameError(DnsProtocolError):
     """
         Bad type in name
     """
+
+class OverlayDNSError(DnsProtocolError):
+    """
+        Raised when an underlying overlay provider call fails irrecoverably
+        during overlay-plane resolution.
+    """
+
+class OverlayDNSNoMatchError(DnsProtocolError):
+    """
+        Raised by :class:`OverlayDNSResolver` when no overlay or fall-through
+        resolution succeeds and fall-through to the standard system resolver
+        is disabled.
+    """

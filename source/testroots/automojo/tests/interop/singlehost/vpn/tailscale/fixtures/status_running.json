@@ -1,0 +1,14 @@
+{
+    "Version": "1.66.0",
+    "BackendState": "Running",
+    "AuthURL": "",
+    "TailscaleIPs": ["100.64.10.5", "fd7a:115c:a1e0::5"],
+    "Self": {
+        "ID": "selfnode",
+        "HostName": "lab-host-01",
+        "DNSName": "lab-host-01.tail-xyz.ts.net.",
+        "TailscaleIPs": ["100.64.10.5", "fd7a:115c:a1e0::5"],
+        "Tags": ["tag:lab"]
+    },
+    "Peer": {}
+}

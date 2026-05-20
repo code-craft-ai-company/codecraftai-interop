@@ -1,0 +1,12 @@
+{
+  "data": {
+    "connectorGenerateTokens": {
+      "ok": true,
+      "error": null,
+      "connectorTokens": {
+        "accessToken": "tg-access-XYZ",
+        "refreshToken": "tg-refresh-ABC"
+      }
+    }
+  }
+}

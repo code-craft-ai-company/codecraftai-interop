@@ -1,0 +1,25 @@
+{
+    "devices": [
+        {
+            "id": "11111111",
+            "nodeId": "node-aaaa",
+            "hostname": "lab-host-01",
+            "name": "lab-host-01.tail-xyz.ts.net",
+            "addresses": ["100.64.10.5", "fd7a:115c:a1e0::5"],
+            "tags": ["tag:lab"],
+            "os": "linux",
+            "lastSeen": "2026-05-19T00:00:00Z",
+            "user": "ops@example.com"
+        },
+        {
+            "id": "22222222",
+            "nodeId": "node-bbbb",
+            "hostname": "lab-host-02",
+            "name": "lab-host-02.tail-xyz.ts.net",
+            "addresses": ["fd7a:115c:a1e0::9", "100.64.10.9"],
+            "tags": [],
+            "os": "linux",
+            "lastSeen": "2026-05-19T00:00:01Z"
+        }
+    ]
+}

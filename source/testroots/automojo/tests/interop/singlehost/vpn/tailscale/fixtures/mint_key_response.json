@@ -1,0 +1,16 @@
+{
+    "id": "k123456CNTRL",
+    "key": "tskey-auth-k123456CNTRL-abcdef1234567890",
+    "created": "2026-05-19T00:00:00Z",
+    "expires": "2026-05-19T00:15:00Z",
+    "capabilities": {
+        "devices": {
+            "create": {
+                "reusable": false,
+                "ephemeral": true,
+                "preauthorized": true,
+                "tags": ["tag:lab"]
+            }
+        }
+    }
+}

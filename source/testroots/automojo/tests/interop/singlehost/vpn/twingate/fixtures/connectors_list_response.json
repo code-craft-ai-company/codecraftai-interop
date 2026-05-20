@@ -1,0 +1,24 @@
+{
+  "data": {
+    "connectors": {
+      "edges": [
+        {
+          "node": {
+            "id": "Q29ubmVjdG9yOjE=",
+            "name": "edge-gateway-01",
+            "state": "ALIVE",
+            "remoteNetwork": {"id": "UmVtb3RlTmV0d29yazox", "name": "prod-net"}
+          }
+        },
+        {
+          "node": {
+            "id": "Q29ubmVjdG9yOjI=",
+            "name": "edge-gateway-02",
+            "state": "DEAD",
+            "remoteNetwork": {"id": "UmVtb3RlTmV0d29yazox", "name": "prod-net"}
+          }
+        }
+      ]
+    }
+  }
+}
