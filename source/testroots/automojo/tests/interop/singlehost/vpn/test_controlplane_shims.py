@@ -19,6 +19,72 @@ from automojo.restclient.twingate.twingateclient import TwingateClient
 import automojo.interop.vpn._shim as vpn_shim
 
 
+def _plain_import_emits_no_deprecation(module_path: str) -> bool:
+    """
+        Import ``module_path`` fresh in a subprocess and report whether the
+        import emitted any :class:`DeprecationWarning`.
+
+        :param module_path: The dotted package path to import.
+
+        :returns: ``True`` when no DeprecationWarning was emitted.
+    """
+    import subprocess
+    import sys
+
+    script_lines = [
+        "import warnings",
+        "with warnings.catch_warnings(record=True) as caught:",
+        "    warnings.simplefilter('always')",
+        "    import {}".format(module_path),
+        "deps = [w for w in caught if issubclass(w.category, DeprecationWarning)]",
+        "raise SystemExit(1 if len(deps) > 0 else 0)",
+    ]
+    script = "\n".join(script_lines)
+    completed = subprocess.run(
+        [sys.executable, "-c", script],
+        capture_output=True,
+    )
+    rtnval = completed.returncode == 0
+    return rtnval
+
+
+def test_plain_import_of_vpn_package_emits_no_deprecation_warning():
+    """
+        Regression for audit IL-H1: a plain ``import automojo.interop.vpn``
+        must not eagerly load the control-plane shims and therefore must not
+        fire a :class:`DeprecationWarning`.
+    """
+    no_warning = _plain_import_emits_no_deprecation("automojo.interop.vpn")
+    assert no_warning is True
+    return
+
+
+def test_plain_import_of_tailscale_package_emits_no_deprecation_warning():
+    """
+        Regression for audit IL-H1: a plain
+        ``import automojo.interop.vpn.tailscale`` must not fire a
+        :class:`DeprecationWarning`.
+    """
+    no_warning = _plain_import_emits_no_deprecation(
+        "automojo.interop.vpn.tailscale"
+    )
+    assert no_warning is True
+    return
+
+
+def test_plain_import_of_twingate_package_emits_no_deprecation_warning():
+    """
+        Regression for audit IL-H1: a plain
+        ``import automojo.interop.vpn.twingate`` must not fire a
+        :class:`DeprecationWarning`.
+    """
+    no_warning = _plain_import_emits_no_deprecation(
+        "automojo.interop.vpn.twingate"
+    )
+    assert no_warning is True
+    return
+
+
 def test_tailscale_shim_emits_deprecation_warning_once():
     """
         Importing the legacy ``tailscalecontrolplane`` module must emit

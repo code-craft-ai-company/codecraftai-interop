@@ -35,6 +35,29 @@ PROVIDER_NAME = "twingate"
 
 _PEER_ENUMERATION_WARNING_EMITTED = False
 
+_SENSITIVE_FLAG_PREFIXES = ("--access-token=", "--refresh-token=")
+
+
+def sanitize_argv(argv: List[str]) -> List[str]:
+    """
+        Build a copy of an argv list with the values of token-bearing flags
+        replaced by ``***`` so the result is safe to embed in error messages
+        and logs.
+
+        :param argv: The original argv list, potentially carrying secrets.
+
+        :returns: A sanitized copy of the argv list.
+    """
+    rtnval: List[str] = []
+    for arg in argv:
+        sanitized = arg
+        for prefix in _SENSITIVE_FLAG_PREFIXES:
+            if arg.startswith(prefix):
+                sanitized = prefix + "***"
+                break
+        rtnval.append(sanitized)
+    return rtnval
+
 
 class TwingateClient:
     """
@@ -159,9 +182,10 @@ class TwingateClient:
         )
 
         if setup_result.exit_code != 0:
+            safe_setup_argv = sanitize_argv(setup_argv)
             err_msg_lines = [
                 "Twingate connector 'setup' command failed.",
-                f"ARGV: {setup_argv}",
+                f"ARGV: {safe_setup_argv}",
                 f"EXIT_CODE: {setup_result.exit_code}",
                 "STDERR:",
                 setup_result.stderr if setup_result.stderr is not None else "",
@@ -340,4 +364,4 @@ class TwingateClient:
         return rtnval
 
 
-__all__ = ["TwingateClient", "PROVIDER_NAME"]
+__all__ = ["TwingateClient", "PROVIDER_NAME", "sanitize_argv"]
