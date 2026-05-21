@@ -20,7 +20,7 @@ __credits__ = []
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True)
 class AspectsOverlayDNS:
     """
         Behaviour-control aspects for the overlay DNS resolver.

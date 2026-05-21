@@ -299,6 +299,42 @@ def test_control_plane_exception_is_wrapped() -> None:
     return
 
 
+def test_client_semantic_error_is_not_swallowed() -> None:
+    """
+        Regression for audit IL-H2: a ``SemanticError`` raised by an
+        ``IVPNClient.peer_addresses()`` call must bubble out unchanged rather
+        than being re-classified as ``OverlayDNSError``.
+    """
+    client = MagicMock(spec=IVPNClient)
+    client.peer_addresses.side_effect = SemanticError("misused api")
+
+    resolver = OverlayDNSResolver(vpn_clients=[client])
+    with pytest.raises(SemanticError):
+        resolver.resolve(
+            name="myhost",
+            aspects=AspectsOverlayDNS(fall_through_standard_dns=False),
+        )
+    return
+
+
+def test_control_plane_semantic_error_is_not_swallowed() -> None:
+    """
+        Regression for audit IL-H3: a ``SemanticError`` raised by an
+        ``IVPNControlPlane.list_devices()`` call must bubble out unchanged
+        rather than being re-classified as ``OverlayDNSError``.
+    """
+    cp = MagicMock(spec=IVPNControlPlane)
+    cp.list_devices.side_effect = SemanticError("misused api")
+
+    resolver = OverlayDNSResolver(control_planes=[cp])
+    with pytest.raises(SemanticError):
+        resolver.resolve(
+            name="myhost",
+            aspects=AspectsOverlayDNS(fall_through_standard_dns=False),
+        )
+    return
+
+
 # ---------------------------------------------------------------------------
 # Property tests (hypothesis) — required for this feature
 # ---------------------------------------------------------------------------

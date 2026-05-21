@@ -128,6 +128,43 @@ def test_bring_up_start_failure_raises_VPNBringUpError():
     return
 
 
+def test_bring_up_setup_failure_does_not_leak_tokens_in_error():
+    # Regression for audit C8: the setup failure error message embeds the
+    # setup argv, which carries --access-token / --refresh-token. Those token
+    # values MUST be redacted before composing the VPNBringUpError message.
+    access_token = "SUPERSECRETACCESS"
+    refresh_token = "SUPERSECRETREFRESH"
+    authkey = "{}:{}".format(access_token, refresh_token)
+    runner = RecorderRunner(scripted_results=[
+        RunResult(exit_code=1, stdout="", stderr="setup rejected"),
+    ])
+    client = TwingateClient(command_runner=runner)
+    with pytest.raises(VPNBringUpError) as exc_info:
+        client.bring_up(authkey=authkey, aspects=_aspects())
+    message = str(exc_info.value)
+    assert access_token not in message
+    assert refresh_token not in message
+    assert "--access-token=***" in message
+    assert "--refresh-token=***" in message
+    return
+
+
+def test_sanitize_argv_redacts_token_flag_values():
+    from automojo.interop.vpn.twingate.twingateclient import sanitize_argv
+    argv = [
+        "twingate-connector", "setup",
+        "--access-token=abc123", "--refresh-token=def456",
+        "--name=edge-01",
+    ]
+    sanitized = sanitize_argv(argv)
+    assert sanitized == [
+        "twingate-connector", "setup",
+        "--access-token=***", "--refresh-token=***",
+        "--name=edge-01",
+    ]
+    return
+
+
 def test_bring_up_dry_run_does_not_invoke_runner():
     runner = RecorderRunner()
     client = TwingateClient(command_runner=runner)

@@ -32,7 +32,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Tuple
 
 from automojo.aspects.aspects import Aspects
-from automojo.errors.exceptions import SemanticError
+from automojo.errors.exceptions import ConfigurationError, SemanticError
 
 from automojo.interfaces.addressplane import AddressPlane
 from automojo.interfaces.ivpnclient import IVPNClient
@@ -326,6 +326,8 @@ class OverlayDNSResolver:
         for client in self._vpn_clients:
             try:
                 peers = client.peer_addresses()
+            except (SemanticError, ConfigurationError):
+                raise
             except Exception as xcpt:
                 err_msg_lines = [
                     "OverlayDNSResolver: IVPNClient.peer_addresses() raised.",
@@ -390,6 +392,8 @@ class OverlayDNSResolver:
         for cp in self._control_planes:
             try:
                 devices = cp.list_devices(aspects=provider_aspects)
+            except (SemanticError, ConfigurationError):
+                raise
             except Exception as xcpt:
                 err_msg_lines = [
                     "OverlayDNSResolver: IVPNControlPlane.list_devices() raised.",
