@@ -15,20 +15,22 @@ __credits__ = []
 
 from typing import Any
 
-from automojo.testbase.testjob import TestJob
+from automojo.integrationruntime.integratedtestjob import IntegratedTestJob
 from automojo.testbase.sequencing.testsequencer import TestSequencer
 
 
-class InteropLibraryTestJob(TestJob):
+class InteropLibraryTestJob(IntegratedTestJob):
     """
         Interop-tier test-job base class.
 
-        Extends :class:`automojo.testbase.testjob.TestJob` (single-host) with
-        the **landscape-activation lifecycle** required by any test job that
-        runs against a real environment described through the landscape model
-        — devices, services, coordinators, control points, integration
-        couplings.  It overrides the five hooks that the parent class leaves
-        as stubs:
+        Extends :class:`automojo.integrationruntime.integratedtestjob.IntegratedTestJob`
+        (the integration tier — JSOS/HTML/presence-folder result recording, run
+        metadata from ``RuntimeVariables``) with the **landscape-activation
+        lifecycle** required by any test job that runs against a real environment
+        described through the landscape model — devices, services, coordinators,
+        control points, integration couplings.  It implements the five ``fire_*``
+        hooks that :class:`automojo.testbase.testjob.TestJob` declares as stubs
+        (and that ``IntegratedTestJob`` does not override):
 
         * ``fire_attach_to_environment(tseq)`` — passes the landscape to
           ``tseq.attach_to_environment`` so registered integrations can

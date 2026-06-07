@@ -49,7 +49,7 @@ def discover_command_groups(root: click.Group):
 @click.option('-v', '--verbose', count=True)
 def am_interop_root_command(verbose):
 
-    from automojo.runtime.runtimevariables import AM_RUNTIME_VARIABLES
+    from automojo.thisapp.runtimevariables import AM_RUNTIME_VARIABLES
 
     
     if verbose == 0:

@@ -26,6 +26,8 @@ automojo-credentials = { git = "https://github.com/automationmojo/automojo-crede
 automojo-networking = { git = "https://github.com/automationmojo/automojo-networking.git", branch = "main" }
 automojo-restclient-base = { git = "https://github.com/automationmojo/automojo-restclient-base.git", branch = "main" }
 automojo-testbase = { git = "https://github.com/automationmojo/automojo-testbase.git", branch = "main" }
+automojo-integration-runtime = { git = "https://github.com/automationmojo/automojo-integration-runtime.git", branch = "main" }
+automojo-this-app = { git = "https://github.com/automationmojo/automojo-this-app.git", branch = "main" }
 automojo-xmodules = { git = "https://github.com/automationmojo/automojo-xmodules.git", branch = "main" }
 automojo-waiting = { git = "https://github.com/automationmojo/automojo-waiting.git", branch = "main" }
 

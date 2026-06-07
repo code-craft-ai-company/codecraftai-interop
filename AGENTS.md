@@ -57,6 +57,11 @@ AI based testing should run only the 'singlehost' tests tests with:
 
 When running tests you should create an output folder in order to be able to capture all the test run artifacts in an isolated folder.
 
+## TestJob Tier Note
+This package contributes `InteropLibraryTestJob` (under `source/packages/automojo/interop/testing/testjob.py`) — the landscape-activation tier of the `TestJob` chain.  It implements the five `fire_*` landscape lifecycle hooks (`fire_attach_to_environment`, `fire_attach_to_framework`, `fire_activate_configuration`, `fire_activate_integration`, `fire_activate_operations`) — which `TestJob` declares as no-op stubs — sourcing the landscape via the `_get_landscape` seam that concrete subclasses (such as `automojo-testplus.DistributedTestJob`) override.
+
+As built today, `InteropLibraryTestJob` extends `automojo-testbase`'s `TestJob` directly, so interop-tier runs inherit testbase's default stdout recording.  The in-flight target is to re-parent it onto `IntegratedTestJob` (from `automojo-integration-runtime`) so that integration runs gain JSOS/HTML/presence-folder recording.  Until that re-parenting lands, the testbase testing guidance above still applies as written.
+
 # Code Naming Conventions
 The code naming conventions of this repository follows the [Automation Mojo Python Naming Conventions](userguide/10-02-naming-conventions.rst)
 
