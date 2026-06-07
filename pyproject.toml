@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "automojo-interop"
-description = "Automation Mojo - Interop Package"
+name = "codecraftai-interop"
+description = "Code Craft AI - Interop Package"
 version = "0.0.1"
 authors = []
 readme = "README.rst"
@@ -13,7 +13,7 @@ classifiers = [
 keywords = [
     "python"
 ]
-packages = [{include="automojo", from="source/packages"}]
+packages = [{include="ccai", from="source/packages"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
@@ -22,14 +22,14 @@ rpyc = "^6.0.1"
 psutil = "^7.2.1"
 requests = "^2.32.3"
 click = "^8.2.1"
-automojo-credentials = { git = "https://github.com/automationmojo/automojo-credentials.git", branch = "main" }
-automojo-networking = { git = "https://github.com/automationmojo/automojo-networking.git", branch = "main" }
-automojo-restclient-base = { git = "https://github.com/automationmojo/automojo-restclient-base.git", branch = "main" }
-automojo-testbase = { git = "https://github.com/automationmojo/automojo-testbase.git", branch = "main" }
-automojo-integration-runtime = { git = "https://github.com/automationmojo/automojo-integration-runtime.git", branch = "main" }
-automojo-this-app = { git = "https://github.com/automationmojo/automojo-this-app.git", branch = "main" }
-automojo-xmodules = { git = "https://github.com/automationmojo/automojo-xmodules.git", branch = "main" }
-automojo-waiting = { git = "https://github.com/automationmojo/automojo-waiting.git", branch = "main" }
+codecraftai-credentials = { git = "https://github.com/automationmojo/codecraftai-credentials.git", branch = "main" }
+codecraftai-networking = { git = "https://github.com/automationmojo/codecraftai-networking.git", branch = "main" }
+codecraftai-restclient-base = { git = "https://github.com/automationmojo/codecraftai-restclient-base.git", branch = "main" }
+codecraftai-testbase = { git = "https://github.com/automationmojo/codecraftai-testbase.git", branch = "main" }
+codecraftai-integration-runtime = { git = "https://github.com/automationmojo/codecraftai-integration-runtime.git", branch = "main" }
+codecraftai-this-app = { git = "https://github.com/automationmojo/codecraftai-this-app.git", branch = "main" }
+codecraftai-xmodules = { git = "https://github.com/automationmojo/codecraftai-xmodules.git", branch = "main" }
+codecraftai-waiting = { git = "https://github.com/automationmojo/codecraftai-waiting.git", branch = "main" }
 
 
 [tool.poetry.group.dev.dependencies]

@@ -12,8 +12,8 @@ import logging
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../../../")))
 
-from automojo.credentials.basiccredential import BasicCredential
-from automojo.interop.protocols.power.dlipower.dlipowerclient import DliPowerRestClient
+from ccai.credentials.basiccredential import BasicCredential
+from ccai.interop.protocols.power.dlipower.dlipowerclient import DliPowerRestClient
 
 
 def test_connection():

@@ -1,13 +1,13 @@
 # Implementation Plan — SSH Address-Plane Awareness
 
 - [x] 1. Add `SSHAddressPlaneUnavailableError` to
-  `automojo/interop/protocols/ssh/exceptions.py`.
-- [x] 2. Create `automojo/interop/protocols/ssh/planeresolver.py`:
+  `ccai/interop/protocols/ssh/exceptions.py`.
+- [x] 2. Create `ccai/interop/protocols/ssh/planeresolver.py`:
   - [x] 2a. Implement `resolve_dial_target(*, address_set, preferred_plane,
     fallback_planes)` as a pure function.
   - [x] 2b. Raise `SSHAddressPlaneUnavailableError` with the attempted list
     when nothing resolves.
-- [x] 3. Update `automojo/interop/protocols/ssh/sshbase.py`:
+- [x] 3. Update `ccai/interop/protocols/ssh/sshbase.py`:
   - [x] 3a. Add keyword-only params `device`, `address_plane`,
     `fallback_planes` to `connect(...)`.
   - [x] 3b. Raise `SemanticError` when both `host` and `device` are supplied.

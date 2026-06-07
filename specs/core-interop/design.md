@@ -2,7 +2,7 @@
 
 ## Overview
 
-The automojo-interop package implements a layered architecture that provides consistent interoperability protocols for automation
+The codecraftai-interop package implements a layered architecture that provides consistent interoperability protocols for automation
 testing. The design follows a modular approach where core protocols (SSH, DNS, Power, Serial, REST) are implemented as separate
 components with shared aspects-based configuration. The system emphasizes debuggability over performance and readability over
 conciseness, making it ideal for test automation scenarios.
@@ -319,7 +319,7 @@ constraints in the aspects configuration, the error is immediately raised and pa
 ### Test Organization
 
 ```
-source/testroots/automojo/tests/singlehost/interop/
+source/testroots/ccai/tests/singlehost/interop/
 ├── protocols/
 │   ├── dns/
 │   ├── ssh/
@@ -360,7 +360,7 @@ The CLI system uses a dynamic discovery mechanism that automatically loads comma
 ```python
 def discover_command_groups(root: click.Group):
     """
-        Discovers modules under 'automojo.interop.cli.cmdtree' namespace
+        Discovers modules under 'ccai.interop.cli.cmdtree' namespace
         and registers their command groups with the root CLI.
     """
 ```
@@ -417,7 +417,7 @@ class PowerAgentBase:
 
 ### CLI Extension Mechanism
 
-- **Namespace Package Discovery**: CLI commands are discovered via `automojo.interop.cli.cmdtree` namespace
+- **Namespace Package Discovery**: CLI commands are discovered via `ccai.interop.cli.cmdtree` namespace
 - **Dynamic Registration**: Protocol modules register commands via `register_groups()` function
 - **Modular Development**: Each protocol can provide its own CLI commands independently
 
@@ -433,7 +433,7 @@ The architecture supports adding new protocols by:
 
 ### Manufacturer Extensions
 
-- **Manufacturer Directory**: `source/packages/automojo/interop/manufacturers/` for vendor-specific implementations
+- **Manufacturer Directory**: `source/packages/ccai/interop/manufacturers/` for vendor-specific implementations
 - **Factory Pattern Support**: Extensible factory registration for device-specific behaviors
 - **Custom Protocol Implementations**: Manufacturer-specific protocol variations
 

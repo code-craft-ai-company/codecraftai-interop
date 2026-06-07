@@ -1,6 +1,6 @@
 # Implementation Plan — Overlay DNS Resolver
 
-- [x] 1. Create `automojo/interop/protocols/dns/aspectsoverlaydns.py` with
+- [x] 1. Create `ccai/interop/protocols/dns/aspectsoverlaydns.py` with
   `AspectsOverlayDNS` and `DEFAULT_OVERLAY_DNS_ASPECTS`.
 - [x] 2. Create `overlaycandidate.py` with the `OverlayCandidate` dataclass.
 - [x] 3. Create `exceptions.py` with `OverlayDNSNoMatchError` and
@@ -35,4 +35,4 @@
 - [x] 9. Add `hypothesis` to the package test dependencies if not already
   present.
 - [x] 10. Export `OverlayDNSResolver` from
-  `automojo/interop/protocols/dns/__init__.py`.
+  `ccai/interop/protocols/dns/__init__.py`.

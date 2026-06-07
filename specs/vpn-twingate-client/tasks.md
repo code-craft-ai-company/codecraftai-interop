@@ -1,6 +1,6 @@
 # Implementation Plan — Twingate Client
 
-- [x] 1. Create `automojo/interop/vpn/twingate/` package.
+- [x] 1. Create `ccai/interop/vpn/twingate/` package.
 - [x] 2. Create `connectorinvocation.py`:
   - [x] 2a. `compose_setup_argv(authkey, hostname)` — splits the combined token
     string, returns argv list.
@@ -30,4 +30,4 @@
   - [x] 6l. `test_reads_never_elevate`.
 - [x] 7. Capture two fixture outputs (`systemctl is-active`, connector setup
   failure) and add to test resources.
-- [x] 8. Export `TwingateClient` from `automojo.interop.vpn` `__init__.py`.
+- [x] 8. Export `TwingateClient` from `ccai.interop.vpn` `__init__.py`.

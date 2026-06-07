@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Utility to fix documentation formatting in automojo source files."""
+"""Utility to fix documentation formatting in ccai source files."""
 
 import sys
 from pathlib import Path
@@ -53,7 +53,7 @@ def fix_file(path: Path) -> bool:
 
 
 def main(argv: list[str]) -> int:
-    root = Path('source/packages/automojo/interop')
+    root = Path('source/packages/ccai/interop')
     py_files = sorted(root.rglob('*.py'))
 
     any_changed = False

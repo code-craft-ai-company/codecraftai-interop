@@ -1,6 +1,6 @@
 # Implementation Plan — Twingate Control Plane
 
-- [x] 1. Create `automojo/interop/vpn/twingate/aspectstwingate.py` with
+- [x] 1. Create `ccai/interop/vpn/twingate/aspectstwingate.py` with
   `AspectsTwingate` and `DEFAULT_TWINGATE_ASPECTS`.
 - [x] 2. Create model dataclasses (`TwingateConnector`, `TwingateResource`,
   `TwingateGroup`).

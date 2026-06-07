@@ -15,8 +15,8 @@ landscapes where no daemon is reachable locally.
 
 **See Also:**
 - [vpn-tailscale-client](../vpn-tailscale-client/design.md)
-- automojo-restclient-base (`RestClientBase`, `AspectsRest`, `RestApiGroup`)
-- automojo-credentials specs for `TailscaleAuthKeyCredential` and
+- codecraftai-restclient-base (`RestClientBase`, `AspectsRest`, `RestApiGroup`)
+- codecraftai-credentials specs for `TailscaleAuthKeyCredential` and
   `TailscaleOAuthCredential`.
 
 ---
@@ -84,7 +84,7 @@ PLAN-VPN-AND-CLOUD-PROVISIONING.
 ## Module Layout
 
 ```
-source/packages/automojo/interop/vpn/tailscale/
+source/packages/ccai/interop/vpn/tailscale/
 ├── tailscalecontrolplane.py
 ├── aspectstailscale.py
 ├── model/

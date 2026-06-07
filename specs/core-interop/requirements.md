@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The automojo-interop package provides a core set of interoperability protocols and agents for automation
+The codecraftai-interop package provides a core set of interoperability protocols and agents for automation
 testing and device management. The system enables communication with remote devices through essential
 protocols including SSH, DNS/mDNS, power management, serial communication, and REST-based services. The
 package follows a consistent aspects-based approach for configuring retry patterns, timeouts, and logging
@@ -14,7 +14,7 @@ classes.
 
 ## Glossary
 
-- **Interop_System**: The automojo-interop package that provides core protocol implementations and extensibility framework
+- **Interop_System**: The codecraftai-interop package that provides core protocol implementations and extensibility framework
 - **SSH_Agent**: Component that manages SSH connections and command execution on remote hosts
 - **DNS_API**: Component that provides DNS query and mDNS service discovery capabilities
 - **Power_Agent**: Component that manages power control for network-attached power strips

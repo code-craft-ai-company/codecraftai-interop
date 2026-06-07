@@ -1,6 +1,6 @@
 # Implementation Plan — Tailscale Control Plane
 
-- [x] 1. Create `automojo/interop/vpn/tailscale/aspectstailscale.py` with
+- [x] 1. Create `ccai/interop/vpn/tailscale/aspectstailscale.py` with
   `AspectsTailscale` and `DEFAULT_TAILSCALE_ASPECTS`.
 - [x] 2. Create `model/vpndevicerecord.py` with the `VPNDeviceRecord`
   dataclass (move to shared location if already defined upstream).
