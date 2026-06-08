@@ -63,7 +63,7 @@ lives in the control-plane spec.
 ## Module Layout
 
 ```
-source/packages/automojo/interop/vpn/twingate/
+source/packages/ccai/interop/vpn/twingate/
 ├── __init__.py
 ├── twingateclient.py
 ├── connectorinvocation.py   ← argv composition per OS family

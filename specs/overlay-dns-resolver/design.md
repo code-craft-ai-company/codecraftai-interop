@@ -22,7 +22,7 @@ deterministic function; the resolver is the I/O-bound shell wrapping it.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│   Caller (resolution.py in automojo-networking)              │
+│   Caller (resolution.py in codecraftai-networking)              │
 └──────────────────────────────┬───────────────────────────────┘
                                │
                                ▼
@@ -86,7 +86,7 @@ DEFAULT_OVERLAY_DNS_ASPECTS = AspectsOverlayDNS()
 ## Module Layout
 
 ```
-source/packages/automojo/interop/protocols/dns/
+source/packages/ccai/interop/protocols/dns/
 ├── overlaydnsresolver.py
 ├── matchpredicate.py         ← pure is_match()
 ├── aspectsoverlaydns.py

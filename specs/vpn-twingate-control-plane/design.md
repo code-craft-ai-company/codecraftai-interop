@@ -15,7 +15,7 @@ tokens).
   counterpart.
 - [vpn-tailscale-control-plane](../vpn-tailscale-control-plane/design.md) —
   sibling, mesh-style control plane.
-- automojo-restclient-base — `RestClientBase`, `AspectsRest`,
+- codecraftai-restclient-base — `RestClientBase`, `AspectsRest`,
   `GraphQLApiGroup` helper (added under the `restapigroup-enhancements`
   feature).
 
@@ -88,7 +88,7 @@ consistency lag. `DEFAULT_TWINGATE_ASPECTS` materialises with sane defaults.
 ## Module Layout
 
 ```
-source/packages/automojo/interop/vpn/twingate/
+source/packages/ccai/interop/vpn/twingate/
 ├── twingatecontrolplane.py
 ├── aspectstwingate.py
 ├── model/

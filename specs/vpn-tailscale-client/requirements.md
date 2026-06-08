@@ -2,9 +2,9 @@
 
 ## Introduction
 
-The `vpn-tailscale-client` feature provides `automojo-interop` with a host-local
+The `vpn-tailscale-client` feature provides `codecraftai-interop` with a host-local
 client that drives the `tailscale` CLI through an `ICommandRunner`. It implements
-the `IVPNClient` protocol from `automojo-interfaces` so consumers (sysman
+the `IVPNClient` protocol from `codecraftai-interfaces` so consumers (sysman
 managers, landscaping coordinators, provisioning verifiers) can bring a node up
 on a tailnet, query its overlay address, and enumerate peer overlay addresses
 without depending on the local installation pattern.

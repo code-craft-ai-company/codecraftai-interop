@@ -2,12 +2,12 @@
 
 ## Introduction
 
-The `vpn-tailscale-control-plane` feature provides `automojo-interop` with a
+The `vpn-tailscale-control-plane` feature provides `codecraftai-interop` with a
 REST client that talks to `api.tailscale.com` to mint auth keys, enumerate
 tailnet devices, delete devices, and apply ACL documents. It implements the
-`IVPNControlPlane` protocol from `automojo-interfaces`.
+`IVPNControlPlane` protocol from `codecraftai-interfaces`.
 
-The client is built on `RestClientBase` from `automojo-restclient-base` and
+The client is built on `RestClientBase` from `codecraftai-restclient-base` and
 uses an `AspectsRest` subclass so every call accepts caller-controlled
 retry, timeout, and logging behaviour. Authentication uses either a
 `TailscaleAuthKeyCredential` (tagged service key) or a

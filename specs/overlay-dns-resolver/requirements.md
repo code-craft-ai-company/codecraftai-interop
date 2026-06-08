@@ -3,7 +3,7 @@
 ## Introduction
 
 The `overlay-dns-resolver` feature provides a DNS resolver under
-`automojo-interop/protocols/dns/` that maps short names (MagicDNS,
+`codecraftai-interop/protocols/dns/` that maps short names (MagicDNS,
 Twingate FQDNs) to overlay addresses by querying the local VPN daemon or the
 VPN control plane. When no overlay match is found, it falls through to the
 standard system resolver.

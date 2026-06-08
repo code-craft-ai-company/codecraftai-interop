@@ -9,7 +9,7 @@ selection logic stays out of the network-bound class. The default value
 (`AddressPlane.PUBLIC`) keeps every existing caller bit-identical.
 
 **See Also:**
-- [device-address-set](../../../automojo-landscaping/specs/device-address-set/design.md)
+- [device-address-set](../../../codecraftai-landscaping/specs/device-address-set/design.md)
   defines `IDeviceAddressSet` and the plane-resolution semantics.
 - [vpn-tailscale-client](../vpn-tailscale-client/design.md) supplies the
   overlay address consumed when `OVERLAY` is requested.
@@ -49,8 +49,8 @@ enums and returns a string or raises.
 ## Data Model and Signatures
 
 ```python
-from automojo.interfaces.addressplane import AddressPlane
-from automojo.interfaces.deviceaddressset import IDeviceAddressSet
+from ccai.interfaces.addressplane import AddressPlane
+from ccai.interfaces.deviceaddressset import IDeviceAddressSet
 
 class SSHAddressPlaneUnavailableError(Exception):
     """Raised when no requested address plane resolves on the device."""
@@ -98,7 +98,7 @@ def resolve_dial_target(address_set, preferred_plane, fallback_planes):
 ```
 
 The algorithm is total over the input space defined in
-[device-address-set](../../../automojo-landscaping/specs/device-address-set/design.md):
+[device-address-set](../../../codecraftai-landscaping/specs/device-address-set/design.md):
 either it returns a non-empty string or it raises a single typed exception.
 
 ---
@@ -106,7 +106,7 @@ either it returns a non-empty string or it raises a single typed exception.
 ## Module Layout
 
 ```
-source/packages/automojo/interop/protocols/ssh/
+source/packages/ccai/interop/protocols/ssh/
 ├── sshbase.py            ← gains keyword params; minimal change
 ├── planeresolver.py      ← resolve_dial_target() pure function
 └── exceptions.py         ← adds SSHAddressPlaneUnavailableError

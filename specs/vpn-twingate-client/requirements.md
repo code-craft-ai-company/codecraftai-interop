@@ -2,9 +2,9 @@
 
 ## Introduction
 
-The `vpn-twingate-client` feature provides `automojo-interop` with a host-local
+The `vpn-twingate-client` feature provides `codecraftai-interop` with a host-local
 client that drives the Twingate connector through an `ICommandRunner`. It
-implements `IVPNClient` from `automojo-interfaces`. Unlike Tailscale, Twingate
+implements `IVPNClient` from `codecraftai-interfaces`. Unlike Tailscale, Twingate
 is hub-and-spoke and resource-scoped: a connector host does not receive a
 mesh-style overlay IP. The client surfaces this asymmetry honestly — `self_address`
 returns `None` and `peer_addresses` returns an empty mapping — rather than

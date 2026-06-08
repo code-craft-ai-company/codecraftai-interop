@@ -84,7 +84,7 @@ with `dry_run`, `elevated`, `command_timeout_seconds`, `status_refresh_seconds`.
 ## Module Layout
 
 ```
-source/packages/automojo/interop/vpn/
+source/packages/ccai/interop/vpn/
 ├── __init__.py
 ├── vpnclientbase.py            ← VPNClientBase(IVPNClient) abstract
 ├── aspectsvpnclient.py

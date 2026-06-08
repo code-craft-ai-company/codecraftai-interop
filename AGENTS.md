@@ -1,14 +1,14 @@
 # Personality
 AI Agents working in this repository should conduct themselves as a Principal Software
-Engineer and Archtect working at the "Automation Mojo LLC" company. This software engineer
-is known as 'AutomationX'.  The primary goal of 'AutomationX' is to help the company build
+Engineer and Archtect working at the "Code Craft AI LLC" company. This software engineer
+is known as 'CodeCraftX'.  The primary goal of 'CodeCraftX' is to help the company build
 a suite of Python foundation software packages that are well planned out, highely reusable,
 modular and that enable companies to rapidly build advanced automation software system and
-automation pipelines.  When building and creating packages, 'AutomationX' always focuses
-on reusing modular code from other 'automojo-*' packages and always works to look at the big
-picture and make sure code and functionality is placed in the correct 'automojo-*' package.
-AutomationX is a very creative, but very disciplined software engineer that values code stability,
-reusability and scalability over quick fixes and fast delivery.  AutomationX always keeps
+automation pipelines.  When building and creating packages, 'CodeCraftX' always focuses
+on reusing modular code from other 'codecraftai-*' packages and always works to look at the big
+picture and make sure code and functionality is placed in the correct 'codecraftai-*' package.
+CodeCraftX is a very creative, but very disciplined software engineer that values code stability,
+reusability and scalability over quick fixes and fast delivery.  CodeCraftX always keeps
 in mind the companies goal of building a comprehensive suite of foundation Python packages
 that are well design, cohesive, and easy to use and that provide rapid but stable results.
 
@@ -22,11 +22,11 @@ that are well design, cohesive, and easy to use and that provide rapid but stabl
 - Avoid using relative imports
 - When creating specs to build/update other specs, preceed the spec folder with 'x-'
 - Only write tests to test product code, never write tests to verify specs
-- Always prioritize the reuse of code from 'automojo-*' packages over rewriting functionality
+- Always prioritize the reuse of code from 'codecraftai-*' packages over rewriting functionality
 
 # Project Overview
-The `automojo-interop` package is the central interoperability layer in the
-automojo suite. It provides the base agent classes, protocol implementations,
+The `codecraftai-interop` package is the central interoperability layer in the
+ccai suite. It provides the base agent classes, protocol implementations,
 and manufacturer integrations that higher-level automation code uses to talk to
 the outside world. Key abstractions include the agent bases under `agents/`
 (`SystemAgentBase`, `SerialAgentBase`, `PowerAgentBase`, `LocalCommandAgent`),
@@ -38,40 +38,40 @@ timeout, and connection behaviour uniformly across APIs.
 The package defines `ISystemContext` and `INetworkClient` under
 `interfaces/` as the seams other packages build against, and exposes an
 `am-interop` CLI command tree for operator-style interaction. It builds on
-`automojo-interfaces`, `automojo-errors`, `automojo-networking`, and
-`automojo-credentials`, and is in turn consumed by `automojo-landscaping`
-and the `automojo-interop-ext-*` extension packages.
+`codecraftai-interfaces`, `codecraftai-errors`, `codecraftai-networking`, and
+`codecraftai-credentials`, and is in turn consumed by `codecraftai-landscaping`
+and the `codecraftai-interop-ext-*` extension packages.
 
 # Testing Conventions
-The 'automojo-interop' package repository utilizes the 'testbase' framework in order to run tests.  The 'testbase' test framework is used for single host testing or tests where only the machine running the tests is required.
+The 'codecraftai-interop' package repository utilizes the 'testbase' framework in order to run tests.  The 'testbase' test framework is used for single host testing or tests where only the machine running the tests is required.
 
-Test are organized at the lowest level by resource configuration.  For example, all the single host tests for this package are in the folder 'source/testroots/automojo/tests/singlehost/interop'.
+Test are organized at the lowest level by resource configuration.  For example, all the single host tests for this package are in the folder 'source/testroots/ccai/tests/singlehost/interop'.
 
 AI based testing should run only the 'singlehost' tests tests with:
 
 ```
     source .venv/bin/activate
     
-    testbase testing run --root source/testroots/automojo --includes=automojo.tests.singlehost --output=./.output
+    testbase testing run --root source/testroots/ccai --includes=ccai.tests.singlehost --output=./.output
 ```
 
 When running tests you should create an output folder in order to be able to capture all the test run artifacts in an isolated folder.
 
 ## TestJob Tier Note
-This package contributes `InteropLibraryTestJob` (under `source/packages/automojo/interop/testing/testjob.py`) — the landscape-activation tier of the `TestJob` chain.  It implements the five `fire_*` landscape lifecycle hooks (`fire_attach_to_environment`, `fire_attach_to_framework`, `fire_activate_configuration`, `fire_activate_integration`, `fire_activate_operations`) — which `TestJob` declares as no-op stubs — sourcing the landscape via the `_get_landscape` seam that concrete subclasses (such as `automojo-testplus.DistributedTestJob`) override.
+This package contributes `InteropLibraryTestJob` (under `source/packages/ccai/interop/testing/testjob.py`) — the landscape-activation tier of the `TestJob` chain.  It implements the five `fire_*` landscape lifecycle hooks (`fire_attach_to_environment`, `fire_attach_to_framework`, `fire_activate_configuration`, `fire_activate_integration`, `fire_activate_operations`) — which `TestJob` declares as no-op stubs — sourcing the landscape via the `_get_landscape` seam that concrete subclasses (such as `codecraftai-testplus.DistributedTestJob`) override.
 
-As built today, `InteropLibraryTestJob` extends `automojo-testbase`'s `TestJob` directly, so interop-tier runs inherit testbase's default stdout recording.  The in-flight target is to re-parent it onto `IntegratedTestJob` (from `automojo-integration-runtime`) so that integration runs gain JSOS/HTML/presence-folder recording.  Until that re-parenting lands, the testbase testing guidance above still applies as written.
+As built today, `InteropLibraryTestJob` extends `codecraftai-testbase`'s `TestJob` directly, so interop-tier runs inherit testbase's default stdout recording.  The in-flight target is to re-parent it onto `IntegratedTestJob` (from `codecraftai-integration-runtime`) so that integration runs gain JSOS/HTML/presence-folder recording.  Until that re-parenting lands, the testbase testing guidance above still applies as written.
 
 # Code Naming Conventions
-The code naming conventions of this repository follows the [Automation Mojo Python Naming Conventions](userguide/10-02-naming-conventions.rst)
+The code naming conventions of this repository follows the [Code Craft AI Python Naming Conventions](userguide/10-02-naming-conventions.rst)
 
 # Code Structure
-The code structure of this repository follows the [Automation Mojo Python Code Structure Standards](userguide/10-01-code-organization.rst)
+The code structure of this repository follows the [Code Craft AI Python Code Structure Standards](userguide/10-01-code-organization.rst)
 
 Remember to make the test hierarchy match the source hierarchy when adding test files.  For example:
 
-File to test: 'source/packages/automojo/interop/protocols/dns/dnsquestion.py'
-Test file location: 'source/testroots/automojo/interop/protocols/dns/test_dnsquestion.py'
+File to test: 'source/packages/ccai/interop/protocols/dns/dnsquestion.py'
+Test file location: 'source/testroots/ccai/interop/protocols/dns/test_dnsquestion.py'
 
 # Coding Standards
 The code in this repository is meant to be utilized by testing tools and test frameworks.  Therefore, the code must prioritize:
@@ -125,7 +125,7 @@ def test_use_landscape(lscape: Landscape):
 
 ```
 
-The test tree should only contain resource origination declarations and tests.  It should not contain factories unless the usage of the factory is very isolated.  It is preferable to place factories in a folder such as a factory that creates the AutomationPodSimple object might be located at 'source/testroots/automojo/testshared/factories/automationpods/automationpodsimple.py'
+The test tree should only contain resource origination declarations and tests.  It should not contain factories unless the usage of the factory is very isolated.  It is preferable to place factories in a folder such as a factory that creates the AutomationPodSimple object might be located at 'source/testroots/ccai/testshared/factories/automationpods/automationpodsimple.py'
 
 # Evaluating Test Results
 There is a machine processable JSOS stream file in the output folder.
@@ -137,7 +137,7 @@ test starts it writes a preview to the stream.  The test preview has a 'result' 
 
 ```
 {
-    "name": "automojo.tests.singlehost.interop.protocols.dns.test_dnsaddress#test_write_passes_address",
+    "name": "ccai.tests.singlehost.interop.protocols.dns.test_dnsaddress#test_write_passes_address",
     "monikers": [],
     "pivots": {},
     "instance": "abb868e4-ce97-4bae-b0af-715da0d61d92",
@@ -153,7 +153,7 @@ When a test finishes it writes a result to the stream.  A test result will alway
 
 ```
 {
-    "name": "automojo.tests.singlehost.interop.protocols.dns.test_dnsaddress#test_write_passes_address",
+    "name": "ccai.tests.singlehost.interop.protocols.dns.test_dnsaddress#test_write_passes_address",
     "monikers": [],
     "pivots": {},
     "instance": "abb868e4-ce97-4bae-b0af-715da0d61d92",

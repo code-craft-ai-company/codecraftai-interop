@@ -1,6 +1,6 @@
 # Implementation Plan — Tailscale Client
 
-- [x] 1. Create `automojo/interop/vpn/` package with `__init__.py`.
+- [x] 1. Create `ccai/interop/vpn/` package with `__init__.py`.
 - [x] 2. Create `vpnclientbase.py` with `VPNClientBase(IVPNClient)` abstract,
   accepting `command_runner: ICommandRunner`, `file_operator: IFileOperator`,
   `credential: BaseCredential` in `__init__`.
@@ -38,5 +38,5 @@
   - [x] 9m. `test_reads_never_elevate`.
 - [x] 10. Capture three real-world `tailscale status --json` fixtures and add to
   test resources.
-- [x] 11. Wire `TailscaleClient` into the `automojo.interop.vpn` package
+- [x] 11. Wire `TailscaleClient` into the `ccai.interop.vpn` package
   `__init__.py` for direct import.

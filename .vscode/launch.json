@@ -22,8 +22,8 @@
             "args": [
                 "testing",
                 "run",
-                "--root=${workspaceFolder}/source/testroots/automojo",
-                "--includes=automojo.tests.interop.singlehost.protocols.dns",
+                "--root=${workspaceFolder}/source/testroots/ccai",
+                "--includes=ccai.tests.interop.singlehost.protocols.dns",
                 "--breakpoint=testrun-start"
             ],
             "console": "integratedTerminal",
@@ -33,7 +33,7 @@
             "name": "Python: UPnP - Generate",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/source/packages/automojo/interop/cli/am_interop_command.py",
+            "program": "${workspaceFolder}/source/packages/ccai/interop/cli/am_interop_command.py",
             "envFile": "${workspaceFolder}/.env",
             "args": [
                 "upnp",
@@ -46,7 +46,7 @@
             "name": "Python: UPnP - Scan",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/source/packages/automojo/interop/cli/am_interop_command.py",
+            "program": "${workspaceFolder}/source/packages/ccai/interop/cli/am_interop_command.py",
             "envFile": "${workspaceFolder}/.env",
             "args": [
                 "upnp",

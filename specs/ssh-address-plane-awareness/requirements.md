@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The `ssh-address-plane-awareness` feature extends `automojo-interop`'s SSH
+The `ssh-address-plane-awareness` feature extends `codecraftai-interop`'s SSH
 client base so callers can request the address plane (`PUBLIC`, `PRIVATE`,
 `OVERLAY`) used to resolve the connect target. The selection threads through
 to the device's `IDeviceAddressSet`; the existing behaviour (callers passing a

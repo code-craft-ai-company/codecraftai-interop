@@ -2,9 +2,9 @@
 
 ## Introduction
 
-The `vpn-twingate-control-plane` feature provides `automojo-interop` with a
+The `vpn-twingate-control-plane` feature provides `codecraftai-interop` with a
 REST/GraphQL client that talks to the Twingate admin API. It implements
-`IVPNControlPlane` from `automojo-interfaces`. Twingate's API is GraphQL at
+`IVPNControlPlane` from `codecraftai-interfaces`. Twingate's API is GraphQL at
 `/api/graphql/`; the client is built on `RestClientBase` and wraps GraphQL
 queries/mutations through a `GraphQLApiGroup` helper.
 
