@@ -74,7 +74,9 @@ def service_type_name(service_type: str, *, allow_underscores: bool = False) -> 
         raise DnsBadTypeInNameError(err_msg)
 
     comp_protocol_type = service_type_parts[1]
-    
+    if comp_protocol_type not in ("_tcp", "_udp"):
+        err_msg = "Type '%s' is not a valid service type name. The protocol label must be '_tcp' or '_udp', got '%s'." % (service_type, comp_protocol_type)
+        raise DnsBadTypeInNameError(err_msg)
 
     comp_service_name = service_type_parts[2]
     validate_service_name(comp_service_name, allow_underscores=allow_underscores)

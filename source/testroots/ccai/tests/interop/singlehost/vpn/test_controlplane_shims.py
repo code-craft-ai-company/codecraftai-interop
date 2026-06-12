@@ -13,8 +13,17 @@ verify the shim wiring: a one-shot warning and a correct re-export identity.
 import importlib
 import warnings
 
-from ccai.restclient.tailscale.tailscaleclient import TailscaleClient
-from ccai.restclient.twingate.twingateclient import TwingateClient
+# The control-plane shims are backed by the optional, deprecated
+# codecraftai-restclient-tailscale / -twingate packages. Guard the imports so this
+# module still collects on a clean install where those dists are not present.
+try:
+    from ccai.restclient.tailscale.tailscaleclient import TailscaleClient
+    from ccai.restclient.twingate.twingateclient import TwingateClient
+    _RESTCLIENT_AVAILABLE = True
+except ImportError:
+    TailscaleClient = None
+    TwingateClient = None
+    _RESTCLIENT_AVAILABLE = False
 
 import ccai.interop.vpn._shim as vpn_shim
 
@@ -143,6 +152,10 @@ def test_tailscale_shim_is_subclass_of_new_client():
         for a bad credential whereas ``TailscaleClient`` raises
         ``ConfigurationError``.
     """
+    if not _RESTCLIENT_AVAILABLE:
+        import unittest
+        raise unittest.SkipTest("requires codecraftai-restclient-tailscale")
+
     from ccai.interop.vpn.tailscale.tailscalecontrolplane import (
         TailscaleControlPlane
     )
@@ -158,6 +171,10 @@ def test_twingate_shim_is_alias_of_new_client():
         new :class:`TwingateClient` — the constructors match, so a plain alias
         is used.
     """
+    if not _RESTCLIENT_AVAILABLE:
+        import unittest
+        raise unittest.SkipTest("requires codecraftai-restclient-twingate")
+
     from ccai.interop.vpn.twingate.twingatecontrolplane import (
         TwingateControlPlane
     )

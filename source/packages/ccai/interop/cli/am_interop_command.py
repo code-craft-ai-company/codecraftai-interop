@@ -23,24 +23,31 @@ from ccai.xmodules.ximport import import_by_name
 
 def discover_command_groups(root: click.Group):
     """
-        Discovers modules under the namespace package 'ccai.interop.cli.cmdtree' and
+        Discovers command sub-packages under ``ccai.interop.cli.cmdtree`` and registers
+        their command groups onto the provided root group.
 
+        :param root: The root :class:`click.Group` that discovered groups attach to.
     """
     import ccai.interop.cli.cmdtree
-
-    first_found = set()
 
     for nxtpath in get_package_paths(ccai.interop.cli.cmdtree):
         for child_name in os.listdir(nxtpath):
             child_dir_full = os.path.join(nxtpath, child_name)
-            child_init = os.path.join(child_dir_full)
-            
-            if os.path.exists(child_init):
-                child_mod_full = f"ccai.interop.cli.cmdtree.{child_name}"
-                cmd_reg_modname = f"{child_mod_full}.xinit"
-                init_mod = import_by_name(cmd_reg_modname)
-                if hasattr(init_mod, 'register_groups'):
-                    init_mod.register_groups(root)
+
+            # Only consider sub-packages (directories) that expose an 'xinit' module.
+            # This skips non-package entries like README.md and the package __init__,
+            # which previously caused an import-time ModuleNotFoundError.
+            if not os.path.isdir(child_dir_full):
+                continue
+
+            xinit_file = os.path.join(child_dir_full, "xinit.py")
+            if not os.path.exists(xinit_file):
+                continue
+
+            cmd_reg_modname = f"ccai.interop.cli.cmdtree.{child_name}.xinit"
+            init_mod = import_by_name(cmd_reg_modname)
+            if hasattr(init_mod, 'register_groups'):
+                init_mod.register_groups(root)
 
     return
 
@@ -49,20 +56,22 @@ def discover_command_groups(root: click.Group):
 @click.option('-v', '--verbose', count=True)
 def am_interop_root_command(verbose):
 
-    from ccai.thisapp.runtimevariables import AM_RUNTIME_VARIABLES
+    from ccai.runtime.activation import activate_runtime, ActivationProfile
+    from ccai.runtime.optionoverrides import AM_RUNTIME_OPTION_OVERRIDES
 
-    
     if verbose == 0:
-        AM_RUNTIME_VARIABLES.AM_LOG_LEVEL_CONSOLE = "WARNING"
+        console_level = "WARNING"
     elif verbose == 1:
-        AM_RUNTIME_VARIABLES.AM_LOG_LEVEL_CONSOLE = "INFO"
+        console_level = "INFO"
     elif verbose == 2:
-        AM_RUNTIME_VARIABLES.AM_LOG_LEVEL_CONSOLE = "DEBUG"
-    elif verbose > 2:
-        AM_RUNTIME_VARIABLES.AM_LOG_LEVEL_CONSOLE = "NOTSET"
+        console_level = "DEBUG"
+    else:
+        console_level = "NOTSET"
 
-    from ccai.runtime.initialize import initialize_runtime
-    initialize_runtime()
+    # Activate the runtime for a console application, then apply the verbosity
+    # override to the console log level.
+    activate_runtime(profile=ActivationProfile.Console)
+    AM_RUNTIME_OPTION_OVERRIDES.override_loglevel_console(console_level)
 
     return
 

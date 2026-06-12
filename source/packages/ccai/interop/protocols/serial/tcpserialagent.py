@@ -6,6 +6,8 @@
     .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
+from __future__ import annotations
+
 __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
@@ -14,7 +16,13 @@ __credits__ = []
 from typing import Optional, Tuple
 from types import TracebackType
 
-import telnetlib
+try:
+    import telnetlib
+except ImportError:
+    # telnetlib was removed in Python 3.13. Allow the module to import so the rest of
+    # the serial agents remain usable; TCP serial connections raise a clear error at
+    # connect time when telnetlib is unavailable.
+    telnetlib = None
 
 from ccai.interop.aspects import AspectsCmd, DEFAULT_CMD_ASPECTS
 from ccai.interop.interfaces.isystemcontext import ISystemContext
@@ -56,6 +64,10 @@ class TcpSerialBase(SerialAgentBase):
             
             :returns: A connected :class:`telnetlib.Telnet` object.
         """
+
+        if telnetlib is None:
+            errmsg = "TCP serial connections require the stdlib 'telnetlib' module, which was removed in Python 3.13. Use Python < 3.13 or a telnetlib backport."
+            raise RuntimeError(errmsg)
 
         tnconn = telnetlib.Telnet(host=self._host, port=self._port)
 

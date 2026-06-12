@@ -80,6 +80,7 @@ class SshBase(ISystemContext):
     def __init__(self, host: str, primary_credential: SshCredential, users: Optional[Dict[str, SshCredential]] = None,
                  port: int = 22, jump: Union[str, SshJumpParams, None] = None, pty_params: Optional[dict] = None,
                  called_id: Optional[str]=None, look_for_keys: bool = False,
+                 verify_host_keys: bool = False,
                  aspects: AspectsCmd = DEFAULT_CMD_ASPECTS):
         """
             Initialize the base SSH helper class.
@@ -92,6 +93,11 @@ class SshBase(ISystemContext):
             :param pty_params: Optional PTY parameters for interactive sessions.
             :param called_id: Identifier used in logs.
             :param look_for_keys: If ``True`` search for SSH keys automatically.
+            :param verify_host_keys: If ``True`` the system known_hosts is loaded and an
+                                     unknown host key is REJECTED (RejectPolicy). If ``False``
+                                     (default) unknown host keys are auto-accepted
+                                     (AutoAddPolicy) -- convenient for ephemeral test devices
+                                     but does not protect against MITM; enable for untrusted networks.
             :param aspects: Default command aspects for operations.
         """
         self._host = host
@@ -126,6 +132,7 @@ class SshBase(ISystemContext):
             self._target_tag = "[{}]".format(called_id)
         
         self._look_for_keys = look_for_keys
+        self._verify_host_keys = verify_host_keys
         self._aspects = aspects
 
         self._ipaddr = socket.gethostbyname(self._host)
@@ -507,7 +514,14 @@ class SshBase(ISystemContext):
                     pkey = self._load_key(cl_keyraw, cl_keypasswd)
 
                 ssh_client = paramiko.SSHClient()
-                ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                if self._verify_host_keys:
+                    # Verify against the system known_hosts and reject unknown keys.
+                    ssh_client.load_system_host_keys()
+                    ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
+                else:
+                    # Auto-accept unknown host keys (convenient for ephemeral test
+                    # devices; does NOT protect against MITM -- see verify_host_keys).
+                    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
                 if self._jump is not None:
                     proxy = paramiko.ProxyCommand(self._jump)

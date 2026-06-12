@@ -23,6 +23,40 @@ from ccai.interop.interfaces.isystemcontext import ISystemContext
 from ccai.interop.models.command.commandresult import CommandResult
 
 
+def _replace_cmd_aspects(base: AspectsCmd, **overrides) -> AspectsCmd:
+    """
+        Builds a new :class:`AspectsCmd` from an existing one with selected fields
+        overridden. ``AspectsCmd`` is a :class:`Freezable` (immutable, not a dataclass),
+        so ``dataclasses.replace`` cannot be used; this reconstructs the instance from
+        its current field values plus the overrides.
+
+        :param base: The :class:`AspectsCmd` whose values seed the new instance.
+        :param overrides: Field values to override on the new instance.
+
+        :returns: A new frozen :class:`AspectsCmd`.
+    """
+    kwargs = {
+        "expected_status": base.expected_status,
+        "user": base.user,
+        "pty_params": base.pty_params,
+        "action_pattern": base.action_pattern,
+        "completion_timeout": base.completion_timeout,
+        "completion_interval": base.completion_interval,
+        "connection_timeout": base.connection_timeout,
+        "connection_interval": base.connection_interval,
+        "inactivity_timeout": base.inactivity_timeout,
+        "inactivity_interval": base.inactivity_interval,
+        "monitor_delay": base.monitor_delay,
+        "logging_pattern": base.logging_pattern,
+        "retry_logging_interval": base.retry_logging_interval,
+        "allowed_error_codes": base.allowed_error_codes,
+        "allowed_connection_exceptions": base.allowed_connection_exceptions,
+    }
+    kwargs.update(overrides)
+    rtnval = AspectsCmd(**kwargs)
+    return rtnval
+
+
 class CommandBuilder:
     """
         Fluent interface for building and executing commands through ISystemContext agents.
@@ -118,14 +152,8 @@ class CommandBuilder:
             :returns: Self for method chaining
         """
         # Create new aspects with updated timeout
-        if self._aspects is None:
-            # If no aspects set, use default with timeout
-            from dataclasses import replace
-            self._aspects = replace(DEFAULT_CMD_ASPECTS, completion_timeout=timeout_seconds)
-        else:
-            # Update existing aspects with new timeout
-            from dataclasses import replace
-            self._aspects = replace(self._aspects, completion_timeout=timeout_seconds)
+        base = DEFAULT_CMD_ASPECTS if self._aspects is None else self._aspects
+        self._aspects = _replace_cmd_aspects(base, completion_timeout=timeout_seconds)
         return self
     
     def with_retry(self, action_pattern: ActionPattern) -> "CommandBuilder":
@@ -140,14 +168,8 @@ class CommandBuilder:
             :returns: Self for method chaining
         """
         # Create new aspects with updated action pattern
-        if self._aspects is None:
-            # If no aspects set, use default with action pattern
-            from dataclasses import replace
-            self._aspects = replace(DEFAULT_CMD_ASPECTS, action_pattern=action_pattern)
-        else:
-            # Update existing aspects with new action pattern
-            from dataclasses import replace
-            self._aspects = replace(self._aspects, action_pattern=action_pattern)
+        base = DEFAULT_CMD_ASPECTS if self._aspects is None else self._aspects
+        self._aspects = _replace_cmd_aspects(base, action_pattern=action_pattern)
         return self
     
     def with_logging(self, logging_pattern: LoggingPattern) -> "CommandBuilder":
@@ -162,14 +184,8 @@ class CommandBuilder:
             :returns: Self for method chaining
         """
         # Create new aspects with updated logging pattern
-        if self._aspects is None:
-            # If no aspects set, use default with logging pattern
-            from dataclasses import replace
-            self._aspects = replace(DEFAULT_CMD_ASPECTS, logging_pattern=logging_pattern)
-        else:
-            # Update existing aspects with new logging pattern
-            from dataclasses import replace
-            self._aspects = replace(self._aspects, logging_pattern=logging_pattern)
+        base = DEFAULT_CMD_ASPECTS if self._aspects is None else self._aspects
+        self._aspects = _replace_cmd_aspects(base, logging_pattern=logging_pattern)
         return self
     
     def dry_run(self, enabled: bool = True) -> "CommandBuilder":
@@ -241,7 +257,22 @@ class CommandBuilder:
         
         # Build the complete command string
         command = self.build_command()
-        
+
+        # In dry-run mode, return a synthetic success result without executing.
+        if self._dry_run:
+            transport = self._determine_transport(agent)
+            rtnval = CommandResult(
+                exit_code=0,
+                stdout="",
+                stderr="",
+                command=self._args,
+                transport=transport,
+                duration_ms=0.0,
+                timed_out=False,
+                dry_run=True
+            )
+            return rtnval
+
         # Ensure aspects are properly configured
         aspects_to_use = self._aspects
         if aspects_to_use is None:

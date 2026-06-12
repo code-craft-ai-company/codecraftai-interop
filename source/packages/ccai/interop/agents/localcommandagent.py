@@ -228,7 +228,7 @@ class LocalCommandAgent(ISystemContext):
         """
         # pylint: disable=no-self-use
 
-        msg = "Error running command on a local agent.".format(command)
+        msg = "Command result from a local agent."
 
         if isinstance(exp_status, int):
             if status == exp_status:
@@ -239,8 +239,10 @@ class LocalCommandAgent(ISystemContext):
             if status in exp_status:
                 if logging_pattern == LoggingPattern.ALL_RESULTS or logging_pattern == LoggingPattern.SUCCESS_ONLY:
                     fullmsg = format_command_result(msg, command, status, stdout, stderr)
+                    logger.info(fullmsg)
             else:
                 if logging_pattern == LoggingPattern.ALL_RESULTS or logging_pattern == LoggingPattern.FAILURE_ONLY:
                     fullmsg = format_command_result(msg, command, status, stdout, stderr)
+                    logger.info(fullmsg)
 
         return

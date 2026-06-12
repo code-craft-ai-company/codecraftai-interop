@@ -11,7 +11,7 @@ __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
 
-from typing import Tuple, Optional, Union
+from typing import Tuple, Type, Optional, Union
 
 from enum import IntEnum
 
@@ -45,7 +45,7 @@ DEFAULT_COMPLETION_INTERVAL = 10
 
 DEFAULT_CONNECTION_TIMEOUT = 16
 DEFAULT_CONNECTION_INTERVAL = 2
-DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS: Tuple[BaseException] = []
+DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS: Tuple[Type[BaseException], ...] = ()
 
 DEFAULT_INACTIVITY_TIMEOUT = 600
 DEFAULT_INACTIVITY_INTERVAL = .5
@@ -58,7 +58,7 @@ DEFAULT_LOGGING_PATTERN = LoggingPattern.ALL_RESULTS
 
 DEFAULT_MUST_CONNECT = False
 
-DEFAULT_ALLOWED_ERROR_CODES: Tuple[int] = []
+DEFAULT_ALLOWED_ERROR_CODES: Tuple[int, ...] = ()
 
 class Aspects(Freezable):
     """
@@ -105,7 +105,7 @@ class Aspects(Freezable):
             :param must_connect: Used to indicate that connection failures should be raised.
             :param logger: Optional logger for output.
         """
-        super(Aspects).__init__()
+        super().__init__()
 
         self.action_pattern = action_pattern
         self.completion_timeout = completion_timeout
@@ -174,7 +174,7 @@ class AspectsCmd(Freezable):
             :param allowed_error_codes: A list of error codes that allow retry
             :param allowed_connection_exceptions: List of exceptions that do not count as connection failures.
         """
-        super(Aspects).__init__()
+        super().__init__()
 
         self.action_pattern = action_pattern
         self.completion_timeout = completion_timeout

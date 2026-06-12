@@ -58,7 +58,8 @@ def lookup_entry_type(pdir: str, ename: str, finfo: paramiko.SFTPAttributes) -> 
     elif stat.S_ISBLK(finfo.st_mode):
         etype = "block"
     else:
-        print ("ERROR: Unknown entry type. pdir=%s, ename=%s" % (pdir, ename))
+        logger.warning("Unknown entry type. pdir=%s, ename=%s" % (pdir, ename))
+        etype = "unknown"
 
     return etype
 
@@ -74,7 +75,9 @@ def primitive_list_directory(ssh_client: paramiko.SSHClient, directory: str) -> 
 
         :returns: A dictionary with the information about the items in the target directory.
     """
-    entries = None
+    # Default to an empty dict (not None) so the '-> dict' contract holds even on a
+    # permission-denied directory; callers iterate .values() unconditionally.
+    entries = {}
 
     ls_cmd = "ls -al %s" % shlex.quote(directory)
 

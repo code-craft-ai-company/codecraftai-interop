@@ -33,9 +33,17 @@ def __getattr__(name: str) -> Any:
         :raises: :class:`AttributeError` when the name is not exported.
     """
     if name == "TailscaleControlPlane":
-        from ccai.interop.vpn.tailscale.tailscalecontrolplane import (
-            TailscaleControlPlane
-        )
+        try:
+            from ccai.interop.vpn.tailscale.tailscalecontrolplane import (
+                TailscaleControlPlane
+            )
+        except ImportError as ierr:
+            err_msg = (
+                "TailscaleControlPlane is a deprecated shim that now requires the "
+                "'codecraftai-restclient-tailscale' package (ccai.restclient.tailscale). "
+                "Install it, or migrate to ccai.restclient.tailscale.tailscaleclient.TailscaleClient."
+            )
+            raise ImportError(err_msg) from ierr
         rtnval = TailscaleControlPlane
         return rtnval
 

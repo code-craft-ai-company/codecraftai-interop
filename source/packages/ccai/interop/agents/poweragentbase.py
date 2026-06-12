@@ -35,6 +35,8 @@ class PowerAgentBase:
         """
         self._host = host
         self._credential = credential
+        self._power_interfaces = {}
+        self._power_config = {}
         return
 
     def _lookup_power_interface(self, interface_name: str) -> Union[dict, None]:
@@ -52,16 +54,22 @@ class PowerAgentBase:
         else:
 
             interface_config = self._power_config[interface_name]
-            
+
             powerType = interface_config["powerType"]
 
             if powerType == "DliPowerSwitch":
+                try:
+                    import dlipower
+                except ImportError:
+                    errmsg = "The 'dlipower' package must be installed to use a 'DliPowerSwitch' power interface."
+                    raise ConfigurationError(errmsg) from None
+
                 credobj: BasicCredential = self._credential
                 power_iface = dlipower.PowerSwitch(userid=credobj.username, password=credobj.password, hostname=self._host)
 
                 self._power_interfaces[interface_name] = power_iface
             else:
-                errmsg = "Un-Support power interface type={}.".format(powerType)
+                errmsg = "Un-Supported power interface type={}.".format(powerType)
                 raise ConfigurationError(errmsg) from None
 
         return power_iface

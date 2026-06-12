@@ -34,9 +34,17 @@ def __getattr__(name: str) -> Any:
         :raises: :class:`AttributeError` when the name is not exported.
     """
     if name == "TwingateControlPlane":
-        from ccai.interop.vpn.twingate.twingatecontrolplane import (
-            TwingateControlPlane
-        )
+        try:
+            from ccai.interop.vpn.twingate.twingatecontrolplane import (
+                TwingateControlPlane
+            )
+        except ImportError as ierr:
+            err_msg = (
+                "TwingateControlPlane is a deprecated shim that now requires the "
+                "'codecraftai-restclient-twingate' package (ccai.restclient.twingate). "
+                "Install it, or migrate to ccai.restclient.twingate.twingateclient.TwingateClient."
+            )
+            raise ImportError(err_msg) from ierr
         rtnval = TwingateControlPlane
         return rtnval
 

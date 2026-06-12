@@ -150,6 +150,15 @@ class DnsInboundMessage:
         """
         return self._questions
 
+    @property
+    def valid(self) -> bool:
+        """
+            Whether the inbound message was parsed successfully and is well-formed.
+
+            :returns: True if the message parsed without error, otherwise False.
+        """
+        return self._valid
+
     def is_query(self) -> bool:
         """
             Returns true if this is a query

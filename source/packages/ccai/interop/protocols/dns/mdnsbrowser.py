@@ -50,7 +50,7 @@ class MdnsBrowseSearchWindow:
         Represents a window of time where mDNS browse results are collected.
     """
 
-    def __init__(self, browser: "MdnsBrowseSearchWindow", id: int):
+    def __init__(self, browser: "MdnsBrowser", id: int):
         """
             Constructs a :class:`MdnsBrowseWindow` object used to collect and store search results.
 
@@ -175,7 +175,7 @@ class MdnsBrowser:
 
         self._lock.acquire()
         try:
-            rtnval = copy.deepcopy(self._active_devices)
+            rtnval = copy.deepcopy(self._active_services)
         finally:
             self._lock.release()
 
@@ -189,7 +189,7 @@ class MdnsBrowser:
 
         self._lock.acquire()
         try:
-            rtnval = copy.deepcopy(self._inactive_devices)
+            rtnval = copy.deepcopy(self._inactive_services)
         finally:
             self._lock.release()
 
@@ -357,7 +357,8 @@ class MdnsBrowser:
                     print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass.name} key={akey} name={aname}")
 
             else:
-                print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass}")        
+                rtype = dns_answer.rtype
+                print(f"Presence: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass}")
 
         return
 
@@ -394,6 +395,7 @@ class MdnsBrowser:
                     print(f"Search: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass.name} key={akey} name={aname}")
 
             else:
+                rtype = dns_answer.rtype
                 print(f"Search: Answer ({from_endpoint}) id={msg_id} rtype={rtype.name} rclass={rclass}")
 
         return
