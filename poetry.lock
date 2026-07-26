@@ -388,7 +388,7 @@ codecraftai-errors = {git = "https://github.com/automationmojo/codecraftai-error
 type = "git"
 url = "https://github.com/automationmojo/codecraftai-credentials.git"
 reference = "main"
-resolved_reference = "0c52375f9670cf6fbae22eb6ebf9a65182eeb0b9"
+resolved_reference = "7aa969658cc46d9daa000b5fa6faebabceabb0ec"
 
 [[package]]
 name = "codecraftai-errors"
@@ -447,7 +447,7 @@ websocket = ["websocket-client (>=1.8.0,<2.0.0)"]
 type = "git"
 url = "https://github.com/automationmojo/codecraftai-integration-runtime.git"
 reference = "main"
-resolved_reference = "2905e4b135eebb2ab9a5049b914c9ee9112485f5"
+resolved_reference = "b310a7aa622240f19b1fa57634389c1b79d9e8c1"
 
 [[package]]
 name = "codecraftai-interfaces"
@@ -487,7 +487,7 @@ netifaces = "^0.11.0"
 type = "git"
 url = "https://github.com/automationmojo/codecraftai-networking.git"
 reference = "main"
-resolved_reference = "8d0b74ad7f74bdeecbd708785b1779dd4521865f"
+resolved_reference = "730ccfcee603f0a34f1d4ff4f14e70366cedb62e"
 
 [[package]]
 name = "codecraftai-restclient-base"
@@ -510,7 +510,7 @@ requests = "^2.32.5"
 type = "git"
 url = "https://github.com/automationmojo/codecraftai-restclient-base.git"
 reference = "main"
-resolved_reference = "7519ed4809b8daa1da0fc53efe7014c4d9016fb2"
+resolved_reference = "a5c8fc1d5a9d2cde5dc6d6d85985afab010bdd3c"
 
 [[package]]
 name = "codecraftai-runtime"
@@ -556,7 +556,7 @@ pyyaml = "^6.0.2"
 type = "git"
 url = "https://github.com/automationmojo/codecraftai-testbase.git"
 reference = "main"
-resolved_reference = "1b7eb659093974fa1276a56ab5f9f5d525e01b2e"
+resolved_reference = "66afd67f8738a78c9f09246d14a16829509f8955"
 
 [[package]]
 name = "codecraftai-this-app"
