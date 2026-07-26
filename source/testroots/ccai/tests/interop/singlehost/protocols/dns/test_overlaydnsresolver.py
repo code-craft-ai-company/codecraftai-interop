@@ -16,7 +16,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from hypothesis import HealthCheck, given, settings, strategies as st
+from ccai.testbase.properties import given
+from ccai.testbase.properties import strategies as st
 
 from ccai.errors.exceptions import SemanticError
 
@@ -350,7 +351,6 @@ _candidate_strategy = st.builds(
 
 
 @given(query=st.text(), candidate=_candidate_strategy)
-@settings(suppress_health_check=[HealthCheck.too_slow])
 def test_is_match_predicate_is_total(query, candidate) -> None:
     """For any ``(str, OverlayCandidate)`` pair, ``is_match`` returns a bool."""
 

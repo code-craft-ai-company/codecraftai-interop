@@ -39,7 +39,6 @@ am-interop = "ccai.interop.cli.am_interop_command:am_interop_root_command"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
-hypothesis = "^6.100.0"
 
 [build-system]
 requires = ["poetry-core"]

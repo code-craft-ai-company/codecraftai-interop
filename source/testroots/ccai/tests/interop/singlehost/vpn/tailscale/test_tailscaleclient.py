@@ -9,7 +9,8 @@ import pathlib
 from typing import Dict, List, Optional
 
 import pytest
-from hypothesis import given, strategies as st, settings
+from ccai.testbase.properties import given
+from ccai.testbase.properties import strategies as st
 
 from ccai.interfaces.icommandrunner import RunResult
 from ccai.interfaces.ivpnclient import IVPNClient, VPNStatus
@@ -260,8 +261,8 @@ _TAG_STRAT = st.lists(st.sampled_from(["tag:lab", "tag:test", "tag:ci", "tag:pro
                        min_size=0, max_size=4, unique=True)
 
 
-@settings(max_examples=25, deadline=None)
-@given(authkey=st.text(min_size=1, max_size=24,
+@given(
+    constraints={"max_examples": 25},authkey=st.text(min_size=1, max_size=24,
                        alphabet=st.characters(min_codepoint=33, max_codepoint=126,
                                               blacklist_characters=" \t\n\r")),
        hostname=st.one_of(st.none(), st.text(min_size=1, max_size=10,
@@ -283,8 +284,7 @@ def test_bring_up_argv_is_deterministic(authkey, hostname, tags):
     return
 
 
-@settings(max_examples=15, deadline=None)
-@given(call_count=st.integers(min_value=2, max_value=6))
+@given(call_count=st.integers(min_value=2, max_value=6), constraints={"max_examples": 15})
 def test_bring_up_idempotent_sequence_converges(call_count):
     runner = RecorderRunner()
     runner.next_result = RunResult(exit_code=0, stdout=_load_fixture("status_running.json"), stderr="")
