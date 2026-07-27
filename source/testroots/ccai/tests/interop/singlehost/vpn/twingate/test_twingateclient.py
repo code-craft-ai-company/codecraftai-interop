@@ -6,7 +6,6 @@ self_address/peer_addresses asymmetry, dry-run, and aspect-driven elevation.
 import pathlib
 from typing import List, Optional
 
-import pytest
 
 from ccai.interfaces.icommandrunner import RunResult
 from ccai.interfaces.ivpnclient import IVPNClient, VPNStatus
@@ -18,6 +17,7 @@ from ccai.interop.vpn.twingate.exceptions import (
     VPNBringDownError, VPNBringUpError,
 )
 from ccai.interop.vpn.twingate.twingateclient import TwingateClient
+from ccai import testbase
 
 
 FIXTURES_DIR = pathlib.Path(__file__).parent / "fixtures"
@@ -107,7 +107,7 @@ def test_bring_up_setup_failure_raises_VPNBringUpError():
         RunResult(exit_code=1, stdout="", stderr=failure_text),
     ])
     client = TwingateClient(command_runner=runner)
-    with pytest.raises(VPNBringUpError) as exc_info:
+    with testbase.raises(VPNBringUpError) as exc_info:
         client.bring_up(authkey="a:b", aspects=_aspects())
     assert exc_info.value.exit_code == 1
     assert "signature mismatch" in exc_info.value.stderr
@@ -121,7 +121,7 @@ def test_bring_up_start_failure_raises_VPNBringUpError():
         RunResult(exit_code=3, stdout="", stderr="unit not found"),
     ])
     client = TwingateClient(command_runner=runner)
-    with pytest.raises(VPNBringUpError) as exc_info:
+    with testbase.raises(VPNBringUpError) as exc_info:
         client.bring_up(authkey="a:b", aspects=_aspects())
     assert exc_info.value.exit_code == 3
     assert "unit not found" in exc_info.value.stderr
@@ -139,7 +139,7 @@ def test_bring_up_setup_failure_does_not_leak_tokens_in_error():
         RunResult(exit_code=1, stdout="", stderr="setup rejected"),
     ])
     client = TwingateClient(command_runner=runner)
-    with pytest.raises(VPNBringUpError) as exc_info:
+    with testbase.raises(VPNBringUpError) as exc_info:
         client.bring_up(authkey=authkey, aspects=_aspects())
     message = str(exc_info.value)
     assert access_token not in message
@@ -190,7 +190,7 @@ def test_bring_up_idempotent_repeat_calls_invoke_runner_twice_each():
 def test_bring_up_empty_authkey_raises_value_error():
     runner = RecorderRunner()
     client = TwingateClient(command_runner=runner)
-    with pytest.raises(ValueError):
+    with testbase.raises(ValueError):
         client.bring_up(authkey="", aspects=_aspects())
     assert runner.calls == []
     return
@@ -209,7 +209,7 @@ def test_bring_down_non_zero_raises_VPNBringDownError():
         RunResult(exit_code=5, stdout="", stderr="permission denied"),
     ])
     client = TwingateClient(command_runner=runner)
-    with pytest.raises(VPNBringDownError) as exc_info:
+    with testbase.raises(VPNBringDownError) as exc_info:
         client.bring_down(aspects=_aspects())
     assert exc_info.value.exit_code == 5
     return

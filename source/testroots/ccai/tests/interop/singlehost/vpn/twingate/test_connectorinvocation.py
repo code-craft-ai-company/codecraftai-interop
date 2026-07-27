@@ -3,7 +3,6 @@ Tests for the pure argv-composition helpers in
 :mod:`ccai.interop.vpn.twingate.connectorinvocation`.
 """
 
-import pytest
 from ccai.testbase.properties import given
 from ccai.testbase.properties import strategies as st
 
@@ -11,6 +10,8 @@ from ccai.interop.vpn.twingate.connectorinvocation import (
     compose_service_argv,
     compose_setup_argv,
 )
+
+from ccai import testbase
 
 
 def test_compose_setup_argv_splits_token_bundle():
@@ -40,21 +41,21 @@ def test_compose_setup_argv_omits_name_flag_when_hostname_absent():
 
 
 def test_compose_setup_argv_rejects_empty_authkey():
-    with pytest.raises(ValueError):
+    with testbase.raises(ValueError):
         compose_setup_argv(authkey="")
     return
 
 
 def test_compose_setup_argv_rejects_missing_colon():
-    with pytest.raises(ValueError):
+    with testbase.raises(ValueError):
         compose_setup_argv(authkey="just-one-token")
     return
 
 
 def test_compose_setup_argv_rejects_empty_half():
-    with pytest.raises(ValueError):
+    with testbase.raises(ValueError):
         compose_setup_argv(authkey="access:")
-    with pytest.raises(ValueError):
+    with testbase.raises(ValueError):
         compose_setup_argv(authkey=":refresh")
     return
 

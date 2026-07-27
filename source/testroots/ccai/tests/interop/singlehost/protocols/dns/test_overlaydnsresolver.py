@@ -11,10 +11,12 @@ __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
 
+from ccai import testbase
+
+
 from typing import Dict, List, Optional
 from unittest.mock import MagicMock
 
-import pytest
 
 from ccai.testbase.properties import given
 from ccai.testbase.properties import strategies as st
@@ -132,7 +134,7 @@ def test_resolve_raises_no_match_when_fall_through_disabled() -> None:
     client = _make_vpn_client(peers={"other": "100.64.0.99"})
     resolver = OverlayDNSResolver(vpn_clients=[client])
     aspects = AspectsOverlayDNS(fall_through_standard_dns=False)
-    with pytest.raises(OverlayDNSNoMatchError):
+    with testbase.raises(OverlayDNSNoMatchError):
         resolver.resolve(name="missing", aspects=aspects)
     return
 
@@ -164,7 +166,7 @@ def test_resolve_empty_peer_addresses_falls_through_or_misses() -> None:
     client = _make_vpn_client(peers={})
     resolver = OverlayDNSResolver(vpn_clients=[client])
     aspects = AspectsOverlayDNS(fall_through_standard_dns=False)
-    with pytest.raises(OverlayDNSNoMatchError):
+    with testbase.raises(OverlayDNSNoMatchError):
         resolver.resolve(name="myhost", aspects=aspects)
     return
 
@@ -173,7 +175,7 @@ def test_resolve_overlay_with_no_providers_raises_semantic_error() -> None:
     """OVERLAY plane on an unconfigured resolver raises ``SemanticError``."""
 
     resolver = OverlayDNSResolver()
-    with pytest.raises(SemanticError):
+    with testbase.raises(SemanticError):
         resolver.resolve(name="anyhost")
     return
 
@@ -292,7 +294,7 @@ def test_control_plane_exception_is_wrapped() -> None:
     cp.list_devices.side_effect = RuntimeError("api blew up")
 
     resolver = OverlayDNSResolver(control_planes=[cp])
-    with pytest.raises(OverlayDNSError):
+    with testbase.raises(OverlayDNSError):
         resolver.resolve(
             name="myhost",
             aspects=AspectsOverlayDNS(fall_through_standard_dns=False),
@@ -310,7 +312,7 @@ def test_client_semantic_error_is_not_swallowed() -> None:
     client.peer_addresses.side_effect = SemanticError("misused api")
 
     resolver = OverlayDNSResolver(vpn_clients=[client])
-    with pytest.raises(SemanticError):
+    with testbase.raises(SemanticError):
         resolver.resolve(
             name="myhost",
             aspects=AspectsOverlayDNS(fall_through_standard_dns=False),
@@ -328,7 +330,7 @@ def test_control_plane_semantic_error_is_not_swallowed() -> None:
     cp.list_devices.side_effect = SemanticError("misused api")
 
     resolver = OverlayDNSResolver(control_planes=[cp])
-    with pytest.raises(SemanticError):
+    with testbase.raises(SemanticError):
         resolver.resolve(
             name="myhost",
             aspects=AspectsOverlayDNS(fall_through_standard_dns=False),
@@ -454,6 +456,6 @@ def test_resolver_outcome_consistent_with_is_match(name) -> None:
     # With no peers the overlay path always misses regardless of suffix —
     # the resolver therefore raises NoMatch. This verifies the resolver
     # never silently returns ``None`` on overlay misses.
-    with pytest.raises(OverlayDNSNoMatchError):
+    with testbase.raises(OverlayDNSNoMatchError):
         resolver.resolve(name=name, aspects=aspects)
     return

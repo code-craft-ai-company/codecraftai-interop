@@ -8,7 +8,6 @@ import os
 import pathlib
 from typing import Dict, List, Optional
 
-import pytest
 from ccai.testbase.properties import given
 from ccai.testbase.properties import strategies as st
 
@@ -22,6 +21,7 @@ from ccai.interop.vpn.tailscale.exceptions import (
     VPNBringDownError, VPNBringUpError, VPNStatusError
 )
 from ccai.interop.vpn.tailscale.tailscaleclient import TailscaleClient
+from ccai import testbase
 
 
 FIXTURES_DIR = pathlib.Path(__file__).parent / "fixtures"
@@ -120,7 +120,7 @@ def test_bring_up_non_zero_raises_vpnbringuperror():
     runner = RecorderRunner()
     runner.next_result = RunResult(exit_code=1, stdout="", stderr="auth rejected")
     client = TailscaleClient(command_runner=runner)
-    with pytest.raises(VPNBringUpError) as excinfo:
+    with testbase.raises(VPNBringUpError) as excinfo:
         client.bring_up(authkey="tskey-AUTH")
     assert excinfo.value.exit_code == 1
     assert "auth rejected" in excinfo.value.stderr
@@ -140,7 +140,7 @@ def test_bring_down_non_zero_raises():
     runner = RecorderRunner()
     runner.next_result = RunResult(exit_code=2, stdout="", stderr="not running")
     client = TailscaleClient(command_runner=runner)
-    with pytest.raises(VPNBringDownError) as excinfo:
+    with testbase.raises(VPNBringDownError) as excinfo:
         client.bring_down()
     assert excinfo.value.exit_code == 2
     return
@@ -183,7 +183,7 @@ def test_status_corrupt_json_raises_vpnstatuserror():
     runner = RecorderRunner()
     runner.next_result = RunResult(exit_code=0, stdout="{not-json", stderr="")
     client = TailscaleClient(command_runner=runner)
-    with pytest.raises(VPNStatusError):
+    with testbase.raises(VPNStatusError):
         client.status()
     return
 
