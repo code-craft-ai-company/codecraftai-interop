@@ -19,6 +19,8 @@ from ccai.interop.vpn.twingate.exceptions import (
 from ccai.interop.vpn.twingate.twingateclient import TwingateClient
 from ccai import testbase
 
+from ccai.testbase.factories import create_log_capture
+
 
 FIXTURES_DIR = pathlib.Path(__file__).parent / "fixtures"
 
@@ -267,6 +269,7 @@ def test_self_address_is_none_always():
     return
 
 
+@testbase.attach.parameter(create_log_capture, identifier="caplog")
 def test_peer_addresses_is_empty_and_debug_logged_once(caplog):
     # Reset the process-once flag so this test owns the assertion.
     import ccai.interop.vpn.twingate.twingateclient as twcmod
