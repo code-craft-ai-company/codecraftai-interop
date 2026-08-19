@@ -22,17 +22,17 @@ rpyc = "^6.0.1"
 psutil = "^7.2.1"
 requests = "^2.32.3"
 click = "^8.2.1"
-codecraftai-errors = { git = "https://github.com/automationmojo/codecraftai-errors.git", branch = "main" }
-codecraftai-interfaces = { git = "https://github.com/automationmojo/codecraftai-interfaces.git", branch = "main" }
-codecraftai-runtime = { git = "https://github.com/automationmojo/codecraftai-runtime.git", branch = "main" }
-codecraftai-credentials = { git = "https://github.com/automationmojo/codecraftai-credentials.git", branch = "main" }
-codecraftai-networking = { git = "https://github.com/automationmojo/codecraftai-networking.git", branch = "main" }
-codecraftai-restclient-base = { git = "https://github.com/automationmojo/codecraftai-restclient-base.git", branch = "main" }
-codecraftai-testbase = { git = "https://github.com/automationmojo/codecraftai-testbase.git", branch = "main" }
-codecraftai-integration-runtime = { git = "https://github.com/automationmojo/codecraftai-integration-runtime.git", branch = "main" }
-codecraftai-this-app = { git = "https://github.com/automationmojo/codecraftai-this-app.git", branch = "main" }
-codecraftai-xmodules = { git = "https://github.com/automationmojo/codecraftai-xmodules.git", branch = "main" }
-codecraftai-waiting = { git = "https://github.com/automationmojo/codecraftai-waiting.git", branch = "main" }
+codecraftai-errors = { git = "https://github.com/code-craft-ai-company/codecraftai-errors.git", branch = "main" }
+codecraftai-interfaces = { git = "https://github.com/code-craft-ai-company/codecraftai-interfaces.git", branch = "main" }
+codecraftai-runtime = { git = "https://github.com/code-craft-ai-company/codecraftai-runtime.git", branch = "main" }
+codecraftai-credentials = { git = "https://github.com/code-craft-ai-company/codecraftai-credentials.git", branch = "main" }
+codecraftai-networking = { git = "https://github.com/code-craft-ai-company/codecraftai-networking.git", branch = "main" }
+codecraftai-restclient-base = { git = "https://github.com/code-craft-ai-company/codecraftai-restclient-base.git", branch = "main" }
+codecraftai-testbase = { git = "https://github.com/code-craft-ai-company/codecraftai-testbase.git", branch = "main" }
+codecraftai-integration-runtime = { git = "https://github.com/code-craft-ai-company/codecraftai-integration-runtime.git", branch = "main" }
+codecraftai-this-app = { git = "https://github.com/code-craft-ai-company/codecraftai-this-app.git", branch = "main" }
+codecraftai-xmodules = { git = "https://github.com/code-craft-ai-company/codecraftai-xmodules.git", branch = "main" }
+codecraftai-waiting = { git = "https://github.com/code-craft-ai-company/codecraftai-waiting.git", branch = "main" }
 
 [tool.poetry.scripts]
 am-interop = "ccai.interop.cli.am_interop_command:am_interop_root_command"
