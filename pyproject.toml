@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "codecraftai-interop"
 description = "Code Craft AI - Interop Package"
-version = "0.0.1"
+version = "1.0.0"
 authors = ["Myron Walker <myron.walker@gmail.com>"]
 readme = "README.rst"
 license = "LicenseRef-CodeCraftAI-Dual-License"
@@ -22,23 +22,29 @@ rpyc = "^6.0.1"
 psutil = "^7.2.1"
 requests = "^2.32.3"
 click = "^8.2.1"
-codecraftai-errors = { git = "https://github.com/code-craft-ai-company/codecraftai-errors.git", branch = "main" }
-codecraftai-interfaces = { git = "https://github.com/code-craft-ai-company/codecraftai-interfaces.git", branch = "main" }
-codecraftai-runtime = { git = "https://github.com/code-craft-ai-company/codecraftai-runtime.git", branch = "main" }
-codecraftai-credentials = { git = "https://github.com/code-craft-ai-company/codecraftai-credentials.git", branch = "main" }
-codecraftai-networking = { git = "https://github.com/code-craft-ai-company/codecraftai-networking.git", branch = "main" }
-codecraftai-restclient-base = { git = "https://github.com/code-craft-ai-company/codecraftai-restclient-base.git", branch = "main" }
-codecraftai-testbase = { git = "https://github.com/code-craft-ai-company/codecraftai-testbase.git", branch = "main" }
-codecraftai-integration-runtime = { git = "https://github.com/code-craft-ai-company/codecraftai-integration-runtime.git", branch = "main" }
-codecraftai-this-app = { git = "https://github.com/code-craft-ai-company/codecraftai-this-app.git", branch = "main" }
-codecraftai-xmodules = { git = "https://github.com/code-craft-ai-company/codecraftai-xmodules.git", branch = "main" }
-codecraftai-waiting = { git = "https://github.com/code-craft-ai-company/codecraftai-waiting.git", branch = "main" }
+codecraftai-errors = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-interfaces = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-runtime = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-credentials = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-networking = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-restclient-base = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-testbase = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-integration-runtime = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-this-app = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-xmodules = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-waiting = { version = "<2.0.0", source = "codecraftai" }
 
 [tool.poetry.scripts]
 am-interop = "ccai.interop.cli.am_interop_command:am_interop_root_command"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
+
+
+[[tool.poetry.source]]
+name = "codecraftai"
+url = "https://code-craft.ai/licensed-repository/simple/"
+priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core"]
