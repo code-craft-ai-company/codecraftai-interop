@@ -19,9 +19,11 @@ __credits__ = []
 
 from dataclasses import dataclass
 
+from ccai.aspects.aspects import Aspects as AspectsBase
 
-@dataclass(frozen=True)
-class AspectsOverlayDNS:
+
+@dataclass(eq=False)
+class AspectsOverlayDNS(AspectsBase):
     """
         Behaviour-control aspects for the overlay DNS resolver.
 
@@ -42,6 +44,11 @@ class AspectsOverlayDNS:
     query_timeout_seconds: float = 5.0
     case_sensitive: bool = False
     cache_ttl_seconds: float = 0.0
+
+    def __post_init__(self) -> None:
+        self.freeze()
+        return
+
 
 
 DEFAULT_OVERLAY_DNS_ASPECTS = AspectsOverlayDNS()
