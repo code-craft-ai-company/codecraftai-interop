@@ -2,7 +2,7 @@
 Code Craft AI Interop
 ==========================
 
-The ``codecraftai-interop`` package is the central interoperability layer in the ccai suite. It provides the base agent classes, protocol implementations, and manufacturer integrations that higher-level automation code uses to talk to the outside world. The package defines ``ISystemContext`` and ``INetworkClient`` under ``interfaces/`` as the seams other packages build against, and exposes an ``am-interop`` CLI command tree for operator-style interaction. It builds on ``codecraftai-interfaces``, ``codecraftai-errors``, ``codecraftai-networking``, and ``codecraftai-credentials``, and is in turn consumed by ``codecraftai-landscaping`` and the ``codecraftai-interop-ext-*`` extension packages.
+The ``codecraftai-interop`` package is the central interoperability layer in the ccai suite. It provides the base agent classes, protocol implementations, and manufacturer integrations that higher-level automation code uses to talk to the outside world. The package defines ``ISystemContext`` and ``INetworkClient`` under ``interfaces/`` as the seams other packages build against, and exposes an ``am-interop`` CLI command tree for operator-style interaction. It builds on ``codecraftai-foundations``, ``codecraftai-networking``, and ``codecraftai-credentials``, and is in turn consumed by ``codecraftai-landscaping`` and the ``codecraftai-interop-ext-*`` extension packages.
 
 Highlights
 ==========

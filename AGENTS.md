@@ -38,7 +38,7 @@ timeout, and connection behaviour uniformly across APIs.
 The package defines `ISystemContext` and `INetworkClient` under
 `interfaces/` as the seams other packages build against, and exposes an
 `am-interop` CLI command tree for operator-style interaction. It builds on
-`codecraftai-interfaces`, `codecraftai-errors`, `codecraftai-networking`, and
+`codecraftai-foundations`, `codecraftai-networking`, and
 `codecraftai-credentials`, and is in turn consumed by `codecraftai-landscaping`
 and the `codecraftai-interop-ext-*` extension packages.
 
