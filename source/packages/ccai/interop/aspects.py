@@ -17,7 +17,7 @@ from enum import IntEnum
 
 import logging
 
-from ccai.xmodules.freezable import Freezable
+from ccai.aspects.aspects import Aspects as AspectsBase
 from ccai.xmodules.xlogging.enhancedloggers import getEnhancedLogger
 
 
@@ -60,12 +60,17 @@ DEFAULT_MUST_CONNECT = False
 
 DEFAULT_ALLOWED_ERROR_CODES: Tuple[int, ...] = ()
 
-class Aspects(Freezable):
+class Aspects(AspectsBase):
     """
         Aspects are utilized with the interop APIs and agents such as the :class:`SSHAgent` class in order
         to modify the behavior of APIs with respect to retry parameter such as timeout, interval, looping patterns
         logging, etc.  The aspects object provides a way to package this common criteria into a single parameter
         or constant you can  pass to multiple APIs
+
+        This class derives from :class:`ccai.aspects.aspects.Aspects`, the root of the aspects hierarchy,
+        so any interop aspects object is accepted wherever the contract-layer base is expected. Instances
+        compare by identity, are hashable and are frozen at the end of ``__init__``; a subclass that adds
+        fields sets them before calling ``super().__init__``.
     """
 
     def __init__(self, action_pattern: ActionPattern = ActionPattern.SINGLE_CALL,
@@ -81,6 +86,8 @@ class Aspects(Freezable):
                        allowed_error_codes: Tuple[int] = DEFAULT_ALLOWED_ERROR_CODES,
                        allowed_connection_exceptions: Tuple[BaseException] = DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS,
                        must_connect: bool = DEFAULT_MUST_CONNECT,
+                       max_attempts: int = 1,
+                       logger_name: Optional[str] = None,
                        logger: Optional[logging.Logger]=None):
         """
             Creates an :class:`Aspects` instance package.
@@ -103,14 +110,14 @@ class Aspects(Freezable):
             :param allowed_error_codes: A list of error codes that allow retry
             :param allowed_connection_exceptions: List of exceptions that do not count as connection failures.
             :param must_connect: Used to indicate that connection failures should be raised.
+            :param max_attempts: Maximum attempts for callers that reconcile against a remote system.
+            :param logger_name: Optional logger name a caller can route logs into.
             :param logger: Optional logger for output.
         """
-        super().__init__()
+        super().__init__(completion_interval=completion_interval, completion_timeout=completion_timeout,
+                         connection_timeout=connection_timeout, max_attempts=max_attempts, logger_name=logger_name)
 
         self.action_pattern = action_pattern
-        self.completion_timeout = completion_timeout
-        self.completion_interval = completion_interval
-        self.connection_timeout = connection_timeout
         self.connection_interval = connection_interval
         self.inactivity_timeout = inactivity_timeout
         self.inactivity_interval = inactivity_interval
@@ -130,7 +137,7 @@ class Aspects(Freezable):
         return
 
 
-class AspectsCmd(Freezable):
+class AspectsCmd(Aspects):
     """
         Extends :class:`Aspects` with command-specific parameters.
     """
@@ -149,6 +156,9 @@ class AspectsCmd(Freezable):
                        retry_logging_interval: int = DEFAULT_RETRY_LOGGING_INTERVAL,
                        allowed_error_codes: Tuple[int] = DEFAULT_ALLOWED_ERROR_CODES,
                        allowed_connection_exceptions: Tuple[BaseException] = DEFAULT_ALLOWED_CONNECTION_EXCEPTIONS,
+                       must_connect: bool = DEFAULT_MUST_CONNECT,
+                       max_attempts: int = 1,
+                       logger_name: Optional[str] = None,
                        logger: Optional[logging.Logger]=None):
         """
             Creates an :class:`AspectsCmd` instance.
@@ -173,27 +183,33 @@ class AspectsCmd(Freezable):
             :param retry_logging_interval: The logging interval for retry loops.
             :param allowed_error_codes: A list of error codes that allow retry
             :param allowed_connection_exceptions: List of exceptions that do not count as connection failures.
+            :param must_connect: Used to indicate that connection failures should be raised.
+            :param max_attempts: Maximum attempts for callers that reconcile against a remote system.
+            :param logger_name: Optional logger name a caller can route logs into.
+            :param logger: Optional logger for output.
         """
-        super().__init__()
-
-        self.action_pattern = action_pattern
-        self.completion_timeout = completion_timeout
-        self.completion_interval = completion_interval
-        self.connection_timeout = connection_timeout
-        self.connection_interval = connection_interval
-        self.inactivity_timeout = inactivity_timeout
-        self.inactivity_interval = inactivity_interval
-        self.monitor_delay = monitor_delay
-        self.logging_pattern = logging_pattern
-        self.retry_logging_interval = retry_logging_interval
-        self.allowed_error_codes = tuple(allowed_error_codes)
-        self.allowed_connection_exceptions = tuple(allowed_connection_exceptions)
-        
+        # Command fields are set first because the base initialiser freezes the instance.
         self.expected_status = expected_status
         self.user = user
         self.pty_params = pty_params
 
-        self.freeze()
+        super().__init__(action_pattern=action_pattern,
+                         completion_timeout=completion_timeout,
+                         completion_interval=completion_interval,
+                         connection_timeout=connection_timeout,
+                         connection_interval=connection_interval,
+                         inactivity_timeout=inactivity_timeout,
+                         inactivity_interval=inactivity_interval,
+                         monitor_delay=monitor_delay,
+                         logging_pattern=logging_pattern,
+                         retry_logging_interval=retry_logging_interval,
+                         allowed_error_codes=allowed_error_codes,
+                         allowed_connection_exceptions=allowed_connection_exceptions,
+                         must_connect=must_connect,
+                         max_attempts=max_attempts,
+                         logger_name=logger_name,
+                         logger=logger)
+
         return
 
 
@@ -201,4 +217,3 @@ class AspectsCmd(Freezable):
 
 DEFAULT_ASPECTS = Aspects()
 DEFAULT_CMD_ASPECTS = AspectsCmd()
-
