@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "codecraftai-interop"
 description = "Code Craft AI - Interop Package"
-version = "1.1.2"
+version = "1.1.3"
 authors = ["Myron Walker <myron.walker@gmail.com>"]
 readme = "README.rst"
 license = "LicenseRef-CodeCraftAI-Dual-License"
@@ -36,7 +36,7 @@ codecraftai-xmodules = { version = "<2.0.0", source = "codecraftai" }
 am-interop = "ccai.interop.cli.am_interop_command:am_interop_root_command"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
+pytest = "^9.0.3"
 
 
 [[tool.poetry.source]]
