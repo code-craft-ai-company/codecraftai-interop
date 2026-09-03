@@ -493,7 +493,7 @@ class MdnsBrowser:
             except socket.timeout:
                 pass
 
-            except:
+            except Exception:
                 self._lock.acquire()
                 try:
                     if sock is not None:
