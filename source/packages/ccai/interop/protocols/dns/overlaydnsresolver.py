@@ -326,6 +326,10 @@ class OverlayDNSResolver:
         for client in self._vpn_clients:
             try:
                 peers = client.peer_addresses()
+            # SemanticError means an API is being used incorrectly and ConfigurationError
+            # means the run was given information it cannot rely on.  Both derive from
+            # BaseException so they end the run; they are caught here ONLY to re-raise
+            # them past the broad handler below.  Never swallow or downgrade either.
             except (SemanticError, ConfigurationError):
                 raise
             except Exception as xcpt:
@@ -392,6 +396,10 @@ class OverlayDNSResolver:
         for cp in self._control_planes:
             try:
                 devices = cp.list_devices(aspects=provider_aspects)
+            # SemanticError means an API is being used incorrectly and ConfigurationError
+            # means the run was given information it cannot rely on.  Both derive from
+            # BaseException so they end the run; they are caught here ONLY to re-raise
+            # them past the broad handler below.  Never swallow or downgrade either.
             except (SemanticError, ConfigurationError):
                 raise
             except Exception as xcpt:
