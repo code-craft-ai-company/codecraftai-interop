@@ -33,11 +33,6 @@ dependencies = [
 [project.scripts]
 am-interop = "ccai.interop.cli.am_interop_command:am_interop_root_command"
 
-[dependency-groups]
-dev = [
-    "pytest>=9.0.3,<10.0.0",
-]
-
 [tool.poetry]
 packages = [{include="ccai", from="source/packages"}]
 
