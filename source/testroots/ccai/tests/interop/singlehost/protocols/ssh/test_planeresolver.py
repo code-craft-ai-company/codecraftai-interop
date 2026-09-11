@@ -6,8 +6,6 @@
     live in :mod:`test_address_plane_awareness`.
 """
 
-import pytest
-
 from ccai.testbase.properties import given
 from ccai.testbase.properties import strategies as st
 
@@ -111,7 +109,7 @@ def test_skipped_planes_lists_skipped_in_order():
 
 
 # ---------------------------------------------------------------------------
-# Property-style tests (hypothesis)
+# Property-style tests (ccai.testbase.properties)
 # ---------------------------------------------------------------------------
 
 _PLANE_VALUES = [AddressPlane.PUBLIC, AddressPlane.PRIVATE, AddressPlane.OVERLAY]
