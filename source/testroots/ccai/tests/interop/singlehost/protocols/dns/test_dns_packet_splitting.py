@@ -145,7 +145,7 @@ def test_packet_splitting_reverts_compression_state() -> None:
         # Verify success. 
         # Note: DnsInboundMessage skips NULL records, so parsed.answers will be empty.
         # But successful parsing means the name compression pointers were valid.
-        testbase.assert_equal(True, True) 
+        testbase.assert_equal(parsed.valid, True)
     except Exception as e:
         # Use a known assertion or raise
         print(f"Packet 1 parsing failed: {e}")
@@ -219,7 +219,6 @@ def test_packet_splitting_does_not_duplicate_questions() -> None:
     p2 = packets[1]
     p2_qdcount = int.from_bytes(p2[4:6], byteorder='big')
     testbase.assert_equal(p2_qdcount, 0)
-    return
     return
 
 def test_parsing_split_sections() -> None:

@@ -38,7 +38,6 @@ class AuthApiGroup(RestApiGroup):
             
             :returns: List of :class:`User` objects.
         """
-        leaf = "restapi/auth/users/"
         client: "DliPowerRestClient" = self.client
         
         # We need to use recursion/depth or specific query to get full objects?
@@ -60,7 +59,6 @@ class AuthApiGroup(RestApiGroup):
         # We can use matrix URI "all" to get all.
         leaf = "restapi/auth/users/all/"
         
-        leaf = "restapi/auth/users/all/" 
         client: "DliPowerRestClient" = self.client
         
         resp: requests.Response = client.perform_call(leaf=leaf, method="GET", params=None, body=None, exp_status=[200, 207], aspects=aspects)

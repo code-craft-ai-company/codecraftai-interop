@@ -333,8 +333,6 @@ class MdnsBrowser:
             :param msg_bytes: Raw message bytes received.
         """
 
-        from_ip = from_endpoint[0]
-
         msg_in = DnsInboundMessage(msg_bytes, from_endpoint)
         msg_id = msg_in.id
 
@@ -369,8 +367,6 @@ class MdnsBrowser:
             :param from_endpoint: Tuple of source IP and port.
             :param msg_bytes: Raw message bytes received.
         """
-
-        from_ip = from_endpoint[0]
 
         msg_resp = DnsInboundMessage(msg_bytes, source_endpoint=from_endpoint)
 
@@ -491,6 +487,7 @@ class MdnsBrowser:
 
                 self.process_presence_message(addr, resp)
             except socket.timeout:
+                # A receive timeout is expected; it lets the loop re-check 'self._running' so the thread can exit.
                 pass
 
             except Exception:
@@ -528,6 +525,7 @@ class MdnsBrowser:
                 self.process_search_response(addr, resp)
                 
             except socket.timeout:
+                # A receive timeout is expected; it lets the loop re-check 'self._running' so the thread can exit.
                 pass
 
             except OSError:

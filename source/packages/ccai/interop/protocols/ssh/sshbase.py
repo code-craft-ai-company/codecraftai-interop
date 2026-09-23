@@ -38,7 +38,6 @@ from ccai.interop.interfaces.isystemcontext import ISystemContext
 from ccai.xmodules.xformatting import indent_lines
 from ccai.xmodules.xlogging.monitoredscope import MonitoredScope
 
-from ccai.interop.protocols.ssh.exceptions import SSHAddressPlaneUnavailableError
 from ccai.interop.protocols.ssh.planeresolver import resolve_dial_target, skipped_planes
 
 from ccai.interop.protocols.ssh.sshconst import (

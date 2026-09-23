@@ -27,10 +27,7 @@ from ccai.interfaces.addressplane import AddressPlane
 from ccai.interfaces.ivpnclient import IVPNClient
 from ccai.interfaces.ivpncontrolplane import IVPNControlPlane, VPNDeviceRecord
 
-from ccai.interop.protocols.dns.aspectsoverlaydns import (
-    AspectsOverlayDNS,
-    DEFAULT_OVERLAY_DNS_ASPECTS,
-)
+from ccai.interop.protocols.dns.aspectsoverlaydns import AspectsOverlayDNS
 from ccai.interop.protocols.dns.exceptions import (
     OverlayDNSError,
     OverlayDNSNoMatchError,
@@ -38,7 +35,6 @@ from ccai.interop.protocols.dns.exceptions import (
 from ccai.interop.protocols.dns.matchpredicate import is_match
 from ccai.interop.protocols.dns.overlaycandidate import OverlayCandidate
 from ccai.interop.protocols.dns.overlaydnsresolver import (
-    KNOWN_OVERLAY_SUFFIXES,
     OverlayDNSResolver,
     OverlayDNSResolverRegistry,
 )

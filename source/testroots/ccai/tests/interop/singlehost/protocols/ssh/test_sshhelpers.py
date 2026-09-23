@@ -13,7 +13,7 @@ from ccai.interop.protocols.ssh.sshhelpers import (
     primitive_file_push,
     ssh_execute_command_in_channel,
 )
-from ccai.interop.protocols.ssh.sshconst import INTERACTIVE_PROMPT, INTERACTIVE_PROMPT_BYTES
+from ccai.interop.protocols.ssh.sshconst import INTERACTIVE_PROMPT_BYTES
 import stat
 
 

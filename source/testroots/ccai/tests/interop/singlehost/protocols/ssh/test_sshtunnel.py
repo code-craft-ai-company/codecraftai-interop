@@ -79,7 +79,7 @@ def test_tunnel_direct_creation_fails():
     ssh_client = DummySSHClient()
     
     try:
-        tunnel = sshtunnel.SshTunnel(ssh_client, 5433, 'localhost', 5432)
+        sshtunnel.SshTunnel(ssh_client, 5433, 'localhost', 5432)
         testbase.assert_equal(True, False, "Should have raised RuntimeError")
     except RuntimeError as e:
         testbase.assert_equal("SshTunnel instances should only be created through SshAgent.open_tunnel() method" in str(e), True)

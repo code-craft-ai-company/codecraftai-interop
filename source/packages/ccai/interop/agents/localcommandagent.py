@@ -88,7 +88,6 @@ class LocalCommandAgent(ISystemContext):
         completion_toctx = TimeoutContext(aspects.completion_timeout, aspects.completion_interval)
         
         inactivity_timeout = aspects.inactivity_timeout
-        inactivity_interval = aspects.inactivity_interval
         monitor_delay = aspects.monitor_delay
         logging_pattern = aspects.logging_pattern
 

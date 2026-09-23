@@ -71,10 +71,10 @@ class TcpSerialBase(SerialAgentBase):
 
         tnconn = telnetlib.Telnet(host=self._host, port=self._port)
 
-        cmd_out = tnconn.read_until(self.NORMAL_PROMPT, self._aspects.inactivity_timeout)
+        tnconn.read_until(self.NORMAL_PROMPT, self._aspects.inactivity_timeout)
 
         tnconn.write(b"\n")
-        cmd_out = tnconn.read_until(self.NORMAL_PROMPT, self._aspects.inactivity_timeout)
+        tnconn.read_until(self.NORMAL_PROMPT, self._aspects.inactivity_timeout)
 
         tnconn.write(b"echo $PS1\n")
         ps1_out = tnconn.read_until(self.NORMAL_PROMPT, self._aspects.inactivity_timeout)
@@ -89,8 +89,8 @@ class TcpSerialBase(SerialAgentBase):
 
         tnconn.write(b'export PS1="' + self.SERIAL_PROMPT + b'"\n')
 
-        cmd_out = tnconn.read_until(self.SERIAL_PROMPT, self._aspects.inactivity_timeout) # Read the echo of our export command
-        cmd_out = tnconn.read_until(self.SERIAL_PROMPT, self._aspects.inactivity_timeout) # Read the actual prompt we set
+        tnconn.read_until(self.SERIAL_PROMPT, self._aspects.inactivity_timeout) # Read the echo of our export command
+        tnconn.read_until(self.SERIAL_PROMPT, self._aspects.inactivity_timeout) # Read the actual prompt we set
         return tnconn
 
     def _restore_prompt(self, tnconn: telnetlib.Telnet) -> None:

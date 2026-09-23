@@ -8,11 +8,9 @@ from typing import List, Optional
 
 
 from ccai.interfaces.icommandrunner import RunResult
-from ccai.interfaces.ivpnclient import IVPNClient, VPNStatus
+from ccai.interfaces.ivpnclient import IVPNClient
 
-from ccai.interop.vpn.aspectsvpnclient import (
-    AspectsVPNClient, DEFAULT_VPN_CLIENT_ASPECTS,
-)
+from ccai.interop.vpn.aspectsvpnclient import AspectsVPNClient
 from ccai.interop.vpn.twingate.exceptions import (
     VPNBringDownError, VPNBringUpError,
 )

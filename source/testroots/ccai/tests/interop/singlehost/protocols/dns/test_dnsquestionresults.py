@@ -14,7 +14,7 @@ def test_owner_returns_weakref() -> None:
     testbase.assert_equal(results.owner, owner)
     # Drop the strong reference and force collection to test weakref behavior
     owner_ref = weakref.ref(owner)
-    owner = None
+    del owner
     gc.collect()
     testbase.assert_equal(owner_ref() is None or results.owner is None, True)
     return

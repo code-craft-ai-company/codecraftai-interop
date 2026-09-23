@@ -22,6 +22,7 @@ def test_interop_aspects_are_freezable_and_frozen_by_default():
         DEFAULT_ASPECTS.completion_timeout = 1
         testbase.assert_true(False, "assignment to a frozen aspects object must raise")
     except AttributeError:
+        # Expected: a frozen aspects object rejects attribute assignment, which is what this test verifies.
         pass
 
 

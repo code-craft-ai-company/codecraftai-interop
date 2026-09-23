@@ -1,5 +1,3 @@
-import ccai.testbase as testbase
-
 from ccai.interop.protocols.dns import testmessagesipv4
 from ccai.interop.protocols.dns import testmessagesipv6
 

@@ -273,9 +273,6 @@ class DnsOutboundMessage:
         authority_offset = 0
         additional_offset = 0
 
-        # we have to at least write out the question
-        first_iteration = True
-
         while (
             questions_offset < len(self._questions)
             or answer_offset < len(self._answers)

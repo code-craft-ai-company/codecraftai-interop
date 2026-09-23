@@ -22,7 +22,6 @@ from ccai.interop.vpn.twingate.aspectstwingate import (
 
 __all__ = [
     "TwingateClient",
-    "TwingateControlPlane",
     "AspectsTwingate",
     "DEFAULT_TWINGATE_ASPECTS",
 ]

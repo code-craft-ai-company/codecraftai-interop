@@ -17,7 +17,7 @@ from typing import Any
 from ccai.interop.vpn.twingate.twingateclient import TwingateClient
 
 
-__all__ = ["TwingateClient", "TwingateControlPlane"]
+__all__ = ["TwingateClient"]
 
 
 def __getattr__(name: str) -> Any:

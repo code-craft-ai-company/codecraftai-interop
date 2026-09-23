@@ -17,7 +17,7 @@ from typing import Any
 from ccai.interop.vpn.tailscale.tailscaleclient import TailscaleClient
 
 
-__all__ = ["TailscaleClient", "TailscaleControlPlane"]
+__all__ = ["TailscaleClient"]
 
 
 def __getattr__(name: str) -> Any:

@@ -142,6 +142,7 @@ class SshSession(SshBase):
                         try:
                             channel.close()
                         except Exception:
+                            # Best-effort cleanup; a failure to close the channel must not mask the initialization error raised below.
                             pass
                     self._cleanup_ssh_client()
                     raise RuntimeError(f"Failed to initialize interactive shell: {e}") from e
@@ -153,6 +154,7 @@ class SshSession(SshBase):
                         try:
                             channel.close()
                         except Exception:
+                            # Best-effort cleanup; a failure to close the channel must not mask the initialization failure raised below.
                             pass
                     self._cleanup_ssh_client()
                     raise RuntimeError("Interactive shell initialization failed - prompt not received within timeout")
@@ -165,6 +167,7 @@ class SshSession(SshBase):
                     try:
                         channel.close()
                     except Exception:
+                        # Best-effort cleanup; a failure to close the channel must not mask the original error re-raised below.
                         pass
                 self._cleanup_ssh_client()
                 raise
@@ -333,7 +336,7 @@ class SshSession(SshBase):
         """
         reboot_cmd = 'reboot'
         try:
-            status, stdout, stderr = self.run_cmd(reboot_cmd, aspects=aspects)
+            self.run_cmd(reboot_cmd, aspects=aspects)
         except (ConnectionError, paramiko.SSHException, socket.error, EOFError) as e:
             # We might see a connection dropout exception here during reboot, which is expected
             logger.debug(f"Expected connection error during reboot: {e}")
@@ -378,6 +381,8 @@ class SshSession(SshBase):
                 try:
                     self._ssh_client.close()
                 except Exception:
+                    # Best-effort cleanup; this runs while an initialization failure is being handled and a failure
+                    # to close the client must not mask that original error.
                     pass
             self._ssh_client = None
 

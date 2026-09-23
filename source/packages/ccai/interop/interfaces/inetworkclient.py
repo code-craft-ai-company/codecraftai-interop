@@ -25,4 +25,3 @@ class INetworkClient(Protocol):
 
             :returns: The IP address associated with the client.
         """
-        ...

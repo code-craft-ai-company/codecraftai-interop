@@ -16,7 +16,7 @@ __credits__ = []
 
 import os
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from ccai.interop.vpn.twingate.aspectstwingate import (
     AspectsTwingate, DEFAULT_TWINGATE_ASPECTS

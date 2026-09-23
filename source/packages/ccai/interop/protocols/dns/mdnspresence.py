@@ -10,7 +10,7 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import socket
 import threading
@@ -23,10 +23,9 @@ from ccai.interop.protocols.dns.dnsconst import (
     DnsRecordClass,
     DnsRecordType,
 )
-from ccai.interop.protocols.dns.dnsflags import DnsFlags, DnsQr, DnsOpCode, DnsRespCode
+from ccai.interop.protocols.dns.dnsflags import DnsFlags, DnsQr, DnsRespCode
 from ccai.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
 from ccai.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
-from ccai.interop.protocols.dns.dnsquestion import DnsQuestion
 from ccai.interop.protocols.dns.dnsrecord import DnsRecord
 from ccai.interop.protocols.dns.dnsservice import DnsService
 from ccai.interop.protocols.dns.dnspointer import DnsPointer
@@ -169,6 +168,7 @@ class MdnsPresence:
                 msg_in, addr = sock.recvfrom(DNS_RECEIVE_BUFFER)
                 self._process_query(addr, msg_in)
             except socket.timeout:
+                # A receive timeout is expected; it lets the loop re-check 'self._running' so the thread can exit.
                 pass
             except Exception:
                 self._lock.acquire()

@@ -11,17 +11,12 @@ __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
 
-from typing import TYPE_CHECKING
-
 import socket
 import threading
 
 from ccai.interop.protocols.dns.dnsquestion import DnsQuestion
 from ccai.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
 from ccai.networking.constants import MDNS_GROUP_ADDR, MDNS_PORT
-
-if TYPE_CHECKING:
-    from ccai.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
 
 class DnsServer:
     """
