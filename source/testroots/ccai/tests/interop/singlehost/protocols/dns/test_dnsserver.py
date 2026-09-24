@@ -203,3 +203,44 @@ def test_create_query_socket_sends_from_the_server_port():
     testbase.assert_equal(sock.options[(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL)], 255)
     testbase.assert_equal(sock.closed, False)
     return
+
+
+def test_create_query_socket_on_a_platform_without_so_reuseport():
+    """
+        Windows has no socket.SO_REUSEPORT.  The query socket is still created and bound there, relying on
+        SO_REUSEADDR alone to share the port.
+    """
+    server = DnsServer()
+
+    class OptionSocket(RecordingSocket):
+        def __init__(self, *args):
+            super().__init__()
+            self.options = {}
+            self.bound_to = None
+            return
+
+        def setsockopt(self, level, option, value):
+            self.options[(level, option)] = value
+            return
+
+        def bind(self, addr):
+            self.bound_to = addr
+            return
+
+    had_reuseport = hasattr(socket, "SO_REUSEPORT")
+    saved_reuseport = getattr(socket, "SO_REUSEPORT", None)
+    if had_reuseport:
+        delattr(socket, "SO_REUSEPORT")
+    try:
+        with create_module_patch(socket, "socket") as mock_socket:
+            mock_socket.configure(side_effect=OptionSocket)
+            sock = server._create_query_socket()
+    finally:
+        if had_reuseport:
+            socket.SO_REUSEPORT = saved_reuseport
+
+    testbase.assert_equal(sock.bound_to, ("0.0.0.0", constants.MDNS_PORT))
+    testbase.assert_equal(sock.options[(socket.SOL_SOCKET, socket.SO_REUSEADDR)], 1)
+    testbase.assert_equal(len(sock.options), 2)
+    testbase.assert_equal(sock.closed, False)
+    return

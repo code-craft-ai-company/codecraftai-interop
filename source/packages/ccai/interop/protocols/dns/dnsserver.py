@@ -124,7 +124,9 @@ class DnsServer:
         bound = False
         try:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+            # Windows has no SO_REUSEPORT; SO_REUSEADDR already allows the port to be shared there.
+            if hasattr(socket, "SO_REUSEPORT"):
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MDNS_MULTICAST_TTL)
             sock.bind(("0.0.0.0", self._svc_port))
             bound = True
@@ -168,7 +170,9 @@ class DnsServer:
                 # Make sure other Automation processes can also bind to the DNS address and port
                 # so they can also get responses.
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+                # Windows has no SO_REUSEPORT; SO_REUSEADDR already allows the port to be shared there.
+                if hasattr(socket, "SO_REUSEPORT"):
+                    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 
                 # Set us up to be a member of the group, this allows us to receive all the packets
                 # that are sent to the group
