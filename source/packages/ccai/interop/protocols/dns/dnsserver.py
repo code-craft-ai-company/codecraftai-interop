@@ -11,12 +11,25 @@ __copyright__ = "Copyright 2025, Code Craft AI LLC"
 __credits__ = []
 
 
+from typing import List
+
 import socket
 import threading
 
+from ccai.interop.protocols.dns.dnsconst import DnsRecordClass, DnsRecordType
+from ccai.interop.protocols.dns.dnsflags import DEFAULT_DNS_FLAGS_QUERY
 from ccai.interop.protocols.dns.dnsquestion import DnsQuestion
 from ccai.interop.protocols.dns.dnsinboundmessage import DnsInboundMessage
+from ccai.interop.protocols.dns.dnsoutboundmessage import DnsOutboundMessage
 from ccai.networking.constants import MDNS_GROUP_ADDR, MDNS_PORT
+
+
+# The DNS-SD service type enumeration name (RFC 6763 section 9); a PTR query for it in a domain lists
+# the service types advertised in that domain.
+DNSSD_SERVICES_ENUMERATION_PREFIX = "_services._dns-sd._udp"
+
+# Multicast DNS messages are sent with an IP TTL of 255 (RFC 6762 section 11).
+MDNS_MULTICAST_TTL = 255
 
 class DnsServer:
     """
@@ -68,14 +81,59 @@ class DnsServer:
 
         return
     
-    def query_all_services(self):
+    def query_all_services(self, domain: str = "local") -> List[bytes]:
         """
-            Queries all services by broadcasting a DNS-SD request.
+            Queries all services by broadcasting a DNS-SD request: a PTR question for the DNS-SD service type
+            enumeration name ``_services._dns-sd._udp.<domain>`` (RFC 6763 section 9) is sent to the server
+            endpoint.  The query is sent from the server port so responders multicast their answers to the
+            group (RFC 6762 section 6.7), where the responder thread of this server receives them.
+
+            :param domain: The DNS domain whose service types are enumerated.
+
+            :returns: The packets that were sent.
         """
 
-        qpacket = DnsQuestion()
+        svc_type = f"{DNSSD_SERVICES_ENUMERATION_PREFIX}.{domain}"
 
-        return
+        question = DnsQuestion(svc_type, DnsRecordType.PTR, DnsRecordClass.IN)
+
+        query_msg = DnsOutboundMessage(DEFAULT_DNS_FLAGS_QUERY)
+        query_msg.add_question(question)
+
+        msg_packets = query_msg.packets()
+
+        sock = self._create_query_socket()
+        try:
+            for packet in msg_packets:
+                sock.sendto(packet, (self._svc_addr, self._svc_port))
+        finally:
+            sock.close()
+
+        return msg_packets
+
+    def _create_query_socket(self) -> socket.socket:
+        """
+            Creates the UDP socket used to send queries.  It is bound to the server port, shared with the
+            responder thread, so the queries originate from the multicast DNS port.
+
+            :returns: The bound datagram socket.
+        """
+
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+
+        bound = False
+        try:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+            sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MDNS_MULTICAST_TTL)
+            sock.bind(("0.0.0.0", self._svc_port))
+            bound = True
+        finally:
+            if not bound:
+                # Do not leak the socket when it cannot be set up, the error propagates to the caller.
+                sock.close()
+
+        return sock
 
     def wait(self, timeout=None):
         """
