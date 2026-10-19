@@ -33,6 +33,10 @@ dependencies = [
 [project.scripts]
 am-interop = "ccai.interop.cli.am_interop_command:am_interop_root_command"
 
+[project.urls]
+Repository = "https://github.com/code-craft-ai-company/codecraftai-interop"
+Issues = "https://github.com/code-craft-ai-company/codecraftai-interop/issues"
+
 [tool.poetry]
 packages = [{include="ccai", from="source/packages"}]
 
