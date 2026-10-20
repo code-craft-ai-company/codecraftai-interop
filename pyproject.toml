@@ -1,6 +1,6 @@
 [project]
 name = "codecraftai-interop"
-version = "1.5.0"
+version = "1.5.1"
 description = "Code Craft AI - Interop Package"
 readme = "README.rst"
 license = "LicenseRef-CodeCraftAI-Source-Available"
