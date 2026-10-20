@@ -19,15 +19,15 @@ dependencies = [
     "psutil>=7.2.1,<8.0.0",
     "requests>=2.32.3,<3.0.0",
     "click>=8.2.1,<9.0.0",
-    "codecraftai-foundations<2.0.0",
-    "codecraftai-runtime<2.0.0",
-    "codecraftai-credentials<2.0.0",
-    "codecraftai-networking<2.0.0",
-    "codecraftai-restclient-base<2.0.0",
-    "codecraftai-testbase<2.0.0",
-    "codecraftai-integration-runtime<2.0.0",
-    "codecraftai-this-app<2.0.0",
-    "codecraftai-xmodules<2.0.0",
+    "codecraftai-foundations>=1.0.0,<2.0.0",
+    "codecraftai-runtime>=1.0.0,<2.0.0",
+    "codecraftai-credentials>=1.0.0,<2.0.0",
+    "codecraftai-networking>=1.0.0,<2.0.0",
+    "codecraftai-restclient-base>=1.0.0,<2.0.0",
+    "codecraftai-testbase>=1.0.0,<2.0.0",
+    "codecraftai-integration-runtime>=1.0.0,<2.0.0",
+    "codecraftai-this-app>=1.0.0,<2.0.0",
+    "codecraftai-xmodules>=1.0.0,<2.0.0",
 ]
 
 [project.scripts]
@@ -39,30 +39,6 @@ Issues = "https://github.com/code-craft-ai-company/codecraftai-interop/issues"
 
 [tool.poetry]
 packages = [{include="ccai", from="source/packages"}]
-
-[tool.poetry.dependencies]
-codecraftai-foundations = {source = "codecraftai"}
-codecraftai-runtime = {source = "codecraftai"}
-codecraftai-credentials = {source = "codecraftai"}
-codecraftai-networking = {source = "codecraftai"}
-codecraftai-restclient-base = {source = "codecraftai"}
-codecraftai-testbase = {source = "codecraftai"}
-codecraftai-integration-runtime = {source = "codecraftai"}
-codecraftai-this-app = {source = "codecraftai"}
-codecraftai-xmodules = {source = "codecraftai"}
-
-[[tool.poetry.source]]
-name = "codecraftai"
-url = "https://code-craft.ai/licensed-repository/simple/"
-priority = "supplemental"
-
-[[tool.uv.index]]
-# Same licensed index as [[tool.poetry.source]]. Listed before PyPI so that
-# codecraftai-* packages (direct and transitive) resolve from it; everything
-# else falls through to PyPI. Credentials: UV_INDEX_CODECRAFTAI_USERNAME /
-# UV_INDEX_CODECRAFTAI_PASSWORD, or `uv auth login`.
-name = "codecraftai"
-url = "https://code-craft.ai/licensed-repository/simple/"
 
 [tool.ruff.lint]
 # Deliberately narrow.  This gate exists for one reason: a bare `except:`
